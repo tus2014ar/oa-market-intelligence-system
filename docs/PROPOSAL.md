@@ -20,7 +20,7 @@ The OA & RA Market Intelligence System is a monthly-refreshable predictive analy
 
 ### 1.1 Core Project Objectives
 
-- **Objective 1 (Core)**: Quantify how visit share among OA treatment categories (branded injectable, generic corticosteroid, NSAID — see §18.1) has shifted over the 6-year available history and identify inflection points tied to FDA approval events. *(Note: whether a true launch-inflection is observable for the branded injectable depends on its FDA approval date falling within our Aug 2019–Jul 2025 data window — this is verified, not assumed; see §18.5.)* For RA, whose competitive structure is fundamentally different (originator biologics vs. biosimilars, not branded-vs-generic small molecules — see §6.2), the equivalent analysis is a visit-volume and originator-vs-biosimilar share trend, not the same three-category formula or a formal inflection-point test.
+- **Objective 1 (Core)**: Quantify how visit share among OA treatment categories (branded injectable, generic corticosteroid, NSAID — see §18.1) has shifted over the 6-year available history and identify inflection points tied to FDA approval events. *(Confirmed via openFDA: Zilretta's FDA approval predates our Aug 2019–Jul 2025 data window (approved Oct 6, 2017, NDA208845), so no true launch inflection is observable in this data; the analysis for the branded injectable is a post-launch adoption trend instead — see §18.5.)* For RA, whose competitive structure is fundamentally different (originator biologics vs. biosimilars, not branded-vs-generic small molecules — see §6.2), the equivalent analysis is a visit-volume and originator-vs-biosimilar share trend, not the same three-category formula or a formal inflection-point test.
 - **Objective 2 (Core)**: Build a classifier that predicts next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against a persistence baseline. RA is explicitly excluded from classification (see §6.2, §10).
 - **Objective 3 (Stretch)**: Classify each specialty/demographic segment as High- or Low-Adoption of the branded injectable, identifying where share is gaining fastest across both disease areas.
 - **Objective 4 (Stretch)**: Build a monitoring layer that compares each month's predicted direction to actual results and automatically flags meaningful misses or accuracy drops.
@@ -481,12 +481,11 @@ The ±1.0pp threshold is a stated **default**, not a verified fact. It will be c
 
 ### 18.5 FDA Approval-Date Verification (Objective 1)
 
-Before the inflection-point narrative in Objective 1 is finalized, Week 4 work must verify — via openFDA, not assumption — whether the branded injectable's actual FDA approval date falls **within** the Aug 2019–Jul 2025 data window:
+**Verified** via openFDA's Drugs@FDA bulk dataset (downloaded directly, not queried live): application **NDA208845**, sponsor **Pacira Pharms Inc**, original approval granted **October 6, 2017**.
 
-- **If within the window**: proceed with the original "launch inflection" framing — we can observe before/after.
-- **If it predates the window**: reframe Objective 1's language to "post-launch adoption trend" for that product, since a true launch inflection isn't observable in our data. Any *other* branded competitor product whose approval date does fall inside the window becomes the stronger inflection-point example instead.
+This date predates our data window (Aug 2019–Jul 2025) by approximately 22 months. **Consequence**: no true launch inflection is observable for Zilretta in this data, its entire presence in our extract is post-launch. Objective 1's analysis for the branded injectable is therefore a **post-launch adoption trend**, not a before/after launch comparison. There is no fallback candidate: per §10/§18.1, Zilretta is the only branded injectable with no generic equivalent in this dataset (Category A of the OA product taxonomy), so no other product substitutes for a launch-inflection analysis.
 
-This decision will be recorded with its actual finding once verified, not left as an assumption.
+This section previously described a to-be-verified branching decision (if within the window vs. if it predates the window); the branch is now resolved with a checked, real answer rather than an assumption.
 
 ### 18.6 Competitor Product Scope for openFDA Retrieval
 
