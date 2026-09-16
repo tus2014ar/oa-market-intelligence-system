@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.32M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a structured data warehouse, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, a locally-deployed LLM for confidential natural-language querying and reporting, and a self-monitoring production loop that retrains monthly. It is deliberately right-sized, real MLOps tooling (MLflow, DVC, Docker, Evidently AI) chosen to fit a monthly-batch, two-person-team system rather than enterprise infrastructure the problem doesn't need.
+The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.32M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a monthly-refreshed gold table, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, and a self-monitoring production loop that retrains monthly. The final deliverable is a public, multi-user website (open signup, access-code gated) where any brand manager can view model predictions and analytics, and ask natural-language questions or request on-demand visualizations against the gold table through Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built database tools (§5, §19) — never raw SQL access. It is deliberately right-sized: real MLOps tooling (MLflow, DVC, Docker, Evidently AI, GitHub Actions scheduled jobs) chosen to fit a monthly-batch, two-person-team system rather than enterprise infrastructure the problem doesn't need.
 
 ---
 
@@ -98,6 +98,8 @@ The data warehouse serves as the central structured storage layer for all cleane
 
 The warehouse is designed for a monthly-batch refresh cycle aligned with IQVIA NMTA extract delivery. DVC (Data Version Control) versions each monthly extract so historical comparisons remain reproducible.
 
+The Aggregate Tables layer above is what the website and the Claude+MCP query layer (§5, §19) actually read from — referred to as the **gold table** from here on. Each monthly run rebuilds it via a **full-refresh overwrite** (recompute from the cumulative cleaned history and replace the table), not a Slowly Changing Dimension (SCD) pattern; the reasoning, and why SCD Type 1/2 isn't warranted here, is in §19.2.
+
 ### 4.2 Knowledge Graph
 
 A knowledge graph layer enriches the structured warehouse data with relational context that tabular schemas cannot easily express:
@@ -110,34 +112,47 @@ The knowledge graph is stored in a lightweight graph format (RDFLib or NetworkX,
 
 ---
 
-## 5. Local LLM Integration
+## 5. AI Query & Visualization Layer: Claude + MCP
 
-The system incorporates a locally deployed Large Language Model (LLM) to support two specific use cases without requiring cloud API calls or transmitting proprietary IQVIA data externally.
+The system's natural-language query and on-demand visualization feature is served by **Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built tools**, rather than a locally hosted open-source model. This section covers the rationale, the three use cases it supports, the implementation approach, and — for completeness and honesty about the trade-off actually made — the locally-hosted-LLM alternative that was seriously considered and rejected.
 
-### 5.1 Rationale for Local Deployment
+### 5.1 Rationale
 
-Since the NMTA dataset is proprietary commercial data, sending it to external LLM APIs (e.g., OpenAI, Anthropic) raises data governance and confidentiality concerns. A locally deployed open-source LLM (e.g., LLaMA 3, Mistral, or Phi-3, run via Ollama or llama.cpp) keeps all data on-premises.
+The deciding factors, in order of how the team weighted them:
+
+- **Reliability and answer quality at multi-user scale**: the deliverable is a public website that "any person" with an access code can query (§17.6), not a single-analyst tool. Claude's reasoning and tool-use reliability materially reduce the risk of a wrong or malformed answer reaching a brand manager, compared to a quantized 7–8B local model.
+- **Engineering effort matched to a two-person team**: standing up reliable local-LLM infrastructure (quantized model serving, tool-calling reliability, uptime) is real, ongoing engineering work; API-based tool-calling is not.
+- **Data governance is deliberately not the deciding factor here**: the NMTA dataset is licensed to Penn State for this project, and the team has taken ownership of the licensing question outside this document. Given that, the local-LLM's primary traditional advantage (data never leaves the premises) is not the binding constraint for this system, so it doesn't outweigh Claude+MCP's advantages on reliability and scale. This is a considered trade-off, not an oversight — see §5.5 for the alternative that was rejected and why.
+- **Cost is a real, actively-managed risk, not an ignored one**: Claude is billed per request, unlike a self-hosted model's fixed compute cost. This is addressed directly through rate limiting and per-user query caps (§19.4), not left as an open risk.
 
 ### 5.2 Use Case 1 — Natural Language Query Interface
 
-The local LLM acts as a query interface over the knowledge graph and data warehouse, allowing the brand manager to ask questions in plain English, e.g.:
+Claude answers questions in plain English by calling scoped MCP tools that query the gold table directly, e.g.:
 
 - "Which specialty segments showed the largest OA branded injectable share gain last month?"
 - "How did RA visit share compare to OA visit share in Q3 2024?"
 - "When did Zilretta's share cross 5% and what happened to generic corticosteroid share in the same month?"
 
-The LLM translates these queries into structured lookups against the knowledge graph and warehouse, returning grounded answers with citations to the underlying data.
+Every numeric or factual answer is grounded in a real tool call against the gold table, never generated from the model's own training data (§19.3, §14).
 
-### 5.3 Use Case 2 — Automated Narrative Reporting
+### 5.3 Use Case 2 — On-Demand Visualization Generation
 
-After each monthly model run, the local LLM auto-drafts a one-page narrative summary of the classifier's output — describing the predicted direction, the key drivers surfaced by SHAP, and any flagged monitoring alerts. This draft is reviewed by the team before delivery to the brand manager, preserving human oversight while reducing reporting time.
+A brand manager can ask for a chart in natural language (e.g., "show me Zilretta's share trend for 2024"). Claude does not generate the chart's data itself: it calls a scoped query tool to fetch the real data, produces a structured chart specification (chart type, axes, series) from the returned rows, and the website's backend renders the actual chart from that real data. This "text-to-viz" pattern prevents the LLM from ever fabricating a plausible-looking but wrong chart (§19.3).
 
-### 5.4 Implementation Approach
+### 5.4 Use Case 3 — Automated Narrative Reporting
 
-- **Model**: LLaMA 3 8B or Mistral 7B (quantized 4-bit via llama.cpp for CPU-only environments).
-- **Serving**: Ollama for a local REST API; no GPU required for course scope.
-- **Integration**: Python client calls the local Ollama endpoint; responses are post-processed and injected into the dashboard or report template.
-- **Data safety**: NMTA data is only passed as aggregated summaries to the LLM prompt, never raw row-level records.
+After each monthly model run, Claude drafts a one-page narrative summary of the classifier's output — describing the predicted direction, the key drivers surfaced by SHAP, and any flagged monitoring alerts — using the same scoped tools. This draft is reviewed by the team before delivery to the brand manager, preserving human oversight while reducing reporting time.
+
+### 5.5 Considered and Rejected: Locally-Hosted LLM
+
+A locally deployed open-source model (LLaMA 3 8B or Mistral 7B, quantized 4-bit via llama.cpp, served through Ollama) was the original design in an earlier draft of this proposal, specifically for its data-governance property: proprietary data never leaves the local environment. That property is real and would matter if data confidentiality were the project's binding constraint. It was set aside in favor of Claude+MCP because, once licensing was no longer the deciding factor, local deployment's remaining costs (weaker reasoning and tool-use reliability at multi-user scale, real infrastructure/uptime engineering burden for a two-person team) outweighed its remaining benefit (cost predictability at scale, which matters less at this project's expected query volume than reliability does). This trade-off is documented here deliberately rather than silently dropped, since it was a real design decision with a real alternative, not an obvious default.
+
+### 5.6 Implementation Approach
+
+- **Model access**: Claude via the Anthropic API, invoked as the reasoning/orchestration layer behind the website's Q&A and visualization features.
+- **Tool layer (MCP)**: a small set of purpose-built, scoped tools (e.g., `get_visit_share`, `get_top_segments`, `search_methodology`, §19.3) — never a raw SQL-execution tool — so the model's access to the database is bounded by design, not by prompting alone.
+- **Backend**: FastAPI service hosting the MCP tool implementations, the website's API, and the access-code/rate-limiting layer (§19.4).
+- **Database**: SQLite for course scope, with Postgres as the documented upgrade path once concurrent multi-user load exceeds SQLite's write-concurrency ceiling.
 
 ---
 
@@ -167,7 +182,7 @@ RA will not have a direction classifier in the core scope due to data sparsity a
 
 ### 6.3 Comparative OA vs. RA Dashboard
 
-A dedicated dashboard panel displays OA and RA metrics side by side, including visit share trends, branded injectable share over time, top 5 gaining specialties, and monitoring flags — for a brand manager who needs to quickly assess whether branded injectable performance is consistent across disease areas or diverging.
+A dedicated dashboard panel, part of the public website (§5, §19), displays OA and RA metrics side by side, including visit share trends, branded injectable share over time, top 5 gaining specialties, and monitoring flags — for a brand manager who needs to quickly assess whether branded injectable performance is consistent across disease areas or diverging. The same panel's data is queryable in natural language through the Claude+MCP Q&A box (§5.2) and can be regenerated as an on-demand custom chart (§5.3), not just viewed as a fixed layout.
 
 ---
 
@@ -179,7 +194,7 @@ A dedicated dashboard panel displays OA and RA metrics side by side, including v
 | 2 | Data Analysis (EDA) | Explore monthly visit volume, place of service distribution, and product mix. Surface the branded-vs-generic competitive pattern in OA. Characterize RA visit data separately to confirm sparsity and set scope expectations. Build preliminary OA vs. RA comparison charts. | EDA notebook, summary statistics, preliminary visualizations. |
 | 3 | Data Cleaning | Reshape the wide pivot export (600+ columns) to tidy long format. Standardize product and manufacturer names. Resolve unspecified categorical values. Separate OA (M15–M19) and RA (M04) records into distinct analytic tables. Load cleaned data into the data warehouse schema. | Cleaned long-format dataset, data warehouse tables (OA + RA fact/dim), DVC-versioned data snapshot. |
 | 4 | Variable Selection & Transformation | Build the OA treatment-category taxonomy (branded injectable / generic corticosteroid / NSAID) from the Brand/Generic tag and product names (§18.1, §10). Build RA's separate originator-vs-biosimilar product mapping (§6.2), a different taxonomy reflecting RA's biologic-drug market. Engineer monthly lag features, rolling averages, seasonal indicators, and FDA event flags via the knowledge graph for OA. Document all variable definitions. | Feature engineering pipeline, variable dictionary, knowledge graph with product/FDA nodes. |
-| 5 | Modelling | Build and evaluate the monthly visit-share direction classifier (Up/Down/Flat) for OA against a persistence baseline. Evaluate candidate models: logistic regression, random forest, gradient boosting (MLflow + Optuna for hyperparameter tuning). Apply SHAP for explainability. Run RA exploratory trend analysis in parallel. Integrate local LLM for narrative generation. | Trained OA classifier, MLflow experiment log, SHAP plots, RA trend analysis, LLM narrative draft module. |
+| 5 | Modelling | Build and evaluate the monthly visit-share direction classifier (Up/Down/Flat) for OA against a persistence baseline. Evaluate candidate models: logistic regression, random forest, gradient boosting (MLflow + Optuna for hyperparameter tuning). Apply SHAP for explainability. Run RA exploratory trend analysis in parallel. Integrate Claude+MCP for narrative generation. | Trained OA classifier, MLflow experiment log, SHAP plots, RA trend analysis, Claude narrative draft module. |
 | 6 | Data Visualization | Build the OA trend/prediction dashboard (visit-share over time, predicted direction, SHAP drivers). Add RA panel for side-by-side comparison. Build final demo visuals. Implement automated monitoring alerts and LLM-generated summary narrative. | Interactive dashboard (OA + RA panels), monitoring alert module, final presentation visuals. |
 
 ---
@@ -193,8 +208,8 @@ A dedicated dashboard panel displays OA and RA metrics side by side, including v
 | Week 6 | Storage Plan | Data warehouse schema finalized; data cleaning pipeline complete; DVC versioning; knowledge graph entity/relationship map. |
 | Week 8 | Data Cleaning Complete | Long-format reshape done; OA and RA records separated; cleaned tables loaded to warehouse. |
 | Week 10 | Variable Selection & Transformation | Feature engineering pipeline complete; treatment-category taxonomy built; lag/seasonal features engineered. |
-| Week 12 | Modeling & Evaluation | OA classifier trained and evaluated (MLflow); SHAP explainability; RA trend analysis; local LLM integrated. |
-| Week 13 | Report & Visualization | Dashboard built (OA + RA panels); monitoring alerts implemented; LLM narrative module tested. |
+| Week 12 | Modeling & Evaluation | OA classifier trained and evaluated (MLflow); SHAP explainability; RA trend analysis; Claude+MCP query/narrative layer integrated. |
+| Week 13 | Report & Visualization | Website dashboard built (OA + RA panels); monitoring alerts implemented; Claude narrative module and MCP Q&A/visualization tools tested. |
 | Week 14 | Live Demo | End-to-end system demo; final report submitted; production cycle documented. |
 
 ---
@@ -207,19 +222,21 @@ The system is designed as a right-sized MLOps pipeline appropriate for a 2-perso
 |-------|-------|-------------------|
 | Strategy | Problem Definition | Business KPI → ML task mapping; feasibility analysis; SLA definition. |
 | Data Layer | Data Ingestion | Monthly NMTA extract + DVC versioning; openFDA API for FDA events; Pandera/Great Expectations schema validation before entry. |
-| Data Layer | Data Warehouse | Star-schema structured storage (OA + RA fact/dim tables); monthly-batch refresh. |
+| Data Layer | Pipeline Scheduling | GitHub Actions scheduled workflow (`on: schedule: cron`), monthly trigger; reuses CI infra already in the repo rather than adopting a new orchestration platform (§19.1). |
+| Data Layer | Data Warehouse / Gold Table | Star-schema structured storage (OA + RA fact/dim tables); Aggregate/gold table rebuilt via full-refresh overwrite each month (§4.1, §19.2), read by both the model and the website. |
 | Data Layer | Knowledge Graph | RDFLib / NetworkX; product-indication-approval entity-relationship map. |
 | Data Layer | Exploratory Analysis | Trend, distribution, and correlation checks; OA vs. RA comparative EDA. |
 | Modeling | Feature Engineering | Lag/seasonal features via sklearn Pipelines; KG-derived competitive context features. |
 | Modeling | Model Development | Logistic regression → random forest → gradient boosting; MLflow + Optuna. |
 | Modeling | Evaluation | Time-based train/test split (expanding-window backtest, §18.3); precision/recall/F1; SHAP explainability; backtesting across historical months in place of live A/B testing; McNemar's test on the paired baseline-vs-model "Down"-class correctness indicator (§18.4), not a point-estimate comparison alone. |
-| MLOps / Prod | Local LLM | LLaMA 3 / Mistral via Ollama; natural language query + automated narrative. |
+| Serving | AI Query & Visualization | Claude via MCP, scoped database tools + RAG methodology tool (§5, §19.3); no raw SQL exposed to the model. |
+| Serving | Website | FastAPI backend + dashboard frontend; open signup, access-code gated, multi-user (§17.6, §19.4). |
 | MLOps / Prod | Monitoring | Drift + accuracy tracking via Evidently AI; monthly direction-vs-actual check. |
-| MLOps / Prod | Productionization | joblib + Docker; scheduled monthly run (not Kubernetes-scale). |
-| MLOps / Prod | Iteration | Monthly retrain on real-world ground truth as new IQVIA data lands. |
+| MLOps / Prod | Productionization | joblib + Docker; scheduled monthly run via GitHub Actions (not Kubernetes-scale). |
+| MLOps / Prod | Iteration | Monthly retrain on real-world ground truth as new IQVIA data lands; predictions written back into the gold table (§19.2). |
 | MLOps / Prod | CI/CD | GitHub Actions: lint and run unit tests on every push, so a broken pipeline change is caught before it merges, not discovered at the next monthly run. |
 
-Deliberately **not** used: Kubernetes, Kafka, live A/B testing, and Grafana-style real-time dashboards — none of these fit a monthly-batch, 2-person-team system, and choosing not to over-engineer is itself a deliberate design decision.
+Deliberately **not** used: Kubernetes, Kafka, live A/B testing, Grafana-style real-time dashboards, and a Spark-based orchestration platform (e.g., Databricks) for the monthly pipeline — none of these fit a monthly-batch, 2-person-team system operating on a modest (tens-of-thousands-of-rows-per-month) dataset, and choosing not to over-engineer is itself a deliberate design decision (§19.1).
 
 ---
 
@@ -234,7 +251,7 @@ The following analytical maturity points are explicitly acknowledged before mode
 - **Internal total discrepancy in the OA reference file**: the OA Brand/Generic reference file's row-level product total (5,561,131) does not exactly match its own printed Grand Total (5,323,282), a ~4.3% internal inconsistency. This is flagged as an open item to raise with the instructor/IQVIA contact rather than treating either figure as authoritative.
 - **RA data sparsity**: Only ~1,283 total visits over 6 years for M04 (RA). Confirmed as too sparse for monthly direction classification, and partly not RA-specific at all (§6.2). RA is included as an exploratory/monitoring parallel track, not a primary classification target.
 - **OA as primary model target**: All core classifier development focuses on OA (M15–M19) data, with RA analysis run in parallel for comparative intelligence.
-- **Local LLM data governance**: Only aggregated summaries (not raw IQVIA rows) are passed to the local LLM prompt, protecting data confidentiality.
+- **AI query-scope governance**: Claude only ever accesses the gold table (aggregate visit-share/prediction data) through scoped MCP tools (§5.6, §19.3), never raw IQVIA rows and never an open SQL-execution tool, so the model's access is bounded by tool design, not by prompting discipline alone.
 
 ---
 
@@ -244,24 +261,25 @@ The repository is organized so each folder maps directly to a stage in the Techn
 
 ```
 oa-market-intelligence-system/
-├── .github/workflows/            # CI/CD — lint + test on every push
+├── .github/workflows/            # CI (lint + test on every push) + scheduled monthly pipeline run (§19.1)
 ├── data/
 │   ├── raw/                     # gitignored — real NMTA extracts
 │   ├── synthetic/                 # public-safe stand-in dataset (once built)
 │   ├── interim/                    # gitignored — reshape outputs
-│   └── processed/                  # DVC-tracked — model-ready tables
+│   └── processed/                  # DVC-tracked — model-ready tables, incl. the gold table (§19.2)
 ├── src/oa_market_intelligence/
 │   ├── ingestion/                  # NMTA extract loader, openFDA client
-│   ├── warehouse/                  # star-schema fact/dimension table builders
+│   ├── warehouse/                  # star-schema fact/dimension/gold table builders (full-refresh overwrite, §19.2)
 │   ├── knowledge_graph/            # entity/relationship graph builder (RDFLib/NetworkX)
 │   ├── features/                   # taxonomy, lag/season features, KG-derived context
 │   ├── models/                     # baseline, classifier training, evaluation, SHAP
-│   ├── llm/                        # Ollama client, NL query interface, narrative generation
+│   ├── mcp/                        # MCP tool implementations: structured query tools + RAG search tool (§19.3)
+│   ├── rag/                        # vector store build/index over methodology, FDA, SHAP-explanation text (§19.3)
 │   ├── monitoring/                 # Evidently AI drift checks, alerting
 │   └── pipeline.py                 # orchestrates the monthly end-to-end run
 ├── notebooks/                       # EDA, reshape validation, model exploration
 ├── tests/                           # unit tests per module
-├── dashboard/                       # Streamlit/Dash app (OA + RA panels)
+├── website/                         # FastAPI backend + dashboard frontend, access-code auth (§5.6, §17.6, §19.4)
 ├── docker/Dockerfile
 ├── docs/
 │   ├── PROPOSAL.md                 # this document
@@ -295,7 +313,7 @@ This section maps the project explicitly onto the standard machine learning life
 | Monitoring | Evidently AI drift and accuracy tracking (§9) |
 | Iteration / retraining | Monthly retrain cycle on real-world ground truth (§9) |
 | Reproducibility / versioning | DVC (data) + MLflow (experiments/models) |
-| Serving / interface | Local LLM natural-language query interface + interactive dashboard (§5, §6.3) |
+| Serving / interface | Claude+MCP natural-language query & on-demand visualization + public multi-user website dashboard (§5, §6.3, §19) |
 
 Every stage of a complete pipeline is represented, including two stages most student (and many early-stage industry) projects skip entirely: a self-monitoring feedback loop and a serving/query interface.
 
@@ -326,9 +344,11 @@ Every stage of a complete pipeline is represented, including two stages most stu
 - Graph-derived feature engineering — deriving model features from relationships a flat table can't easily express
 
 **Applied LLM engineering**
-- Retrieval-grounded querying (a RAG-style pattern) — the LLM answers are grounded in structured lookups against the knowledge graph/warehouse with citations, not free generation
-- Local model quantization and serving (4-bit via llama.cpp/Ollama) — running an 8B-parameter model on CPU rather than a cloud API
-- Data governance by design — deciding what the LLM prompt is allowed to see (aggregated summaries only, never raw rows) as an engineering constraint, not just policy
+- Tool-calling / Model Context Protocol (MCP) — Claude answers numeric and factual questions exclusively through scoped, purpose-built database tools, never raw SQL execution, and never free generation of the answer itself (§5, §19.3)
+- Retrieval-Augmented Generation (RAG), applied specifically — a separate vector-search tool grounds *narrative* answers (methodology definitions, taxonomy explanations, FDA regulatory context, SHAP-derived "why" explanations) in real source text with citations, kept deliberately distinct from the structured tool-calling path used for numbers (§19.3)
+- Text-to-viz pattern — the LLM produces a structured chart specification from real query results; the backend renders the actual chart, so the model can never fabricate the underlying data (§5.3)
+- Considered-and-rejected alternative, documented — local model quantization/serving (4-bit via llama.cpp/Ollama) was evaluated and set aside in favor of Claude+MCP once data governance was no longer the binding constraint (§5.5), a real architecture trade-off made explicit rather than silently dropped
+- Engineering for a multi-user, pay-per-request service — rate limiting, per-user query caps, and access-code gating (§19.4) designed specifically because the serving model (Claude API) has a real per-request cost unlike a fixed-cost local model
 
 **MLOps / production engineering**
 - Containerization (Docker) for reproducible execution
@@ -349,11 +369,14 @@ Every stage of a complete pipeline is represented, including two stages most stu
 
 ## 14. Responsible AI & Model Risk
 
-This system informs commercial decisions, not clinical ones, and its outputs are advisory, not autonomous. Three specific controls follow from that:
+This system informs commercial decisions, not clinical ones, and its outputs are advisory, not autonomous. The move to an open, multi-user website (§17.6, §19.4) makes this section load-bearing rather than aspirational: controls that were reasonable for a team-internal tool are not automatically sufficient once "any person" with an access code can query the system. The following controls follow from that:
 
-- **Human-in-the-loop for LLM output**: every auto-drafted narrative summary (§5.3) is reviewed by the team before it reaches the Brand Manager. The LLM drafts; it does not publish unsupervised.
-- **Grounded, citable answers only**: the natural-language query interface (§5.2) is restricted to structured lookups against the knowledge graph and warehouse, not free generation, specifically to reduce the risk of a confidently-wrong, ungrounded answer. Every answer traces back to the underlying data it was computed from.
-- **Explicit uncertainty communication**: the classifier's output is a prediction with a known baseline-relative accuracy, not a guarantee. Dashboard and narrative outputs state the model's current accuracy alongside the prediction, so the Brand Manager can calibrate how much weight to give it.
+- **Human-in-the-loop for LLM output**: every auto-drafted narrative summary (§5.4) is reviewed by the team before it reaches the Brand Manager. Claude drafts; it does not publish unsupervised.
+- **Grounded, citable answers only**: numeric and factual answers (§5.2) come exclusively from scoped MCP tool calls against the gold table, never free generation; narrative/methodology answers (§19.3) come from the RAG layer's retrieved passages with citations back to the source document. Neither path lets the model answer from what it "remembers" instead of what a tool returned.
+- **Query-scope enforcement**: the MCP tools and system prompt are scoped to advisory/commercial questions about visit-share and model output only. The system is explicitly designed to decline clinical, diagnostic, or treatment-recommendation questions, since it was never trained or validated for that use, regardless of what a user asks it.
+- **Prompt-injection-resistant tool design**: because this is now a multi-user, open-signup surface, tool inputs and outputs are treated as untrusted by default — tools return structured data rather than executing arbitrary user-supplied query text (no raw SQL tool, §5.6), which removes the main injection vector rather than relying on the model to resist a malicious prompt.
+- **Rate limiting and cost control as a safety control, not just a budget control**: per-user query caps (§19.4) also bound how much any single account (malicious or just misconfigured) can probe the system in a short window.
+- **Explicit uncertainty communication**: the classifier's output is a prediction with a known baseline-relative accuracy, not a guarantee. Dashboard, Q&A, and narrative outputs state the model's current accuracy alongside the prediction, so the Brand Manager can calibrate how much weight to give it.
 
 This system does not process or expose patient-identifiable information; the NMTA extract is aggregate visit-count data, not patient-level records.
 
@@ -415,21 +438,25 @@ If a monthly pipeline run fails (a malformed extract that fails validation, an i
 
 ### 17.6 Access Control
 
-The dashboard, LLM query interface, and underlying warehouse are restricted to the project team and the named stakeholder (Brand Manager); no public exposure of the data or model internals.
+The website is **open signup, access-code gated**: any brand manager with a valid access code can create an account and use the dashboard and Claude+MCP Q&A/visualization features (§5, §19.4) — this is a deliberate change from an earlier, team-only access model, made to match the team's stated goal of building a reliable, scalable system for brand managers generally, not a single-user tool. Two boundaries make this safe to open up:
+
+- **The underlying warehouse and gold table are never directly exposed.** Every user interaction, dashboard render or Claude query, goes through the FastAPI backend and its scoped MCP tools (§5.6, §19.3); no account, including a signed-up user, gets raw database or SQL access.
+- **Access-code issuance and revocation stay with the project team.** Codes are the actual admission control; a compromised or abused code can be revoked without affecting other users, and issuance is tracked so usage can be tied back to an account if abuse or excessive cost is flagged (§19.4).
 
 ### 17.7 Cost & Resource Considerations
 
-The system deliberately runs on standard team hardware, CPU-only, no GPU required (§5.4), so the monthly retrain and local LLM inference carry no recurring cloud compute cost. This is itself a scoping decision: the system is designed to be operable by a small team with no infrastructure budget, not just technically functional.
+The monthly retrain and pipeline run on standard team hardware and free GitHub Actions runners (§19.1), CPU-only, no GPU required, no recurring compute cost. The one real recurring cost is the Claude API, billed per Q&A/visualization request (§5.6) — this is a deliberate, accepted trade-off (§5.1, §5.5) rather than an oversight, and it is the reason §19.4's rate limiting and per-user query caps exist: they keep that variable cost bounded and predictable rather than open-ended, which is what actually makes the system operable by a small team without a large infrastructure budget.
 
 ### 17.8 Cloud Infrastructure Footprint
 
-The system's design intentionally keeps sensitive data local (§5.1), but that doesn't mean zero cloud usage, it means cloud is used only where nothing sensitive is exposed:
+The system's design keeps the raw IQVIA extract itself local and never uploaded anywhere (§3.1), but the serving layer is intentionally cloud-based, since the deliverable is a public website (§5, §19):
 
-- **DVC remote storage (S3)**: only processed, aggregate, de-identified tables (§18.7) are pushed to a DVC-managed S3 remote for versioned, reproducible access across the team. The raw IQVIA extract is never uploaded anywhere, cloud or otherwise (§3.1), it stays `.gitignore`d and local.
-- **CI/CD (GitHub Actions)**: linting and unit tests (§9) run on GitHub-hosted, cloud-based runners on every push. This is genuine cloud compute already in the architecture, simply not previously labeled as such.
-- **Dashboard hosting**: the OA/RA comparison dashboard (§6.3) displays only aggregate visit-share and prediction outputs, never raw rows, and is deployable to a small cloud instance (e.g., Streamlit Community Cloud, or a minimal AWS/GCP instance) so the Brand Manager can access it without local infrastructure.
+- **DVC remote storage (S3)**: only processed, aggregate, de-identified tables (§18.7) are pushed to a DVC-managed S3 remote for versioned, reproducible access across the team. The raw IQVIA extract stays `.gitignore`d and local, and is never uploaded anywhere, cloud or otherwise.
+- **CI/CD and pipeline scheduling (GitHub Actions)**: linting and unit tests (§9) run on every push, and the monthly gold-table refresh pipeline (§19.1) runs on a GitHub Actions scheduled workflow — both on GitHub-hosted, cloud-based runners.
+- **AI query layer (Claude API)**: the gold table's aggregate visit-share and prediction data (never raw IQVIA rows, §10) is sent to the Claude API when a user asks a question or requests a visualization (§5, §19.3). This is a genuine, deliberate exception to "nothing sensitive leaves the environment," made explicitly because the underlying data is licensed for this use and the team has taken ownership of that licensing question; it is documented here rather than left implicit.
+- **Website hosting**: the dashboard and Q&A interface (§6.3, §19.4) are deployed to a small cloud instance (e.g., a minimal AWS/GCP/Render instance) so any access-code-holding brand manager can reach it without local infrastructure.
 
-This is a deliberate split, not an oversight: cloud where the artifact is safe to expose, strictly local where it isn't (§5.1, §10).
+This is a deliberate split: the raw extract never leaves local storage, while the aggregate gold table is treated as safe to serve through cloud infrastructure and the Claude API, consistent with the licensing position stated above.
 
 ---
 
@@ -505,3 +532,43 @@ Both remain fully in-scope for the project overall (§4), just not on the critic
 Live A/B testing does not apply to this system as scoped: there is exactly one real-world outcome per month for a single market, and the model itself doesn't causally affect that outcome, it predicts, it doesn't intervene. Backtesting (§18.3) is the statistically appropriate substitute, not a workaround.
 
 If this system were extended to monitor multiple products or therapeutic areas simultaneously, each product's monthly prediction would become an independent unit, enabling a genuine between-product randomized comparison of a challenger model against the current champion (§17.2), a real, causally valid experiment at that scale. This is documented here as a stated future direction. It is **not** built, tested, or claimed as part of the current system, and should never be described as an existing capability.
+
+---
+
+## 19. Final Deliverable: Website & AI Serving-Layer Architecture
+
+Sections 1–18 establish the data, modeling, and MLOps design. This section specifies how the final deliverable, a public multi-user website showing predictions, analytics, and an AI Q&A/visualization feature, is actually built, end to end, month over month.
+
+### 19.1 Monthly Pipeline & Scheduling
+
+The monthly cycle (ingest → validate → reshape → feature-engineer → predict → refresh gold table) is triggered by a **GitHub Actions scheduled workflow** (`on: schedule`, cron), not a new orchestration platform. This was a real decision, not a default: a Spark-based platform like **Databricks** was considered and rejected, because Databricks is built for distributed, large-scale data processing, and this pipeline runs on a modest dataset (tens of thousands of visit rows per month) on a monthly, not continuous, cadence. Adopting it would mean taking on a new platform to learn, operate, and pay for (its free tier is also time/credit-limited, not a stable long-term free option) to solve a scale problem this project doesn't have — the same reasoning that already ruled out Kubernetes and Kafka (§9). GitHub Actions is free at this usage level, and it's infrastructure the project already runs (§9 CI/CD), so there is zero new platform to adopt. If the team later needs richer retry/observability behavior than a cron-triggered job provides, the documented upgrade path is a lightweight open-source orchestrator (Prefect or Dagster), not a jump straight to enterprise-scale infrastructure.
+
+### 19.2 Gold Table: Schema & Full-Refresh Overwrite
+
+The gold table (§4.1) is the single source of truth both the classifier and the website read from. It is rebuilt in full each month rather than updated incrementally:
+
+- **Loading pattern — full refresh overwrite**: each monthly run recomputes the entire gold table from the cumulative cleaned history and replaces it, rather than applying a Slowly Changing Dimension (SCD) pattern. This is the right-sized choice here: SCD Type 1/2/3 exists to track *changes to dimension attributes over time* (e.g., a product's manufacturer-of-record changing mid-window, §10), which matters for slowly-changing reference data, not for a fact table of monthly visit counts and predictions being fully recomputed anyway. Full refresh is simpler, matches the modest data volume, and DVC (§4.1) already gives snapshot-level history if a prior month's exact table state is ever needed.
+- **Schema**: one row per (month, product-category, specialty, age band, gender) with visit counts, the computed visit-share metric (§18.1), and — appended by the modeling stage — that row's predicted direction (Up/Down/Flat), the model version that produced it, and, once the actual outcome is known the following month, the realized direction for monitoring (§17.2, §17.4).
+- **Predictions live in the same table as the data they were computed from**, not a separate store, so the website and Claude+MCP tools query one place for both "what happened" and "what the model predicted."
+
+### 19.3 MCP Tool Design: Structured Queries vs. RAG
+
+Claude's access to the gold table is entirely through a small, fixed set of MCP tools, split deliberately into two kinds, because they answer two different kinds of questions and fail in different ways if handled wrong:
+
+- **Structured query tools** (e.g., `get_visit_share(product, category, start_month, end_month)`, `get_top_segments(metric, month)`, `get_prediction(product, month)`) answer numeric/factual questions by executing a fixed, parameterized query against the gold table and returning real rows. There is no raw SQL-execution tool: the model can only call these specific, scoped functions, which is both a safety boundary (§14) and a reliability one, a model can't malform a query it never writes.
+- **A RAG tool** (`search_methodology(query)`) answers a different class of question that the gold table has no rows for: "what does visit share mean," "why is Zilretta categorized differently from Kenalog," "why did the model predict Up," "when was this drug approved and by whom." This tool retrieves from a small vector store (Chroma or FAISS, chosen for being free and right-sized, not a new platform) built from: chunked `PROPOSAL.md` methodology sections (§18.1's formula, §10's taxonomy reasoning), the openFDA approval/label text already downloaded for this project (§18.5), and per-prediction SHAP explanation text generated at model-run time. Retrieved passages are returned with a citation to their source section/document, and Claude answers from those passages, not from its own training data, for exactly the reason the Kenalog/Depo-Medrol taxonomy trap (§10) showed: plausible-sounding domain knowledge can be wrong for *this specific dataset's* conventions.
+- **Chart generation** (§5.3) is not a third tool type: it's a structured query tool call followed by Claude producing a chart *specification* (not chart data) from the real returned rows, which the backend renders. The model never has a path to inventing numbers that appear in either an answer or a chart.
+
+### 19.4 Multi-User Access, Rate Limiting & Cost Control
+
+Because the website is open signup (any brand manager, gated only by an access code, §17.6) and Claude is billed per request, the backend enforces:
+
+- **Access-code-gated signup**: creating an account requires a valid, team-issued access code; this is the actual admission boundary, not the LLM itself.
+- **Per-user rate limits and query caps**: a bounded number of Q&A/visualization requests per user per day, enforced in the FastAPI backend before a request ever reaches the Claude API, so a single account (misbehaving or malicious) cannot drive runaway API cost.
+- **Usage tied to accounts, not anonymous**: every query is attributable to the account that made it, so unusual usage can be traced and a specific access code revoked (§17.6) without disrupting other users.
+
+These controls exist specifically because the project's chosen serving model (Claude API, pay-per-request) trades a fixed local-compute cost for a variable one (§5.5); they are the concrete mechanism that makes that trade-off manageable rather than an open-ended risk.
+
+### 19.5 End-to-End Monthly Cycle
+
+Putting §19.1–§19.4 together, the full monthly cycle is: (1) GitHub Actions triggers the pipeline on schedule; (2) the new NMTA extract is validated, cleaned, and reshaped (§3.4, §7); (3) the gold table is rebuilt via full-refresh overwrite (§19.2); (4) the classifier retrains and, if it beats the current champion, is promoted (§17.2), with its new predictions written into the same gold table; (5) the website's dashboard reflects the new month's data and predictions automatically, and Claude's MCP tools query the newly refreshed table for every subsequent question, no manual step required between a new extract landing and the website reflecting it.
