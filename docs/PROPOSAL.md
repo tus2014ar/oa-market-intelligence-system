@@ -82,6 +82,10 @@ These gaps are acknowledged explicitly. **Visit share** is used as our proxy for
 
 Each incoming monthly extract is validated before it enters the pipeline, not just cleaned after the fact. Using a schema-validation library (Pandera or Great Expectations), the ingestion stage checks: expected column count and naming convention for the wide pivot export, valid ranges for visit counts (non-negative, no implausible spikes), expected categorical values for Brand/Generic tag and Place of Service, and presence of the expected ICD-10 scope (M15–M19, M04). A malformed or out-of-spec extract is flagged and halted before it can silently corrupt a monthly model run, rather than being discovered downstream after a bad prediction ships.
 
+### 3.5 Data Dictionary
+
+Field-level structure for every raw source, verified by direct inspection rather than assumed, is maintained separately in [`docs/data_dictionary.md`](data_dictionary.md): the nested Month/Manufacturer/Product pivot structure and compound column-header format (§2 of that document, including a confirmed structural difference between the OA and RA sheets' header formats), the previously undocumented Place-of-Service-by-month summary sheet present in every workbook (§3), the Brand/Generic reference table layout (§4), and the specific openFDA JSON fields consumed (§5). The ingestion pipeline (§9.4) implements against that document directly, so schema changes are tracked in one place rather than rediscovered per module.
+
 ---
 
 ## 4. Knowledge Graph & Data Warehouse Architecture
@@ -363,7 +367,7 @@ The following analytical maturity points are explicitly acknowledged before mode
 
 ## 11. Repository Structure
 
-The repository is organized so each folder maps directly to a stage in the Technical Architecture (§9). Only `README.md`, `.gitignore`, and `docs/PROPOSAL.md` exist as of this proposal; the rest is the target structure the team will build into over the course of the semester.
+The repository is organized so each folder maps directly to a stage in the Technical Architecture (§9). As of Phase 1 (ingestion), `README.md`, `.gitignore`, `docs/PROPOSAL.md`, `docs/data_dictionary.md` (§3.5), and `.dvc/` (versioning config) exist; the rest is the target structure the team builds into over the course of the semester.
 
 ```
 oa-market-intelligence-system/
@@ -390,7 +394,7 @@ oa-market-intelligence-system/
 ├── docs/
 │   ├── PROPOSAL.md                 # this document
 │   ├── ARCHITECTURE.md
-│   ├── data_dictionary.md
+│   ├── data_dictionary.md          # field-level raw-source structure (§3.5) — exists
 │   └── MODEL_CARD.md               # intended use, training data, limitations, performance by segment
 ├── .dvc/                            # data versioning config
 ├── mlruns/                          # gitignored — MLflow local tracking store
