@@ -1,0 +1,7 @@
+# Core (populated incrementally as each roadmap stage is actually built — see docs/PROPOSAL.md §11)
+pandas
+numpy
+
+# Dev / CI
+ruff
+pytest
