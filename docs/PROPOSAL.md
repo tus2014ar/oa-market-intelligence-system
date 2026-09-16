@@ -216,7 +216,111 @@ A dedicated dashboard panel, part of the public website (§5, §19), displays OA
 
 ## 9. Technical Architecture
 
-The system is designed as a right-sized MLOps pipeline appropriate for a 2-person capstone team. Each layer is chosen for fit rather than enterprise scale.
+### 9.1 Design Principles
+
+The system is designed as a right-sized MLOps pipeline appropriate for a 2-person capstone team, not a scaled-down enterprise platform. Three principles apply consistently across every layer below:
+
+1. **Fit over scale.** Every tool choice is justified against this project's actual data volume (tens of thousands of rows per monthly extract) and cadence (monthly batch, not real-time), not against what a large commercial deployment would use.
+2. **Reuse before adopting.** Where an existing piece of infrastructure can do the job (e.g., GitHub Actions already runs CI, §19.1 uses it for pipeline scheduling too), a new platform is not introduced just because it's the more common enterprise pattern.
+3. **Grounded, auditable outputs at every boundary.** Schema validation gates data entry (§3.4), backtesting with a significance test gates model claims (§18.3–18.4), and scoped tool-calling gates what the AI layer can say (§5, §19.3) — nothing downstream is trusted to "just work" without an explicit check.
+
+### 9.2 Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph SRC["Data Sources"]
+        A1["IQVIA NMTA Monthly Extract"]
+        A2["openFDA Drugs@FDA API"]
+    end
+
+    subgraph ING["Data Layer — Ingestion & Validation (§3.4)"]
+        B1["Schema Validation<br/>Pandera / Great Expectations"]
+        B2["Wide-to-Long Reshape<br/>+ Taxonomy Tagging (§10, §18.1)"]
+        B3["DVC-Versioned Snapshot"]
+    end
+
+    subgraph WH["Data Layer — Warehouse & Gold Table (§4)"]
+        C1["Star-Schema Fact/Dim Tables"]
+        C2["Knowledge Graph<br/>RDFLib / NetworkX (§4.2)"]
+        C3[("Gold Table<br/>Full-Refresh Overwrite (§19.2)")]
+    end
+
+    subgraph MOD["Modeling Layer (§9.4, §18)"]
+        D1["Feature Engineering<br/>lag/seasonal + KG context"]
+        D2["Model Training<br/>LogReg → RF → GBM<br/>MLflow + Optuna"]
+        D3["Backtest Evaluation<br/>Expanding Window + McNemar's (§18.3–18.4)"]
+        D4["Champion/Challenger<br/>Promotion Gate (§17.2)"]
+    end
+
+    subgraph SRV["Serving Layer (§5, §19.3)"]
+        E1["MCP Structured Query Tools"]
+        E2["MCP RAG Tool<br/>Chroma / FAISS Vector Store"]
+        E3["Claude API"]
+        E4["FastAPI Backend<br/>Access Code Auth + Rate Limits (§19.4)"]
+        E5["Website: Dashboard + Q&A / Visualization (§6.3)"]
+    end
+
+    subgraph OPS["MLOps / Production Loop (§17, §19.1)"]
+        F1["Evidently AI<br/>Drift + Accuracy Monitoring"]
+        F2["GitHub Actions<br/>Scheduled Monthly Trigger"]
+        F3["GitHub Actions CI<br/>Lint + Test on Push"]
+        F4["Slack / Email Alerting"]
+    end
+
+    F2 --> A1
+    A1 --> B1 --> B2 --> B3 --> C1
+    A2 --> C2
+    C1 --> C2
+    C1 --> C3
+    C3 --> D1
+    C2 --> D1
+    D1 --> D2 --> D3 --> D4
+    D4 -- "promoted model writes predictions back" --> C3
+    C3 --> E1
+    C3 --> E2
+    E1 --> E3
+    E2 --> E3
+    E3 --> E4 --> E5
+    D4 --> F1
+    F1 --> F4
+    F3 -. "gates every merge" .-> D2
+```
+
+### 9.3 End-to-End Data Flow
+
+Each monthly cycle moves through the diagram above in this order:
+
+1. **Trigger**: a GitHub Actions scheduled workflow fires the pipeline monthly, aligned to NMTA's ~40-day data-lag delivery cycle (§17.1, §19.1).
+2. **Ingest & validate**: the new NMTA extract and any new openFDA records are pulled in; Pandera/Great Expectations schema checks run before anything downstream sees the data (§3.4). A malformed extract halts here, not three stages later.
+3. **Clean & reshape**: the wide pivot export is reshaped to tidy long format, categorical values are standardized, and the treatment-category taxonomy is applied (§10, §18.1). The result is DVC-versioned so any month's exact input state is reproducible.
+4. **Warehouse & knowledge graph build**: cleaned data populates the star-schema fact/dimension tables; the knowledge graph adds product/manufacturer/FDA-event relationships that a flat table can't express (§4).
+5. **Gold table rebuild**: the aggregate layer is recomputed end-to-end and the gold table is replaced via full-refresh overwrite (§4.1, §19.2) — this is the single table both the model and the website read from.
+6. **Feature engineering & modeling**: lag/seasonal features and KG-derived competitive-context features are engineered; candidate models are trained and tuned (MLflow + Optuna); the classifier is backtested against the persistence baseline using the expanding-window scheme and McNemar's test (§18.3–18.4).
+7. **Promotion gate**: a retrained model ("challenger") is only promoted to production if it beats the currently-deployed model ("champion") on the primary metric; otherwise it's logged and discarded (§17.2). The promoted model's predictions are written back into the same gold table row they were computed for (§19.2).
+8. **Serving**: the website's dashboard reflects the refreshed gold table automatically. When a user asks a question or requests a chart, Claude calls a scoped MCP structured-query tool (for numbers) or the RAG tool (for methodology/regulatory/explanation text), never both loosely — see §19.3 for why that split exists.
+9. **Monitor & alert**: Evidently AI checks the new month's actual outcome against what was predicted; a drift or accuracy-drop flag posts to Slack/email within the same run that detects it, not on a delay (§17.1, §17.4).
+10. **Continuous integration**: independent of the monthly cycle, every push to any branch runs lint + unit tests via GitHub Actions, so a broken pipeline change is caught at merge time, not at the next scheduled run (§9.5).
+
+### 9.4 Component Detail
+
+| Component | Purpose | Key Technology | Reads From | Writes To | Repo Location (§11) |
+|---|---|---|---|---|---|
+| Ingestion & Validation | Load monthly NMTA extract + openFDA records; enforce schema before entry | Pandera / Great Expectations, `requests` | Raw extract files, openFDA API | Validated raw tables | `src/.../ingestion/` |
+| Cleaning & Reshape | Wide-to-long pivot, categorical standardization, taxonomy tagging | pandas | Validated raw tables | Tidy long-format table (DVC-tracked) | `src/.../ingestion/`, `src/.../features/` |
+| Warehouse & Gold Table Builder | Build star-schema fact/dim tables; rebuild gold table via full-refresh overwrite | pandas, SQLite | Tidy long-format table | Fact/dim tables, gold table | `src/.../warehouse/` |
+| Knowledge Graph Builder | Encode product/manufacturer/FDA-event relationships | RDFLib / NetworkX | Warehouse tables, openFDA data | Graph store | `src/.../knowledge_graph/` |
+| Feature Engineering | Lag/seasonal features, KG-derived competitive context | scikit-learn Pipelines | Gold table, knowledge graph | Model-ready feature matrix | `src/.../features/` |
+| Model Training & Evaluation | Train/tune candidates; backtest vs. baseline with significance testing; SHAP | scikit-learn, MLflow, Optuna, SHAP | Feature matrix | Trained model artifact, experiment log | `src/.../models/` |
+| Model Registry & Promotion | Champion/challenger gate; version the deployed model | MLflow Model Registry | Candidate + current champion metrics | Promotion decision, predictions written to gold table | `src/.../models/` |
+| MCP Tool Server | Scoped structured-query tools + RAG methodology tool | Python MCP SDK | Gold table, vector store | Tool responses to Claude | `src/.../mcp/` |
+| RAG Index | Chunk and embed methodology/FDA/SHAP-explanation text | Chroma / FAISS | `docs/PROPOSAL.md`, openFDA text, generated SHAP summaries | Vector store | `src/.../rag/` |
+| Website Backend | Auth, rate limiting, orchestrates Claude + MCP calls, serves dashboard data | FastAPI | Gold table (via MCP tools), user requests | API responses | `website/` |
+| Website Frontend | Dashboard visuals, Q&A box, on-demand chart rendering | Rendered from FastAPI-served data | Backend API | Rendered pages | `website/` |
+| Monitoring | Drift + accuracy tracking, alert generation | Evidently AI | Gold table (predicted vs. actual) | Slack/email alert | `src/.../monitoring/` |
+| Pipeline Orchestration | Ties the monthly stages together in order | Python, GitHub Actions schedule | All of the above | Triggers each stage in sequence | `src/.../pipeline.py`, `.github/workflows/` |
+| CI/CD | Lint + test gate on every push | GitHub Actions, ruff, pytest | Repository code | Pass/fail check on PR | `.github/workflows/` |
+
+### 9.5 Technology Stack Summary
 
 | Layer | Stage | Tools / Approach |
 |-------|-------|-------------------|
@@ -236,7 +340,9 @@ The system is designed as a right-sized MLOps pipeline appropriate for a 2-perso
 | MLOps / Prod | Iteration | Monthly retrain on real-world ground truth as new IQVIA data lands; predictions written back into the gold table (§19.2). |
 | MLOps / Prod | CI/CD | GitHub Actions: lint and run unit tests on every push, so a broken pipeline change is caught before it merges, not discovered at the next monthly run. |
 
-Deliberately **not** used: Kubernetes, Kafka, live A/B testing, Grafana-style real-time dashboards, and a Spark-based orchestration platform (e.g., Databricks) for the monthly pipeline — none of these fit a monthly-batch, 2-person-team system operating on a modest (tens-of-thousands-of-rows-per-month) dataset, and choosing not to over-engineer is itself a deliberate design decision (§19.1).
+### 9.6 Deliberately Not Used
+
+Kubernetes, Kafka, live A/B testing, Grafana-style real-time dashboards, and a Spark-based orchestration platform (e.g., Databricks) for the monthly pipeline — none of these fit a monthly-batch, 2-person-team system operating on a modest (tens-of-thousands-of-rows-per-month) dataset, and choosing not to over-engineer is itself a deliberate design decision (§19.1).
 
 ---
 
