@@ -509,6 +509,8 @@ This system informs commercial decisions, not clinical ones, and its outputs are
 
 This system does not process or expose patient-identifiable information; the NMTA extract is aggregate visit-count data, not patient-level records.
 
+**On fairness auditing, specifically**: a standard ML-lifecycle checklist calls for a formal fairness/bias audit at evaluation time, and this system doesn't have one in the traditional sense (checking for disparate outcomes across protected classes like race or gender in an individual-level decision). That's a considered scope decision, not an oversight: the classifier doesn't make or influence any decision *about* an individual person — it predicts an aggregate, market-level visit-share trend for a commercial product, computed from de-identified visit counts with no patient-level record in scope at all (§14 above). The closest analogous, genuinely useful check for *this* system is the segment-level performance breakdown already planned in the Model Card (§15) — verifying the classifier's accuracy holds consistently across specialties and demographic segments rather than degrading for a particular one — and that's the diagnostic this system actually runs, in place of an individual-fairness audit that wouldn't have a meaningful target here.
+
 ---
 
 ## 15. Model Card (Planned)
