@@ -254,6 +254,15 @@ Ties the proposal's stated model progression (§9) to what the data itself actua
 
 **RA track**: should not receive its own Up/Down/Flat classifier — confirmed directly by the raw file (only ~1,283 visits, zero generic-tagged products), not just assumed. RA remains descriptive/exploratory: trend charts, branded-vs-biosimilar share decomposition, side-by-side comparison against OA (§6.2 of `PROPOSAL.md`).
 
+### 5.1 Time-Series Decomposition & a Classical Forecasting Baseline (validation check, not a competing track)
+
+With 72 months of data, it would be a real gap not to apply classical time-series analysis — but it's added here as a **validation check on the classification approach above, not a second modeling track**. Two additions, both scoped deliberately small:
+
+- **Decomposition as EDA**: trend/seasonality/residual decomposition and ACF/PACF plots on the `visit_share` series. This confirms — with real numbers, not just visual inspection — the two claims the feature engineering in §4.1 already depends on: that the series is strongly autocorrelated (why lagged visit share is the top-priority engineered feature) and seasonal (why the April 2020 Office→Telehealth shock needs an explicit flag rather than a generic seasonality term).
+- **One classical model as an additional baseline**: SARIMA or Holt-Winters/ETS, forecasting `visit_share` directly, with Up/Down/Flat derived from the forecasted change. Evaluated through the exact same expanding-window backtest (§18.3) and McNemar's test (§18.4) as every other candidate — not a separate evaluation methodology. This answers, honestly, whether the tree-based classifiers are earning their added complexity: if a well-understood SARIMA/ETS model gets most of the way there, that's a finding worth reporting, not a result to bury.
+
+**Deliberately not done**: a full second modeling track, or anything beyond one classical model (no LSTM/deep sequence models). The same small-dataset caution already stated above applies with even more force to a heavily parameterized SARIMA grid search — 72 points is a short series to tune `(p,d,q)(P,D,Q,s=12)` on without overfitting.
+
 ---
 
 ## 6. Combining the NMTA Data with openFDA
