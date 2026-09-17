@@ -99,7 +99,10 @@ CREATE TABLE IF NOT EXISTS dim_product (
         CHECK (brand_generic_tag IN ('BRAND','GENERIC','BRANDED GENERIC','OTHER')),
     disease_area       TEXT NOT NULL CHECK (disease_area IN ('OA','RA')),
     treatment_category TEXT NOT NULL DEFAULT 'unclassified',
-        -- 'branded_injectable' | 'generic_corticosteroid' | 'nsaid_otc' | 'opioid_other' | 'unclassified'
+        -- OA taxonomy: 'branded_injectable' | 'generic_corticosteroid' | 'nsaid_otc' | 'opioid_other'
+        -- 'not_applicable': product is outside this taxonomy's scope by design (all 15 RA products —
+        --   RA uses an originator-vs-biosimilar structure, §6.2, not this OA formula) — reviewed, not a gap
+        -- 'unclassified': genuinely not yet reviewed — the only value that triggers a monitoring alert (§18.10)
         -- sourced from data/reference/product_taxonomy.csv (§4 below), not inferred at load time
     fda_approval_date  TEXT                          -- ISO date, nullable; openFDA Method A (PROPOSAL.md §6.3)
 );
@@ -223,7 +226,7 @@ KENALOG,generic_corticosteroid,OA
 DEPO-MEDROL,generic_corticosteroid,OA
 ASPIRIN,nsaid_otc,OA
 KETOROLAC TROMETH,opioid_other,OA
-ILARIS,unclassified,RA
+ILARIS,not_applicable,RA
 ```
 
 A product present in a new monthly extract but absent from this file is loaded with `treatment_category = 'unclassified'` and triggers a monitoring alert — never silently guessed (§18.10).

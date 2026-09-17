@@ -1,0 +1,161 @@
+product_name,treatment_category,disease_area
+ZILRETTA,branded_injectable,OA
+KENALOG,generic_corticosteroid,OA
+DEPO-MEDROL,generic_corticosteroid,OA
+TRIAMCINOLONE ACTN,generic_corticosteroid,OA
+BETAMETH ACE/SOD PHOS,generic_corticosteroid,OA
+METHYLPRED ACE,generic_corticosteroid,OA
+DEXAMETHASONE,generic_corticosteroid,OA
+CELESTONE,generic_corticosteroid,OA
+DEXAMETH S PH,generic_corticosteroid,OA
+SOLU-MEDROL,generic_corticosteroid,OA
+METHYLPREDNISOLONE,generic_corticosteroid,OA
+PRO-C-DURE 5,generic_corticosteroid,OA
+PHYS EZ USE JOINT,generic_corticosteroid,OA
+METHYLPRED SOD SUC,generic_corticosteroid,OA
+SARAPIN,generic_corticosteroid,OA
+TRIAMCINOLONE DIAC,generic_corticosteroid,OA
+BETAMETHASONE COMBO,generic_corticosteroid,OA
+PRO-C-DURE 6,generic_corticosteroid,OA
+SOLU-CORTEF,generic_corticosteroid,OA
+DEX COMBO,generic_corticosteroid,OA
+CELESTONE PHOS,generic_corticosteroid,OA
+READYSHARP BETAMET,generic_corticosteroid,OA
+ARISTOSPAN,generic_corticosteroid,OA
+MULTI-SPECIALTY,generic_corticosteroid,OA
+HEXATRIONE,generic_corticosteroid,OA
+BETA 1,generic_corticosteroid,OA
+PREDNISONE,generic_corticosteroid,OA
+HYDROCORTISONE VAL,generic_corticosteroid,OA
+DECADRON,generic_corticosteroid,OA
+DYURAL-80,generic_corticosteroid,OA
+A-METHAPRED,generic_corticosteroid,OA
+A-HYDROCORT,generic_corticosteroid,OA
+HYDROCORTISONE,generic_corticosteroid,OA
+DEXAMETHASONE INTN,generic_corticosteroid,OA
+DEXLIDO-M,generic_corticosteroid,OA
+MEDROL,generic_corticosteroid,OA
+BETAMETHASONE,generic_corticosteroid,OA
+BETAMETH DIP AUG,generic_corticosteroid,OA
+PREDNISOLONE S PH,generic_corticosteroid,OA
+ARZE-JECT-A,generic_corticosteroid,OA
+CLOBETASOL PROP,generic_corticosteroid,OA
+READYSHARP DEXAMET,generic_corticosteroid,OA
+HYDROCORTONE,generic_corticosteroid,OA
+CORTEF,generic_corticosteroid,OA
+MARBETA-L,generic_corticosteroid,OA
+MEDROLOAN SUIK,generic_corticosteroid,OA
+PREDNISOLONE,generic_corticosteroid,OA
+ARISTOCORT,generic_corticosteroid,OA
+LIDOLOG,generic_corticosteroid,OA
+BAYCADRON,generic_corticosteroid,OA
+TAC-3,generic_corticosteroid,OA
+DOUBLEDEX,generic_corticosteroid,OA
+BETALOAN SUIK,generic_corticosteroid,OA
+KETOROLAC TROMETH,opioid_other,OA
+DICLOFENAC POT,opioid_other,OA
+FENTANYL CIT,opioid_other,OA
+NALBUPHINE HCL,opioid_other,OA
+LIDOCAINE,opioid_other,OA
+HYDROMORPHONE HCL,opioid_other,OA
+MORPHINE SULF,opioid_other,OA
+P-CARE K40,opioid_other,OA
+LOFENA,opioid_other,OA
+DEMEROL,opioid_other,OA
+CLONIDINE HCL,opioid_other,OA
+TORADOL,opioid_other,OA
+BUPRENORPHINE HCL,opioid_other,OA
+DARVON-N,opioid_other,OA
+INFUMORPH,opioid_other,OA
+BUTORPHANOL TART,opioid_other,OA
+DARVOCET-N 50,opioid_other,OA
+TRAMADOL HCL,opioid_other,OA
+MEPERIDINE HCL,opioid_other,OA
+HYCD/APAP,opioid_other,OA
+PRIALT,opioid_other,OA
+DARVOCET-N 100,opioid_other,OA
+POD-CARE 100K,opioid_other,OA
+MORPHINE SULF C-JECT,opioid_other,OA
+DILAUDID,opioid_other,OA
+TRAMADOL HCL ER,opioid_other,OA
+DURAMORPH PF,opioid_other,OA
+DARVON,opioid_other,OA
+POD-CARE 100C,opioid_other,OA
+ANJESO,opioid_other,OA
+DYLOJECT,opioid_other,OA
+OXYCODONE HCL,opioid_other,OA
+OFIRMEV,opioid_other,OA
+DURACLON,opioid_other,OA
+DILAUDID SYRINGE,opioid_other,OA
+OXYCODONE/APAP,opioid_other,OA
+READYSHARP ANES+KETO,opioid_other,OA
+ASPIRIN,nsaid_otc,OA
+ACETAMINOPHEN,nsaid_otc,OA
+ASPIRIN (OTC),nsaid_otc,OA
+NAPROXEN SOD (RX),nsaid_otc,OA
+MAPAP ARTHRITIS PAIN,nsaid_otc,OA
+BAYER ASP REGIMEN,nsaid_otc,OA
+TRI-BUFFERED ASPIRIN,nsaid_otc,OA
+IBUPROFEN (OTC),nsaid_otc,OA
+PHARBETOL,nsaid_otc,OA
+DIFLUNISAL,nsaid_otc,OA
+ECOTRIN,nsaid_otc,OA
+ZORVOLEX,nsaid_otc,OA
+BAYER ASPIRIN,nsaid_otc,OA
+IBUPROFEN,nsaid_otc,OA
+SALSALATE,nsaid_otc,OA
+NAPROXEN SOD,nsaid_otc,OA
+TYLENOL EXTRA STRG,nsaid_otc,OA
+TYLENOL REGULAR,nsaid_otc,OA
+ZIPSOR,nsaid_otc,OA
+IBUPROFEN (RX),nsaid_otc,OA
+TYLENOL ARTHRITIS,nsaid_otc,OA
+NAPROXEN SOD (OTC),nsaid_otc,OA
+TYLENOL 8 HOUR,nsaid_otc,OA
+ASPIRIN BUFFERED,nsaid_otc,OA
+ASA/APAP/CAF,nsaid_otc,OA
+M-PAP,nsaid_otc,OA
+THERAPY BAYER ASP,nsaid_otc,OA
+FENOPROFEN CA,nsaid_otc,OA
+ALEVE,nsaid_otc,OA
+BUFFERIN,nsaid_otc,OA
+DOLOBID,nsaid_otc,OA
+PAIN RELIEVER PLUS,nsaid_otc,OA
+PAIN RELIEF,nsaid_otc,OA
+ADVIL,nsaid_otc,OA
+VAZALORE,nsaid_otc,OA
+ACETAMINOPHEN CHILD,nsaid_otc,OA
+EXCEDRIN EX STR,nsaid_otc,OA
+SILAPAP,nsaid_otc,OA
+ST. JOSEPH ASPIRIN,nsaid_otc,OA
+EXCEDRIN MIGRAINE,nsaid_otc,OA
+IBUPROFEN (OTC) CHILD,nsaid_otc,OA
+Q-PAP,nsaid_otc,OA
+ANACIN,nsaid_otc,OA
+HALFPRIN,nsaid_otc,OA
+MOTRIN IB,nsaid_otc,OA
+EXCEDRIN TEN HDCHE,nsaid_otc,OA
+APAP X,nsaid_otc,OA
+APAP/CAF,nsaid_otc,OA
+ASCRIPTIN,nsaid_otc,OA
+EXCEDRIN ASP/FREE,nsaid_otc,OA
+DOANS X-STR,nsaid_otc,OA
+BIOFREEZE W/ILEX,nsaid_otc,OA
+CHILDRENS MAPAP,nsaid_otc,OA
+FEVERALL JUNIOR,nsaid_otc,OA
+MLK PROCEDUR F2,unclassified,OA
+ILARIS,not_applicable,RA
+ACTEMRA,not_applicable,RA
+INFLECTRA,not_applicable,RA
+KINERET,not_applicable,RA
+REMICADE,not_applicable,RA
+ARCALYST,not_applicable,RA
+RENFLEXIS,not_applicable,RA
+OPDIVO,not_applicable,RA
+YERVOY,not_applicable,RA
+KEYTRUDA,not_applicable,RA
+ORENCIA,not_applicable,RA
+RITUXAN,not_applicable,RA
+SAPHNELO,not_applicable,RA
+STELARA,not_applicable,RA
+TRUXIMA,not_applicable,RA
