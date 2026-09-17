@@ -62,7 +62,7 @@ erDiagram
         int patient_visits
     }
     gold_visit_share_monthly {
-        int month_id PK_FK
+        int month_id PK
         real visit_share
         text predicted_direction
     }
