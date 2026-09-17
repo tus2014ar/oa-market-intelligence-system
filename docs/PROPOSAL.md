@@ -80,7 +80,7 @@ These gaps are acknowledged explicitly. **Visit share** is used as our proxy for
 
 ### 3.4 Data Validation Approach
 
-Each incoming monthly extract is validated before it enters the pipeline, not just cleaned after the fact. Using a schema-validation library (Pandera or Great Expectations), the ingestion stage checks: expected column count and naming convention for the wide pivot export, valid ranges for visit counts (non-negative, no implausible spikes), expected categorical values for Brand/Generic tag and Place of Service, and presence of the expected ICD-10 scope (M15–M19, M04). A malformed or out-of-spec extract is flagged and halted before it can silently corrupt a monthly model run, rather than being discovered downstream after a bad prediction ships.
+Each incoming monthly extract is validated before it enters the pipeline, not just cleaned after the fact. Using Pandera (chosen over Great Expectations for being lighter-weight and more Pythonic, a better fit for a 2-person team), the ingestion stage checks: expected column count and naming convention for the wide pivot export, valid ranges for visit counts (non-negative, no implausible spikes), expected categorical values for Brand/Generic tag and Place of Service, and presence of the expected ICD-10 scope (M15–M19, M04). A malformed or out-of-spec extract is flagged and halted before it can silently corrupt a monthly model run, rather than being discovered downstream after a bad prediction ships.
 
 ### 3.5 Data Dictionary
 
@@ -94,15 +94,15 @@ To support enriched querying, lineage tracking, and multi-domain analytics acros
 
 ### 4.1 Data Warehouse
 
-The data warehouse serves as the central structured storage layer for all cleaned, transformed, and model-ready data, organized into:
+The data warehouse serves as the central structured storage layer for all cleaned, transformed, and model-ready data, organized into (full DDL and field-level meaning locked in `database_schema.md` and `silver_gold_data_dictionary.md`, not repeated here):
 
-- **Fact Tables**: Monthly visit volume by product × specialty × age band × gender × place of service × ICD-10 code.
-- **Dimension Tables**: Product master (brand/generic tag, manufacturer, therapeutic category), Time dimension (month, quarter, year, FDA event flags), Specialty dimension, Demographics dimension.
-- **Aggregate Tables**: Pre-computed monthly visit-share by treatment category (branded injectable / generic corticosteroid / NSAID) for rapid dashboard refresh.
+- **Dimension Tables** (4): `dim_month`, `dim_product` (manufacturer, brand/generic tag, taxonomy-assigned treatment category, FDA approval date), `dim_specialty`, `dim_demographics`.
+- **Fact Tables** (2, deliberately not one — Place of Service is a genuinely different grain, §2 of `data_dictionary.md`): `fact_product_visits` (month × product × specialty × demographic) and `fact_place_of_service_visits` (month × disease area × setting, market-level).
+- **Gold Tables** (2, split by consumer objective): `gold_visit_share_monthly` (Objective 2 — one row per month) and `gold_segment_adoption` (Objective 3, Stretch — one row per month × specialty × demographic).
 
-The warehouse is designed for a monthly-batch refresh cycle aligned with IQVIA NMTA extract delivery. DVC (Data Version Control) versions each monthly extract so historical comparisons remain reproducible.
+The warehouse is designed for a monthly-batch refresh cycle aligned with IQVIA NMTA extract delivery. DVC (Data Version Control) versions the database file (`warehouse.db`) and the model registry (`mlruns/`) so both survive between scheduled runs on an otherwise-ephemeral GitHub Actions runner (§19.6).
 
-The Aggregate Tables layer above is what the website and the Claude+MCP query layer (§5, §19) actually read from — referred to as the **gold table** from here on. Each monthly run rebuilds it via a **full-refresh overwrite** (recompute from the cumulative cleaned history and replace the table), not a Slowly Changing Dimension (SCD) pattern; the reasoning, and why SCD Type 1/2 isn't warranted here, is in §19.2.
+The two Gold tables above are what the website and the Claude+MCP query layer (§5, §19) actually read from. Each monthly run rebuilds them via a **full-refresh overwrite** (recompute from the cumulative cleaned history and replace the table), not a Slowly Changing Dimension (SCD) pattern; the reasoning, and why SCD Type 1/2 isn't warranted here, is in §19.2. Dimension tables use a different rule — upsert, not overwrite, to keep surrogate keys stable (`database_schema.md` §6).
 
 ### 4.2 Knowledge Graph
 
@@ -225,8 +225,9 @@ A dedicated dashboard panel, part of the public website (§5, §19), displays OA
 The system is designed as a right-sized MLOps pipeline appropriate for a 2-person capstone team, not a scaled-down enterprise platform. Three principles apply consistently across every layer below:
 
 1. **Fit over scale.** Every tool choice is justified against this project's actual data volume (tens of thousands of rows per monthly extract) and cadence (monthly batch, not real-time), not against what a large commercial deployment would use.
-2. **Reuse before adopting.** Where an existing piece of infrastructure can do the job (e.g., GitHub Actions already runs CI, §19.1 uses it for pipeline scheduling too), a new platform is not introduced just because it's the more common enterprise pattern.
-3. **Grounded, auditable outputs at every boundary.** Schema validation gates data entry (§3.4), backtesting with a significance test gates model claims (§18.3–18.4), and scoped tool-calling gates what the AI layer can say (§5, §19.3) — nothing downstream is trusted to "just work" without an explicit check.
+2. **Reuse before adopting.** Where an existing piece of infrastructure can do the job (e.g., GitHub Actions already runs CI, §19.1 uses it for pipeline scheduling too; the same DVC remote persists both the database and the model registry, §19.6), a new platform is not introduced just because it's the more common enterprise pattern.
+3. **Grounded, auditable outputs at every boundary.** Schema validation gates data entry (§3.4), a maintained taxonomy mapping gates what category a product is assigned rather than letting the pipeline guess (§18.10), backtesting with a significance test gates model claims (§18.3–18.4), and scoped tool-calling gates what the AI layer can say (§5, §19.3) — nothing downstream is trusted to "just work" without an explicit check.
+4. **Local-first.** The pipeline, database, and model training are built and validated on local machines for the bulk of the project; cloud infrastructure is stood up only once there's something ready to demo publicly, not provisioned upfront (§19.6).
 
 ### 9.2 Architecture Diagram
 
@@ -235,114 +236,131 @@ flowchart TD
     subgraph SRC["Data Sources"]
         A1["IQVIA NMTA Monthly Extract"]
         A2["openFDA Drugs@FDA API"]
+        A3["product_taxonomy.csv<br/>Maintained Mapping (§18.10)"]
     end
 
     subgraph ING["Data Layer — Ingestion & Validation (§3.4)"]
-        B1["Schema Validation<br/>Pandera / Great Expectations"]
-        B2["Wide-to-Long Reshape<br/>+ Taxonomy Tagging (§10, §18.1)"]
-        B3["DVC-Versioned Snapshot"]
+        B1["Schema Validation<br/>Pandera"]
+        B2["Wide-to-Long Reshape<br/>(data_dictionary.md §2)"]
     end
 
-    subgraph WH["Data Layer — Warehouse & Gold Table (§4)"]
-        C1["Star-Schema Fact/Dim Tables"]
-        C2["Knowledge Graph<br/>RDFLib / NetworkX (§4.2)"]
-        C3[("Gold Table<br/>Full-Refresh Overwrite (§19.2)")]
+    subgraph SIL["Silver Layer — Star Schema (database_schema.md §3)"]
+        C1["4 Dimension Tables<br/>upserted, stable keys (§6)"]
+        C2["2 Fact Tables<br/>full-refresh overwrite"]
+        C3["Knowledge Graph<br/>RDFLib / NetworkX (§4.2, Stretch)"]
     end
 
-    subgraph MOD["Modeling Layer (§9.4, §18)"]
-        D1["Feature Engineering<br/>lag/seasonal + KG context"]
-        D2["Model Training<br/>LogReg → RF → GBM<br/>MLflow + Optuna"]
-        D3["Backtest Evaluation<br/>Expanding Window + McNemar's (§18.3–18.4)"]
-        D4["Champion/Challenger<br/>Promotion Gate (§17.2)"]
+    subgraph GLD["Gold Layer (database_schema.md §4)"]
+        D1[("gold_visit_share_monthly<br/>Objective 2")]
+        D2[("gold_segment_adoption<br/>Objective 3, Stretch")]
+    end
+
+    subgraph MOD["Modeling Layer (§18)"]
+        E1["Feature Engineering<br/>lag/seasonal + FDA-derived (§6.3)"]
+        E2["Model Training<br/>LogReg → RF → GBM<br/>+ SARIMA/ETS check (§18.9)<br/>MLflow + Optuna"]
+        E3["Backtest Evaluation<br/>Expanding Window + McNemar's (§18.3–18.4)"]
+        E4["Champion/Challenger<br/>Promotion Gate (§17.2)"]
     end
 
     subgraph SRV["Serving Layer (§5, §19.3)"]
-        E1["MCP Structured Query Tools"]
-        E2["MCP RAG Tool<br/>Chroma / FAISS Vector Store"]
-        E3["Claude API"]
-        E4["FastAPI Backend<br/>Access Code Auth + Rate Limits (§19.4)"]
-        E5["Website: Dashboard + Q&A / Visualization (§6.3)"]
+        F1["MCP Structured Query Tools"]
+        F2["MCP RAG Tool<br/>Chroma / FAISS Vector Store"]
+        F3["Claude API"]
+        F4["FastAPI Backend<br/>Access Code Auth + Rate Limits (§19.4)"]
+        F5["Website: Dashboard + Q&A / Visualization (§6.3)"]
     end
 
-    subgraph OPS["MLOps / Production Loop (§17, §19.1)"]
-        F1["Evidently AI<br/>Drift + Accuracy Monitoring"]
-        F2["GitHub Actions<br/>Scheduled Monthly Trigger"]
-        F3["GitHub Actions CI<br/>Lint + Test on Push"]
-        F4["Slack / Email Alerting"]
+    subgraph OPS["MLOps / Production Loop (§17, §19.1, §19.6)"]
+        G1["Evidently AI<br/>Drift + Accuracy Monitoring"]
+        G2["GitHub Actions<br/>Scheduled Monthly Trigger"]
+        G3["GitHub Actions CI<br/>Lint + Test on Push"]
+        G4["Slack / Email Alerting"]
+        G5[("DVC Remote<br/>warehouse.db + mlruns/ (§19.6)")]
     end
 
-    F2 --> A1
-    A1 --> B1 --> B2 --> B3 --> C1
-    A2 --> C2
+    G2 --> A1
+    A1 --> B1 --> B2
+    A3 --> C1
+    B2 --> C1
+    A2 --> C1
     C1 --> C2
     C1 --> C3
-    C3 --> D1
+    G5 -. "pull before / push after" .-> C1
     C2 --> D1
-    D1 --> D2 --> D3 --> D4
-    D4 -- "promoted model writes predictions back" --> C3
+    C2 --> D2
     C3 --> E1
-    C3 --> E2
-    E1 --> E3
-    E2 --> E3
-    E3 --> E4 --> E5
-    D4 --> F1
-    F1 --> F4
-    F3 -. "gates every merge" .-> D2
+    D1 --> E1
+    E1 --> E2 --> E3 --> E4
+    E4 -- "writes predictions back" --> D1
+    D1 --> F1
+    D2 --> F1
+    C1 --> F2
+    F1 --> F3
+    F2 --> F3
+    F3 --> F4 --> F5
+    E4 --> G1
+    G1 --> G4
+    G3 -. "gates every merge" .-> E2
 ```
 
 ### 9.3 End-to-End Data Flow
 
 Each monthly cycle moves through the diagram above in this order:
 
-1. **Trigger**: a GitHub Actions scheduled workflow fires the pipeline monthly, aligned to NMTA's ~40-day data-lag delivery cycle (§17.1, §19.1).
-2. **Ingest & validate**: the new NMTA extract and any new openFDA records are pulled in; Pandera/Great Expectations schema checks run before anything downstream sees the data (§3.4). A malformed extract halts here, not three stages later.
-3. **Clean & reshape**: the wide pivot export is reshaped to tidy long format, categorical values are standardized, and the treatment-category taxonomy is applied (§10, §18.1). The result is DVC-versioned so any month's exact input state is reproducible.
-4. **Warehouse & knowledge graph build**: cleaned data populates the star-schema fact/dimension tables; the knowledge graph adds product/manufacturer/FDA-event relationships that a flat table can't express (§4).
-5. **Gold table rebuild**: the aggregate layer is recomputed end-to-end and the gold table is replaced via full-refresh overwrite (§4.1, §19.2) — this is the single table both the model and the website read from.
-6. **Feature engineering & modeling**: lag/seasonal features and KG-derived competitive-context features are engineered; candidate models are trained and tuned (MLflow + Optuna); the classifier is backtested against the persistence baseline using the expanding-window scheme and McNemar's test (§18.3–18.4).
-7. **Promotion gate**: a retrained model ("challenger") is only promoted to production if it beats the currently-deployed model ("champion") on the primary metric; otherwise it's logged and discarded (§17.2). The promoted model's predictions are written back into the same gold table row they were computed for (§19.2).
-8. **Serving**: the website's dashboard reflects the refreshed gold table automatically. When a user asks a question or requests a chart, Claude calls a scoped MCP structured-query tool (for numbers) or the RAG tool (for methodology/regulatory/explanation text), never both loosely — see §19.3 for why that split exists.
-9. **Monitor & alert**: Evidently AI checks the new month's actual outcome against what was predicted; a drift or accuracy-drop flag posts to Slack/email within the same run that detects it, not on a delay (§17.1, §17.4).
-10. **Continuous integration**: independent of the monthly cycle, every push to any branch runs lint + unit tests via GitHub Actions, so a broken pipeline change is caught at merge time, not at the next scheduled run (§9.5).
+1. **Trigger**: a GitHub Actions scheduled workflow fires the pipeline monthly, aligned to NMTA's ~40-day data-lag delivery cycle (§17.1, §19.1). The runner starts by pulling the current `warehouse.db` and `mlruns/` from the DVC remote (§19.6) — it's ephemeral and holds nothing between runs otherwise.
+2. **Ingest & validate**: the new NMTA extract is pulled in; Pandera schema checks run before anything downstream sees the data (§3.4). A malformed extract halts here, not three stages later.
+3. **Clean & reshape**: the wide pivot export is reshaped to tidy long format and categorical values are standardized (`data_dictionary.md` §2). No taxonomy decision happens yet — that's the next stage.
+4. **Silver build**: dimension tables are **upserted** (stable surrogate keys, since `gold_segment_adoption` depends on them, `database_schema.md` §6) — this is where `dim_product.treatment_category` is assigned from `product_taxonomy.csv`, with `unclassified` + a monitoring alert for a genuinely new product, or `not_applicable` for RA's out-of-scope products (§18.10). Fact tables are then full-refresh-overwritten. The knowledge graph (Stretch scope, §4.2, §18.7) is built in parallel from the same dimension data plus openFDA.
+5. **Gold build**: `gold_visit_share_monthly` (Objective 2) and `gold_segment_adoption` (Objective 3, Stretch) are both rebuilt via full-refresh overwrite (`database_schema.md` §4) — these, not the Silver tables, are the only things the model and the website ever read.
+6. **Feature engineering & modeling**: lag/seasonal and FDA-derived features (§6.3) are computed as part of the Gold build; candidate models are trained and tuned (MLflow + Optuna), alongside the SARIMA/ETS validation check (§18.9); the classifier is backtested using the expanding-window scheme and McNemar's test (§18.3–18.4).
+7. **Promotion gate**: a retrained model ("challenger") is only promoted if it beats the current champion on the primary metric; otherwise it's logged and discarded (§17.2). Predictions are written back into `gold_visit_share_monthly`. The runner then pushes the updated `warehouse.db` and `mlruns/` back to the DVC remote (§19.6) before it's torn down.
+8. **Serving**: the website's dashboard reflects the refreshed gold tables once it pulls its own copy (§19.6). When a user asks a question or requests a chart, Claude calls a scoped MCP structured-query tool (for numbers, against the gold tables) or the RAG tool (for methodology/regulatory/explanation text, against Silver-layer product/FDA data) — never both loosely, see §19.3.
+9. **Monitor & alert**: Evidently AI checks the new month's actual outcome against what was predicted; a drift or accuracy-drop flag posts to Slack/email within the same run that detects it (§17.1, §17.4).
+10. **Continuous integration**: independent of the monthly cycle, every push to any branch runs lint + unit tests via GitHub Actions against the real committed data (§9.5), so a broken pipeline change is caught at merge time, not at the next scheduled run.
 
 ### 9.4 Component Detail
 
 | Component | Purpose | Key Technology | Reads From | Writes To | Repo Location (§11) |
 |---|---|---|---|---|---|
-| Ingestion & Validation | Load monthly NMTA extract + openFDA records; enforce schema before entry | Pandera / Great Expectations, `requests` | Raw extract files, openFDA API | Validated raw tables | `src/.../ingestion/` |
-| Cleaning & Reshape | Wide-to-long pivot, categorical standardization, taxonomy tagging | pandas | Validated raw tables | Tidy long-format table (DVC-tracked) | `src/.../ingestion/`, `src/.../features/` |
-| Warehouse & Gold Table Builder | Build star-schema fact/dim tables; rebuild gold table via full-refresh overwrite | pandas, SQLite | Tidy long-format table | Fact/dim tables, gold table | `src/.../warehouse/` |
-| Knowledge Graph Builder | Encode product/manufacturer/FDA-event relationships | RDFLib / NetworkX | Warehouse tables, openFDA data | Graph store | `src/.../knowledge_graph/` |
-| Feature Engineering | Lag/seasonal features, KG-derived competitive context | scikit-learn Pipelines | Gold table, knowledge graph | Model-ready feature matrix | `src/.../features/` |
-| Model Training & Evaluation | Train/tune candidates; backtest vs. baseline with significance testing; SHAP | scikit-learn, MLflow, Optuna, SHAP | Feature matrix | Trained model artifact, experiment log | `src/.../models/` |
-| Model Registry & Promotion | Champion/challenger gate; version the deployed model | MLflow Model Registry | Candidate + current champion metrics | Promotion decision, predictions written to gold table | `src/.../models/` |
-| MCP Tool Server | Scoped structured-query tools + RAG methodology tool | Python MCP SDK | Gold table, vector store | Tool responses to Claude | `src/.../mcp/` |
-| RAG Index | Chunk and embed methodology/FDA/SHAP-explanation text | Chroma / FAISS | `docs/PROPOSAL.md`, openFDA text, generated SHAP summaries | Vector store | `src/.../rag/` |
-| Website Backend | Auth, rate limiting, orchestrates Claude + MCP calls, serves dashboard data | FastAPI | Gold table (via MCP tools), user requests | API responses | `website/` |
+| Ingestion & Validation | Load monthly NMTA extract; enforce schema before entry | Pandera, `openpyxl` | Raw extract files (`data/raw/`, git-tracked, §3.1) | Validated raw tables | `src/.../ingestion/` |
+| Cleaning & Reshape | Wide-to-long pivot, categorical standardization | pandas | Validated raw tables | Tidy long-format table (`data/interim/`) | `src/.../ingestion/` |
+| openFDA Client | Targeted lookup: earliest approval date per branded product (Method A, §6.3) | `requests` | openFDA API | Product → approval-date lookup | `src/.../ingestion/` |
+| Silver Warehouse Builder | Upsert 4 dimension tables (stable keys); full-refresh-overwrite 2 fact tables; assign `treatment_category` via taxonomy lookup | SQLAlchemy Core, SQLite | Tidy long-format table, `data/reference/product_taxonomy.csv` | `warehouse.db` — Silver tables (`database_schema.md` §3) | `src/.../warehouse/` |
+| Gold Table Builder | Aggregate to `gold_visit_share_monthly` and `gold_segment_adoption`; compute `visit_share`, lags, FDA-derived features (Method B) | SQLAlchemy Core, pandas | Silver tables | `warehouse.db` — Gold tables (`database_schema.md` §4) | `src/.../warehouse/` |
+| Knowledge Graph Builder (Stretch, §18.7) | Encode product/manufacturer/FDA-event relationships | RDFLib / NetworkX | Silver `dim_product`, openFDA | Graph store | `src/.../knowledge_graph/` |
+| Feature Engineering | Lag/seasonal features, KG-derived competitive context (Stretch) | scikit-learn Pipelines | Gold tables, knowledge graph | Model-ready feature matrix | `src/.../features/` |
+| Model Training & Evaluation | Train/tune candidates; SARIMA/ETS validation check (§18.9); backtest with significance testing; SHAP | scikit-learn, `statsmodels`, MLflow, Optuna, SHAP | Feature matrix | Trained model artifact, experiment log (`mlruns/`, DVC-tracked, §19.6) | `src/.../models/` |
+| Model Registry & Promotion | Champion/challenger gate; version the deployed model | MLflow Model Registry | Candidate + current champion metrics | Promotion decision, predictions written to `gold_visit_share_monthly` | `src/.../models/` |
+| MCP Tool Server | Scoped structured-query tools (Gold tables) + RAG methodology tool (Silver/FDA/SHAP text) | Python MCP SDK | Gold tables, vector store | Tool responses to Claude | `src/.../mcp/` |
+| RAG Index | Chunk and embed methodology/FDA/SHAP-explanation text | Chroma / FAISS | `docs/PROPOSAL.md`, `data_analysis_reference.md`, openFDA text, generated SHAP summaries | Vector store | `src/.../rag/` |
+| Website Backend | Auth, rate limiting, orchestrates Claude + MCP calls, serves dashboard data | FastAPI | Gold tables (via MCP tools), user requests | API responses | `website/` |
 | Website Frontend | Dashboard visuals, Q&A box, on-demand chart rendering | Rendered from FastAPI-served data | Backend API | Rendered pages | `website/` |
-| Monitoring | Drift + accuracy tracking, alert generation | Evidently AI | Gold table (predicted vs. actual) | Slack/email alert | `src/.../monitoring/` |
-| Pipeline Orchestration | Ties the monthly stages together in order | Python, GitHub Actions schedule | All of the above | Triggers each stage in sequence | `src/.../pipeline.py`, `.github/workflows/` |
-| CI/CD | Lint + test gate on every push | GitHub Actions, ruff, pytest | Repository code | Pass/fail check on PR | `.github/workflows/` |
+| Monitoring | Drift + accuracy tracking, alert generation | Evidently AI | `gold_visit_share_monthly` (predicted vs. actual), unmapped-product flags (§18.10) | Slack/email alert | `src/.../monitoring/` |
+| Pipeline Orchestration | Ties the monthly stages together in order; DVC pull/push around the run (§19.6) | Python, GitHub Actions schedule | All of the above | Triggers each stage in sequence | `src/.../pipeline.py`, `.github/workflows/` |
+| CI/CD | Lint + test gate on every push, against real committed data (§9.5) | GitHub Actions, ruff, pytest | Repository code | Pass/fail check on PR | `.github/workflows/` |
 
 ### 9.5 Technology Stack Summary
 
 | Layer | Stage | Tools / Approach |
 |-------|-------|-------------------|
 | Strategy | Problem Definition | Business KPI → ML task mapping; feasibility analysis; SLA definition. |
-| Data Layer | Data Ingestion | Monthly NMTA extract + DVC versioning; openFDA API for FDA events; Pandera/Great Expectations schema validation before entry. |
+| Data Layer | Data Ingestion | Monthly NMTA extract, committed directly (git-tracked, §3.1); openFDA API for FDA events; Pandera schema validation before entry (§3.4). |
 | Data Layer | Pipeline Scheduling | GitHub Actions scheduled workflow (`on: schedule: cron`), monthly trigger; reuses CI infra already in the repo rather than adopting a new orchestration platform (§19.1). |
-| Data Layer | Data Warehouse / Gold Table | Star-schema structured storage (OA + RA fact/dim tables); Aggregate/gold table rebuilt via full-refresh overwrite each month (§4.1, §19.2), read by both the model and the website. |
-| Data Layer | Knowledge Graph | RDFLib / NetworkX; product-indication-approval entity-relationship map. |
+| Data Layer | Database Engine | SQLite + SQLAlchemy Core, one file (`data/processed/warehouse.db`); Postgres is the documented upgrade path once concurrent load requires it (`database_schema.md` §1). |
+| Data Layer | Silver — Star Schema | 4 dimension tables (upserted, stable keys) + 2 fact tables (full-refresh overwrite); taxonomy assigned via `data/reference/product_taxonomy.csv`, not inferred (`database_schema.md` §3, §18.10). |
+| Data Layer | Gold — Serving Tables | `gold_visit_share_monthly` (Objective 2) + `gold_segment_adoption` (Objective 3, Stretch), both full-refresh overwrite each month (`database_schema.md` §4); the only tables the model and website ever read. |
+| Data Layer | Knowledge Graph | RDFLib / NetworkX; product-indication-approval entity-relationship map — Stretch scope; Core scope uses the simpler taxonomy/FDA lookup instead (§18.7). |
 | Data Layer | Exploratory Analysis | Trend, distribution, and correlation checks; OA vs. RA comparative EDA. |
-| Modeling | Feature Engineering | Lag/seasonal features via sklearn Pipelines; KG-derived competitive context features. |
-| Modeling | Model Development | Logistic regression → random forest → gradient boosting; MLflow + Optuna. |
+| Modeling | Feature Engineering | Lag/seasonal features via sklearn Pipelines; KG-derived competitive context features (Stretch). |
+| Modeling | Model Development | Logistic regression → random forest → gradient boosting; MLflow + Optuna; SARIMA/ETS as a validation check, not a competing track (§18.9). |
 | Modeling | Evaluation | Time-based train/test split (expanding-window backtest, §18.3); precision/recall/F1; SHAP explainability; backtesting across historical months in place of live A/B testing; McNemar's test on the paired baseline-vs-model "Down"-class correctness indicator (§18.4), not a point-estimate comparison alone. |
-| Serving | AI Query & Visualization | Claude via MCP, scoped database tools + RAG methodology tool (§5, §19.3); no raw SQL exposed to the model. |
+| Serving | AI Query & Visualization | Claude via MCP, scoped Gold-table query tools + RAG methodology tool over Silver/FDA/SHAP text (§5, §19.3); no raw SQL exposed to the model. |
 | Serving | Website | FastAPI backend + dashboard frontend; open signup, access-code gated, multi-user (§17.6, §19.4). |
-| MLOps / Prod | Monitoring | Drift + accuracy tracking via Evidently AI; monthly direction-vs-actual check. |
-| MLOps / Prod | Productionization | joblib + Docker; scheduled monthly run via GitHub Actions (not Kubernetes-scale). |
-| MLOps / Prod | Iteration | Monthly retrain on real-world ground truth as new IQVIA data lands; predictions written back into the gold table (§19.2). |
-| MLOps / Prod | CI/CD | GitHub Actions: lint and run unit tests on every push, so a broken pipeline change is caught before it merges, not discovered at the next monthly run. |
+| MLOps / Prod | Monitoring | Drift + accuracy tracking via Evidently AI; monthly direction-vs-actual check; unmapped-product alerts (§18.10). |
+| MLOps / Prod | Productionization | joblib + Docker; scheduled monthly run via GitHub Actions (not Kubernetes-scale); local-first development, cloud stood up only for the actual demo (§19.6). |
+| MLOps / Prod | Persistence | `warehouse.db` and `mlruns/` both DVC-tracked against the same remote; a scheduled run pulls both before executing and pushes both after, since the GitHub Actions runner itself is ephemeral (§19.6). |
+| MLOps / Prod | Iteration | Monthly retrain on real-world ground truth as new IQVIA data lands; predictions written back into `gold_visit_share_monthly` (`database_schema.md` §4.1). |
+| MLOps / Prod | CI/CD | GitHub Actions: lint and run unit tests on every push against the real committed data, so a broken pipeline change is caught before it merges, not discovered at the next monthly run. |
 
 ### 9.6 Deliberately Not Used
 
@@ -448,7 +466,7 @@ Every stage of a complete pipeline is represented, including two stages most stu
 - Wide-to-long (tidy data) reshaping
 - Star-schema data modeling — fact tables vs. dimension tables
 - Data versioning (DVC) for reproducibility
-- Schema/data validation (Pandera or Great Expectations) at ingestion, before a bad extract can enter the pipeline
+- Schema/data validation (Pandera, §3.4) at ingestion, before a bad extract can enter the pipeline
 
 **Knowledge representation**
 - Entity-relationship / graph data modeling — nodes (products, manufacturers, FDA events) and typed edges (`competes-with`, `approved-for-indication`)
@@ -678,18 +696,18 @@ The monthly cycle (ingest → validate → reshape → feature-engineer → pred
 
 ### 19.2 Gold Table: Schema & Full-Refresh Overwrite
 
-The gold table (§4.1) is the single source of truth both the classifier and the website read from. It is rebuilt in full each month rather than updated incrementally:
+The two Gold tables (§4.1, full DDL in `database_schema.md` §4) are the single source of truth both the classifier and the website read from. Both are rebuilt in full each month rather than updated incrementally:
 
-- **Loading pattern — full refresh overwrite**: each monthly run recomputes the entire gold table from the cumulative cleaned history and replaces it, rather than applying a Slowly Changing Dimension (SCD) pattern. This is the right-sized choice here: SCD Type 1/2/3 exists to track *changes to dimension attributes over time* (e.g., a product's manufacturer-of-record changing mid-window, §10), which matters for slowly-changing reference data, not for a fact table of monthly visit counts and predictions being fully recomputed anyway. Full refresh is simpler, matches the modest data volume, and DVC (§4.1) already gives snapshot-level history if a prior month's exact table state is ever needed.
-- **Schema**: one row per (month, product-category, specialty, age band, gender) with visit counts, the computed visit-share metric (§18.1), and — appended by the modeling stage — that row's predicted direction (Up/Down/Flat), the model version that produced it, and, once the actual outcome is known the following month, the realized direction for monitoring (§17.2, §17.4).
+- **Loading pattern — full refresh overwrite**: each monthly run recomputes both tables from the cumulative cleaned history and replaces them, rather than applying a Slowly Changing Dimension (SCD) pattern. This is the right-sized choice here: SCD Type 1/2/3 exists to track *changes to dimension attributes over time* (e.g., a product's manufacturer-of-record changing mid-window, §10), which matters for slowly-changing reference data — handled instead by upserting the Silver dimension tables (`database_schema.md` §6) — not for tables of monthly visit counts and predictions being fully recomputed anyway. Full refresh is simpler, matches the modest data volume, and DVC (§4.1, §19.6) already gives snapshot-level history if a prior month's exact table state is ever needed.
+- **Schema — two tables, split by grain, not one**: `gold_visit_share_monthly` (one row per month) carries the visit-share metric (§18.1), engineered lag/rolling/FDA-derived features, and — appended by the modeling stage — the predicted direction, model version, and, once known the following month, the realized direction for monitoring (§17.2, §17.4). `gold_segment_adoption` (one row per month × specialty × demographic, Objective 3/Stretch) carries the finer-grained adoption metric a single monthly table can't. Full column-by-column detail is in `silver_gold_data_dictionary.md` §2.
 - **Predictions live in the same table as the data they were computed from**, not a separate store, so the website and Claude+MCP tools query one place for both "what happened" and "what the model predicted."
 
 ### 19.3 MCP Tool Design: Structured Queries vs. RAG
 
-Claude's access to the gold table is entirely through a small, fixed set of MCP tools, split deliberately into two kinds, because they answer two different kinds of questions and fail in different ways if handled wrong:
+Claude's access to the Gold tables is entirely through a small, fixed set of MCP tools, split deliberately into two kinds, because they answer two different kinds of questions and fail in different ways if handled wrong:
 
-- **Structured query tools** (e.g., `get_visit_share(product, category, start_month, end_month)`, `get_top_segments(metric, month)`, `get_prediction(product, month)`) answer numeric/factual questions by executing a fixed, parameterized query against the gold table and returning real rows. There is no raw SQL-execution tool: the model can only call these specific, scoped functions, which is both a safety boundary (§14) and a reliability one, a model can't malform a query it never writes.
-- **A RAG tool** (`search_methodology(query)`) answers a different class of question that the gold table has no rows for: "what does visit share mean," "why is Zilretta categorized differently from Kenalog," "why did the model predict Up," "when was this drug approved and by whom." This tool retrieves from a small vector store (Chroma or FAISS, chosen for being free and right-sized, not a new platform) built from: chunked `PROPOSAL.md` methodology sections (§18.1's formula, §10's taxonomy reasoning), the openFDA approval/label text already downloaded for this project (§18.5), and per-prediction SHAP explanation text generated at model-run time. Retrieved passages are returned with a citation to their source section/document, and Claude answers from those passages, not from its own training data, for exactly the reason the Kenalog/Depo-Medrol taxonomy trap (§10) showed: plausible-sounding domain knowledge can be wrong for *this specific dataset's* conventions.
+- **Structured query tools** — e.g., `get_visit_share(category, start_month, end_month)` and `get_prediction(month)` query `gold_visit_share_monthly`; `get_top_segments(metric, month)` queries `gold_segment_adoption` (Objective 3, Stretch). Each answers a numeric/factual question by executing a fixed, parameterized query against the specific Gold table it maps to, and returning real rows. There is no raw SQL-execution tool: the model can only call these specific, scoped functions, which is both a safety boundary (§14) and a reliability one, a model can't malform a query it never writes.
+- **A RAG tool** (`search_methodology(query)`) answers a different class of question the Gold tables have no rows for: "what does visit share mean," "why is Zilretta categorized differently from Kenalog," "why did the model predict Up," "when was this drug approved and by whom." This tool retrieves from a small vector store (Chroma or FAISS, chosen for being free and right-sized, not a new platform) built from: chunked `PROPOSAL.md`/`data_analysis_reference.md` methodology sections (§18.1's formula, §10's taxonomy reasoning), the openFDA approval/label text already downloaded for this project (§18.5), and per-prediction SHAP explanation text generated at model-run time. Retrieved passages are returned with a citation to their source section/document, and Claude answers from those passages, not from its own training data, for exactly the reason the Kenalog/Depo-Medrol taxonomy trap (§10) showed: plausible-sounding domain knowledge can be wrong for *this specific dataset's* conventions.
 - **Chart generation** (§5.3) is not a third tool type: it's a structured query tool call followed by Claude producing a chart *specification* (not chart data) from the real returned rows, which the backend renders. The model never has a path to inventing numbers that appear in either an answer or a chart.
 
 ### 19.4 Multi-User Access, Rate Limiting & Cost Control
@@ -704,7 +722,7 @@ These controls exist specifically because the project's chosen serving model (Cl
 
 ### 19.5 End-to-End Monthly Cycle
 
-Putting §19.1–§19.4 together, the full monthly cycle is: (1) GitHub Actions triggers the pipeline on schedule; (2) the new NMTA extract is validated, cleaned, and reshaped (§3.4, §7); (3) the gold table is rebuilt via full-refresh overwrite (§19.2); (4) the classifier retrains and, if it beats the current champion, is promoted (§17.2), with its new predictions written into the same gold table; (5) the website's dashboard reflects the new month's data and predictions automatically, and Claude's MCP tools query the newly refreshed table for every subsequent question, no manual step required between a new extract landing and the website reflecting it.
+Putting §19.1–§19.4 together, the full monthly cycle is: (1) GitHub Actions pulls `warehouse.db`/`mlruns/` from the DVC remote and triggers the pipeline on schedule (§19.6); (2) the new NMTA extract is validated, cleaned, and reshaped (§3.4, §7); (3) the Silver dimension/fact tables and both Gold tables are rebuilt via upsert/full-refresh overwrite as appropriate (§19.2, `database_schema.md` §6); (4) the classifier retrains and, if it beats the current champion, is promoted (§17.2), with its new predictions written into `gold_visit_share_monthly`; (5) the updated `warehouse.db`/`mlruns/` are pushed back to the DVC remote (§19.6); (6) the website's dashboard reflects the new month's data and predictions once it pulls its own copy, and Claude's MCP tools query the newly refreshed Gold tables for every subsequent question, no manual step required between a new extract landing and the website reflecting it.
 
 ### 19.6 Local-First Development & the Persistence Problem
 
