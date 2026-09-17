@@ -54,7 +54,7 @@ Every objective is tied directly to one primary stakeholder — the OA & RA Inje
 
 ### 3.1 Primary Dataset — IQVIA NMTA Patient Visit Extract
 
-The primary dataset is an IQVIA National Medical and Treatment Audit (NMTA) patient visit extract covering August 2019 through July 2025 (6 complete years). This is a proprietary commercial dataset provided for this capstone project and is **not included in this repository**.
+The primary dataset is an IQVIA National Medical and Treatment Audit (NMTA) patient visit extract covering August 2019 through July 2025 (6 complete years). This is a commercial dataset provided for this capstone project under Penn State's data license; the raw extracts are **committed directly in this repository** (`data/raw/`) rather than gitignored, since that license covers this use.
 
 | Field | Description |
 |-------|-------------|
@@ -373,8 +373,7 @@ The repository is organized so each folder maps directly to a stage in the Techn
 oa-market-intelligence-system/
 ├── .github/workflows/            # CI (lint + test on every push) + scheduled monthly pipeline run (§19.1)
 ├── data/
-│   ├── raw/                     # gitignored — real NMTA extracts
-│   ├── synthetic/                 # public-safe stand-in dataset (once built)
+│   ├── raw/                     # git-tracked — real NMTA extracts (§3.1: covered by Penn State's data license)
 │   ├── interim/                    # gitignored — reshape outputs
 │   ├── reference/                  # git-tracked — product_taxonomy.csv, the maintained taxonomy mapping (§18.10)
 │   └── processed/                  # DVC-tracked — model-ready tables, incl. the gold table (§19.2)

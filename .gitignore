@@ -1,8 +1,5 @@
-# Licensed/proprietary data — NEVER commit real IQVIA extracts
-data/raw/
-data/Dataset/
-*.xlsx
-!data/synthetic/**/*.xlsx
+# Real IQVIA extracts are committed directly (Penn State's data license covers this
+# public repo — see docs/PROPOSAL.md §3.1); no exclusion needed for data/raw/ or *.xlsx.
 
 # Python
 __pycache__/
