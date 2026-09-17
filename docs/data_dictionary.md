@@ -16,8 +16,6 @@ See [`docs/PROPOSAL.md`](PROPOSAL.md) for the business context; this document co
 | `Branded Generic - RA.xlsx` | `M04_RA_PAT_VISIT` (main), `M04_RA_PAT_VISIT1` (secondary) | 20 rows × 4 cols | Same structure as above, for RA |
 | `drug-drugsfda-0001-of-0001.json` | n/a (single JSON array) | 29,329 records | openFDA Drugs@FDA bulk export — application/sponsor/submission history per drug |
 
-**A naming caveat, confirmed directly**: file names are not a reliable signal of disease scope — `Team1_M15_19_OA.xlsx` has previously been saved to disk under an `..._RA.xlsx` name after an Excel re-save, with identical, correct internal content. The loader identifies OA vs. RA by **sheet name and header content** (`M15_19_OA_*` vs. `M04_RA_*`, and the presence/absence of an ICD-10 segment in the value-column headers — see §2.3), never by file name.
-
 ---
 
 ## 2. Main Patient-Visit Pivot Sheets
