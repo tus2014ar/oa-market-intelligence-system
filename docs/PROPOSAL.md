@@ -376,6 +376,7 @@ oa-market-intelligence-system/
 │   ├── raw/                     # gitignored — real NMTA extracts
 │   ├── synthetic/                 # public-safe stand-in dataset (once built)
 │   ├── interim/                    # gitignored — reshape outputs
+│   ├── reference/                  # git-tracked — product_taxonomy.csv, the maintained taxonomy mapping (§18.10)
 │   └── processed/                  # DVC-tracked — model-ready tables, incl. the gold table (§19.2)
 ├── src/oa_market_intelligence/
 │   ├── ingestion/                  # NMTA extract loader, openFDA client
@@ -442,6 +443,7 @@ Every stage of a complete pipeline is represented, including two stages most stu
 - Class imbalance awareness (High/Low Adoption segmentation)
 - Statistical significance testing on model-vs-baseline comparisons, not point estimates alone
 - Backtesting across historical periods, as the substitute for live A/B testing
+- Classical time-series decomposition (trend/seasonality/residual, ACF/PACF) and a SARIMA/ETS forecasting baseline, used as a validation check on the classification approach rather than a competing model (§18.9)
 
 **Data engineering**
 - Wide-to-long (tidy data) reshaping
@@ -642,6 +644,27 @@ Both remain fully in-scope for the project overall (§4), just not on the critic
 Live A/B testing does not apply to this system as scoped: there is exactly one real-world outcome per month for a single market, and the model itself doesn't causally affect that outcome, it predicts, it doesn't intervene. Backtesting (§18.3) is the statistically appropriate substitute, not a workaround.
 
 If this system were extended to monitor multiple products or therapeutic areas simultaneously, each product's monthly prediction would become an independent unit, enabling a genuine between-product randomized comparison of a challenger model against the current champion (§17.2), a real, causally valid experiment at that scale. This is documented here as a stated future direction. It is **not** built, tested, or claimed as part of the current system, and should never be described as an existing capability.
+
+### 18.9 Time-Series Validation Check (Complementary, Not a Second Modeling Track)
+
+With 72 months of monthly data, a genuine time series, it would be a real gap not to apply classical time-series analysis. It is added specifically as a **validation check on the classification approach (Objective 2)**, not a competing or replacement modeling track — the core objective remains the Up/Down/Flat classifier evaluated in §18.3–18.4.
+
+Two additions, both deliberately scoped small (full reasoning and detail in `docs/data_analysis_reference.md` §5.1):
+
+- **Trend/seasonality/residual decomposition and ACF/PACF analysis** on the `visit_share` series, confirming with real numbers (not just inspection) the autocorrelation and seasonality claims the feature-engineering plan already depends on.
+- **One classical forecasting model (SARIMA or Holt-Winters/ETS)** as an additional baseline, forecasting `visit_share` directly and deriving Up/Down/Flat from the forecasted change. It is evaluated through the **same** expanding-window backtest (§18.3) and McNemar's test (§18.4) as every other candidate, not a separate methodology, so it answers honestly whether the tree-based classifiers are earning their added complexity over a well-understood classical alternative.
+
+**Deliberately not done**: a second full modeling track, or anything beyond one classical model — no LSTM or other deep sequence models. The small-dataset caution already stated for tree-based/ensemble models (§16, §18.4) applies even more strongly to a heavily parameterized SARIMA grid search on only 72 points.
+
+### 18.10 Taxonomy Mapping as a Maintained Artifact (Handling New Products)
+
+The branded-injectable/generic-corticosteroid/NSAID taxonomy (§10, §18.1) cannot be fully automated: assigning a new, never-before-seen product to the correct treatment category is a product-name-review judgment call, not a rule a script can reliably make — the Kenalog/Depo-Medrol finding (§10) is exactly this kind of call, and it was made by a human, not inferred from the raw tag. Since the monthly pipeline (§19.1) is meant to run unattended, this judgment call is externalized into a small, version-controlled mapping file rather than left as inline logic or, worse, silently guessed at:
+
+- **`data/reference/product_taxonomy.csv`**: one row per (product_name, treatment_category, disease_area), maintained by the team and git-tracked — not gitignored — so changes go through the same branch/PR/CI workflow as code.
+- **Pipeline behavior on a new product**: at star-schema build time (§9.4, `dim_product`), any product name present in the new monthly extract but absent from this mapping file is assigned `treatment_category = 'unclassified'` and triggers a monitoring alert (§17.4) naming the specific unmapped product. The pipeline does **not** fail the run and does **not** guess a category — it flags the gap for a human to review and add a mapping entry before the next monthly cycle.
+- **The full product taxonomy already documented in `data_analysis_reference.md` §3 (all 145 OA and 15 RA products) is this file's first snapshot, not a one-off document** — the mapping file is what the pipeline actually reads at runtime; the markdown table stays as the human-readable rationale behind each category assignment.
+
+This follows the same principle already applied elsewhere in the system: when full automation would require a judgment call the pipeline can't reliably make, it flags and waits for a human rather than guessing — the same posture as schema validation halting on a malformed extract (§3.4) or a challenger model never auto-promoting without beating the champion (§17.2).
 
 ---
 
