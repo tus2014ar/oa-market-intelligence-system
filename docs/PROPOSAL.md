@@ -705,3 +705,27 @@ These controls exist specifically because the project's chosen serving model (Cl
 ### 19.5 End-to-End Monthly Cycle
 
 Putting §19.1–§19.4 together, the full monthly cycle is: (1) GitHub Actions triggers the pipeline on schedule; (2) the new NMTA extract is validated, cleaned, and reshaped (§3.4, §7); (3) the gold table is rebuilt via full-refresh overwrite (§19.2); (4) the classifier retrains and, if it beats the current champion, is promoted (§17.2), with its new predictions written into the same gold table; (5) the website's dashboard reflects the new month's data and predictions automatically, and Claude's MCP tools query the newly refreshed table for every subsequent question, no manual step required between a new extract landing and the website reflecting it.
+
+### 19.6 Local-First Development & the Persistence Problem
+
+**Development approach**: the pipeline, database, and model training are built and validated entirely on local machines for the bulk of the project, with cloud infrastructure (the DVC remote, the deployed website) stood up only once there's something ready to actually demo publicly — not provisioned upfront. Nothing in Phases 1–2's work (ingestion, star schema, gold tables, model training via MLflow) requires any cloud service to build or test; `warehouse.db` and `mlruns/` are both just local files on whichever machine is running the code, exactly the same as any other project file.
+
+**Why this is safe to defer, not a shortcut**: this project has no real monthly IQVIA data arriving during the semester — one static historical extract is all there is. So "the pipeline runs automatically every month in production" is a **designed and demonstrated capability** (triggering the GitHub Actions workflow and showing it completes successfully), not something that needs to have actually been running unattended for months before it counts as done.
+
+**The one real persistence problem this raises, and its fix**: a GitHub Actions runner is ephemeral — it's created fresh for each scheduled run and destroyed afterward, so nothing saved to its local disk survives to the next run. This affects **two** things, not just the database:
+
+- `data/processed/warehouse.db` (the star schema + gold tables)
+- `mlruns/` (MLflow's tracking store — experiment history and the registered "champion" model), which the champion/challenger promotion logic (§17.2) depends on having *last* month's result available to compare against
+
+Both get the same fix: both are DVC-tracked, with the actual bytes persisted in a DVC remote (§17.8). A scheduled pipeline run does `dvc pull` for both at the start (fetching last month's state), does its work, then `dvc push` for both at the end (publishing the new state) — reusing the one piece of cloud infrastructure this project needs, rather than inventing a separate persistence mechanism for models versus data.
+
+**What the delivery layer (website + MCP) needs, and where it comes from, in both the local and deployed case**:
+
+| Component | Local development | Once deployed |
+|---|---|---|
+| Gold tables (`warehouse.db`) | Local file, same machine as the website | Website's host pulls its own copy via DVC after each monthly refresh (§17.8) |
+| Trained model (`mlruns/`) | Local file, same machine | Same — pulled via DVC alongside the database |
+| Claude API | Requires internet regardless — Anthropic's service, not self-hosted | Same, unaffected by where the website itself runs |
+| openFDA API | Requires internet, but only during the pipeline run (Bronze-stage), not at serving time | Same |
+
+The only genuinely external dependency in this whole system, even in a fully local setup, is the Claude API call itself — everything the team builds (database, models, MCP tools, website) can run entirely on local machines until there's a real reason to deploy it.

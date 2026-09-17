@@ -10,6 +10,7 @@ This document locks in the concrete database design decided during Phase 1 final
 - **Access layer**: SQLAlchemy Core (not the full ORM) — schema defined once in Python, portable to Postgres via a connection-string change if that migration happens.
 - **File location**: `data/processed/warehouse.db`, DVC-tracked (§11).
 - **Both the Silver (star schema) and Gold tables live in this same single file** — no separate database per layer.
+- **Local-first**: for development and testing, this file is just a normal local file on whichever machine runs the pipeline — no cloud service required to build or use it. DVC tracking only becomes load-bearing once the pipeline runs on an ephemeral GitHub Actions runner, which has no persistent disk between scheduled runs — see `PROPOSAL.md` §19.6 for the full persistence story, which applies identically to `mlruns/` (the MLflow model registry, §17.2).
 
 ---
 
