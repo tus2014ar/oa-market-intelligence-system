@@ -39,6 +39,8 @@ These are documented in full in `PROPOSAL.md` §10 and `data_dictionary.md` §7;
 
 Computed directly from `Branded Generic - OA.xlsx` and `Branded Generic - RA.xlsx` (not retyped by hand). Manufacturer-split entries (e.g., Zilretta) are combined into a single product-level total.
 
+**This is the seed of a maintained artifact, not a one-off document.** The full tables below become the first snapshot of `data/reference/product_taxonomy.csv`, the version-controlled mapping file the pipeline actually reads at runtime (`product_name → treatment_category`). A product not yet in that file gets flagged, not guessed at — see `PROPOSAL.md` §18.10 for the full pipeline behavior on a new, never-before-seen product.
+
 ### 3.1 OA — Category Summary (145 products, 5,561,131 visits by row-level sum — see §2 on the internal discrepancy)
 
 | Category | # Products | Total Visits |
