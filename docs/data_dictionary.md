@@ -68,7 +68,7 @@ Visit counts are positive integers (no zeros and no negatives appear anywhere in
 |---|---|---|
 | Main pivot `Grand Total` row | 5,308,627 | Distinct visits, all products (this sheet's own total) |
 | Sum of the pivot's Product rows | 5,544,840 | Over-counts: a visit involving two products is counted in each |
-| Reference file, row-level sum | 5,561,131 | `Branded Generic - OA.xlsx`, summed by hand |
+| Reference file, row-level sum | 5,561,131 | `Branded Generic - OA.xlsx`, summed by hand; exceeds the printed total because rows overlap (§4) |
 | Reference file, printed Grand Total | 5,323,282 | The same file's own stated total |
 | Place-of-Service total | 7,189,004 | All OA visits, with or without a product recorded |
 
@@ -102,14 +102,21 @@ This is the real source of the "Place of Service" field described in §3.1 of th
 
 Applies to `M15_19_OA_BRANDED_GENERIC` (in `Branded Generic - OA.xlsx`) and `M04_RA_PAT_VISIT` (in `Branded Generic - RA.xlsx` — note this file reuses the same sheet-name convention as the main RA pivot despite holding entirely different, non-pivoted content; distinguish by row/column shape, not sheet name, for this file).
 
-A flat table, one row per (Manufacturer, Product):
+A flat table, one row per **(Manufacturer, Product, Brand/Generic tag)** — the tag is part of the key, not just an attribute. The loader is `ingestion/reference_loader.py`; it finds the sheet by the shape of its header (`Manufacturer`, `Product Sum`, `Brand/Generic`, then ICD-10 columns), never by name.
 
 | Column | Type | Description |
 |---|---|---|
 | Manufacturer | string | Manufacturer name, or `"No Manufacturer"` |
 | Product Sum | string | Product name (labeled `"Product Sum"` in the OA file's header — a leftover Excel pivot-field label, not a numeric sum) |
-| Brand/Generic | string, one of `BRAND`, `GENERIC`, `BRANDED GENERIC` | Patent/ownership tag — reflects patent status, not therapeutic class (§10, §18.1: this tag alone is not sufficient to build the treatment-category taxonomy) |
-| One column per ICD-10 code | integer or blank | e.g., `"M16 - OSTEOARTHRITIS OF HIP\nPatient Visits"`, `"M17 - OSTEOARTHRITIS OF KNEE\nPatient Visits"` — this is where OA's ICD-10-code-level breakdown actually lives, unlike the main pivot sheet (§2.2) |
+| Brand/Generic | string, one of `BRAND`, `GENERIC`, `BRANDED GENERIC`, `OTHER` | Patent/ownership tag — reflects patent status, not therapeutic class (§10, §18.1: this tag alone is not sufficient to build the treatment-category taxonomy) |
+| One column per ICD-10 code | integer or blank | OA has two: `"M16 - OSTEOARTHRITIS OF HIP\nPatient Visits"` and `"M17 - OSTEOARTHRITIS OF KNEE\nPatient Visits"` (no M15, M18 or M19 column exists); RA has one, `M04`. This is where OA's ICD-10-code-level breakdown actually lives, unlike the main pivot sheet (§2.2). A blank cell means zero. |
+
+A final `Grand Total` row closes the sheet. **Real-data facts** (verified, and asserted in `tests/test_reference_loader.py`):
+
+- **OA:** 417 data rows = 145 distinct products × 168 distinct manufacturers, tags `GENERIC` 170, `OTHER` 123, `BRAND` 80, `BRANDED GENERIC` 44. **RA:** 18 rows = 15 distinct products, 12 manufacturers, every row `BRAND`.
+- **A product can carry more than one tag.** 7 OA products do (ACETAMINOPHEN, ASPIRIN, ASPIRIN (OTC), HYDROCORTISONE, IBUPROFEN, NAPROXEN SOD, NAPROXEN SOD (OTC)), because the same manufacturer's product is occasionally tagged differently on a stray row. The stray tags are tiny: ACETAMINOPHEN is 131,976 visits tagged `OTHER` against 65 tagged `GENERIC`. A single-valued `dim_product.brand_generic_tag` therefore needs a stated resolution rule (see `database_schema.md`).
+- **Row sums exceed the printed Grand Total, and that is not an error.** `Patient Visits` is a distinct count here too (§2.1): a visit involving two products appears in both rows. OA rows sum to 567,927 (M16) and 4,993,204 (M17) against printed totals of 525,661 and 4,797,621 — 1.08× and 1.04×; RA rows sum to 1,287 against 1,283. The loader checks the inequalities that must hold — each row ≤ the Grand Total ≤ the sum of the rows — not equality. This is the explanation for the "5,561,131 row-level vs. 5,323,282 printed" gap noted in §2.4.
+- **The product list matches the committed taxonomy exactly:** the 145 OA and 15 RA products here are precisely the products in `data/reference/product_taxonomy.csv`.
 
 ---
 

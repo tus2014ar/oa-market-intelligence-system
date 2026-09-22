@@ -96,6 +96,9 @@ CREATE TABLE IF NOT EXISTS dim_product (
     product_name       TEXT NOT NULL UNIQUE,
     manufacturer       TEXT,                         -- informational only; never used for grouping/joins (§10)
     brand_generic_tag  TEXT NOT NULL
+        -- single value per product, but the reference file carries >1 tag for 7 OA products
+        -- (data_dictionary.md §4); the resolution rule (proposed: tag with the most visits) is an
+        -- open decision for the Silver builder, not yet made
         CHECK (brand_generic_tag IN ('BRAND','GENERIC','BRANDED GENERIC','OTHER')),
     disease_area       TEXT NOT NULL CHECK (disease_area IN ('OA','RA')),
     treatment_category TEXT NOT NULL DEFAULT 'unclassified',
