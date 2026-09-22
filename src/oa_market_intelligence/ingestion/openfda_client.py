@@ -93,6 +93,13 @@ def branded_products(reference_table: pd.DataFrame) -> list[str]:
 def build_approval_date_lookup(
     product_names: list[str], fetch: FetchFn = _default_fetch
 ) -> pd.DataFrame:
-    """Look up every name in `product_names`, one openFDA query each."""
+    """Look up every name in `product_names`, one openFDA query each.
+
+    fda_approval_date is cast to datetime64 (pandas' usual date representation,
+    matching every other date column in this project) rather than left as the object
+    dtype a plain list of date/None values would otherwise produce.
+    """
     records = [(name, earliest_approval_date(name, fetch=fetch)) for name in product_names]
-    return pd.DataFrame(records, columns=["product", "fda_approval_date"])
+    frame = pd.DataFrame(records, columns=["product", "fda_approval_date"])
+    frame["fda_approval_date"] = pd.to_datetime(frame["fda_approval_date"])
+    return frame

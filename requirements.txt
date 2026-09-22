@@ -3,6 +3,7 @@ pandas
 numpy
 openpyxl
 requests
+pandera
 
 # Dev / CI
 ruff
