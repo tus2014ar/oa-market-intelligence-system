@@ -11,13 +11,13 @@ Four Excel files, forming two pairs (OA / RA), each with a large raw monthly piv
 | File | Size | Role |
 |---|---|---|
 | `Team1_M15_19_OA.xlsx` | 26.5 MB | Raw OA data — full monthly pivot, every product × specialty × age × gender combination, Aug 2019–Jul 2025 |
-| `Branded Generic - OA.xlsx` | 39 KB | OA product reference table — one row per drug, tagged Brand/Generic, totals only (not monthly) |
+| `Branded Generic - OA.xlsx` | 39 KB | OA product reference table — one row per (manufacturer, product, tag), totals only (not monthly) |
 | `Team1_M04_RA.xlsx` | 200 KB | Raw RA data — same structure as OA, far smaller due to RA's data sparsity |
-| `Branded Generic - RA.xlsx` | 24 KB | RA product reference table — 18 products total |
+| `Branded Generic - RA.xlsx` | 24 KB | RA product reference table — 18 rows, 15 distinct products |
 
 Full field-level structure (row hierarchy, column-header encoding, the Place-of-Service secondary sheet, the OA/RA header-segment difference) is documented in [`data_dictionary.md`](data_dictionary.md) §1–§4 and is not repeated here.
 
-**Data coverage confirmed**: all four files, all eight worksheets (two per file) were directly opened and inspected — no hidden sheets exist in any of the four files. Both reference files' second sheet is confirmed empty; both raw pivot files' second sheet is the Place-of-Service breakdown, fully extracted across all 72 months.
+**Data coverage confirmed**: all four files, all eight worksheets (two per file) were directly opened and inspected — no hidden sheets exist in any of the four files. **All four** workbooks' second sheet is a Place-of-Service-by-month table (an earlier version of this note wrongly called the reference files' second sheet empty). They are not interchangeable: the pivot workbooks' labels carry a year, the reference workbooks' are truncated (`Sep...`) and cover Sep 2019–Aug 2025, and the RA pivot workbook's sheet totals only 126 visits — see `data_dictionary.md` §3.
 
 ---
 
@@ -32,7 +32,7 @@ These are documented in full in `PROPOSAL.md` §10 and `data_dictionary.md` §7;
 | Zilretta split across two manufacturer labels (11,235 + 123,898 = 135,133) | Group by Product name only, never (Manufacturer, Product), or true share is understated ~8%. |
 | Brand/Generic tag reflects patent status, not drug class | Real NSAIDs (aspirin, ibuprofen) are tagged `OTHER`. The treatment-category taxonomy must be built by product-name review, not read off this column. |
 | RA reference table has zero generic-tagged products (all 18 rows `BRAND`) | Confirms, from the data itself, that RA's competitive structure (biologic vs. biosimilar) doesn't map to OA's branded-vs-generic formula. |
-| Reference file's row-level total (5,561,131) ≠ its own printed Grand Total (5,323,282) | ~4.3% internal discrepancy, flagged as an open item for the instructor/IQVIA contact, not resolved by picking one figure as authoritative. |
+| Reference file's row-level total (5,561,131) ≠ its own printed Grand Total (5,323,282) | Not an error: `Patient Visits` is a distinct count, so a visit involving two products sits in both rows and rows sum to *at least* the Grand Total (same overlap as the pivot's 5,544,840 vs. 5,308,627, and RA's 1,287 vs. 1,283). Previously listed as an open item for the instructor; explained in `data_dictionary.md` §4. |
 
 ---
 
@@ -42,7 +42,7 @@ Computed directly from `Branded Generic - OA.xlsx` and `Branded Generic - RA.xls
 
 **This is the seed of a maintained artifact, not a one-off document.** The full tables below become the first snapshot of `data/reference/product_taxonomy.csv`, the version-controlled mapping file the pipeline actually reads at runtime (`product_name → treatment_category`). A product not yet in that file gets flagged, not guessed at — see `PROPOSAL.md` §18.10 for the full pipeline behavior on a new, never-before-seen product.
 
-### 3.1 OA — Category Summary (145 products, 5,561,131 visits by row-level sum — see §2 on the internal discrepancy)
+### 3.1 OA — Category Summary (145 products, 5,561,131 visits by row-level sum — an over-count by design, see §2)
 
 | Category | # Products | Total Visits |
 |---|---|---|
