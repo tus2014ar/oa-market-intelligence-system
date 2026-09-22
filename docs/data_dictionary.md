@@ -26,11 +26,17 @@ Applies to `M15_19_OA_PAT_VISIT` (OA) and `M04_RA_PAT_VISIT` (RA).
 
 Column A alternates between three row types, in this repeating pattern:
 
-1. **Month row**: column A holds a `datetime` value (e.g., `2019-08-01`); all value columns are blank.
-2. **Manufacturer row**: column A holds a manufacturer name (string, or the literal `"No Manufacturer"`); all value columns are blank.
+1. **Month row**: column A holds a `datetime` value (e.g., `2019-08-01`); the value columns hold that month's **subtotal**.
+2. **Manufacturer row**: column A holds a manufacturer name (string, or the literal `"No Manufacturer"`); the value columns hold that manufacturer's **subtotal** for the month.
 3. **Product row(s)**: column A holds a product name (string); value columns hold visit counts for that product, under whichever manufacturer row precedes it.
 
-A given Month block contains many Manufacturer/Product row pairs before the next Month row appears. **Parsing requires forward-filling the Month value down through the Manufacturer and Product rows beneath it**, and pairing each Product row with the nearest Manufacturer row above it — there is no explicit foreign key linking them, only row order.
+A final row with the label `Grand Total` closes the sheet. Match it exactly — one manufacturer is literally named `PHYS TOTAL CARE`, so a substring match on "total" would misfire.
+
+**The hierarchy is marked by the column-A cell's indent, not by any value**: Month and `Grand Total` rows have indent 1, Manufacturer rows indent 3, Product rows indent 5 (cell fill just alternates for banding and carries no meaning). Values alone cannot separate Manufacturer rows from Product rows — a small manufacturer's row can look exactly like a product's. There is no explicit foreign key linking a Product to its Manufacturer or Month, only row order plus indent, so **parsing requires carrying the current Month and Manufacturer down through the rows beneath them**.
+
+**Because subtotal rows sit alongside detail rows, naively summing the value columns over every row multiple-counts visits.** Use only Product rows for product-level analysis.
+
+**Patient Visits is a distinct count at every level, not a sum.** A visit that involved two of one manufacturer's products counts once in the Manufacturer row but once in *each* of the two Product rows. So a Manufacturer subtotal can be *less than* the sum of its Product rows (verified on the real data: e.g., FRESENIUS KABI USA, Aug 2019, is 16 visits short across 12 columns, each exactly 1 over). The relationships that do hold, verified on every row of both the OA and RA sheets: each Product row is ≤ its Manufacturer row, each Manufacturer row is ≤ the sum of its Product rows, and the `Grand Total` row equals the sum of the 72 Month rows (months are disjoint).
 
 ### 2.2 Column Structure — compound headers, one header row
 
@@ -54,7 +60,19 @@ Only combinations with at least one recorded visit appear as columns — the piv
 
 ### 2.4 Cell Values
 
-Visit counts are non-negative integers on Product rows only; `None`/blank elsewhere (Month rows, Manufacturer rows, and any Specialty×Age×Gender combination with zero visits for that product that month).
+Visit counts are positive integers (no zeros and no negatives appear anywhere in either sheet); a **blank cell means zero visits**. Month and Manufacturer rows carry subtotals (§2.1), so only Product-row cells are detail-level observations. The parser (`ingestion/nmta_loader.py`) drops blank cells and emits one long-format row per non-blank Product-row cell — 240,773 rows for OA and 1,021 for RA.
+
+**Totals differ by source and should not be treated as interchangeable** (OA):
+
+| Figure | Value | What it is |
+|---|---|---|
+| Main pivot `Grand Total` row | 5,308,627 | Distinct visits, all products (this sheet's own total) |
+| Sum of the pivot's Product rows | 5,544,840 | Over-counts: a visit involving two products is counted in each |
+| Reference file, row-level sum | 5,561,131 | `Branded Generic - OA.xlsx`, summed by hand |
+| Reference file, printed Grand Total | 5,323,282 | The same file's own stated total |
+| Place-of-Service total | 7,189,004 | All OA visits, with or without a product recorded |
+
+The same disagreement shows at product level: Zilretta is 135,119 visits in the pivot (11,403 under `No Manufacturer`, 123,716 under `PACIRA PHARM`) but 135,133 in the reference file (11,235 + 123,898). Which figure a downstream metric uses must be a stated choice.
 
 ---
 

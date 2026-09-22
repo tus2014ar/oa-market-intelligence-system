@@ -27,7 +27,8 @@ These are documented in full in `PROPOSAL.md` §10 and `data_dictionary.md` §7;
 
 | Finding | Consequence |
 |---|---|
-| Main pivot total (5,323,282) ≠ Place-of-Service total (7,189,004) | ~1.87M OA visits (~26%) are diagnosis-only, no product recorded. The visit-share formula uses the 5.32M product-linked figure, not the 7.19M headline figure. |
+| Main pivot's own `Grand Total` (5,308,627) ≠ Place-of-Service total (7,189,004) | ~1.88M OA visits (~26%) are diagnosis-only, no product recorded. The visit-share formula uses the ~5.3M product-linked figure, not the 7.19M headline figure. (An earlier draft attributed 5,323,282 to the pivot; that is the *reference file's* printed total — see `data_dictionary.md` §2.4 for all five figures.) |
+| Pivot `Patient Visits` is a distinct count at every level | A visit involving two products appears in both product rows, so the pivot's product rows sum to 5,544,840 — more than its Grand Total. Product-level shares are shares of *product-visits*, and that must be stated wherever they are reported. |
 | Zilretta split across two manufacturer labels (11,235 + 123,898 = 135,133) | Group by Product name only, never (Manufacturer, Product), or true share is understated ~8%. |
 | Brand/Generic tag reflects patent status, not drug class | Real NSAIDs (aspirin, ibuprofen) are tagged `OTHER`. The treatment-category taxonomy must be built by product-name review, not read off this column. |
 | RA reference table has zero generic-tagged products (all 18 rows `BRAND`) | Confirms, from the data itself, that RA's competitive structure (biologic vs. biosimilar) doesn't map to OA's branded-vs-generic formula. |
