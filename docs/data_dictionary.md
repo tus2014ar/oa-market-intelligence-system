@@ -82,7 +82,7 @@ Applies to the `*1`-suffixed sheet in all four workbooks (e.g., `M15_19_OA_PAT_V
 
 | Column | Type | Description |
 |---|---|---|
-| Month | string, `"Mon YYYY"` (e.g., `"Aug 2019"`) — note: **string here, not `datetime`** as in the main sheet | Calendar month |
+| Month | string, `"Mon YYYY"` (e.g., `"Aug 2019"`) in the two `Team1_*` workbooks — note: **string here, not `datetime`** as in the main sheet. In the two `Branded Generic` workbooks it is truncated to `"Sep..."` with **no year** (see below). | Calendar month |
 | HOSPITAL | integer or blank | Visit count, hospital setting |
 | OFFICE | integer or blank | Visit count, office setting |
 | OTHER | integer or blank | Visit count, other/unspecified setting |
@@ -90,7 +90,11 @@ Applies to the `*1`-suffixed sheet in all four workbooks (e.g., `M15_19_OA_PAT_V
 
 **Confirmed inconsistency**: not every file's secondary sheet has all four columns — `Team1_M04_RA.xlsx`'s secondary sheet only has `OFFICE` and `OTHER` (RA has effectively zero hospital/telehealth visits, consistent with its known sparsity, §6.2/§10), while the other three files have all four. The loader must read columns by header name, not fixed position, and tolerate a missing column as "no visits in that setting," not an error.
 
-This is the real source of the "Place of Service" field described in §3.1 of the proposal — 72 monthly rows per file, spanning Aug 2019–Jul 2025, matching the stated 6-year data window exactly.
+This is the real source of the "Place of Service" field described in §3.1 of the proposal. The loader is `ingestion/place_of_service_loader.py`. Which of the four workbooks it can and should read is not uniform, and three findings from the real data (verified, not assumed) decide it:
+
+1. **OA, main workbook (`Team1_M15_19_OA.xlsx`) — clean.** 72 rows, `Aug 2019`–`Jul 2025`, all four settings, total **7,189,004** (the documented all-OA-visits figure). April 2020 shows the COVID shock: Office 39,487 (down from 68,746 in March), Telehealth 1,016 (up from 275).
+2. **The `Branded Generic` workbooks carry a different, year-less window.** Their month labels are truncated to `Sep...`, `Oct...`, … with no year, so the loader refuses them rather than guess. Comparing against the OA main sheet shows the rows line up **one month later**, i.e. Sep 2019–Aug 2025 rather than Aug 2019–Jul 2025: 60 of the 71 overlapping months are identical, and the last 11 (Sep 2024–Jul 2025) are slightly *higher* in the Branded Generic file (e.g., Sep 2024 Office 83,983 vs. 83,849). That looks like the same extract re-run later, with recent months restated upward as late data arrived — so **the most recent months of any single extract are provisional**. OA reference total: 7,187,677.
+3. **RA is internally inconsistent across sources.** The RA main workbook's Place-of-Service sheet totals only **126 visits** (58 months, Office and Other only), while that same workbook's pivot has a Grand Total of **1,246** and the RA Branded Generic workbook's sheet has **1,283** (72 months, all four settings). The 126-visit sheet appears to be a filtered subset, not the whole RA market. The "~1,283 RA visits" figure quoted elsewhere in this project comes from the Branded Generic sheet, not from this main-workbook sheet. Which RA source (if any) feeds `fact_place_of_service_visits` is an open decision.
 
 ---
 
