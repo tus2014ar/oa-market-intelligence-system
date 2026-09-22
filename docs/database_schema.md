@@ -97,8 +97,13 @@ CREATE TABLE IF NOT EXISTS dim_product (
     manufacturer       TEXT,                         -- informational only; never used for grouping/joins (§10)
     brand_generic_tag  TEXT NOT NULL
         -- single value per product, but the reference file carries >1 tag for 7 OA products
-        -- (data_dictionary.md §4); the resolution rule (proposed: tag with the most visits) is an
-        -- open decision for the Silver builder, not yet made
+        -- (data_dictionary.md §4). Decided: the Silver builder resolves to the tag with the
+        -- most visits for that product. 6 of the 7 resolve to OTHER by a wide margin
+        -- (thousands to tens of thousands of visits vs. single/double digits); the seventh,
+        -- HYDROCORTISONE, resolves to GENERIC over BRAND by 6 visits to 1 - the only close
+        -- call, and immaterial given its 7-visit total. HYDROCORTISONE still gets an openFDA
+        -- lookup regardless (openfda_client.branded_products() scopes off the raw reference
+        -- table, not this resolved column, PROPOSAL.md §18.6)
         CHECK (brand_generic_tag IN ('BRAND','GENERIC','BRANDED GENERIC','OTHER')),
     disease_area       TEXT NOT NULL CHECK (disease_area IN ('OA','RA')),
     treatment_category TEXT NOT NULL DEFAULT 'unclassified',
@@ -137,7 +142,11 @@ CREATE TABLE IF NOT EXISTS fact_product_visits (
 
 CREATE TABLE IF NOT EXISTS fact_place_of_service_visits (
     month_id         INTEGER NOT NULL REFERENCES dim_month(month_id),
-    disease_area     TEXT NOT NULL CHECK (disease_area IN ('OA','RA')),
+    disease_area     TEXT NOT NULL CHECK (disease_area IN ('OA','RA')),  -- schema allows both;
+        -- the Phase 2 Silver builder loads OA only (data_dictionary.md §3) — RA's three
+        -- Place-of-Service sources disagree by an order of magnitude, and nothing in Core
+        -- scope reads an RA figure yet. Not a schema restriction: an RA row is valid here
+        -- whenever a real decision on which RA source to use is actually made.
     place_of_service TEXT NOT NULL CHECK (place_of_service IN ('HOSPITAL','OFFICE','OTHER','TELEHEALTH')),
     patient_visits   INTEGER NOT NULL CHECK (patient_visits >= 0),
     PRIMARY KEY (month_id, disease_area, place_of_service)
