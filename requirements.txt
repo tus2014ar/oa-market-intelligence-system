@@ -4,6 +4,7 @@ numpy
 openpyxl
 requests
 pandera
+sqlalchemy
 
 # Dev / CI
 ruff

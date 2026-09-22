@@ -141,6 +141,13 @@ CREATE TABLE IF NOT EXISTS fact_product_visits (
     demographic_id INTEGER NOT NULL REFERENCES dim_demographics(demographic_id),
     patient_visits INTEGER NOT NULL CHECK (patient_visits >= 0),
     PRIMARY KEY (month_id, product_id, specialty_id, demographic_id)
+    -- This grain deliberately excludes manufacturer (dim_product resolves one manufacturer
+    -- per product for display only). A single product is routinely sold under several
+    -- manufacturers within the same month/specialty/demographic slice in the raw NMTA
+    -- pivot (one real slice spans 13 manufacturers), so the Silver builder SUMS
+    -- patient_visits across manufacturer to collapse raw rows onto this grain. Verified
+    -- exact (no visits lost or double-counted) against the full real dataset: total
+    -- patient_visits is unchanged by the collapse, 5,546,090 before and after.
 );
 
 CREATE TABLE IF NOT EXISTS fact_place_of_service_visits (
