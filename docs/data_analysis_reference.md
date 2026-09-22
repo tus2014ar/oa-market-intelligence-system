@@ -77,7 +77,7 @@ Kenalog and Depo-Medrol are tagged `BRANDED GENERIC`/`BRAND` — the same tags a
 | PRO-C-DURE 5 | 1,418 | BRANDED GENERIC | | DYURAL-80 | 14 | BRANDED GENERIC |
 | PHYS EZ USE JOINT | 835 | BRANDED GENERIC | | A-METHAPRED | 13 | BRANDED GENERIC |
 | METHYLPRED SOD SUC | 749 | GENERIC | | A-HYDROCORT | 9 | BRANDED GENERIC |
-| SARAPIN | 691 | BRANDED GENERIC | | HYDROCORTISONE | 7 | BRAND/GENERIC |
+| SARAPIN | 691 | BRANDED GENERIC | | HYDROCORTISONE | 7 | GENERIC* |
 | TRIAMCINOLONE DIAC | 685 | GENERIC | | DEXAMETHASONE INTN | 7 | BRANDED GENERIC |
 | BETAMETHASONE COMBO | 599 | BRANDED GENERIC | | DEXLIDO-M | 7 | BRANDED GENERIC |
 | PRO-C-DURE 6 | 231 | BRANDED GENERIC | | MEDROL | 6 | BRAND |
@@ -98,6 +98,8 @@ Kenalog and Depo-Medrol are tagged `BRANDED GENERIC`/`BRAND` — the same tags a
 | | | | | TAC-3 | 1 | BRANDED GENERIC |
 | | | | | DOUBLEDEX | 1 | BRANDED GENERIC |
 | | | | | BETALOAN SUIK | 1 | BRANDED GENERIC |
+
+*HYDROCORTISONE is tagged both `GENERIC` (6 visits) and `BRAND` (1 visit) on different rows of the reference file — one of 7 OA products with more than one tag (§4 of `data_dictionary.md`). `GENERIC` is shown here as the resolved value under the tag-with-most-visits rule now locked into `database_schema.md`'s `dim_product` definition; it is the one close call among the 7 (6 visits to 1), the rest resolving by a wide margin.
 
 #### C. Opioid / other injectable analgesics
 
