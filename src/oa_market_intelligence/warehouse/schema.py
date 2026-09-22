@@ -1,4 +1,4 @@
-"""SQLAlchemy Core table definitions for the Silver star schema.
+"""SQLAlchemy Core table definitions for the Silver star schema and Gold serving tables.
 
 Mirrors docs/database_schema.md exactly. Defined as Core Table/Column objects, not raw
 SQL strings, so the schema itself is portable to Postgres via a connection-string change
@@ -13,6 +13,7 @@ from sqlalchemy import (
     CheckConstraint,
     Column,
     Engine,
+    Float,
     ForeignKey,
     Integer,
     MetaData,
@@ -116,6 +117,75 @@ fact_place_of_service_visits = Table(
         name="ck_fact_pos_setting",
     ),
     CheckConstraint("patient_visits >= 0", name="ck_fact_pos_visits_nonneg"),
+)
+
+
+DIRECTION_LABELS = ("Up", "Down", "Flat")
+
+gold_visit_share_monthly = Table(
+    "gold_visit_share_monthly",
+    metadata,
+    Column("month_id", Integer, ForeignKey("dim_month.month_id"), primary_key=True),
+    # category totals (database_schema.md §4.1, PROPOSAL.md §18.1)
+    Column("branded_injectable_visits", Integer, nullable=False),
+    Column("generic_corticosteroid_visits", Integer, nullable=False),
+    Column("nsaid_otc_visits", Integer, nullable=False),
+    # target
+    Column("visit_share", Float, nullable=False),
+    Column("direction_label", Text),  # nullable: the first month has no prior month
+    # engineered features
+    Column("visit_share_lag_1", Float),
+    Column("visit_share_lag_2", Float),
+    Column("visit_share_lag_3", Float),
+    Column("visit_share_roll_3mo", Float),
+    Column("visit_share_roll_6mo", Float),
+    # FDA-derived features, Method B
+    Column("months_since_launch", Integer),
+    Column("is_post_launch", Integer),
+    Column("competitor_count_on_market", Integer),
+    Column("months_since_last_competitor_event", Integer),
+    # market-level context, from fact_place_of_service_visits (OA only)
+    Column("hospital_visits", Integer),
+    Column("office_visits", Integer),
+    Column("other_visits", Integer),
+    Column("telehealth_visits", Integer),
+    # model output - written by the (not-yet-built) modeling stage, never by
+    # build_gold.py. See build_gold.py's module docstring for the rebuild-semantics
+    # tension this creates with database_schema.md §6's full-refresh-overwrite rule.
+    Column("predicted_direction", Text),
+    Column("prediction_probability", Float),
+    Column("model_version", Text),
+    Column("actual_direction", Text),
+    CheckConstraint("branded_injectable_visits >= 0", name="ck_gvsm_branded_nonneg"),
+    CheckConstraint("generic_corticosteroid_visits >= 0", name="ck_gvsm_generic_nonneg"),
+    CheckConstraint("nsaid_otc_visits >= 0", name="ck_gvsm_nsaid_nonneg"),
+    CheckConstraint("direction_label IN ('Up','Down','Flat')", name="ck_gvsm_direction_label"),
+    CheckConstraint("is_post_launch IN (0,1)", name="ck_gvsm_is_post_launch"),
+    CheckConstraint(
+        "predicted_direction IN ('Up','Down','Flat')", name="ck_gvsm_predicted_direction"
+    ),
+    CheckConstraint("actual_direction IN ('Up','Down','Flat')", name="ck_gvsm_actual_direction"),
+)
+
+gold_segment_adoption = Table(
+    "gold_segment_adoption",
+    metadata,
+    Column("month_id", Integer, ForeignKey("dim_month.month_id"), nullable=False),
+    Column("specialty_id", Integer, ForeignKey("dim_specialty.specialty_id"), nullable=False),
+    Column(
+        "demographic_id", Integer, ForeignKey("dim_demographics.demographic_id"), nullable=False
+    ),
+    Column("branded_injectable_visits", Integer, nullable=False),
+    Column("total_category_visits", Integer, nullable=False),
+    Column("segment_visit_share", Float, nullable=False),
+    # Written by the Objective 3 (stretch) model once it runs, never by build_gold.py -
+    # "High"/"Low" is a classification output, not a fixed rule (silver_gold_data_
+    # dictionary.md §2.2).
+    Column("adoption_label", Text),
+    PrimaryKeyConstraint("month_id", "specialty_id", "demographic_id"),
+    CheckConstraint("branded_injectable_visits >= 0", name="ck_gsa_branded_nonneg"),
+    CheckConstraint("total_category_visits >= 0", name="ck_gsa_total_nonneg"),
+    CheckConstraint("adoption_label IN ('High','Low')", name="ck_gsa_adoption_label"),
 )
 
 

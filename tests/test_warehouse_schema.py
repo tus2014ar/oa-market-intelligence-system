@@ -17,6 +17,8 @@ from oa_market_intelligence.warehouse.schema import (
     dim_specialty,
     fact_place_of_service_visits,
     fact_product_visits,
+    gold_segment_adoption,
+    gold_visit_share_monthly,
 )
 
 
@@ -27,7 +29,7 @@ def engine():
     return eng
 
 
-def test_create_schema_creates_all_six_tables(engine):
+def test_create_schema_creates_all_eight_tables(engine):
     from sqlalchemy import inspect
 
     tables = set(inspect(engine).get_table_names())
@@ -38,6 +40,8 @@ def test_create_schema_creates_all_six_tables(engine):
         "dim_demographics",
         "fact_product_visits",
         "fact_place_of_service_visits",
+        "gold_visit_share_monthly",
+        "gold_segment_adoption",
     }
 
 
@@ -149,6 +153,99 @@ def test_fact_place_of_service_visits_rejects_bad_setting(engine):
             conn.execute(insert(fact_place_of_service_visits).values(
                 month_id=201908, disease_area="OA", place_of_service="PHARMACY", patient_visits=1,
             ))
+
+
+def _seed_gold_visit_share_row(engine, **overrides) -> dict:
+    with engine.begin() as conn:
+        conn.execute(
+            insert(dim_month).values(
+                month_id=201908,
+                calendar_date="2019-08-01",
+                year=2019,
+                quarter=3,
+                month_number=8,
+                month_name="August",
+            )
+        )
+    row = {
+        "month_id": 201908,
+        "branded_injectable_visits": 10,
+        "generic_corticosteroid_visits": 90,
+        "nsaid_otc_visits": 5,
+        "visit_share": 0.087,
+    }
+    row.update(overrides)
+    return row
+
+
+def test_gold_visit_share_monthly_rejects_negative_category_visits(engine):
+    row = _seed_gold_visit_share_row(engine, branded_injectable_visits=-1)
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(insert(gold_visit_share_monthly).values(**row))
+
+
+def test_gold_visit_share_monthly_rejects_bad_direction_label(engine):
+    row = _seed_gold_visit_share_row(engine, direction_label="Sideways")
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(insert(gold_visit_share_monthly).values(**row))
+
+
+def test_gold_visit_share_monthly_rejects_bad_is_post_launch(engine):
+    row = _seed_gold_visit_share_row(engine, is_post_launch=2)
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(insert(gold_visit_share_monthly).values(**row))
+
+
+def test_gold_visit_share_monthly_rejects_bad_predicted_direction(engine):
+    row = _seed_gold_visit_share_row(engine, predicted_direction="Maybe")
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(insert(gold_visit_share_monthly).values(**row))
+
+
+def test_gold_visit_share_monthly_accepts_null_direction_label(engine):
+    row = _seed_gold_visit_share_row(engine)  # direction_label omitted - first month
+    with engine.begin() as conn:
+        conn.execute(insert(gold_visit_share_monthly).values(**row))
+    with engine.connect() as conn:
+        result = conn.execute(select(gold_visit_share_monthly)).mappings().first()
+    assert result["direction_label"] is None
+
+
+def test_gold_segment_adoption_rejects_bad_adoption_label(engine):
+    _seed_one_fact_dependency_set(engine)
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(
+                insert(gold_segment_adoption).values(
+                    month_id=201908,
+                    specialty_id=1,
+                    demographic_id=1,
+                    branded_injectable_visits=1,
+                    total_category_visits=10,
+                    segment_visit_share=0.1,
+                    adoption_label="Medium",
+                )
+            )
+
+
+def test_gold_segment_adoption_rejects_negative_total_visits(engine):
+    _seed_one_fact_dependency_set(engine)
+    with pytest.raises(IntegrityError):
+        with engine.begin() as conn:
+            conn.execute(
+                insert(gold_segment_adoption).values(
+                    month_id=201908,
+                    specialty_id=1,
+                    demographic_id=1,
+                    branded_injectable_visits=1,
+                    total_category_visits=-10,
+                    segment_visit_share=0.1,
+                )
+            )
 
 
 def _seed_one_fact_dependency_set(engine) -> None:
