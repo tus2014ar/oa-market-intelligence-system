@@ -72,7 +72,7 @@ Visit counts are positive integers (no zeros and no negatives appear anywhere in
 | Reference file, printed Grand Total | 5,323,282 | The same file's own stated total |
 | Place-of-Service total | 7,189,004 | All OA visits, with or without a product recorded |
 
-The same disagreement shows at product level: Zilretta is 135,119 visits in the pivot (11,403 under `No Manufacturer`, 123,716 under `PACIRA PHARM`) but 135,133 in the reference file (11,235 + 123,898). Which figure a downstream metric uses must be a stated choice.
+The same disagreement shows at product level: Zilretta is 135,119 visits in the pivot (11,403 under `No Manufacturer`, 123,716 under `PACIRA PHARM`) but 135,133 in the reference file (11,235 + 123,898). Which figure a downstream metric uses must be a stated choice; for product-level visit share it is decided: the pivot (`PROPOSAL.md` §18.1).
 
 ---
 

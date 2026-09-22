@@ -607,13 +607,17 @@ visit_share(branded_injectable, month t) =
 
 The denominator spans **all three treatment categories** (branded injectable, generic corticosteroid, NSAID) rather than injectables alone. This is deliberate: §6.1 and the Executive Summary already frame the competitive dynamic as including NSAIDs, narrowing the denominator to injectables-only would silently contradict the business framing stated elsewhere in this document.
 
-Concretely, using the full OA product categorization (145 products, data-derived from the reference file, not hand-typed):
+**Source of the visit counts — decided: the monthly pivot, not the reference file.** The share is computed from the Product rows of the monthly pivot (`Team1_M15_19_OA.xlsx`). The `Branded Generic` reference file has no time dimension, so it cannot produce a monthly series; it supplies only the Brand/Generic tag and the product list. The two sources disagree slightly (e.g., Zilretta is 135,119 in the pivot vs. 135,133 in the reference file; see `data_dictionary.md` §2.4), so the choice is stated rather than left implicit. One consequence to report alongside any share: Patient Visits is a distinct count per pivot row, so a visit involving two products is counted in both, and these shares are shares of *product-visits*, not of unique visits.
 
-- `branded_injectable` = Zilretta only (135,133 visits, the only product in this market with no generic equivalent)
-- `generic_corticosteroid` = 52 products including Kenalog and Depo-Medrol (4,914,533 visits combined)
-- `NSAID` = 54 products including aspirin, acetaminophen, and ibuprofen variants (398,722 visits combined)
+Concretely, using the full OA product categorization (data-derived, not hand-typed; the category *membership* comes from the reference file's 145 products, the visit *counts* below from the pivot's Product rows over all 72 months):
 
-A fourth category present in the data, opioid/other injectable analgesics (37 products, e.g., Ketorolac, Fentanyl, 112,742 visits combined), is **deliberately excluded** from this formula: these are pain-control agents used around procedures, not part of the branded-injectable-vs-generic-corticosteroid competitive story the classifier is built around.
+- `branded_injectable` = Zilretta only (135,119 visits, the only product in this market with no generic equivalent)
+- `generic_corticosteroid` = 52 products including Kenalog and Depo-Medrol (4,904,897 visits combined)
+- `NSAID` = 54 products including aspirin, acetaminophen, and ibuprofen variants (394,076 visits combined)
+
+A fourth category present in the data, opioid/other injectable analgesics (36 products in the pivot, e.g., Ketorolac, Fentanyl, 110,747 visits combined), is **deliberately excluded** from this formula: these are pain-control agents used around procedures, not part of the branded-injectable-vs-generic-corticosteroid competitive story the classifier is built around.
+
+Resulting monthly `visit_share` ranges from 1.7% to 3.4% (median 2.5%) across the 72 months.
 
 ### 18.2 Direction Labeling Threshold ("Flat")
 
@@ -624,6 +628,18 @@ Month-over-month change in `visit_share` is labeled:
 - **Flat**: change within ±1.0 percentage point
 
 The ±1.0pp threshold is a stated **default**, not a verified fact. It will be checked against the real distribution of month-over-month share changes during Week 4 EDA and adjusted if needed so the three classes are reasonably balanced (a threshold that leaves "Flat" nearly empty, or nearly all months, would make the classification task degenerate). Any change to this threshold will be logged, not silently altered.
+
+**Check performed on the real pivot data — the default fails it.** Month-over-month changes in `visit_share` range only from −0.58 to +0.68 percentage points (standard deviation 0.19). At ±1.0pp, **all 71 changes are Flat** (0 Up, 0 Down), so the classifier would have nothing to learn:
+
+| Threshold | Up | Down | Flat | (of 71) |
+|---|---|---|---|---|
+| ±1.0pp (default) | 0 | 0 | 71 | degenerate |
+| ±0.5pp | 1 | 1 | 69 | degenerate |
+| ±0.3pp | 3 | 4 | 64 | |
+| ±0.2pp | 7 | 7 | 57 | |
+| ±0.1pp | 18 | 20 | 33 | balanced |
+
+The default must change; the replacement value is **an open decision, not yet made**. It is a genuine trade-off: only a threshold near ±0.1pp yields balanced classes, but that is about half the series' own month-to-month standard deviation, so many labeled "moves" will be noise-level. A smaller threshold also raises the stakes on the significance-test caveat in §18.4, since with only ~48 backtest folds a rare Down class gives very few events to evaluate.
 
 ### 18.3 Backtesting / Walk-Forward Validation Scheme
 
