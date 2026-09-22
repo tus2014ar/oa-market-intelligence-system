@@ -285,8 +285,8 @@ A full row-for-row merge doesn't make sense — there's no month column on the F
 
 ### 6.2 The real obstacles (all manageable — none structural)
 
-- **Scale mismatch**: only ~20 of 29,329 applications are actually relevant. Filtering, not a blocker.
-- **Name spelling differences**: xlsx `Product Sum` values (e.g., `ZILRETTA`) vs. JSON `brand_name` values usually match after simple normalization (uppercase, trim); with only ~20 relevant products, manual verification of every match is realistic — already done for Zilretta, Kenalog, Depo-Medrol, and the RA biologics.
+- **Scale mismatch**: only a fraction of 29,329 applications are actually relevant. Filtering, not a blocker — **corrected scope**: applying §18.6's actual rule (every product tagged `BRAND` or `BRANDED GENERIC` in our own reference tables) gives **87 products** (`ingestion/openfda_client.branded_products()`), not the ~20 this section originally estimated. The ~20 figure was the handful checked by hand early on (Zilretta, Kenalog, Depo-Medrol, the RA biologics); most of the other ~67 are opioid/anesthetic brand names (Category C, already excluded from the visit-share formula, §18.1) or the RA oncology-miscoded products (§3.2) — real products, just not ones Objective 1's inflection-point analysis needs a date for. Which subset the Silver builder actually queries (all 87, or only the categories the classifier's features use) is an open decision, not yet made.
+- **Name spelling differences**: xlsx `Product Sum` values (e.g., `ZILRETTA`) vs. JSON `brand_name` values usually match after simple normalization (uppercase, trim) — verified for Zilretta and Kenalog against the live API while building `ingestion/openfda_client.py`.
 - **Multiple applications per product**: some products (e.g., Kenalog) have several FDA applications over the decades. Fix: take the earliest ORIG/approved date across all matching applications, the approach already used when checked manually (§18.5 of `PROPOSAL.md`).
 - **Manufacturer-of-record changes (the Zilretta case)**: join on Product name only, never Manufacturer, for the same reason already established for the visit-share taxonomy itself (§2).
 
@@ -296,7 +296,7 @@ Not competing alternatives — the proposal's architecture calls for using more 
 
 **Method A — Simple key-based lookup join** (the foundation). Build a small derived table from the JSON: product name → earliest approval date. Exactly what `PROPOSAL.md` §18.7 already calls for (a simple lookup table, not the full knowledge graph, for Core Objectives 1–2).
 ```
-fda_lookup = {"ZILRETTA": "2017-10-06", "KENALOG": "1960-01-04", ...}
+fda_lookup = {"ZILRETTA": "2017-10-06", "KENALOG": "1974-01-29", ...}  # both verified live
 oa_long["fda_approval_date"] = oa_long["product"].map(fda_lookup)
 ```
 This alone creates no new predictive feature — a static date sitting in a column isn't something a monthly classifier can use directly. It's the input to Method B.
