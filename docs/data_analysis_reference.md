@@ -77,7 +77,7 @@ Kenalog and Depo-Medrol are tagged `BRANDED GENERIC`/`BRAND` — the same tags a
 | PRO-C-DURE 5 | 1,418 | BRANDED GENERIC | | DYURAL-80 | 14 | BRANDED GENERIC |
 | PHYS EZ USE JOINT | 835 | BRANDED GENERIC | | A-METHAPRED | 13 | BRANDED GENERIC |
 | METHYLPRED SOD SUC | 749 | GENERIC | | A-HYDROCORT | 9 | BRANDED GENERIC |
-| SARAPIN | 691 | BRANDED GENERIC | | HYDROCORTISONE | 7 | BRAND/GENERIC |
+| SARAPIN | 691 | BRANDED GENERIC | | HYDROCORTISONE | 7 | GENERIC* |
 | TRIAMCINOLONE DIAC | 685 | GENERIC | | DEXAMETHASONE INTN | 7 | BRANDED GENERIC |
 | BETAMETHASONE COMBO | 599 | BRANDED GENERIC | | DEXLIDO-M | 7 | BRANDED GENERIC |
 | PRO-C-DURE 6 | 231 | BRANDED GENERIC | | MEDROL | 6 | BRAND |
@@ -98,6 +98,8 @@ Kenalog and Depo-Medrol are tagged `BRANDED GENERIC`/`BRAND` — the same tags a
 | | | | | TAC-3 | 1 | BRANDED GENERIC |
 | | | | | DOUBLEDEX | 1 | BRANDED GENERIC |
 | | | | | BETALOAN SUIK | 1 | BRANDED GENERIC |
+
+*HYDROCORTISONE is tagged both `GENERIC` (6 visits) and `BRAND` (1 visit) on different rows of the reference file — one of 7 OA products with more than one tag (§4 of `data_dictionary.md`). `GENERIC` is shown here as the resolved value under the tag-with-most-visits rule now locked into `database_schema.md`'s `dim_product` definition; it is the one close call among the 7 (6 visits to 1), the rest resolving by a wide margin.
 
 #### C. Opioid / other injectable analgesics
 
@@ -285,7 +287,7 @@ A full row-for-row merge doesn't make sense — there's no month column on the F
 
 ### 6.2 The real obstacles (all manageable — none structural)
 
-- **Scale mismatch**: only a fraction of 29,329 applications are actually relevant. Filtering, not a blocker — **corrected scope**: applying §18.6's actual rule (every product tagged `BRAND` or `BRANDED GENERIC` in our own reference tables) gives **87 products** (`ingestion/openfda_client.branded_products()`), not the ~20 this section originally estimated. The ~20 figure was the handful checked by hand early on (Zilretta, Kenalog, Depo-Medrol, the RA biologics); most of the other ~67 are opioid/anesthetic brand names (Category C, already excluded from the visit-share formula, §18.1) or the RA oncology-miscoded products (§3.2) — real products, just not ones Objective 1's inflection-point analysis needs a date for. Which subset the Silver builder actually queries (all 87, or only the categories the classifier's features use) is an open decision, not yet made.
+- **Scale mismatch**: only a fraction of 29,329 applications are actually relevant. Filtering, not a blocker — **corrected scope**: applying §18.6's actual rule (every product tagged `BRAND` or `BRANDED GENERIC` in our own reference tables) gives **87 products** (`ingestion/openfda_client.branded_products()`), not the ~20 this section originally estimated. The ~20 figure was the handful checked by hand early on (Zilretta, Kenalog, Depo-Medrol, the RA biologics); most of the other ~67 are opioid/anesthetic brand names (Category C, already excluded from the visit-share formula, §18.1) or the RA oncology-miscoded products (§3.2) — real products, just not ones Objective 1's inflection-point analysis needs a date for. **Decided: the Silver builder queries only Zilretta.** `dim_product.fda_approval_date` feeds the Method B features below (§6.3), all of which are about the branded-injectable-vs-no-generic-equivalent-competitor story; today Zilretta is the only product in that category (§3.1's Category A), so `competitor_count_on_market(t)` has nothing else to count regardless of whether the other 86 are looked up. `branded_products()` stays general-purpose — a future no-generic-equivalent branded injectable entering the data is the trigger to widen this, a real product appearing rather than a guess about what might.
 - **Name spelling differences**: xlsx `Product Sum` values (e.g., `ZILRETTA`) vs. JSON `brand_name` values usually match after simple normalization (uppercase, trim) — verified for Zilretta and Kenalog against the live API while building `ingestion/openfda_client.py`.
 - **Multiple applications per product**: some products (e.g., Kenalog) have several FDA applications over the decades. Fix: take the earliest ORIG/approved date across all matching applications, the approach already used when checked manually (§18.5 of `PROPOSAL.md`).
 - **Manufacturer-of-record changes (the Zilretta case)**: join on Product name only, never Manufacturer, for the same reason already established for the visit-share taxonomy itself (§2).
