@@ -1,0 +1,51 @@
+# Runs the warehouse pipeline (src/oa_market_intelligence/pipeline.py) on a schedule,
+# per PROPOSAL.md §19.1: "GitHub Actions scheduled workflow, not a new orchestration
+# platform" - reusing the same CI infrastructure ci.yml already runs on, rather than
+# adopting a new one.
+#
+# What this workflow does NOT yet do, and why: the full production cycle (§19.1,
+# §745) also retrains/promotes a model, writes predictions back into
+# gold_visit_share_monthly, runs Evidently AI monitoring, and does `dvc pull`/`dvc
+# push` of warehouse.db + mlruns/ around the run so state survives the runner being
+# ephemeral (§19.6). None of that exists yet (later phases) or has a DVC remote
+# configured yet. Until it does, this workflow uploads warehouse.db as a build
+# artifact instead - a documented, honest stand-in for real persistence, not a claim
+# that this is the final production setup. This is the "designed and demonstrated
+# capability" §751 describes: proving the pipeline runs and completes successfully on
+# a schedule, not a claim it has run unattended in production for months (there is no
+# real monthly IQVIA extract arriving during this project).
+name: Monthly Pipeline
+
+on:
+  schedule:
+    # NMTA extracts arrive on a ~40-day lag after month end (§19.1). The 10th of each
+    # month gives a comfortable buffer past a typical prior-month delivery, at 06:00
+    # UTC (a quiet-hours choice, not a data-driven one).
+    - cron: "0 6 10 * *"
+  workflow_dispatch: {}  # manual trigger, so the run can be demonstrated on demand
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run pipeline
+        env:
+          PYTHONPATH: src
+        run: python -m oa_market_intelligence.pipeline
+
+      - name: Upload warehouse.db
+        uses: actions/upload-artifact@v4
+        with:
+          name: warehouse-db
+          path: data/processed/warehouse.db
+          retention-days: 90

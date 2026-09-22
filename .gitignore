@@ -16,6 +16,13 @@ env/
 mlruns/
 mlartifacts/
 
+# Generated warehouse database (pipeline.py output) - a build artifact, not source
+# data, so it's excluded here the same way data/raw/'s real extracts are deliberately
+# NOT excluded above. Meant to be DVC-tracked (PROPOSAL.md §19.6) once an actual DVC
+# remote is stood up; until then the scheduled workflow uploads it as a CI artifact
+# instead (.github/workflows/monthly_pipeline.yml) rather than committing it here.
+data/processed/
+
 # Environment / secrets
 .env
 *.env.local
