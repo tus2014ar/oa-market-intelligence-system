@@ -112,7 +112,10 @@ CREATE TABLE IF NOT EXISTS dim_product (
         --   RA uses an originator-vs-biosimilar structure, §6.2, not this OA formula) — reviewed, not a gap
         -- 'unclassified': genuinely not yet reviewed — the only value that triggers a monitoring alert (§18.10)
         -- sourced from data/reference/product_taxonomy.csv (§4 below), not inferred at load time
-    fda_approval_date  TEXT                          -- ISO date, nullable; openFDA Method A (PROPOSAL.md §6.3)
+    fda_approval_date  TEXT                          -- ISO date, nullable; openFDA Method A (PROPOSAL.md §6.3).
+        -- Populated only where treatment_category = 'branded_injectable' (today: Zilretta
+        -- only) - nothing downstream reads any other product's date yet
+        -- (data_analysis_reference.md §6.2). NULL elsewhere means "not queried", not "not found".
 );
 
 CREATE TABLE IF NOT EXISTS dim_specialty (
