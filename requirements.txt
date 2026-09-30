@@ -6,6 +6,14 @@ requests
 pandera
 sqlalchemy
 
+# EDA / notebooks
+matplotlib
+seaborn
+jupyter
+ipykernel
+nbformat
+nbconvert
+
 # Dev / CI
 ruff
 pytest

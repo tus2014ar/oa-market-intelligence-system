@@ -5,6 +5,11 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]
+# Notebooks are exploratory EDA artifacts (docs/PROPOSAL.md §11), not shipped library
+# code - the sys.path.insert-before-imports idiom they need and the wide print()
+# lines they produce don't serve the same purpose the strict import-order/line-length
+# rules serve in src/ and tests/, so they're excluded rather than fought.
+extend-exclude = ["notebooks/*.ipynb"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
