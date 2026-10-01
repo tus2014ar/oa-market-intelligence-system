@@ -13,6 +13,9 @@ jupyter
 ipykernel
 nbformat
 nbconvert
+scipy
+scikit-learn
+statsmodels
 
 # Dev / CI
 ruff

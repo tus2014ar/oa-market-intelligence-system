@@ -80,27 +80,86 @@ def _monthly(shares: list[float]) -> pd.DataFrame:
     return pd.DataFrame({"month_id": range(201901, 201901 + len(shares)), "visit_share": shares})
 
 
-def test_direction_label_first_month_is_null():
-    result = compute_direction_label(_monthly([0.02, 0.02]))
+def test_direction_label_unknown_method_raises():
+    with pytest.raises(ValueError):
+        compute_direction_label(_monthly([0.02, 0.02]), method="not_a_real_method")
+
+
+# ---------- compute_direction_label: method="pp" (superseded default, kept for the
+# original degenerate finding's reproducibility - see method="zscore" tests below for
+# the actual §18.2-decided default) ----------
+
+
+def test_direction_label_pp_first_month_is_null():
+    result = compute_direction_label(_monthly([0.02, 0.02]), method="pp")
     assert result.loc[0, "direction_label"] is None
 
 
-def test_direction_label_up_and_down():
+def test_direction_label_pp_up_and_down():
     # +2.0pp then -2.0pp, well past the default 1.0pp threshold in both directions.
-    result = compute_direction_label(_monthly([0.02, 0.04, 0.02]))
+    result = compute_direction_label(_monthly([0.02, 0.04, 0.02]), method="pp")
     assert result.loc[1, "direction_label"] == "Up"
     assert result.loc[2, "direction_label"] == "Down"
 
 
-def test_direction_label_exact_threshold_is_flat_not_up():
+def test_direction_label_pp_exact_threshold_is_flat_not_up():
     # §18.2: "Up: change > +1.0pp" - a change of *exactly* 1.0pp must not count as Up.
-    result = compute_direction_label(_monthly([0.02, 0.03]), threshold_pp=1.0)
+    result = compute_direction_label(_monthly([0.02, 0.03]), method="pp", threshold_pp=1.0)
     assert result.loc[1, "direction_label"] == "Flat"
 
 
-def test_direction_label_respects_custom_threshold():
-    result = compute_direction_label(_monthly([0.020, 0.023]), threshold_pp=0.1)
+def test_direction_label_pp_respects_custom_threshold():
+    result = compute_direction_label(_monthly([0.020, 0.023]), method="pp", threshold_pp=0.1)
     assert result.loc[1, "direction_label"] == "Up"
+
+
+# ---------- compute_direction_label: method="zscore" (the §18.2-decided default) ----------
+
+
+def _monthly_with_known_zscore_history() -> pd.DataFrame:
+    """16 months: 12 months of small alternating changes (a stable trailing-std
+    baseline), then a large Up jump, a much larger Down jump, and a typical-sized
+    change that should read as Flat against the now-widened trailing std - regardless
+    of exact float precision, since each jump is picked to be unambiguous relative to
+    whatever the trailing window contains at that point."""
+    changes_pp = [0.1, 0.2] * 6 + [5.0, -20.0, 0.15]
+    shares = [0.10]
+    for c in changes_pp:
+        shares.append(shares[-1] + c / 100)
+    return _monthly(shares)
+
+
+def test_direction_label_zscore_is_the_default_method():
+    with_default = compute_direction_label(_monthly_with_known_zscore_history())
+    with_explicit = compute_direction_label(
+        _monthly_with_known_zscore_history(), method="zscore"
+    )
+    pd.testing.assert_series_equal(
+        with_default["direction_label"], with_explicit["direction_label"]
+    )
+
+
+def test_direction_label_zscore_null_until_full_trailing_window():
+    result = compute_direction_label(_monthly_with_known_zscore_history())
+    # ZSCORE_TRAILING_WINDOW=12 plus the first month's own missing diff = 13 nulls.
+    assert result.loc[:12, "direction_label"].isna().all()
+    assert result.loc[13:, "direction_label"].notna().all()
+
+
+def test_direction_label_zscore_up_and_down_and_flat():
+    result = compute_direction_label(_monthly_with_known_zscore_history())
+    assert result.loc[13, "direction_label"] == "Up"  # +5.0pp vs a tiny trailing std
+    assert result.loc[14, "direction_label"] == "Down"  # -20.0pp, unambiguously beyond it
+    assert result.loc[15, "direction_label"] == "Flat"  # back to a typical-sized change
+
+
+def test_direction_label_zscore_respects_custom_window_and_threshold():
+    # A far larger window than there's history for means every row is null - the
+    # window size is genuinely load-bearing, not a cosmetic parameter.
+    result = compute_direction_label(
+        _monthly_with_known_zscore_history(), zscore_window=15
+    )
+    assert result["direction_label"].isna().all()
 
 
 # ---------- compute_lag_and_rolling_features ----------
@@ -359,12 +418,14 @@ def test_build_gold_end_to_end_against_real_data(real_silver_engine):
     assert monthly["visit_share"].min() > 0.017
     assert monthly["visit_share"].max() < 0.034  # PROPOSAL.md §18.1's 1.7%-3.4% range
 
-    # §18.2's documented degenerate finding at the default ±1.0pp threshold.
+    # §18.2 (decided): the trailing-12-month z-score default, validated against the
+    # real 72-month series in notebooks/02_eda_cleaned_data.ipynb §12.4 - 7 Up / 43
+    # Flat / 9 Down over the 59 months with a full trailing window, 13 null before that.
     counts = monthly["direction_label"].value_counts(dropna=False)
-    assert counts.get("Up", 0) == 0
-    assert counts.get("Down", 0) == 0
-    assert counts.get("Flat", 0) == 71
-    assert monthly["direction_label"].isna().sum() == 1
+    assert counts.get("Up", 0) == 7
+    assert counts.get("Down", 0) == 9
+    assert counts.get("Flat", 0) == 43
+    assert monthly["direction_label"].isna().sum() == 13
 
     # April 2020 COVID Office->Telehealth shock, confirmed in Step 3.
     april_2020 = monthly.set_index("month_id").loc[202004]
