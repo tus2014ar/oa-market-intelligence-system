@@ -42,12 +42,18 @@ CATEGORY_COLUMNS = {
 }
 SHARE_CATEGORIES = tuple(CATEGORY_COLUMNS)
 
-DEFAULT_DIRECTION_THRESHOLD_PP = 1.0
-# PROPOSAL.md §18.2's stated default. Confirmed degenerate against the real 72-month
-# series (0 Up, 0 Down out of 71 month-over-month changes) - the replacement value is
-# an open decision explicitly deferred to the modeling phase, not decided here.
-# Exposed as a parameter so that later decision can be applied without editing this
-# module again.
+DEFAULT_DIRECTION_METHOD = "zscore"
+# PROPOSAL.md §18.2: the originally-stated ±1.0pp fixed threshold was confirmed
+# degenerate against the real 72-month series (0 Up, 0 Down out of 71 changes) -
+# replaced with a volatility-scaled (z-score) threshold, validated in
+# notebooks/02_eda_cleaned_data.ipynb §12.4/§13.1. "pp" is kept as an option, mainly
+# so the original degenerate finding stays reproducible, not because it's a real
+# alternative for modeling.
+
+DEFAULT_DIRECTION_THRESHOLD_PP = 1.0  # only used when method="pp"
+
+ZSCORE_TRAILING_WINDOW = 12  # months of past change history the z-score is measured against
+ZSCORE_THRESHOLD = 1.0  # in standard deviations of trailing month-over-month change
 
 POS_COLUMN_MAP = {
     "HOSPITAL": "hospital_visits",
@@ -109,22 +115,59 @@ def compute_visit_share(totals: pd.DataFrame) -> pd.DataFrame:
     return totals
 
 
+def _apply_direction_label(monthly: pd.DataFrame, series: pd.Series, threshold: float) -> None:
+    """Sets monthly['direction_label'] in place, exclusive at the threshold (a value
+    of exactly +/-threshold is Flat) - shared by both methods below, just fed a
+    different series (raw pp change for "pp", a z-score for "zscore").
+
+    Builds the column via `.loc` assignment directly on `monthly` rather than
+    returning a freshly-constructed `pd.Series(None, ..., dtype=object)` - the latter
+    was tried first and found to silently produce NaN instead of None for untouched
+    rows on this project's pandas version, which a caller comparing `is None` (as
+    tests do, matching every other nullable column in this module) would miss."""
+    monthly["direction_label"] = None
+    monthly.loc[series > threshold, "direction_label"] = "Up"
+    monthly.loc[series < -threshold, "direction_label"] = "Down"
+    monthly.loc[series.notna() & series.between(-threshold, threshold), "direction_label"] = "Flat"
+
+
 def compute_direction_label(
-    monthly: pd.DataFrame, threshold_pp: float = DEFAULT_DIRECTION_THRESHOLD_PP
+    monthly: pd.DataFrame,
+    *,
+    method: str = DEFAULT_DIRECTION_METHOD,
+    threshold_pp: float = DEFAULT_DIRECTION_THRESHOLD_PP,
+    zscore_window: int = ZSCORE_TRAILING_WINDOW,
+    zscore_threshold: float = ZSCORE_THRESHOLD,
 ) -> pd.DataFrame:
-    """Adds `direction_label` per §18.2: Up/Down/Flat on the month-over-month change in
-    `visit_share`, in percentage points. `threshold_pp` is exclusive for Up/Down (a
-    change of exactly the threshold is Flat, matching §18.2's stated wording: "Up:
-    change > +1.0pp"). The first month has no prior month and gets NULL, not a guessed
-    label."""
+    """Adds `direction_label` per §18.2 (decided): Up/Down/Flat on the month-over-month
+    change in `visit_share`. Two methods:
+
+    - `"zscore"` (the default): each month's change, in percentage points, divided by
+      the trailing `zscore_window`-month standard deviation of *past* changes only
+      (`change.shift(1).rolling(zscore_window).std()`) - leakage-safe, since the
+      volatility baseline for month t never includes month t's own change. Validated
+      against the real 72-month series in `notebooks/02_eda_cleaned_data.ipynb`
+      §12.4/§13.1: 7 Up / 43 Flat / 9 Down (of the 59 months with a full trailing
+      window), vs. the fixed-pp rule's degenerate 0/71/0.
+    - `"pp"`: the original fixed-percentage-point rule PROPOSAL.md §18.2 first
+      proposed, confirmed degenerate on real data. Kept only so that finding stays
+      reproducible, not as a real alternative.
+
+    Either way, months without enough history for the chosen method (the first month
+    for "pp"; the first `zscore_window + 1` months for "zscore") get NULL, not a
+    guessed label."""
     monthly = monthly.sort_values("month_id").reset_index(drop=True)
     change_pp = monthly["visit_share"].diff() * 100
-    monthly["direction_label"] = None
-    monthly.loc[change_pp > threshold_pp, "direction_label"] = "Up"
-    monthly.loc[change_pp < -threshold_pp, "direction_label"] = "Down"
-    monthly.loc[
-        change_pp.notna() & change_pp.between(-threshold_pp, threshold_pp), "direction_label"
-    ] = "Flat"
+
+    if method == "pp":
+        _apply_direction_label(monthly, change_pp, threshold_pp)
+    elif method == "zscore":
+        trailing_std = change_pp.shift(1).rolling(zscore_window).std()
+        z = change_pp / trailing_std
+        _apply_direction_label(monthly, z, zscore_threshold)
+    else:
+        raise ValueError(f"Unknown direction-labeling method: {method!r}")
+
     return monthly
 
 
@@ -231,7 +274,12 @@ def _place_of_service_pivot(engine: Engine) -> pd.DataFrame:
 
 
 def refresh_gold_visit_share_monthly(
-    engine: Engine, direction_threshold_pp: float = DEFAULT_DIRECTION_THRESHOLD_PP
+    engine: Engine,
+    *,
+    direction_method: str = DEFAULT_DIRECTION_METHOD,
+    direction_threshold_pp: float = DEFAULT_DIRECTION_THRESHOLD_PP,
+    zscore_window: int = ZSCORE_TRAILING_WINDOW,
+    zscore_threshold: float = ZSCORE_THRESHOLD,
 ) -> int:
     """Full-refresh-overwrite (database_schema.md §6). See this module's docstring for
     the known tension this creates with the model-output columns, which are always
@@ -239,7 +287,13 @@ def refresh_gold_visit_share_monthly(
     visits_by_category = _load_product_visits_by_category(engine)
     monthly = _category_totals_by_month(visits_by_category)
     monthly = compute_visit_share(monthly)
-    monthly = compute_direction_label(monthly, direction_threshold_pp)
+    monthly = compute_direction_label(
+        monthly,
+        method=direction_method,
+        threshold_pp=direction_threshold_pp,
+        zscore_window=zscore_window,
+        zscore_threshold=zscore_threshold,
+    )
     monthly = compute_lag_and_rolling_features(monthly)
     monthly = compute_fda_derived_features(monthly, _competitor_approval_dates(engine))
 
@@ -308,14 +362,23 @@ def refresh_gold_segment_adoption(engine: Engine) -> int:
 
 
 def build_gold(
-    engine: Engine, *, direction_threshold_pp: float = DEFAULT_DIRECTION_THRESHOLD_PP
+    engine: Engine,
+    *,
+    direction_method: str = DEFAULT_DIRECTION_METHOD,
+    direction_threshold_pp: float = DEFAULT_DIRECTION_THRESHOLD_PP,
+    zscore_window: int = ZSCORE_TRAILING_WINDOW,
+    zscore_threshold: float = ZSCORE_THRESHOLD,
 ) -> dict:
     """Rebuilds both Gold tables from whatever is currently in the Silver tables.
     Order doesn't matter between the two - they're independent reads of Silver, unlike
     build_silver.py's dimension-then-fact ordering."""
     return {
         "gold_visit_share_monthly_rows": refresh_gold_visit_share_monthly(
-            engine, direction_threshold_pp
+            engine,
+            direction_method=direction_method,
+            direction_threshold_pp=direction_threshold_pp,
+            zscore_window=zscore_window,
+            zscore_threshold=zscore_threshold,
         ),
         "gold_segment_adoption_rows": refresh_gold_segment_adoption(engine),
     }

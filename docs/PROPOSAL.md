@@ -379,6 +379,8 @@ The following analytical maturity points are explicitly acknowledged before mode
 - **Treatment-category taxonomy**: Branded injectable / generic corticosteroid / NSAID groupings are not pre-labeled, and the raw Brand/Generic tag alone is actively misleading here: Kenalog and Depo-Medrol are tagged BRANDED GENERIC/BRAND, the same tags used for Zilretta, yet both have real generic equivalents elsewhere in the data (e.g., Amneal's, Teva's, and Northstar Rx's triamcinolone acetonide) and so belong in the generic-corticosteroid bucket, not as branded peers to Zilretta. The taxonomy is built from the Brand/Generic tag plus manual product-name review and cross-checking for generic equivalents, not the tag alone.
 - **Manufacturer-of-record changes mid-window**: Zilretta's manufacturer changed during the 6-year window (Flexion Therapeutics, later acquired by Pacira BioSciences), splitting its visits across two manufacturer labels in the raw data (11,235 + 123,898 = 135,133 combined). Grouping by (Manufacturer, Product) instead of Product name alone would understate its true share by roughly 8%; Product-name-only grouping is used throughout.
 - **Row-level totals exceed printed Grand Totals — explained, not an error**: the OA Brand/Generic reference file's row-level product total (5,561,131) is ~4.5% above its own printed Grand Total (5,323,282). `Patient Visits` is a distinct count at every level, so a visit involving two products appears in both product rows; rows therefore sum to *at least* the Grand Total, never exactly to it. The same overlap appears in the monthly pivot (product rows 5,544,840 vs. Grand Total 5,308,627) and in RA (1,287 vs. 1,283). This was previously listed as an open item for the instructor/IQVIA contact; inspecting both files shows it is a property of the measure. The consequence to carry forward: product-level visit shares are shares of *product-visits*, not unique visits (§18.1; `data_dictionary.md` §2.1, §4).
+- **Likely prescriber mis-coding: `PEDIATRICS` specialty treating elderly OA patients** (found in `notebooks/02_eda_cleaned_data.ipynb` §11): 95% of `PEDIATRICS`-tagged visits are for patients aged 20+, mostly 65–84 — and Zilretta use under this specialty appears from nothing (0 visits 2019–2023) to 83 visits in 2024 and 224 in Jan–Jul 2025, concentrated in women aged 65–84 at 24–54% share vs. ~2% overall. Pediatricians do not treat knee osteoarthritis in 75-year-olds; this is almost certainly one adult-care prescriber mis-tagged as Pediatrics in the source data, not a genuine pediatric-prescribing finding. Small in absolute volume (~300 Zilretta visits), but would distort any specialty-level adoption analysis (Objective 3) if not accounted for.
+- **Possible claims-processing disruption, Mar–Jul 2024** (found in `notebooks/02_eda_cleaned_data.ipynb` §10–11): office, hospital, generic-corticosteroid, and NSAID visit counts all drop together in this window (e.g., office visits fall from ~95–106K/month to ~76–84K/month) — a pattern that looks more like a data-supply interruption across unrelated categories than a real treatment shift, plausibly related to the Feb 2024 Change Healthcare outage, which disrupted US healthcare claims processing industry-wide for months. `visit_share` itself is less affected, since numerator and denominator dip together, but absolute 2024 volume figures should be treated with caution and confirmed with the data provider before being trusted at face value.
 - **RA data sparsity**: Only ~1,283 total visits over 6 years for M04 (RA). Confirmed as too sparse for monthly direction classification, and partly not RA-specific at all (§6.2). RA is included as an exploratory/monitoring parallel track, not a primary classification target.
 - **OA as primary model target**: All core classifier development focuses on OA (M15–M19) data, with RA analysis run in parallel for comparative intelligence.
 - **AI query-scope governance**: Claude only ever accesses the gold table (aggregate visit-share/prediction data) through scoped MCP tools (§5.6, §19.3), never raw IQVIA rows and never an open SQL-execution tool, so the model's access is bounded by tool design, not by prompting discipline alone.
@@ -641,7 +643,36 @@ The ±1.0pp threshold is a stated **default**, not a verified fact. It will be c
 | ±0.2pp | 7 | 7 | 57 | |
 | ±0.1pp | 18 | 20 | 33 | balanced |
 
-The default must change; the replacement value is **an open decision, not yet made**. It is a genuine trade-off: only a threshold near ±0.1pp yields balanced classes, but that is about half the series' own month-to-month standard deviation, so many labeled "moves" will be noise-level. A smaller threshold also raises the stakes on the significance-test caveat in §18.4, since with only ~48 backtest folds a rare Down class gives very few events to evaluate.
+The default must change. A fixed percentage-point threshold was the wrong shape of rule
+regardless of which value was picked: every candidate above forces the same trade-off
+between a degenerate class split and a threshold small enough to mostly label noise as
+a "move." A threshold scaled to how much the series *actually* moves avoids that
+trade-off entirely.
+
+**Decided: a volatility-scaled (z-score) threshold, not a fixed percentage point**
+(found and validated in `notebooks/02_eda_cleaned_data.ipynb` §12.4, §13.1). Each
+month's change is measured in standard deviations of *recent* month-over-month change,
+not in raw percentage points:
+
+```
+z(t) = change(t) / std(change(t-12..t-1))     # trailing 12-month std of past changes
+label(t) = Up if z(t) > 1, Down if z(t) < -1, else Flat
+```
+
+This is **leakage-safe** — the trailing std at month *t* uses only changes from months
+*t-12* through *t-1*, never the current or future month, so it's valid for real model
+training, not just descriptive EDA (a whole-period std was also checked and rejected
+for exactly this reason — it uses future data). The first 13 months of the series have
+no full trailing window yet and are left unlabeled (`NULL`), not guessed.
+
+**Checked on the real 72-month series**: the ±1.0pp rule labels all 71 changes Flat (0
+Up, 0 Down). The z-score rule labels 59 months (the first 13 lack enough trailing
+history) as **7 Up, 43 Flat, 9 Down** — a genuinely usable, non-degenerate class split,
+without resorting to a fixed threshold small enough to mostly capture noise. This
+replaces `direction_label`'s definition in `gold_visit_share_monthly` (§4.1
+`database_schema.md`) and `build_gold.py`'s `compute_direction_label`; the fixed-pp
+version remains available as a parameter for anyone who wants to reproduce the original
+degenerate finding, but is no longer the default.
 
 ### 18.3 Backtesting / Walk-Forward Validation Scheme
 
