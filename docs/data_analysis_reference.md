@@ -206,7 +206,7 @@ The "NSAID" leg of the three-way visit-share denominator (`PROPOSAL.md` §18.1).
 | Field | Source | Type | Values / Range |
 |---|---|---|---|
 | Month | Row hierarchy (raw pivot) | Date (monthly) | 72 values: Aug 2019–Jul 2025 |
-| Manufacturer | Row hierarchy (raw pivot) | Categorical | ~169 distinct values; needs name-standardization |
+| Manufacturer | Row hierarchy (raw pivot) | Categorical | ~169 distinct values; display-only, never used for grouping (§2) |
 | Product | Row hierarchy (raw pivot) | Categorical | ~145 distinct products (OA); 15 (RA) |
 | Brand/Generic tag | Lookup file | Categorical | `BRAND`, `GENERIC`, `BRANDED GENERIC`, `OTHER` |
 | Specialty | Column header (raw pivot) | Categorical | 50 values |
@@ -229,7 +229,7 @@ Ranked for predicting next month's Up/Down/Flat direction of branded-injectable 
 | `[RAW FIELD]` Place of Service | Medium | Usable as monthly market-level context; useful for flagging anomalies (e.g., the April 2020 COVID-driven Office→Telehealth shift). |
 | `[RAW FIELD]` Specialty | Medium | Main value is as the input to the engineered "specialty-mix shift" feature; also the key field for the Objective 3 stretch goal. |
 | `[RAW FIELD]` Age band and Gender | Low | 30 age×gender combinations against only 72 months of data mostly produces noise for the core monthly classifier; more useful for Objective 3. |
-| `[RAW FIELD]` Manufacturer | Low / use with caution | Given the Zilretta manufacturer-of-record split, clean or ignore in favor of Product name for any grouping. |
+| `[RAW FIELD]` Manufacturer | Not used | Given the Zilretta manufacturer-of-record split (§2), decided as display-only: never standardized, never used for any grouping — Product name is used instead everywhere. |
 
 **Engineered features (none exist in the raw files today):**
 
