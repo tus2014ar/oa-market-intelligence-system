@@ -174,16 +174,19 @@ def compute_direction_label(
 def compute_lag_and_rolling_features(monthly: pd.DataFrame) -> pd.DataFrame:
     """Adds the lag-1/2/3 and 3/6-month rolling-average engineered features
     (data_analysis_reference.md §4.1), the single highest-priority predictors for the
-    core classifier. Rolling windows include the current month (pandas' own
-    `.rolling(n).mean()` convention) - the first n-1 months of each window are NaN
-    (-> NULL on write), not backfilled, since there's no real data to average yet."""
+    core classifier. Rolling windows END AT THE PREVIOUS MONTH (`share.shift(1)` first),
+    so a month's average never includes its own `visit_share` - the value the classifier
+    is predicting. The original `share.rolling(n).mean()` included it, which made
+    `visit_share_roll_3mo` correlate 0.95 with the target by construction
+    (notebooks/02_eda_cleaned_data.ipynb §9). The first n months of each window are NaN
+    (-> NULL on write), not backfilled, since there is no prior data to average yet."""
     monthly = monthly.sort_values("month_id").reset_index(drop=True)
     share = monthly["visit_share"]
     monthly["visit_share_lag_1"] = share.shift(1)
     monthly["visit_share_lag_2"] = share.shift(2)
     monthly["visit_share_lag_3"] = share.shift(3)
-    monthly["visit_share_roll_3mo"] = share.rolling(window=3).mean()
-    monthly["visit_share_roll_6mo"] = share.rolling(window=6).mean()
+    monthly["visit_share_roll_3mo"] = share.shift(1).rolling(window=3).mean()
+    monthly["visit_share_roll_6mo"] = share.shift(1).rolling(window=6).mean()
     return monthly
 
 
