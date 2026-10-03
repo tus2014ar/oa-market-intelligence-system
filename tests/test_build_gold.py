@@ -173,14 +173,29 @@ def test_lag_features_shift_by_correct_amount():
     assert pd.isna(result.loc[0, "visit_share_lag_1"])
 
 
-def test_rolling_features_are_null_until_window_is_full():
-    result = compute_lag_and_rolling_features(_monthly([0.01, 0.02, 0.03, 0.04, 0.05, 0.06]))
-    assert pd.isna(result.loc[1, "visit_share_roll_3mo"])
-    assert result.loc[2, "visit_share_roll_3mo"] == pytest.approx((0.01 + 0.02 + 0.03) / 3)
-    assert pd.isna(result.loc[4, "visit_share_roll_6mo"])
-    assert result.loc[5, "visit_share_roll_6mo"] == pytest.approx(
-        sum([0.01, 0.02, 0.03, 0.04, 0.05, 0.06]) / 6
-    )
+def test_rolling_features_use_only_prior_months():
+    shares = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08]
+    result = compute_lag_and_rolling_features(_monthly(shares))
+    # The window ends at the previous month: month 3's 3-month average is months 0-2,
+    # and month 6's 6-month average is months 0-5 - never the month itself.
+    assert result.loc[3, "visit_share_roll_3mo"] == pytest.approx((0.01 + 0.02 + 0.03) / 3)
+    assert result.loc[6, "visit_share_roll_6mo"] == pytest.approx(sum(shares[:6]) / 6)
+    assert result.loc[7, "visit_share_roll_3mo"] == pytest.approx((0.05 + 0.06 + 0.07) / 3)
+
+
+def test_rolling_features_are_null_until_a_full_prior_window_exists():
+    result = compute_lag_and_rolling_features(_monthly([0.01 * k for k in range(1, 9)]))
+    assert result["visit_share_roll_3mo"].isna().tolist() == [True] * 3 + [False] * 5
+    assert result["visit_share_roll_6mo"].isna().tolist() == [True] * 6 + [False] * 2
+
+
+def test_rolling_features_do_not_depend_on_the_current_months_share():
+    base = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08]
+    changed = base[:-1] + [0.99]  # perturb only the final month
+    a = compute_lag_and_rolling_features(_monthly(base))
+    b = compute_lag_and_rolling_features(_monthly(changed))
+    for col in ("visit_share_roll_3mo", "visit_share_roll_6mo"):
+        assert a.loc[7, col] == pytest.approx(b.loc[7, col])
 
 
 # ---------- compute_fda_derived_features ----------
@@ -426,6 +441,15 @@ def test_build_gold_end_to_end_against_real_data(real_silver_engine):
     assert counts.get("Down", 0) == 9
     assert counts.get("Flat", 0) == 43
     assert monthly["direction_label"].isna().sum() == 13
+
+    # Rolling averages are leak-safe: each equals the mean of the PRIOR n months, so the
+    # first n are null (notebooks/02_eda_cleaned_data.ipynb §9 found the original
+    # current-month-inclusive version correlated 0.95 with the target by construction).
+    indexed = monthly.sort_values("month_id").reset_index(drop=True)
+    for n, col in ((3, "visit_share_roll_3mo"), (6, "visit_share_roll_6mo")):
+        expected = indexed["visit_share"].shift(1).rolling(n).mean()
+        assert indexed[col].isna().sum() == n
+        assert (indexed[col] - expected).abs().max() < 1e-12
 
     # April 2020 COVID Office->Telehealth shock, confirmed in Step 3.
     april_2020 = monthly.set_index("month_id").loc[202004]

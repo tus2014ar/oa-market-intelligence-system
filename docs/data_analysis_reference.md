@@ -236,7 +236,7 @@ Ranked for predicting next month's Up/Down/Flat direction of branded-injectable 
 | Feature | Priority | Built from |
 |---|---|---|
 | Lagged visit share (t-1, t-2, t-3) | **High** — single strongest expected predictor | The computed monthly visit-share series, shifted back 1–3 months. Highly autocorrelated, which is exactly why the persistence baseline is a genuinely hard bar. |
-| Rolling averages / momentum (3-mo, 6-mo) | High | Rolling-window average or slope on the visit-share series — captures whether a gain is accelerating or decelerating. |
+| Rolling averages / momentum (3-mo, 6-mo) | High | Rolling-window average or slope on the visit-share series, with the window ending at the previous month so it never includes the month being predicted — captures whether a gain is accelerating or decelerating. |
 | Competitive context | High | Product + Brand/Generic tag (count of no-generic-equivalent branded products active that month) **plus** FDA approval dates from openFDA — a signal the visit data structurally cannot contain alone (§6 below). |
 | Seasonality indicators (month-of-year/quarter) | Medium | Built from Month. The Place-of-Service sheet already shows a concrete shock: Office visits fell from ~90,000/month to 39,487 in April 2020 while Telehealth jumped from near-zero to 1,016 — handle explicitly as a flagged outlier, not smoothed away generically. |
 | Specialty-mix shift | Medium | Specialty + Patient Visits — a change in which specialties are prescribing can lead the aggregate share number. |
