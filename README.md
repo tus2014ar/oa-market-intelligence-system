@@ -16,7 +16,7 @@ A newer, extended-release branded injectable (Zilretta) is trying to take visit 
 - **Serves** a public, multi-user website (open signup, access-code gated) with a dashboard and a Q&A / on-demand visualization layer: Claude connected through the Model Context Protocol (MCP) to scoped, read-only tools over the Gold tables, plus a RAG tool for methodology and regulatory questions — never raw SQL
 - Runs on a **right-sized MLOps pipeline**: DVC for data and model-registry persistence, MLflow + Optuna for experimentation, SHAP for explainability, Evidently AI for drift monitoring, GitHub Actions for CI and the monthly scheduled run — deliberately *without* Kubernetes, Kafka, Databricks, or live A/B testing, since this is a monthly batch system, not a real-time service
 
-RA is an exploratory, comparison-only track: with ~1,283 visits over 6 years (and some miscoded oncology products), it is too sparse for a classifier.
+RA is an exploratory, comparison-only track: with ~1,250 visits over 6 years in the warehouse (1,283 on the reference file's different counting basis) and some miscoded oncology products, it is too sparse for a classifier.
 
 ## Architecture in one picture
 
@@ -65,7 +65,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 - **Silver builder**: upserts the 4 dimension tables (stable surrogate keys) and full-refresh-overwrites the 2 fact tables
 - **Gold builder**: computes `visit_share`, the Up/Down/Flat direction label, lag/rolling features, and the FDA-derived competitive-context features
 - **Pipeline orchestration**: `pipeline.py` ties every stage together behind one CLI command, with a scheduled + manually-triggerable GitHub Actions workflow
-- 152 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
+- 157 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
 
 **Phase 3's EDA sub-phase is complete** — three notebooks, each executed end to end against the real warehouse with zero errors:
 
@@ -73,7 +73,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 - [`notebooks/02_eda_cleaned_data.ipynb`](notebooks/02_eda_cleaned_data.ipynb) — a full audit of the Gold tables, surfacing two real findings not documented anywhere else (a likely mis-coded `PEDIATRICS` prescriber, and a Mar–Jul 2024 volume dip plausibly tied to the Change Healthcare outage — both now in `PROPOSAL.md` §10) — and **closing the long-open Flat-threshold decision** (§18.2): the originally-proposed ±1.0pp fixed threshold was confirmed degenerate (0 Up, 0 Down on all 72 real months); it's replaced with a leakage-safe threshold based on each month's change measured in standard deviations of the trailing 12 months' change, now `build_gold.py`'s default (7 Up / 43 Flat / 9 Down on the real data)
 - [`notebooks/03_eda_ra_data.ipynb`](notebooks/03_eda_ra_data.ipynb) — the first dedicated look at RA, which had ridden along in the warehouse since Phase 2 without ever being analyzed on its own. Confirms RA still can't support a classifier (OA's smallest category alone sees ~110x RA's entire monthly volume), but finds RA volume is **growing, not flat** (~5.4 → ~29.4 visits/month, 2019–2020 vs. 2024–2025) and delivers the originator-vs-biosimilar decomposition `PROPOSAL.md` §6.2 had only ever planned: the infliximab family's originator share fell from 100% to 11% over the window — a real, demonstrable biosimilar switch, not a hypothetical
 
-**Remaining in Phase 3** — the only work left before Phase 4: promote the engineered features already prototyped in `02_eda_cleaned_data.ipynb` (specialty-mix shift via `specialty_prior_share` target encoding, FDA event flags) from notebook code into `build_gold.py`, then build the classifier itself — a persistence baseline, logistic regression, random forest, and gradient boosting, backtested with an expanding walk-forward scheme and compared via McNemar's test, with MLflow tracking and SHAP explainability. Later phases: knowledge graph (stretch), monitoring and promotion, MCP/RAG serving layer, website, and deployment.
+**Remaining in Phase 3** — the only work left before Phase 4: promote the engineered features already prototyped in `02_eda_cleaned_data.ipynb` (specialty-mix shift via `specialty_prior_share` target encoding, FDA event flags) from notebook code into `build_gold.py` (including rebuilding the rolling averages, which as built in the Gold table still include the current month, from prior months only), then build the classifier itself — a persistence baseline, logistic regression, random forest, and gradient boosting, backtested with an expanding walk-forward scheme and compared via McNemar's test, with MLflow tracking and SHAP explainability. Later phases: knowledge graph (stretch), monitoring and promotion, MCP/RAG serving layer, website, and deployment.
 
 Development is local-first: cloud infrastructure (the DVC remote, the hosted website) is stood up only once there is something ready to demo publicly. See [`docs/PROPOSAL.md`](docs/PROPOSAL.md) §8 for the course roadmap and §19.6 for the persistence model.
 

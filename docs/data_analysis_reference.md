@@ -257,7 +257,7 @@ Ties the proposal's stated model progression (§9) to what the data itself actua
 
 **Honest caveat on dataset size**: only 72 months of data total. The backtesting design (§18.3) uses the first 24 months for initial training, leaving ~48 monthly predictions to evaluate on — a small evaluation set for a 3-class classifier. Differences between candidate models may end up small, and statistical significance (McNemar's test, §18.4) may be hard to establish. That's an expected outcome, not a flaw in the plan — McNemar's test was chosen specifically to handle this rather than relying on a raw accuracy comparison. **Practical implication**: a heavily complex model (deep learning, large ensembles) is unlikely to help here and more likely to overfit; a well-regularized random forest or gradient boosting model with a small number of carefully engineered features is the more defensible choice.
 
-**RA track**: should not receive its own Up/Down/Flat classifier — confirmed directly by the raw file (only ~1,283 visits, zero generic-tagged products), not just assumed. RA remains descriptive/exploratory: trend charts, branded-vs-biosimilar share decomposition, side-by-side comparison against OA (§6.2 of `PROPOSAL.md`).
+**RA track**: should not receive its own Up/Down/Flat classifier — confirmed directly by the raw file (only ~1,250 visits in the product-linked pivot, 1,283 on the reference file's basis; zero generic-tagged products), not just assumed. RA remains descriptive/exploratory: trend charts, branded-vs-biosimilar share decomposition, side-by-side comparison against OA (§6.2 of `PROPOSAL.md`).
 
 ### 5.1 Time-Series Decomposition & a Classical Forecasting Baseline (validation check, not a competing track)
 

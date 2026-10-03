@@ -198,6 +198,9 @@ CREATE TABLE IF NOT EXISTS gold_visit_share_monthly (
     visit_share_lag_3                   REAL,
     visit_share_roll_3mo                REAL,
     visit_share_roll_6mo                REAL,
+    -- WARNING: as currently built, both rolling windows INCLUDE the current month (pandas .rolling(n).mean()),
+    -- so they contain the value a classifier would predict. Do not use as model features until rebuilt from
+    -- visit_share.shift(1) (notebooks/02_eda_cleaned_data.ipynb §9 and §13).
 
     -- FDA-derived features, Method B (PROPOSAL.md §6.3 / data_analysis_reference.md §6.3)
     months_since_launch                 INTEGER,
