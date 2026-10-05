@@ -2,19 +2,30 @@
 
 A monthly-refreshable, production-oriented classification system that tracks and predicts visit-share direction between branded specialty injectables and generic pain therapies in Osteoarthritis (OA) and Rheumatoid Arthritis (RA), built on real IQVIA National Medical and Treatment Audit (NMTA) patient-visit data.
 
+**Status:** data pipeline and exploratory analysis complete; the classifier is next (see [Status](#status)).
+
 Built as a capstone project for **DAAN 888 — Design and Implementation of Analytics System**, Penn State University, School of Graduate Professional Studies (Fall 2026).
+
+**Team:** Tushar and Saakshaat Saini
 
 ## The problem
 
 A newer, extended-release branded injectable (Zilretta) is trying to take visit share from decades-old generic corticosteroids and NSAIDs in a high-volume OA market (7.19M+ visits across 6 years in our extract). The system is built around a single stakeholder — an **OA/RA Injectable Brand Manager** — who needs an early signal on competitive share movement before it shows up in a standard quarterly business review.
 
-## What this system does
+## What this system does, and where each piece stands
 
-- **Classifies** next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against a persistence baseline and a classical time-series (SARIMA/ETS) validation check
-- **Segments** provider specialties/demographics by adoption level (High vs. Low) — stretch objective
-- **Monitors** its own predictions against actual results monthly, and flags meaningful misses
-- **Serves** a public, multi-user website (open signup, access-code gated) with a dashboard and a Q&A / on-demand visualization layer: Claude connected through the Model Context Protocol (MCP) to scoped, read-only tools over the Gold tables, plus a RAG tool for methodology and regulatory questions — never raw SQL
-- Runs on a **right-sized MLOps pipeline**: DVC for data and model-registry persistence, MLflow + Optuna for experimentation, SHAP for explainability, Evidently AI for drift monitoring, GitHub Actions for CI and the monthly scheduled run — deliberately *without* Kubernetes, Kafka, Databricks, or live A/B testing, since this is a monthly batch system, not a real-time service
+Each item is tagged **[Built]** (implemented and tested in this repo), **[In progress]**, or **[Planned]** (designed in [`docs/PROPOSAL.md`](docs/PROPOSAL.md), not yet implemented).
+
+- **[Built]** Ingests the four IQVIA NMTA Excel extracts, validates them with a Pandera gate, and builds a Bronze → Silver → Gold SQLite warehouse with a single CLI command
+- **[Built]** Computes the monthly target in the Gold table — Zilretta's visit share and its Up / Down / Flat direction label (volatility-scaled threshold) — plus lag and rolling-average features
+- **[Built]** Runs lint and tests on every push and pull request (GitHub Actions, `ruff` + `pytest`), and a scheduled, manually triggerable monthly pipeline workflow that uploads the rebuilt warehouse as a build artifact
+- **[Built]** Three executed EDA notebooks (raw data, the cleaned warehouse, and RA) whose findings shaped the cleaning rules and the label definition
+- **[Planned]** Classifies next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against a persistence baseline and a classical time-series (SARIMA/ETS) validation check. This is the next step: the target label is already built and candidate features are prototyped in a notebook, but no model has been trained yet
+- **[Planned]** Segments provider specialties/demographics by adoption level (High vs. Low) — stretch objective. The segment-level Gold table it will read is built; the adoption labels are not
+- **[Planned]** Monitors its own predictions against actual results monthly, and flags meaningful misses (the Gold table has empty placeholder columns for predictions and actuals)
+- **[Planned]** Serves a public, multi-user website (open signup, access-code gated) with a dashboard and a Q&A / on-demand visualization layer: Claude connected through the Model Context Protocol (MCP) to scoped, read-only tools over the Gold tables, plus a RAG tool for methodology and regulatory questions — never raw SQL
+- **[Planned]** Adds a knowledge graph of products, manufacturers and FDA events for competitive context — stretch objective
+- **[Planned]** Designed to run on a right-sized MLOps stack: DVC for data and model-registry persistence (`.dvc/` is initialized but no remote is configured), MLflow + Optuna for experimentation, SHAP for explainability, and Evidently AI for drift monitoring — none of which is installed yet. GitHub Actions for CI and the monthly run is already in place (see above). Deliberately *without* Kubernetes, Kafka, Databricks, or live A/B testing, since this is a monthly batch system, not a real-time service
 
 RA is an exploratory, comparison-only track: with ~1,250 visits over 6 years in the warehouse (1,283 on the reference file's different counting basis) and some miscoded oncology products, it is too sparse for a classifier.
 
@@ -40,7 +51,7 @@ A scheduled GitHub Actions workflow ([`.github/workflows/monthly_pipeline.yml`](
 
 ## Data
 
-The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this capstone under Penn State's data license. The four Excel extracts are committed directly in [`data/raw/`](data/raw/). A maintained product taxonomy mapping (160 products: 145 OA + 15 RA) lives in [`data/reference/product_taxonomy.csv`](data/reference/product_taxonomy.csv) — a product the pipeline hasn't seen before is flagged for human review rather than guessed at.
+The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this capstone. The four Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A maintained product taxonomy mapping (160 products: 145 OA + 15 RA) lives in [`data/reference/product_taxonomy.csv`](data/reference/product_taxonomy.csv) — a product the pipeline hasn't seen before is flagged for human review rather than guessed at.
 
 FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 

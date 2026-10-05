@@ -4,13 +4,13 @@
 **Program**: School of Graduate Professional Studies, Penn State University
 **Term**: Fall 2026
 **Team**: Tushar, Saakshaat Saini
-**Revision**: Project Proposal, 6 September 2026
+**Revision**: Project Proposal, 4 October 2026
 
 ---
 
 ## Executive Summary
 
-The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.32M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a monthly-refreshed gold table, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, and a self-monitoring production loop that retrains monthly. The final deliverable is a public, multi-user website (open signup, access-code gated) where any brand manager can view model predictions and analytics, and ask natural-language questions or request on-demand visualizations against the gold table through Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built database tools (§5, §19) — never raw SQL access. It is deliberately right-sized: real MLOps tooling (MLflow, DVC, Docker, Evidently AI, GitHub Actions scheduled jobs) chosen to fit a monthly-batch, two-person-team system rather than enterprise infrastructure the problem doesn't need.
+The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.32M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a monthly-refreshed gold table, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, and a self-monitoring production loop that retrains monthly. The final deliverable is a public, multi-user website (open signup, access-code gated) where any brand manager can view model predictions and analytics, and ask natural-language questions or request on-demand visualizations against the gold table through Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built database tools (§5, §19) — never raw SQL access. It is deliberately right-sized: real MLOps tooling (MLflow, DVC, Docker, Evidently AI, GitHub Actions scheduled jobs) chosen to fit a monthly-batch, two-person-team system rather than enterprise infrastructure the problem doesn't need. **Status as of 4 October 2026:** Phases 1–2 (data foundation and the ingestion → validation → Silver → Gold pipeline) and the exploratory data analysis are complete; the classifier is the next step, and the monitoring loop, website and AI query layer are designed but not yet built (see the README's Status section).
 
 ---
 
@@ -54,7 +54,7 @@ Every objective is tied directly to one primary stakeholder — the OA & RA Inje
 
 ### 3.1 Primary Dataset — IQVIA NMTA Patient Visit Extract
 
-The primary dataset is an IQVIA National Medical and Treatment Audit (NMTA) patient visit extract covering August 2019 through July 2025 (6 complete years). This is a commercial dataset provided for this capstone project under Penn State's data license; the raw extracts are **committed directly in this repository** (`data/raw/`) rather than gitignored, since that license covers this use.
+The primary dataset is an IQVIA National Medical and Treatment Audit (NMTA) patient visit extract covering August 2019 through July 2025 (6 complete years). This is a commercial dataset provided for this capstone project; the raw extracts are **committed directly in this repository** (`data/raw/`) rather than gitignored, with the course instructor's approval under Penn State's data license.
 
 | Field | Description |
 |-------|-------------|
@@ -128,7 +128,7 @@ The deciding factors, in order of how the team weighted them:
 
 - **Reliability and answer quality at multi-user scale**: the deliverable is a public website that "any person" with an access code can query (§17.6), not a single-analyst tool. Claude's reasoning and tool-use reliability materially reduce the risk of a wrong or malformed answer reaching a brand manager, compared to a quantized 7–8B local model.
 - **Engineering effort matched to a two-person team**: standing up reliable local-LLM infrastructure (quantized model serving, tool-calling reliability, uptime) is real, ongoing engineering work; API-based tool-calling is not.
-- **Data governance is deliberately not the deciding factor here**: the NMTA dataset is licensed to Penn State for this project, and the team has taken ownership of the licensing question outside this document. Given that, the local-LLM's primary traditional advantage (data never leaves the premises) is not the binding constraint for this system, so it doesn't outweigh Claude+MCP's advantages on reliability and scale. This is a considered trade-off, not an oversight — see §5.5 for the alternative that was rejected and why.
+- **Data governance is deliberately not the deciding factor here**: the NMTA dataset is licensed to Penn State for this project, and only aggregate Gold-table data (never raw IQVIA rows) is sent to the Claude API. Given that, the local-LLM's primary traditional advantage (data never leaves the premises) is not the binding constraint for this system, so it doesn't outweigh Claude+MCP's advantages on reliability and scale. This is a considered trade-off, not an oversight — see §5.5 for the alternative that was rejected and why.
 - **Cost is a real, actively-managed risk, not an ignored one**: Claude is billed per request, unlike a self-hosted model's fixed compute cost. This is addressed directly through rate limiting and per-user query caps (§19.4), not left as an open risk.
 
 ### 5.2 Use Case 1 — Natural Language Query Interface
@@ -151,7 +151,7 @@ After each monthly model run, Claude drafts a one-page narrative summary of the 
 
 ### 5.5 Considered and Rejected: Locally-Hosted LLM
 
-A locally deployed open-source model (LLaMA 3 8B or Mistral 7B, quantized 4-bit via llama.cpp, served through Ollama) was the original design in an earlier draft of this proposal, specifically for its data-governance property: proprietary data never leaves the local environment. That property is real and would matter if data confidentiality were the project's binding constraint. It was set aside in favor of Claude+MCP because, once licensing was no longer the deciding factor, local deployment's remaining costs (weaker reasoning and tool-use reliability at multi-user scale, real infrastructure/uptime engineering burden for a two-person team) outweighed its remaining benefit (cost predictability at scale, which matters less at this project's expected query volume than reliability does). This trade-off is documented here deliberately rather than silently dropped, since it was a real design decision with a real alternative, not an obvious default.
+A locally deployed open-source model (LLaMA 3 8B or Mistral 7B, quantized 4-bit via llama.cpp, served through Ollama) was the original design in an earlier draft of this proposal, specifically for its data-governance property: proprietary data never leaves the local environment. That property is real and would matter if data confidentiality were the project's binding constraint. It was set aside in favor of Claude+MCP because, once data governance was no longer the deciding factor, local deployment's remaining costs (weaker reasoning and tool-use reliability at multi-user scale, real infrastructure/uptime engineering burden for a two-person team) outweighed its remaining benefit (cost predictability at scale, which matters less at this project's expected query volume than reliability does). This trade-off is documented here deliberately rather than silently dropped, since it was a real design decision with a real alternative, not an obvious default.
 
 ### 5.6 Implementation Approach
 
@@ -399,7 +399,7 @@ The repository is organized so each folder maps directly to a stage in the Techn
 oa-market-intelligence-system/
 ├── .github/workflows/            # CI (lint + test on every push) + scheduled monthly pipeline run (§19.1)
 ├── data/
-│   ├── raw/                     # git-tracked — real NMTA extracts (§3.1: covered by Penn State's data license)
+│   ├── raw/                     # git-tracked — real NMTA extracts (§3.1: committed with the course instructor's approval under Penn State's data license)
 │   ├── interim/                    # gitignored — reshape outputs
 │   ├── reference/                  # git-tracked — product_taxonomy.csv, the maintained taxonomy mapping (§18.10)
 │   └── processed/                  # DVC-tracked — model-ready tables, incl. the gold table (§19.2)
@@ -588,14 +588,14 @@ The monthly retrain and pipeline run on standard team hardware and free GitHub A
 
 ### 17.8 Cloud Infrastructure Footprint
 
-The system's design keeps the raw IQVIA extract itself local and never uploaded anywhere (§3.1), but the serving layer is intentionally cloud-based, since the deliverable is a public website (§5, §19):
+The raw IQVIA extracts are committed to this repository (§3.1) but are not pushed to the DVC remote, and the serving layer is intentionally cloud-based, since the deliverable is a public website (§5, §19):
 
-- **DVC remote storage (S3)**: only processed, aggregate, de-identified tables (§18.7) are pushed to a DVC-managed S3 remote for versioned, reproducible access across the team. The raw IQVIA extract stays `.gitignore`d and local, and is never uploaded anywhere, cloud or otherwise.
+- **DVC remote storage (S3)** (planned; `.dvc/` is initialized but no remote is configured yet): only processed, aggregate, de-identified tables (§18.7) are to be pushed to a DVC-managed S3 remote for versioned, reproducible access across the team. The raw IQVIA extracts are committed in this repository (§3.1) and are not pushed to the remote.
 - **CI/CD and pipeline scheduling (GitHub Actions)**: linting and unit tests (§9) run on every push, and the monthly gold-table refresh pipeline (§19.1) runs on a GitHub Actions scheduled workflow — both on GitHub-hosted, cloud-based runners.
-- **AI query layer (Claude API)**: the gold table's aggregate visit-share and prediction data (never raw IQVIA rows, §10) is sent to the Claude API when a user asks a question or requests a visualization (§5, §19.3). This is a genuine, deliberate exception to "nothing sensitive leaves the environment," made explicitly because the underlying data is licensed for this use and the team has taken ownership of that licensing question; it is documented here rather than left implicit.
+- **AI query layer (Claude API)**: the gold table's aggregate visit-share and prediction data (never raw IQVIA rows, §10) is sent to the Claude API when a user asks a question or requests a visualization (§5, §19.3). This is a deliberate exception to "nothing sensitive leaves the environment": aggregate Gold-table data, not raw IQVIA rows, goes to a third-party API. It is documented here rather than left implicit.
 - **Website hosting**: the dashboard and Q&A interface (§6.3, §19.4) are deployed to a small cloud instance (e.g., a minimal AWS/GCP/Render instance) so any access-code-holding brand manager can reach it without local infrastructure.
 
-This is a deliberate split: the raw extract never leaves local storage, while the aggregate gold table is treated as safe to serve through cloud infrastructure and the Claude API, consistent with the licensing position stated above.
+This is a deliberate split: the raw extracts are not pushed to the DVC remote, while the aggregate gold table is designed to be served through cloud infrastructure and the Claude API.
 
 ---
 
