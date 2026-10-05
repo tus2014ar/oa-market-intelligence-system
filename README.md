@@ -51,7 +51,7 @@ A scheduled GitHub Actions workflow ([`.github/workflows/monthly_pipeline.yml`](
 
 ## Data
 
-The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this capstone. The four Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A maintained product taxonomy mapping (160 products: 145 OA + 15 RA) lives in [`data/reference/product_taxonomy.csv`](data/reference/product_taxonomy.csv) — a product the pipeline hasn't seen before is flagged for human review rather than guessed at.
+The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this capstone. The four Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. That approval also covers sending aggregate Gold-table data (never raw rows) to the Claude API for the planned Q&A layer. A maintained product taxonomy mapping (160 products: 145 OA + 15 RA) lives in [`data/reference/product_taxonomy.csv`](data/reference/product_taxonomy.csv) — a product the pipeline hasn't seen before is flagged for human review rather than guessed at.
 
 FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 
