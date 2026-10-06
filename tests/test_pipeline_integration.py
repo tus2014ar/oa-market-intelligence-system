@@ -41,6 +41,8 @@ from oa_market_intelligence.ingestion.validation import (
     validate_place_of_service,
     validate_reference_table,
 )
+from oa_market_intelligence.modeling.baselines import MajorityClassBaseline, PersistenceBaseline
+from oa_market_intelligence.modeling.evaluation import compare_models, score_table
 from oa_market_intelligence.warehouse.build_gold import build_gold
 from oa_market_intelligence.warehouse.build_silver import build_silver
 from oa_market_intelligence.warehouse.schema import create_schema
@@ -214,3 +216,27 @@ def test_feature_matrices_on_real_data_match_the_verified_eda_figures(gold_from_
     assert group_rare_specialties(seg["specialty_name"]).nunique() == 29  # 28 common + RARE
     corr = np.corrcoef(features["specialty_prior_share"], features["segment_visit_share"])[0, 1]
     assert corr == pytest.approx(0.61, abs=0.005)
+
+
+def test_baselines_on_real_data_set_the_bar_a_model_must_clear(gold_from_validated_pipeline):
+    """The walk-forward baselines on the real 59 model-ready months (24-month minimum
+    window, so 35 test months: 25 Flat, 6 Down, 4 Up). Always-Flat reaches 71% accuracy
+    yet never catches a Down month; persistence catches 1 of 6 Down months, about the
+    6/35 base rate, i.e. no skill. These are the numbers any trained model must beat."""
+    engine = gold_from_validated_pipeline
+    ready = model_ready_monthly(compute_monthly_features(load_monthly_gold(engine)))
+    predictions = compare_models(
+        ready,
+        {"always-majority": MajorityClassBaseline, "persistence": PersistenceBaseline},
+        min_train=24,
+    )
+
+    assert len(predictions) == 35
+    assert predictions["y_true"].value_counts().to_dict() == {"Flat": 25, "Down": 6, "Up": 4}
+
+    scores = score_table(predictions)
+    assert scores.loc["always-majority", "accuracy"] == pytest.approx(25 / 35)
+    assert scores.loc["always-majority", "recall_down"] == 0.0
+    assert scores.loc["persistence", "accuracy"] == pytest.approx(22 / 35)
+    assert scores.loc["persistence", "recall_down"] == pytest.approx(1 / 6)
+    assert scores.loc["persistence", "recall_up"] == pytest.approx(1 / 4)
