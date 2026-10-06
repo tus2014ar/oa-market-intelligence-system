@@ -2,7 +2,7 @@
 
 A monthly-refreshable, production-oriented classification system that tracks and predicts visit-share direction between branded specialty injectables and generic pain therapies in Osteoarthritis (OA) and Rheumatoid Arthritis (RA), built on real IQVIA National Medical and Treatment Audit (NMTA) patient-visit data.
 
-**Status:** data pipeline and exploratory analysis complete; the classifier is next (see [Status](#status)).
+**Status:** data pipeline, exploratory analysis and feature engineering complete; the classifier is next (see [Status](#status)).
 
 Built as a capstone project for **DAAN 888 — Design and Implementation of Analytics System**, Penn State University, School of Graduate Professional Studies (Fall 2026).
 
@@ -20,7 +20,8 @@ Each item is tagged **[Built]** (implemented and tested in this repo), **[In pro
 - **[Built]** Computes the monthly target in the Gold table — Zilretta's visit share and its Up / Down / Flat direction label (volatility-scaled threshold) — plus lag and rolling-average features
 - **[Built]** Runs lint and tests on every push and pull request (GitHub Actions, `ruff` + `pytest`), and a scheduled, manually triggerable monthly pipeline workflow that uploads the rebuilt warehouse as a build artifact
 - **[Built]** Three executed EDA notebooks (raw data, the cleaned warehouse, and RA) whose findings shaped the cleaning rules and the label definition
-- **[Planned]** Classifies next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against a persistence baseline and a classical time-series (SARIMA/ETS) validation check. This is the next step: the target label is already built and candidate features are prototyped in a notebook, but no model has been trained yet
+- **[Built]** Leak-safe, model-ready feature matrices computed from the Gold tables (a monthly matrix for the classifier and a segment matrix with a specialty-level target encoding), each guarded by a test that rewrites every later month and requires the features not to move
+- **[Planned]** Classifies next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against a persistence baseline and a classical time-series (SARIMA/ETS) validation check. This is the next step: the target label and the feature matrices are built, but no model has been trained yet
 - **[Planned]** Segments provider specialties/demographics by adoption level (High vs. Low) — stretch objective. The segment-level Gold table it will read is built; the adoption labels are not
 - **[Planned]** Monitors its own predictions against actual results monthly, and flags meaningful misses (the Gold table has empty placeholder columns for predictions and actuals)
 - **[Planned]** Serves a public, multi-user website (open signup, access-code gated) with a dashboard and a Q&A / on-demand visualization layer: Claude connected through the Model Context Protocol (MCP) to scoped, read-only tools over the Gold tables, plus a RAG tool for methodology and regulatory questions — never raw SQL
@@ -39,7 +40,7 @@ Data moves through three layers, all stored in one SQLite file (`data/processed/
 | **Silver** | Star schema: 4 dimension tables + 2 fact tables (Place-of-Service is a separate grain, so it gets its own fact table) |
 | **Gold** | 2 serving tables: `gold_visit_share_monthly` (core classifier, one row per month) and `gold_segment_adoption` (stretch objective, month × specialty × demographic) |
 
-Engineered features (lags, rolling averages, FDA-derived competitive-context features) are stored as columns in the Gold tables, alongside model predictions. Claude and the website read only from Gold. Each monthly run upserts the dimension tables (to keep surrogate keys stable) and full-refresh-overwrites the fact and Gold tables.
+Engineered features (lags, rolling averages, FDA-derived competitive-context features) are stored as columns in the Gold tables, alongside model predictions. The remaining model features (momentum, calendar, event and segment features) are computed on demand from Gold by `src/oa_market_intelligence/features/` and are not stored. Claude and the website read only from Gold. Each monthly run upserts the dimension tables (to keep surrogate keys stable) and full-refresh-overwrites the fact and Gold tables.
 
 This is now a real, running pipeline, not just a design: `src/oa_market_intelligence/pipeline.py` orchestrates ingest → validate → Silver build → Gold build end to end, and produces a verified `warehouse.db` with 72 months, 160 products, 149,141 product-visit rows, and 135,119 total branded-injectable visits — matching every figure documented in `PROPOSAL.md` §18.1. Run it yourself with:
 
@@ -64,6 +65,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 | [`docs/data_analysis_reference.md`](docs/data_analysis_reference.md) | Dataset audit, full product taxonomy, feature priorities, and the strategy for combining NMTA with openFDA |
 | [`docs/database_schema.md`](docs/database_schema.md) | SQLite DDL for the Silver and Gold tables, ER diagram, and rebuild rules |
 | [`docs/silver_gold_data_dictionary.md`](docs/silver_gold_data_dictionary.md) | What every Silver and Gold column means and where its value comes from |
+| [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model feature: its definition, the EDA finding behind it, and the leakage rule that governs it |
 
 ## Status
 
@@ -76,7 +78,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 - **Silver builder**: upserts the 4 dimension tables (stable surrogate keys) and full-refresh-overwrites the 2 fact tables
 - **Gold builder**: computes `visit_share`, the Up/Down/Flat direction label, lag/rolling features, and the FDA-derived competitive-context features
 - **Pipeline orchestration**: `pipeline.py` ties every stage together behind one CLI command, with a scheduled + manually-triggerable GitHub Actions workflow
-- 159 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
+- 177 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
 
 **Phase 3's EDA sub-phase is complete** — three notebooks, each executed end to end against the real warehouse with zero errors:
 
@@ -84,7 +86,9 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 - [`notebooks/02_eda_cleaned_data.ipynb`](notebooks/02_eda_cleaned_data.ipynb) — a full audit of the Gold tables, surfacing two real findings not documented anywhere else (a likely mis-coded `PEDIATRICS` prescriber, and a Mar–Jul 2024 volume dip plausibly tied to the Change Healthcare outage — both now in `PROPOSAL.md` §10) — and **closing the long-open Flat-threshold decision** (§18.2): the originally-proposed ±1.0pp fixed threshold was confirmed degenerate (0 Up, 0 Down on all 72 real months); it's replaced with a leakage-safe threshold based on each month's change measured in standard deviations of the trailing 12 months' change, now `build_gold.py`'s default (7 Up / 43 Flat / 9 Down on the real data)
 - [`notebooks/03_eda_ra_data.ipynb`](notebooks/03_eda_ra_data.ipynb) — the first dedicated look at RA, which had ridden along in the warehouse since Phase 2 without ever being analyzed on its own. Confirms RA still can't support a classifier (OA's smallest category alone sees ~110x RA's entire monthly volume), but finds RA volume is **growing, not flat** (~5.4 → ~29.4 visits/month, 2019–2020 vs. 2024–2025) and delivers the originator-vs-biosimilar decomposition `PROPOSAL.md` §6.2 had only ever planned: the infliximab family's originator share fell from 100% to 11% over the window — a real, demonstrable biosimilar switch, not a hypothetical
 
-**Remaining in Phase 3** — the only work left before Phase 4: promote the engineered features already prototyped in `02_eda_cleaned_data.ipynb` (specialty-mix shift via `specialty_prior_share` target encoding, FDA event flags) from notebook code into `build_gold.py`, then build the classifier itself — a persistence baseline, logistic regression, random forest, and gradient boosting, backtested with an expanding walk-forward scheme and compared via McNemar's test, with MLflow tracking and SHAP explainability. Later phases: knowledge graph (stretch), monitoring and promotion, MCP/RAG serving layer, website, and deployment.
+**Feature engineering is built** — [`src/oa_market_intelligence/features/`](src/oa_market_intelligence/features/) computes leak-safe model-ready matrices from the Gold tables, documented in [`docs/feature_dictionary.md`](docs/feature_dictionary.md): 59 monthly rows (7 Up / 43 Flat / 9 Down) with 22 features, and 8,563 modelling segments with a specialty-level target encoding. They reproduce the notebook prototype exactly on the real warehouse, and a generic test that rewrites every later month guards against look-ahead leakage.
+
+**Remaining in Phase 3** — the classifier itself: a persistence baseline, logistic regression, random forest, and gradient boosting, backtested with an expanding walk-forward scheme and compared via McNemar's test, with MLflow tracking and SHAP explainability. Later phases: knowledge graph (stretch), monitoring and promotion, MCP/RAG serving layer, website, and deployment.
 
 Development is local-first: cloud infrastructure (the DVC remote, the hosted website) is stood up only once there is something ready to demo publicly. See [`docs/PROPOSAL.md`](docs/PROPOSAL.md) §8 for the course roadmap and §19.6 for the persistence model.
 
