@@ -18,10 +18,21 @@ specific step's own test file.
 
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import pytest
 from sqlalchemy import create_engine, text
 
+from oa_market_intelligence.features.monthly import (
+    compute_monthly_features,
+    load_monthly_gold,
+    model_ready_monthly,
+)
+from oa_market_intelligence.features.segment import (
+    compute_segment_features,
+    group_rare_specialties,
+    load_segment_gold,
+)
 from oa_market_intelligence.ingestion.nmta_loader import parse_pivot_sheet
 from oa_market_intelligence.ingestion.place_of_service_loader import parse_place_of_service
 from oa_market_intelligence.ingestion.reference_loader import parse_reference_table
@@ -178,3 +189,28 @@ def test_full_pipeline_is_idempotent_end_to_end(validated_extracts):
 
     assert product_ids_before == product_ids_after
     pd.testing.assert_frame_equal(gold_before, gold_after)
+
+
+def test_feature_matrices_on_real_data_match_the_verified_eda_figures(gold_from_validated_pipeline):
+    """The figures notebooks/02_eda_cleaned_data.ipynb §13 established, now produced by
+    the pipeline's own feature code instead of notebook cells: 59 model-ready months
+    (7 Up / 43 Flat / 9 Down) with 22 features once the all-zero `covid_shock` column is
+    dropped, and 8,563 modelling segments whose `specialty_prior_share` correlates 0.61
+    with the segment's actual share."""
+    engine = gold_from_validated_pipeline
+
+    monthly = compute_monthly_features(load_monthly_gold(engine))
+    assert len(monthly) == 72
+    ready = model_ready_monthly(monthly)
+    assert len(ready) == 59
+    assert not ready.isna().any().any()
+    assert ready["direction_label"].value_counts().to_dict() == {"Flat": 43, "Down": 9, "Up": 7}
+    assert len(ready.columns) - 1 == 22
+    assert "covid_shock" not in ready.columns
+
+    seg = load_segment_gold(engine)
+    features = compute_segment_features(seg)
+    assert len(features) == 8_563
+    assert group_rare_specialties(seg["specialty_name"]).nunique() == 29  # 28 common + RARE
+    corr = np.corrcoef(features["specialty_prior_share"], features["segment_visit_share"])[0, 1]
+    assert corr == pytest.approx(0.61, abs=0.005)
