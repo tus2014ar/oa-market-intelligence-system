@@ -682,7 +682,9 @@ degenerate finding, but is no longer the default.
 
 - **Initial training window**: 24 months minimum (two full seasonal cycles) before the first out-of-sample prediction.
 - **Window type**: expanding, not rolling — each new month is added to the training set rather than dropping old months, since total history is limited (72 months) and this matches how the real monthly production cycle will actually operate (§17.2).
-- **Backtest folds**: walking forward one month at a time across the remaining ~48 months, retraining before each prediction, yielding ~48 paired baseline-vs-model predictions for evaluation.
+- **Backtest folds** (see the update below): walking forward one month at a time across the remaining ~48 months, retraining before each prediction, yielding ~48 paired baseline-vs-model predictions for evaluation.
+
+**Update (October 2026), measured on the real data.** The direction label needs 13 months of warm-up (12 months of volatility history plus one difference), leaving 59 usable months, so a 24-month minimum window gives **35** backtest folds, not ~48, and only **6** of them are Down months. On those 35 months the persistence baseline catches 1 of 6 Down months, about the base rate, so it is a weak competitor for the direction label (it is strong for the share level). The same low count limits the power of the significance test in §18.4. Details: `docs/evaluation_protocol.md` and `notebooks/04_evaluation_and_baselines.ipynb`.
 
 ### 18.4 Statistical Significance Test
 
