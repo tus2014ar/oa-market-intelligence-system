@@ -101,8 +101,8 @@ def _preprocessor(scale: bool) -> ColumnTransformer:
     )
 
 
-def _fit_predict_logistic(config: dict, overrides: dict) -> Callable:
-    def fit_predict(train: pd.DataFrame, test: pd.DataFrame) -> np.ndarray:
+def _fitter_logistic(config: dict, overrides: dict) -> Callable:
+    def fit(train: pd.DataFrame) -> Callable:
         X2, y2, w2 = expand_counts(design_frame(train), successes(train), train["y_visits"])
         model = Pipeline(
             [
@@ -111,9 +111,10 @@ def _fit_predict_logistic(config: dict, overrides: dict) -> Callable:
             ]
         )
         model.fit(X2, y2, clf__sample_weight=w2)
-        return model.predict_proba(design_frame(test))[:, 1]
+        fit.model = model
+        return lambda test: model.predict_proba(design_frame(test))[:, 1]
 
-    return fit_predict
+    return fit
 
 
 def _boosting_frame(df: pd.DataFrame, encoder: OrdinalEncoder) -> pd.DataFrame:
@@ -122,8 +123,8 @@ def _boosting_frame(df: pd.DataFrame, encoder: OrdinalEncoder) -> pd.DataFrame:
     return X.astype(float)
 
 
-def _fit_predict_gbm(config: dict, overrides: dict) -> Callable:
-    def fit_predict(train: pd.DataFrame, test: pd.DataFrame) -> np.ndarray:
+def _fitter_gbm(config: dict, overrides: dict) -> Callable:
+    def fit(train: pd.DataFrame) -> Callable:
         encoder = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
         encoder.fit(train[["specialty_grouped"]].astype(str))
         X = _boosting_frame(train, encoder)
@@ -134,13 +135,13 @@ def _fit_predict_gbm(config: dict, overrides: dict) -> Callable:
             categorical_features=[X.columns.get_loc("specialty_grouped")], **settings
         )
         model.fit(X2, y2, sample_weight=w2)
-        return model.predict_proba(_boosting_frame(test, encoder))[:, 1]
+        return lambda test: model.predict_proba(_boosting_frame(test, encoder))[:, 1]
 
-    return fit_predict
+    return fit
 
 
-def _fit_predict_rf(config: dict, overrides: dict) -> Callable:
-    def fit_predict(train: pd.DataFrame, test: pd.DataFrame) -> np.ndarray:
+def _fitter_rf(config: dict, overrides: dict) -> Callable:
+    def fit(train: pd.DataFrame) -> Callable:
         weights = train["y_visits"].to_numpy(float)
         model = Pipeline(
             [
@@ -150,17 +151,24 @@ def _fit_predict_rf(config: dict, overrides: dict) -> Callable:
         )
         model.fit(design_frame(train), train["y_share"].to_numpy(float),
                   clf__sample_weight=weights / weights.mean())
-        return np.clip(model.predict(design_frame(test)), 0.0, 1.0)
+        return lambda test: np.clip(model.predict(design_frame(test)), 0.0, 1.0)
 
-    return fit_predict
+    return fit
 
 
-_BUILDERS = {"logistic": _fit_predict_logistic, "gbm": _fit_predict_gbm, "rf": _fit_predict_rf}
+_BUILDERS = {"logistic": _fitter_logistic, "gbm": _fitter_gbm, "rf": _fitter_rf}
+
+
+def fitter_for(model: str, config: dict, *, overrides: dict | None = None) -> Callable:
+    """`fit(train)` returning a `predict(test)` for one model with one setting. Fitting once
+    and predicting several times is what permutation importance needs."""
+    return _BUILDERS[model](config, overrides or {})
 
 
 def fit_predict_for(model: str, config: dict, *, overrides: dict | None = None) -> Callable:
     """`fit_predict(train, test)` for one model with one setting."""
-    return _BUILDERS[model](config, overrides or {})
+    fit = fitter_for(model, config, overrides=overrides)
+    return lambda train, test: fit(train)(test)
 
 
 def tune_config(

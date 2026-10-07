@@ -24,7 +24,8 @@ DEFAULT_MIN_TRAIN_MONTHS = 24
 CLIP = 1e-6
 LOWER_PERCENTILE = 1.67  # Bonferroni for three trained models (plan, DL-41)
 HIGHER_IS_BETTER = {"balanced_accuracy", "accuracy", "flip_accuracy"}
-CARRIED = ("market_share_lag1", "seg_high_lag1", "y_label", "y_raw_above", "y_market")
+CARRIED = ("market_share_lag1", "seg_high_lag1", "seg_log_visits_lag1", "specialty_name",
+           "age_band", "gender", "y_label", "y_raw_above", "y_market")
 
 
 class FutureLeakError(RuntimeError):

@@ -123,7 +123,8 @@ def a2_frame(preds: pd.DataFrame, two_label_rows: pd.DataFrame) -> pd.DataFrame:
     frame = preds.merge(actual, on=["month_id", "segment"], how="inner")
     frame["predicted"] = classify_from_share(frame)
     frame["last_month"] = np.where(frame["seg_high_lag1"] == 1, "High", "Low")
-    return frame[["month_id", "segment", "p", "actual", "predicted", "last_month"]]
+    return frame[["month_id", "segment", "p", "market_share_lag1", "actual", "predicted",
+                  "last_month"]]
 
 
 def label_baseline_frames(two_label_rows: pd.DataFrame, min_train_months: int = 24) -> dict:
