@@ -172,7 +172,19 @@ RA is not monitored (too sparse); OA only. *Gate:* the flag rules have tests wit
 
 **Step 13: Stakeholder outputs (M).** Notebooks 06 (segments and inference), 07 (forecast and monitoring) and 08 (the Q1 analyses), a one-page model card per predictive task, and a plain-language summary for the brand manager: for each question, what we can say, what we cannot, how uncertain it is, and whether it survived the sensitivity checks. *Gate:* every number traces to a notebook cell; the owner reviews the wording for overclaiming.
 
-**Step 14: Pipeline and site (M).** The publish step computes the analyses, panels and monitor status and stores them in the database file; the Model results tab and the Claude `get_model_results` tool show them. Tests cover the new stages, including a model-stage failure keeping the last good database. *Gate:* full suite passes and CI is green; merge only on the owner's word.
+**Step 14: Pipeline and site (M).** Details fixed 8 Oct 2026, before any code (DL-58).
+- *What the publish step computes and stores,* all inside the database file so that one file is one consistent version of the site:
+  1. **`findings`** (Q1 and Q3): the Zilretta series with its fitted break and interval, the three-category break table, the decomposition chain with intervals and the main specialty contributions, adjusted shares by specialty with intervals and positions, the stability result, and the five robustness verdicts.
+  2. **`segment_model`** (Task A): scores, best baseline, paired summaries, the serving decision with the tie-break, the calibration table and slope, improvement by segment size, and the High or Low extras.
+  3. **`forecast`** (Task B): scores, interval coverage, paired summaries and the decision, next month's forecast with its 80% and 90% intervals, and the last 48 months of actual against forecast.
+  4. **`direction`** (Q2): the existing direction panel extended with random forest and gradient boosting, the chance band and the power table.
+  5. **`monitoring`** (Q4): the direction hit series, rolling accuracy, review threshold and flags, and the forecast alarm (R90) status with its recent misses.
+  The backtest predictions of the served direction classifier are also written into the Gold placeholder columns before the file is swapped in.
+- *Precision.* The monthly run uses the full settings (the draws used in the notebooks). A `fast` option with small draws exists for tests and quick checks; it is recorded in the stored results and the site says so when it is in use.
+- *Failure rule.* A failure in any of these stages fails the whole publish and leaves the last good database live (DL-36); there is no half-updated site.
+- *The site.* Tabs for the market trend (Q1), segments (Q3), forecast and monitoring, a model panel covering the three tasks, and the Claude box. Every number is read from the stored results; nothing is fitted when a page loads. A banner appears if a monitoring flag is crossed, and a tab says "not published with this database" when its results are missing.
+- *The Claude tools.* The existing four plus `get_findings` and `get_forecast_and_monitoring`, with `get_model_results` extended to all three tasks. Aggregate summaries only, with row caps, and still no SQL.
+- *Acceptance, fixed now.* (a) On a full run the stored results equal the notebook numbers for the same data (Zilretta break March 2022; Physical Medicine & Rehab adjusted share 5.34%; logistic regression serving for Task A; "same as last month" for Task B; the seasonal rule for direction; rule R90). (b) Every new stage has tests, including a failure in each stage that keeps the last good database. (c) No Claude tool returns rows, and all respect their caps. (d) The site loads from stored results without fitting any model. (e) The full suite passes and CI is green; merge only on the owner's word.
 
 ## What a stakeholder gets
 

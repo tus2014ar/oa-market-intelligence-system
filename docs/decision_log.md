@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-57, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-58, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -244,6 +244,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-57 · 8 Oct 2026 · Extra data (payer, geography, price, volume) is the main route to a more useful project; it is deferred until Phase 4 is finished and documented.** Decided (your direction).
 *What was found:* public CMS sources exist: the Medicare Physician & Other Practitioners by Provider and Service file (billing code, specialty, state, facility or office, annual), the quarterly Part B average-sales-price files, the Part B drug spending dashboard and Medicaid State Drug Utilization Data (quarterly, by state and NDC). They cover Original Medicare only and are annual or quarterly, so they add context (an independent check of the specialty ranking, geography, price, policy timeline) and not monthly forecasting power. *Unverified lead:* a search summary said Zilretta's Medicare outpatient pass-through payment status ran from 1 April 2018 to 31 March 2021, ending shortly before the 2022 turn; it could not be confirmed from a primary CMS source and is a hypothesis only. *Next, when resumed:* ask the instructor whether IQVIA Rx volume, administered-versus-prescribed, approval status or region data are still coming; verify the pass-through dates from the official CMS lists; pull the Medicare billing data for the Zilretta code and its competitors by specialty and state through the filtered API; add the quarterly price series and a policy timeline. Each analysis gets a protocol fixed in the plan first.
+
+**DL-58 · 8 Oct 2026 · Step 14 design: the publish step computes and stores all Phase 4 results, the site and the Claude tools read them, and any failure keeps the last good database.** Decided (your direction to finish Phase 4).
+*What:* results for Q1 and Q3, the segment model, the forecast, the direction panel (with random forest and gradient boosting) and the monitoring status are computed in the publish step and stored in the same database file as the tables, in a key-value results table, so a site version can never mix new tables with old results. The backtest predictions are written to the Gold placeholder columns before the swap. *Why all-or-nothing:* it is the same rule as DL-36 and keeps the guarantee simple: the site is either the last good version or a fully new one. *Cost:* a full monthly run is several times longer than the earlier publish (the notebooks take about 40 minutes of model fitting in total), which is acceptable for a monthly batch job; a `fast` precision exists for tests. *Site and tools:* stored results are displayed as they are, with no fitting on page load; two new read-only aggregate tools and an extended model-results tool let Claude answer from the stored results, still with no SQL and no rows. Acceptance checks are in plan Step 14.
 
 ## Known loose ends (not decisions)
 
