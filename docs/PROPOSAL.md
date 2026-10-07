@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.32M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a monthly-refreshed gold table, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, and a self-monitoring production loop that retrains monthly. The final deliverable is a public, multi-user website (open signup, access-code gated) where any brand manager can view model predictions and analytics, and ask natural-language questions or request on-demand visualizations against the gold table through Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built database tools (§5, §19) — never raw SQL access. It is deliberately right-sized: real MLOps tooling (MLflow, DVC, Docker, Evidently AI, GitHub Actions scheduled jobs) chosen to fit a monthly-batch, two-person-team system rather than enterprise infrastructure the problem doesn't need. **Status as of 4 October 2026:** Phases 1–2 (data foundation and the ingestion → validation → Silver → Gold pipeline) and the exploratory data analysis are complete; the classifier is the next step, and the monitoring loop, website and AI query layer are designed but not yet built (see the README's Status section).
+The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.31M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a monthly-refreshed gold table, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, and a self-monitoring production loop that retrains monthly. The final deliverable is a public, multi-user website (open signup, access-code gated) where any brand manager can view model predictions and analytics, and ask natural-language questions or request on-demand visualizations against the gold table through Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built database tools (§5, §19) — never raw SQL access. It is deliberately right-sized: real MLOps tooling (MLflow, DVC, Docker, Evidently AI, GitHub Actions scheduled jobs) chosen to fit a monthly-batch, two-person-team system rather than enterprise infrastructure the problem doesn't need. **Status as of 8 October 2026:** Phases 1–2 (data foundation and the ingestion → validation → Silver → Gold pipeline), the exploratory data analysis and Phase 4 (modeling and evaluation, including inference, segment-level and forecast models, monitoring tools and their documentation) are complete; the website and the Claude query layer are built but not yet deployed or connected to the Phase 4 results (see the README's Status section and `docs/phase4_results.md`).
 
 ---
 
@@ -535,16 +535,17 @@ A model card (`docs/MODEL_CARD.md`) will be published alongside the trained clas
 
 ## 16. Preliminary Results (To Be Completed)
 
-Model training has not yet begun as of this proposal (Week 2). This section is structured now so results can be filled in directly as they become available, rather than assembled from scratch at the end of the project.
+This section was written at the proposal stage (Week 2) so results could be filled in directly. **Update (October 2026): the direction classifier has been trained and tested.** The full Phase 4 results are in [`phase4_results.md`](phase4_results.md); the headline for the Up / Down / Flat classifier (35 walk-forward test months) is below.
 
 | Metric | Persistence Baseline | Trained Classifier | Statistically Significant? |
 |---|---|---|---|
-| Overall accuracy | TBD | TBD | TBD |
-| Precision ("Down" class) | TBD | TBD | TBD |
-| Recall ("Down" class) | TBD | TBD | TBD |
-| F1 ("Down" class) | TBD | TBD | TBD |
+| Overall accuracy | 62.9% | Logistic regression 40.0%; random forest 45.7%; gradient boosting 62.9% | No: none is better than persistence (McNemar p = 0.096, 0.109, 1.000) |
+| Recall ("Down" class) | 1 of 6 | 1 of 6 for all three | No |
+| Balanced accuracy (the serving rule's metric) | 0.406 | 0.369, 0.326, 0.406 | None clears the chance ceiling of 0.461 |
 
-Backtesting results across historical periods, and the High/Low Adoption segment classifier's performance, will be reported here in the same format once available (target: Week 12, per the roadmap in §8).
+The seasonal rule (accuracy 65.7%, balanced accuracy 0.419) serves. With 35 test months a gain over persistence would have to be about 30 percentage points to be detected with 80% power (`docs/model_card_logistic_regression.md`). Precision and F1 for the Down class, and the intervals, are in `notebooks/04_evaluation_and_baselines.ipynb`, `05_logistic_regression.ipynb` and `09_forecast_monitoring_and_direction.ipynb`.
+
+**The High/Low Adoption segment objective (Objective 3)** was reframed after a label audit: the primary test predicts each segment's share next month, and High or Low is derived from it. A model that blends a segment's recent and long-run share beats "same as last month" modestly and consistently, mostly for small segments (`docs/model_card_segment_share.md`, `notebooks/08_segment_share_prediction.ipynb`).
 
 ---
 
@@ -694,6 +695,8 @@ degenerate finding, but is no longer the default.
 
 **Update (October 2026), first trained model.** The first trained model, a regularized logistic regression with settings fixed before any result was seen, did not beat the baselines or chance on the 35 backtest months (balanced accuracy 0.37 against a chance range of 0.21 to 0.46 over 1,000 random runs) and overfit (about 0.86 balanced accuracy on its training months against 0.37 on unseen months). This is the outcome the paragraph above anticipated. Details: `notebooks/05_logistic_regression.ipynb` and `docs/model_card_logistic_regression.md`.
 
+**Update (8 October 2026), other model families and statistical power.** Random forest and gradient boosting were added under the same protocol and also did not beat persistence or chance (balanced accuracy 0.326 and 0.406); all three trained models overfit (0.86 to 1.00 on training months against 0.33 to 0.41 on unseen ones). A power simulation anchored on the observed disagreement between persistence and the seasonal rule shows 35 test months detect an accuracy gain over persistence with 80% power only if it is about 30 percentage points, so the data cannot rule out a modest effect (decisions DL-54, DL-56).
+
 ### 18.5 FDA Approval-Date Verification (Objective 1)
 
 **Verified** via openFDA's Drugs@FDA bulk dataset (downloaded directly, not queried live): application **NDA208845**, sponsor **Pacira Pharms Inc**, original approval granted **October 6, 2017**.
@@ -729,6 +732,8 @@ Two additions, both deliberately scoped small (full reasoning and detail in `doc
 
 - **Trend/seasonality/residual decomposition and ACF/PACF analysis** on the `visit_share` series, confirming with real numbers (not just inspection) the autocorrelation and seasonality claims the feature-engineering plan already depends on.
 - **One classical forecasting model (SARIMA or Holt-Winters/ETS)** as an additional baseline, forecasting `visit_share` directly and deriving Up/Down/Flat from the forecasted change. It is evaluated through the **same** expanding-window backtest (§18.3) and McNemar's test (§18.4) as every other candidate, not a separate methodology, so it answers honestly whether the tree-based classifiers are earning their added complexity over a well-understood classical alternative.
+
+**Update (October 2026):** the classical model was built as a direct forecast of the share level with prediction intervals (damped-trend ETS, with and without yearly seasonality, plus a ridge regression on lags), not as a source of Up / Down / Flat labels. None beat "same as last month" over 48 walk-forward months (mean absolute error 0.125 pp for last month against 0.147 to 0.158 pp for the models), so the baseline serves (DL-53; `docs/model_card_share_forecast.md`).
 
 **Deliberately not done**: a second full modeling track, or anything beyond one classical model — no LSTM or other deep sequence models. The small-dataset caution already stated for tree-based/ensemble models (§16, §18.4) applies even more strongly to a heavily parameterized SARIMA grid search on only 72 points.
 

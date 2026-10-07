@@ -34,7 +34,7 @@ Target: the Gold table's stored `direction_label` (Up / Down / Flat; the trailin
 | `nsaid_mix_lag_1` | Previous month's NSAID share of the three-category total | Denominator mix (§9) |
 | `office_mix_lag_1`, `telehealth_mix_lag_1` | Previous month's office / telehealth share of place-of-service visits | Care-setting mix (COVID shift) |
 | `month_sin`, `month_cos` | Cyclical month, so December and January are adjacent | Seasonality (§9, §13) |
-| `is_december`, `is_january` | Month flags | The clearest signal found: December averages +0.16pp, January −0.28pp |
+| `is_december`, `is_january` | Month flags | The strongest seasonal pattern found in the EDA: December averages +0.16pp, January −0.28pp. This is an in-sample pattern in a few years of data; the trained models did not use it to predict out of sample (permutation importance of the calendar inputs is about zero), so treat it as descriptive |
 | `months_since_launch` | Months since the Oct 2017 FDA approval | A clock; kept in place of the redundant `year` and `quarter` |
 | `covid_shock` | 1 for Mar–May 2020 | Event flag (§10, §11) |
 | `dip_2024` | 1 for Mar–Jul 2024 | Event flag; a likely claims-supply disruption (PROPOSAL §10) |
@@ -62,3 +62,21 @@ Rows are segments (month × specialty × demographic group) with at least 20 cat
 | `month_sin`, `month_cos` | Cyclical month | Seasonality |
 
 On the real warehouse this gives **8,563** modelling segments; `specialty_prior_share` correlates 0.61 with the segment's actual share, and its deciles sit almost on the diagonal. The first month of each specialty has no prior history and is dropped.
+
+## Task A features (`features/segment_task.py`, added October 2026)
+
+These are the inputs for predicting a segment's share next month (Phase 4, Task A). One row per segment and month *t*; **every input uses month *t-1* or earlier**, and the month-*t* answer sits in `y_`-prefixed columns that a model must never see. A prediction is made only for segments with at least 20 category visits in month *t-1*. This set replaces `log_total_visits` above (a same-month column) with last month's volume.
+
+| Feature | Definition |
+|---|---|
+| `specialty_grouped`, `specialty_prior_share` | Specialty (rare ones grouped) and its volume-weighted Zilretta share over all earlier months |
+| `seg_prior_share` | The segment's own volume-weighted share over all earlier months |
+| `age_ordinal`, `gender_FEMALE`, `gender_MALE` | As above |
+| `seg_share_lag1`, `seg_share_roll3` | The segment's share last month, and its mean over months *t-3* to *t-1* |
+| `seg_margin_lag1` | Last month's segment share minus last month's market-wide share |
+| `seg_log_visits_lag1` | `log1p` of the segment's category visits last month |
+| `seg_high_lag1` | 1 if the segment's share last month was above the market-wide share, else 0 (the raw sign, not the interval label) |
+| `market_share_lag1`, `market_change_lag1` | The market-wide share last month, and its change from the month before |
+| `month_sin`, `month_cos` | Cyclical month |
+
+Four count columns (`seg_prior_z`, `seg_prior_t`, `spec_prior_z`, `spec_prior_t`: cumulative Zilretta and category visits to last month) are kept so the history shares can be smoothed; they use only earlier months too. The outcome columns are `y_share`, `y_visits`, `y_market`, `y_raw_above` and `y_label` (High, Low or Undetermined from a 95% Wilson interval, or High or Low in the two-label fallback). **Leakage control:** a test rewrites every month from a cut onward and requires all earlier inputs not to move; it fails when a leak is injected on purpose, and the same check was run on the real table (largest change 0). One accepted detail: rare specialties are grouped from which specialties appear, never from visit counts or shares. Decisions: DL-48, DL-49.
