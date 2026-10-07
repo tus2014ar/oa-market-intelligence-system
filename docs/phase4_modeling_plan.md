@@ -47,8 +47,8 @@ Effort: S small, M medium, L large.
 
 **Step 2: Q1, trend and change points (M).**
 - Analyze the monthly share of each OA treatment category (branded injectable, generic corticosteroid, NSAID).
-- *Method (fixed):* fit up to two breakpoints to the Zilretta share series (piecewise linear, at least 12 months per segment), choose the number of breaks (0, 1 or 2) by BIC, and attach a 90% interval to each break month by block bootstrap of the residuals.
-- *Events, listed before the analysis runs:* COVID shock (Mar to May 2020), the Change Healthcare outage window (Mar to Jul 2024), and any competitor approval dates inside the data window from the openFDA enrichment. Break intervals are compared with this list only.
+- *Method (fixed; revised 7 Oct 2026, DL-44):* fit up to two breakpoints to each category's share series (piecewise linear, own intercept and slope per segment, at least 12 months per segment). The number of breaks is chosen by **sequential tests calibrated by a block bootstrap** (a break is kept only if the improvement in fit beats what noise produces in 95% of 1,000 simulated series), not by BIC, which in testing reported breaks that were not there. Each break month gets a 90% interval from a second block bootstrap (1,000 draws) of the residuals. Block lengths 3 and 12 are run as sensitivity checks; a conclusion that changes with the block length is reported as fragile.
+- *Events, listed before the analysis runs:* COVID shock (Mar to May 2020), the Change Healthcare outage window (Mar to Jul 2024), and any competitor approval dates inside the data window. The approval dates were looked up on 7 Oct 2026 (70 branded products, openFDA; DL-45) and none falls inside the window, so the list is the two events. Break intervals are compared with this list only.
 - *Limits stated up front:* Zilretta was approved in Oct 2017, before the data starts in Aug 2019, so its market entry cannot be observed and the FDA part of Q1 is answered by saying so. A break near an event is consistent with an effect, not proof of one.
 - *Gate:* break locations are stable across the bootstrap, or the instability is reported as the result.
 
