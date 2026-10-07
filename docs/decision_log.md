@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-48, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-49, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -217,6 +217,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-48 · 7 Oct 2026 · The Task A label audit failed for the interval scheme, so the pre-specified two-label fallback is used, with a last-month volume rule.** Decided (applying the plan's own gate).
 *Audit (8,450 prediction rows, 70 months, 150 segments):* the 95% interval scheme leaves 2,355 scored rows (28%), below the 3,000 gate; the High share (62%) and Low share (38%) pass. A 90% interval would scrape through (3,009), and is **not** adopted, because the gate and fallback were fixed before the data was seen. The scored rows are also almost trivially persistent (93% accuracy, 164 label changes in 70 months), because only clearly-above or clearly-below segments are labelled. *Fallback:* two labels, segments with at least 100 category visits last month: 5,436 rows, 47% High, persistence 0.82 balanced accuracy, 979 label changes (18%), median 14 a month. *Clarification:* the plan said "segments with at least 100 visits" without a month; last month's volume is used because it is known at prediction time (using the outcome month's volume gives nearly the same rows, 5,245, and persistence 0.82). *Checks:* feature leakage tests (including a deliberately injected leak that must be caught), a rewrite-the-future check on the real table at three cut months (maximum difference 0), and five rows recomputed independently from the raw counts. *Consequence:* the bar to beat is persistence at 0.82, with about 979 label changes to learn from, so power to show a gain is limited; see the Step 6 report.
+
+**DL-49 · 7 Oct 2026 · Task A's primary test predicts each segment's share next month; High/Low becomes the secondary test.** Decided (your direction, after the Step 6 audit).
+*Why:* the High/Low label barely changes (persistence 0.82 balanced accuracy, about 980 changes in 70 months), so a test on the label alone has little power to show a real gain. Predicting the share from the visit counts uses all 8,450 prediction rows and the actual counts, and a model that weighs recent history against longer history and the specialty's level should beat naive "same as last month" on noisy small segments, a known property of shrinkage that can be tested out of sample. *Fixed in advance (plan Steps 7 to 9):* the primary metric (binomial log-loss per visit on the test months), four baselines (market share, last month's share, segment history, specialty history; best baseline = lowest pooled log-loss), the models and grids, the walk-forward protocol with tuning only inside the training window, and the serving rule (the 1.67th percentile of the paired month-bootstrap improvement over the best baseline above zero). *A2:* High/Low derived from the A1 prediction (High if above last month's market share), scored on balanced accuracy and the flip subset against majority, persistence and the specialty rule; supporting evidence only. *Rejected:* adopting the 90% interval to rescue the three-label scheme (the gate was fixed beforehand), and a label-only Task A as the headline.
 
 ## Known loose ends (not decisions)
 
