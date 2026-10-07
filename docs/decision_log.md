@@ -14,6 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-33, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -109,7 +110,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 
 ## E. Direction from here (proposed, awaiting approval)
 
-These follow from DL-26. Nothing here has been built or run.
+These follow from DL-26. Nothing here has been built or run. **Part G supersedes the emphasis of PD-01:** the course deliverable is a deployed data and MLOps pipeline with a public analytics website, so the segment model and the share forecast become the trained models inside that pipeline (DL-32), not stand-alone analyses.
 
 **PD-01 · Change what the project delivers.** Proposed.
 (1) A **segment opportunity model**: where Zilretta adoption is below or above what a group's profile would predict. (2) A **share-level forecast with honest intervals**, judged against "same as last month". (3) A **surprise alert**: flag a month that moved more than normal, after it happens. (4) The monthly Up/Down/Flat classifier stays a documented null result.
@@ -140,6 +141,36 @@ These follow from DL-26. Nothing here has been built or run.
 | Q-03 | Is XGBoost wanted (for the resume) rather than scikit-learn's boosting? | PD-05 |
 | Q-04 | If the High/Low adoption label is wanted, what fixed threshold (for example above or below the market-wide share)? | PD-02 |
 | Q-05 | ETS or SARIMA for the share-level forecast? | PD-01 (2) |
+| Q-06 | Single shared access code, or open access, for the public site? | PD-11, DL-30 |
+| Q-07 | Hosting platform, and the Claude API budget and monthly spend cap? | DL-33 (by 14 Oct) |
+| Q-08 | Is the segment model, the share forecast, or both the trained models shown on the site? (Plan assumes both, with the monthly classifier as an informational challenger.) | DL-32 |
+
+## G. Final deliverable and plan (Oct 2026)
+
+What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deliverable_plan.md`](final_deliverable_plan.md).
+
+**DL-28 · 6 Oct 2026 · The final deliverable is due at the end of October 2026.** Decided. About three and a half weeks. The plan is time-boxed, with a cut list (see the plan).
+
+**DL-29 · 6 Oct 2026 · The final deliverable is a deployed data pipeline and MLOps pipeline, with a public analytics website that has a Claude API question box on the modeling and the analytics.** Decided (course requirement).
+*Why this changes priorities:* the work is graded as a working system, not a model score. The riskiest unknowns are now hosting, secrets, storage and the Claude API, not modeling, so the plan builds a thin deployed slice first and then widens it. *Recorded in:* `docs/final_deliverable_plan.md`.
+
+**DL-30 · 6 Oct 2026 · Public display of aggregate IQVIA-derived tables on the website is approved.** Decided (your confirmation). Aggregate tables only, never raw rows, as for the Claude API (DL-07). *Not decided:* whether access is behind a single access code; the plan assumes one shared code for cost control (see Q-06).
+
+**DL-31 · 6 Oct 2026 · The system must be robust and adaptable to new data, but a new-data arrival is not demonstrated live.** Decided.
+*Why:* a live demo of arrival adds risk for little value. Robustness is proven by automated tests instead: a simulated new month (run on data up to June, then July), a malformed file, and an outside-service failure. A failed run keeps the last good data live and shows why on the site.
+
+**DL-32 · 6 Oct 2026 · The pipeline must train and serve real trained models (this is an ML pipeline project).** Decided.
+*Why and how:* each monthly run trains models, evaluates them out of time against the baselines with confidence intervals (the evaluation protocol), records them, and a pre-specified rule decides, per task, what serves. Where no trained model beats its baseline, the site says so plainly and serves the better of the two. This keeps the null result on monthly direction (DL-26) honest instead of hiding it. Trained models planned: the segment model (random forest and gradient boosting against the specialty-track-record baseline), the share-level forecast (ETS or SARIMA against "same as last month"), and the monthly direction classifier kept as an informational challenger. *Rejected:* promoting a model by default, or a model that cannot be checked out of time.
+
+**DL-33 · 6 Oct 2026 · Hosting platform and budgets are deferred to a decision point.** Decided. To be settled together before the deployed slice starts (target: by 14 Oct 2026). The Claude API budget, the per-user limits and the monthly spend cap are part of that decision.
+
+**PD-09 · Build a deployed thin slice first, then widen.** Proposed. A deployed page with one table, a Claude question box scoped to that table, and a workflow that publishes a new database file and makes the site pick it up. Then harden the rerun, widen the site, add Q&A guardrails, and add the MLOps layer.
+
+**PD-10 · A safe rerun.** Proposed. Build the new database beside the old one and swap it in only if every check passes. On failure, keep the last good data live, show a banner with the reason, and write a run log. Retry outside-service calls.
+
+**PD-11 · Claude Q&A with scoped tools and guardrails.** Proposed. A fixed set of read-only functions over the summary tables (never raw rows and never open SQL), an access code, per-user rate limits, a monthly spend cap, and a test set of questions with expected answers. Plain Claude tool use first; MCP packaging only if time allows.
+
+**PD-12 · Scope cuts, in order, if time runs short.** Proposed. Accounts and sign-up (use one access code), then RAG over methodology documents, then the knowledge graph, then SHAP, then drift tooling beyond a simple custom check, then XGBoost. Not cut: a deployed site, the Claude Q&A box, the safe rerun, and at least one trained model served with its honest evaluation.
 
 ## Known loose ends (not decisions)
 
