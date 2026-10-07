@@ -39,3 +39,9 @@ build/
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
+
+# Large public datasets (CMS Medicare, Open Payments, Medicaid; DL-57) are kept locally under
+# data/raw/New Datasets/ (about 16 GB, far over GitHub's 100 MB file limit). The pipeline reads
+# them in chunks and loads only the rows it needs into the warehouse; the documentation records
+# each source link, download date and column lineage instead of the raw files.
+data/raw/New Datasets/
