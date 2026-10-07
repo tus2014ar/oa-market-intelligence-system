@@ -134,12 +134,17 @@ The **best baseline** is the one with the lowest pooled log-loss on the test row
 - *Explanation (SHAP is not installed and stays on the cut list):* permutation importance by feature group on the test folds, the logistic regression's standardized coefficients, and observed against predicted share by specialty and age band, compared with the Step 4 adjusted shares by rank agreement. Labelled **not causal**; disagreements with Step 4 are written down.
 - *Gate:* the verdict holds in all views, or the exceptions are reported.
 
-**Step 10: Task B, the share forecast with intervals (M).**
-- *Baselines:* same as last month; same month last year. *Trained:* ETS with damped additive trend; ETS with damped trend and additive yearly seasonality; ridge regression on lags 1 to 3, the shifted 3-month mean and month sin/cos (alpha in {0.1, 1, 10}). A fold where an ETS fit fails falls back to the baseline forecast, and fallbacks are counted.
-- *Intervals (fixed):* 80% and 90% prediction intervals for every model (ETS from simulation; baselines from the expanding-window empirical residuals).
-- *Scoring:* MAE in percentage points (primary), RMSE, MASE, **interval coverage and width**, with the same month-bootstrap comparison against the best baseline and the same serving rule (1.67th percentile).
-- *Why this matters:* the intervals are what Step 11 monitors, so a tie with "same as last month" is still a useful result.
-- *Gate:* coverage is close to nominal (an 80% interval contains the actual about 80% of the time) or the miscalibration is reported.
+**Step 10: Task B, the share forecast with intervals (M).** Details fixed 8 Oct 2026, before any Task B run (DL-52).
+- *Series and protocol:* the monthly Zilretta visit share from Gold, in percentage points (share x 100), 72 months. Walk-forward, expanding window, 24-month minimum, one month ahead, a fresh model per month: 48 test months (Aug 2021 to Jul 2025).
+- *Baselines:* **last month** (forecast = last month's value) and **same month last year** (needs 12 months). Their 80% and 90% intervals are the forecast plus the empirical 10th/90th and 5th/95th percentiles of the baseline's own one-step errors over the training window.
+- *Trained models:* **ETS damped** (statsmodels `ETSModel`, additive error, damped additive trend, no seasonality); **ETS damped seasonal** (the same with additive seasonality, period 12); **ridge regression** on lags 1 to 3, the shifted 3-month mean (identical information to the three lags, kept as the plan lists it) and month sin/cos, inputs standardized. A month where an ETS fit fails or returns non-finite values falls back to last month's forecast and interval, and fallbacks are counted and reported.
+- *Ridge tuning:* alpha in {0.1, 1, 10}, chosen inside the training window by one-step rolling-origin squared error over its last 12 months (ties go to the larger alpha, the simpler model); re-chosen every 6 test months. With so few rows a single validation split would be too thin, so each of the last 12 months is predicted from a model fitted on the months before it.
+- *Intervals:* ETS from the model's own analytic prediction intervals; ridge from the empirical one-step errors of its rolling-origin forecasts over the training window (from the first origin with 12 months of history); baselines as above.
+- *Scoring:* MAE in percentage points (primary), RMSE, MASE (each month's absolute error scaled by the training window's in-sample one-step "last month" MAE, then averaged), empirical coverage and mean width of the 80% and 90% intervals, and the interval (Winkler) score.
+- *Inference:* a **moving-block bootstrap** of the 48 monthly absolute errors (block length 6, 2,000 draws, seed 0; lengths 3 and 12 as sensitivity checks), paired against the best baseline, because forecast errors in one series are serially dependent and resampling single months would overstate certainty. The best baseline is the one with the lowest pooled MAE.
+- *Serving rule:* a trained model is promoted only if the 1.67th percentile of its paired MAE improvement over the best baseline is above zero (Bonferroni for three models); among promoted models the simplest serves unless a more complex one is clearly better (order: ETS damped, ridge, ETS damped seasonal; DL-50); otherwise the best baseline serves and the site says so.
+- *Why this matters:* the intervals are what Step 11 monitors, so a tie with "last month" is still a useful result.
+- *Gate:* coverage is near nominal, defined as within two binomial standard errors for 48 months (80% interval: 68% to 92%; 90% interval: 81% to 99%), or the miscalibration is reported.
 
 ### Part 3: Monitoring and closure
 
