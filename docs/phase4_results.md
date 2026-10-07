@@ -1,6 +1,6 @@
 # Phase 4 Results: Modeling and Evaluation
 
-**Status:** Phase 4 modeling is complete (7 to 8 Oct 2026); the site and pipeline integration (Step 14) is described at the end. This is the one-page overview. Plan: [`phase4_modeling_plan.md`](phase4_modeling_plan.md). Every choice below was written into the plan, and committed, before the analysis that tested it. Decisions: [`decision_log.md`](decision_log.md) DL-38 to DL-57.
+**Status:** Phase 4 modeling is complete (7 to 8 Oct 2026); the site and pipeline integration (Step 14, DL-58) is done and merged. This is the one-page overview. Plan: [`phase4_modeling_plan.md`](phase4_modeling_plan.md). Every choice below was written into the plan, and committed, before the analysis that tested it. Decisions: [`decision_log.md`](decision_log.md) DL-38 to DL-57.
 
 ## The four business questions
 
@@ -36,7 +36,7 @@ Extra data: payer or formulary changes, geography, price and prescription volume
 
 ## Reproducing the results
 
-- Warehouse: `PYTHONPATH=src python -m oa_market_intelligence.publish` (builds `data/published/warehouse.db`, about 2 minutes).
-- Tests: `PYTHONPATH=src python -m pytest` (about 11 minutes; CI runs the same).
+- Warehouse and stored results: `PYTHONPATH=src python -m oa_market_intelligence.publish` (builds `data/published/warehouse.db`; about 40 minutes at full precision, `--precision fast` for a quick check). The full-precision stored results equal the notebook numbers (break March 2022, Physical Medicine & Rehab adjusted share 5.34%, logistic regression serving the segment task, "same as last month" the forecast, the seasonal rule direction).
+- Tests: `PYTHONPATH=src python -m pytest` (497 tests; about 10 minutes in CI).
 - Notebooks 06 to 09 read `data/published/warehouse.db` and run with the registered kernel (see the repository README); the live runs take about 2, 15, 10 and 10 minutes.
 - Every random choice uses a fixed seed; two full runs of Tasks A, B and C gave identical results.

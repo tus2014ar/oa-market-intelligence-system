@@ -37,8 +37,8 @@ Each item is tagged **[Built]** (implemented and tested in this repo), **[Built,
 - **[Built]** **Phase 4, inference** (Q1, Q3): a bootstrap-calibrated change-point test, a mix-versus-adoption decomposition of the share change, a binomial specialty model with adjusted shares, intervals and stability, and re-runs without the known data problems (notebooks 06 and 07)
 - **[Built]** **Phase 4, prediction** (Q2): a segment-level share model (logistic regression, gradient boosting, random forest) that beats "same as last month" modestly, and a monthly share forecast (ETS, ridge) that does **not**, plus random forest and gradient boosting on direction, which do not beat persistence; a power statement says what 35 test months could detect (notebooks 08 and 09; model cards below)
 - **[Built]** **Phase 4, monitoring** (Q4): a data-based review threshold for the direction classifier and an interval-miss alarm for the forecast, tested on simulated degradation, plus a tested function that records backtest predictions in the Gold placeholder columns
-- **[Built, not yet deployed]** A safe publish step (`python -m oa_market_intelligence.publish`): builds the warehouse in a staging file, checks it, runs a model evaluation, and swaps it in atomically; a failed run keeps the last good database and writes a run log. The monthly workflow runs it and commits `data/published/warehouse.db`. **Not yet in it:** the Phase 4 models and the monitoring write (Step 14)
-- **[Built, not yet deployed]** A Streamlit analytics site (`app/streamlit_app.py`) with the market trend, a specialty/age/gender comparison, a model panel (a trained model serves only if it beats chance and every baseline), and a Claude question box over four read-only aggregate tools, with an access code, rate limits and a daily token budget (tested with a scripted client; no live API call yet). Deployment: [`docs/deployment.md`](docs/deployment.md)
+- **[Built, not yet deployed]** A safe publish step (`python -m oa_market_intelligence.publish`): builds the warehouse in a staging file, checks it, computes every Phase 4 result (trend and change point, decomposition, adjusted specialty shares and robustness checks, the segment model, the next-month forecast with ranges, the direction panel and the monitoring status) and stores it in the same file, writes the backtest predictions to Gold, and swaps it in atomically; a failed stage fails the whole run and keeps the last good database, and a run log is written. A full run takes about 40 minutes (`--precision fast` gives a quick check). The monthly workflow runs it and commits `data/published/warehouse.db`
+- **[Built, not yet deployed]** A Streamlit analytics site (`app/streamlit_app.py`) with the market trend and its detected change, the mix-versus-rate decomposition, adjusted specialty shares, a forecast-and-monitoring tab with a review banner, a three-task model panel (a trained model serves only if it beats chance and every baseline), and a Claude question box over six read-only aggregate tools, with an access code, rate limits and a daily token budget (tested with a scripted client; no live API call yet). Deployment: [`docs/deployment.md`](docs/deployment.md)
 - **[Planned]** Extra data to explain what history cannot: payer or formulary changes, geography, price, prescription volume (public CMS sources exist; see [Status](#status))
 - **[Planned]** A knowledge graph, RAG over the methodology documents and drift tooling (stretch)
 - **[Planned]** The rest of the MLOps stack (DVC remote, MLflow, Optuna, SHAP, Evidently AI): none is installed; a JSON run log, permutation importance and small fixed tuning grids were used instead. Deliberately *without* Kubernetes, Kafka, Databricks, or live A/B testing, since this is a monthly batch system, not a real-time service
@@ -55,7 +55,7 @@ Data moves through three layers, all stored in one SQLite file accessed via SQLA
 | **Silver** | Star schema: 4 dimension tables + 2 fact tables (Place-of-Service is a separate grain, so it gets its own fact table) |
 | **Gold** | 2 serving tables: `gold_visit_share_monthly` (one row per month) and `gold_segment_adoption` (month × specialty × demographic) |
 
-The pipeline writes `data/processed/warehouse.db` (git-ignored). The publish step builds `data/published/warehouse.db` (committed), which the website and the notebooks read; it also stores the model panel inside that file so one file is one consistent version of the site. Claude and the website read only aggregate Gold tables, never raw rows. Engineered features (lags, rolling averages, FDA-derived context) are columns in the Gold tables; the model features are computed on demand from Gold by `src/oa_market_intelligence/features/`.
+The pipeline writes `data/processed/warehouse.db` (git-ignored). The publish step builds `data/published/warehouse.db` (committed), which the website and the notebooks read; it also stores the model panel and every Phase 4 result inside that file so one file is one consistent version of the site and nothing is fitted while a page loads. Claude and the website read only aggregate Gold tables, never raw rows. Engineered features (lags, rolling averages, FDA-derived context) are columns in the Gold tables; the model features are computed on demand from Gold by `src/oa_market_intelligence/features/`.
 
 This is a real, running pipeline: `src/oa_market_intelligence/pipeline.py` orchestrates ingest → validate → Silver build → Gold build and produces a verified warehouse with 72 months, 160 products, 149,141 product-visit rows, and 135,119 total branded-injectable visits, matching every figure documented in `PROPOSAL.md` §18.1. Run it yourself with:
 
@@ -113,9 +113,8 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 
 **What remains:**
 
-1. **Deployment** (needs the owner's accounts and secrets): an Anthropic API key with a spend limit, the Streamlit Community Cloud app, and a domain redirect ([`docs/deployment.md`](docs/deployment.md)).
-2. **Integration (Step 14):** compute the Phase 4 results and monitoring status inside the publish step, write the backtest predictions to Gold, and show them on the site and in the Claude tool.
-3. **Extra data (next improvement, DL-57):** the instructor may still have IQVIA prescription-volume, administered-versus-prescribed or regional data to provide; public CMS sources exist (billing data by specialty and state, quarterly average-sales-price files); a lead about Medicare outpatient pass-through payment status ending in March 2021 is unverified. Each addition gets a protocol fixed in the plan first.
+1. **Deployment** (needs the owner's accounts and secrets): an Anthropic API key with a spend limit, the Streamlit Community Cloud app, and a domain redirect ([`docs/deployment.md`](docs/deployment.md)). Integration (Step 14) is done: the publish step computes and stores the Phase 4 results, writes the backtest predictions to Gold, and the site and the Claude tools read them.
+2. **Extra data (next improvement, DL-57):** the instructor may still have IQVIA prescription-volume, administered-versus-prescribed or regional data to provide; public CMS sources exist (billing data by specialty and state, quarterly average-sales-price files); a lead about Medicare outpatient pass-through payment status ending in March 2021 is unverified. Each addition gets a protocol fixed in the plan first.
 
 Development is local-first: cloud infrastructure (the hosted website) is stood up when the owner is ready. See [`docs/PROPOSAL.md`](docs/PROPOSAL.md) §8 for the course roadmap.
 
@@ -128,8 +127,8 @@ Development is local-first: cloud infrastructure (the hosted website) is stood u
 ## Reproducing the results
 
 ```bash
-PYTHONPATH=src python -m oa_market_intelligence.publish     # builds data/published/warehouse.db (about 2 minutes)
-PYTHONPATH=src python -m pytest                             # 455 tests (about 11 minutes)
+PYTHONPATH=src python -m oa_market_intelligence.publish     # builds data/published/warehouse.db (about 40 minutes at full precision; add --precision fast for a quick check)
+PYTHONPATH=src python -m pytest                             # 497 tests (about 10 minutes in CI)
 streamlit run app/streamlit_app.py                          # the site, locally
 ```
 
