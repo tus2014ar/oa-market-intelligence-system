@@ -27,10 +27,10 @@ The website always reads the last published, fully checked database. A failed ru
 
 | Piece | Status |
 |---|---|
-| Ingest, validate, Silver, Gold, features, evaluation harness, baselines | Built and tested (455 tests, CI on every change) |
-| Rerun on new data | **Built:** a publish step builds the warehouse in a staging file, checks it, runs a model evaluation, swaps it in atomically and writes a run log; the monthly workflow runs it and commits the result. Tested for a crash in the pipeline, a crash in the model stage, a shrinking rebuild, an empty rebuild and a new month |
+| Ingest, validate, Silver, Gold, features, evaluation harness, baselines | Built and tested (497 tests, CI on every change) |
+| Rerun on new data | **Built:** a publish step builds the warehouse in a staging file, checks it, computes and stores every Phase 4 result, writes the backtest predictions to Gold, swaps it in atomically and writes a run log; the monthly workflow runs it and commits the result. Tested for a crash in the pipeline, a crash in the results stage, a shrinking rebuild, an empty rebuild and a new month |
 | Models and a rule for which one serves | **Built and tested in library code and notebooks** (Phase 4: see below and [`phase4_results.md`](phase4_results.md)). **In the publish step since Step 14 (DL-58):** every Phase 4 result is computed at publish, stored in the database file, and shown on the site and to Claude |
-| Website, Claude Q&A, access code and spend limits | **Built** (Streamlit site, four read-only aggregate tools, access code, rate limits, token budget) and tested with a scripted client. **Not deployed:** it needs the API key, the hosting account and the domain redirect (`docs/deployment.md`) |
+| Website, Claude Q&A, access code and spend limits | **Built** (Streamlit site, six read-only aggregate tools, access code, rate limits, token budget) and tested with a scripted client. **Not deployed:** it needs the API key, the hosting account and the domain redirect (`docs/deployment.md`) |
 | Monitoring | Tools built and tested (a review threshold for the direction classifier; an interval alarm for the forecast, with stated blind spots). Called by the publish step since Step 14: the status is stored, shown as a banner on the site and reported to Claude, and the backtest predictions are written to Gold |
 
 ## The trained models (as built)
@@ -52,7 +52,7 @@ Every model is scored out of time with confidence intervals, and a rule fixed in
 | **M3** | 21 to 27 Oct | **Widen and harden.** | Market trend and share forecast with ranges; segment gap table; a model panel with baselines, intervals and the honest verdict; data-quality notes; run history; Claude tools over every table; a set of test questions with expected answers; guardrail tests (no raw rows, no open SQL, off-topic and prompt-injection refusals); basic data-quality and drift checks; cost limits verified. |
 | **M4** | 28 to 31 Oct | **Rehearse and buffer.** No new features after 28 Oct. | A clean-checkout dry run end to end; README, model card and decision log updated; refreshed slide deck and script; demo script; fix list cleared. |
 
-**Status note (8 October 2026):** the dates above were a first draft. The owner set a target of version 1 live by 15 October (DL-34) and Phase 4 modeling is finished; what remains is the deployment (the owner's accounts and secrets), the Step 14 integration of the Phase 4 results into the publish step and the site, and a later round of improvement with extra data (DL-57). The cut list below is unchanged.
+**Status note (8 October 2026):** the dates above were a first draft. The owner set a target of version 1 live by 15 October (DL-34) and Phase 4 modeling is finished; what remains is the deployment (the owner's accounts and secrets), (the Step 14 integration of the Phase 4 results into the publish step and the site is done and merged), and a later round of improvement with extra data (DL-57). The cut list below is unchanged.
 
 ## Cut list, in this order, if time runs short
 
