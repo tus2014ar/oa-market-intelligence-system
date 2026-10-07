@@ -29,7 +29,7 @@ RA has about 1,283 visits in six years, so it is handled descriptively (counts a
 |---|---|---|
 | Segment-months with at least 20 category visits (rows eligible for Task A) | about 8,300 (139 segments, 17 specialties, 71 months) | Enough for a real test; few specialties and segments |
 | Raw "above the market share" label, High rate | 43.9% | Balanced, but see the label problem below |
-| "Same High/Low as last month" | **0.77 balanced accuracy** | **The bar to beat is persistence, not majority** |
+| "Same High/Low as last month" | **0.77 balanced accuracy** (0.82 on segments with 100+ visits; Step 6 audit) | **The bar to beat is persistence, not majority** |
 | Specialty track-record rule | 0.68 balanced accuracy | Weaker than persistence |
 | Monthly share, lag-1 autocorrelation | 0.90 (lag 12: 0.39) | "Same as last month" is already a strong forecast |
 | Monthly change, lag-1 autocorrelation | −0.19 | Moves partly reverse; small but real |
@@ -88,38 +88,63 @@ Effort: S small, M medium, L large.
 - *Unit and selection:* a prediction is made only for segments with at least 20 category visits in month t−1; a row is scored only if its label is determined in month t.
 - *Leakage rule:* every feature uses month t−1 or earlier. The current feature set has one same-month column (`log_total_visits`); it is replaced by last month's volume. Tests rewrite every later month and require features not to move, and fail when a leak is deliberately injected.
 - *Features (fixed):* specialty (rare ones grouped) and its prior share; the segment's own prior share; age as an ordered number; gender; last month's segment share and the mean over months t−3 to t−1; **last month's segment share minus last month's market share (distance from the line: a segment just above flips easily, one far above does not)**; last month's log volume and label; last month's market share and its change; month sin/cos. A missing lag is a missing value (median fill plus a "was missing" flag inside the pipeline, fit on training data only).
+- *Result of the audit (7 Oct 2026, DL-48):* the interval rule **failed** the gate (2,355 scored rows, fewer than 3,000; 72% of prediction rows undetermined), so the plan's fallback applies: two labels (above or below the market-wide share), restricted to segments with at least 100 category visits **last month** (a prediction-time rule; the plan did not say which month, and conditioning on the outcome month's volume would use information we do not have when predicting). That leaves 5,436 prediction rows over 70 months, 47% High, with persistence at 0.82 balanced accuracy.
 - *Gate:* leakage tests pass (including the injected-leak check) and row counts reconcile to Gold.
 
-**Step 7: Extend the harness (M).** Pooled scoring, per-month scoring, the month bootstrap, paired differences against the best baseline, a flip-subset score (segments whose label changed from last month, where persistence is wrong by definition), visit-weighted versions of every metric, and a check that proves the test month is never used in tuning. *Gate:* every function has a test with a hand-computed answer.
+**Task A is now two linked tests (DL-49, 7 Oct 2026).** The Step 6 audit showed the High/Low label barely changes (persistence 0.82, only about 980 changes in 70 months), so a label-only test has little power. The **primary test (A1) predicts each segment's share next month from its visit counts** and is judged on out-of-sample log-loss per visit, which uses every row and the actual counts. The **secondary test (A2) is the High/Low question**, derived from the A1 predictions and judged against persistence on the segments whose label changes.
 
-**Step 8: Baselines and models for Task A (L).**
+**Step 7: Extend the harness for segment rows (M).**
+- *Walk-forward over rows:* for each test month t, train on every row from months before t (24-month minimum), predict every row in t. A runtime guard raises if the training rows contain month t or later, and a test proves it.
+- *Scores:* binomial log-loss per visit (primary; predictions are clipped to 1e-6 to 1 - 1e-6), visit-weighted and unweighted MAE of the share, per-month versions of each, and for A2 balanced accuracy and the flip-subset score (rows whose label changed from last month, where persistence is wrong by definition).
+- *Inference:* month-block bootstrap (2,000 draws, fixed seed) of the paired difference against the best baseline, resampling whole test months from per-month sums so every draw is fast.
+- *Gate:* every function has a test with a hand-computed answer; the guard test fails when a deliberately leaky model factory is used.
+
+**Step 8: Baselines and models (L).**
+
+*A1, predicted share for segment-month t (fixed):*
 
 | Role | Model | Grid (fixed) |
 |---|---|---|
-| Baseline | Majority class | none |
-| Baseline | **Persistence:** last month's raw above/below-market sign | none |
-| Baseline | **Specialty track record:** High if the specialty's prior share is above last month's market share | none |
-| Trained, core | Logistic regression (scaled, balanced weights) | C in {0.01, 0.1, 1} |
-| Trained, core | Gradient boosting (HistGradientBoosting, 200 iterations) | learning_rate in {0.05, 0.1} × max_depth in {3, 5} |
-| Trained, if time | Random forest (300 trees) | max_depth in {4, 8, 12} × min_samples_leaf in {5, 20} |
+| Baseline | **Market:** the market-wide share in t-1 | none |
+| Baseline | **Last month:** the segment's share in t-1, smoothed as (z + 0.5) / (n + 1) | none |
+| Baseline | **Segment history:** the segment's cumulative share to t-1, same smoothing | none |
+| Baseline | **Specialty history:** the specialty's cumulative share to t-1 | none |
+| Trained, core | Binomial logistic regression (inputs below; scaled) | C in {0.01, 0.1, 1} |
+| Trained, core | Gradient boosting (HistGradientBoosting, binomial loss, 200 iterations) | learning_rate in {0.05, 0.1} x max_depth in {3, 5} |
+| Trained, if time | Random forest (300 trees) | max_depth in {4, 8, 12} x min_samples_leaf in {5, 20} |
 | Trained, last | XGBoost (first cut) | same grid as gradient boosting |
 
-Walk-forward by month, expanding window, 24-month minimum, one month ahead, a fresh model per fold. Tuning happens only inside the training window (last 12 months as validation; balanced accuracy; ties go to the simpler setting; redone every 6 test months); a test month never influences a choice. Seeds fixed; every run logged to MLflow. *Gate:* the baselines reproduce the profile numbers within rounding; a second full run gives identical results.
+The **best baseline** is the one with the lowest pooled log-loss on the test rows. Models fit success and failure counts as weighted rows. Logistic inputs: the logit of the smoothed last-month share, 3-month mean, segment history, specialty history and market share; the market change; last month's log volume and its interaction with the logit of last month's share (so the model can weigh a noisy small-segment history less); age; gender; month sin and cos; specialty (one-hot). Tree models take the raw features of `TASK_A_FEATURES`.
+
+*A2, High or Low (secondary, fixed):* predict High if the A1 prediction is above last month's market share; the truth is the two-label label from Step 6 (segments with at least 100 visits last month). Baselines: majority class, persistence (last month's sign), and the specialty rule (High if the specialty's prior share is above last month's market share).
+
+*Protocol:* walk-forward by month, expanding window, 24-month minimum, one month ahead, a fresh model per fold. Tuning only inside the training window (last 12 months as validation; log-loss per visit; ties go to the simpler setting; redone every 6 test months); a test month never influences a choice. Seeds fixed; every run logged to MLflow. *Gate:* the A2 baselines reproduce the Step 6 audit numbers (persistence 0.82 balanced accuracy on the 5,436 rows) within rounding; a second full run gives identical results.
 
 **Step 9: Judge and explain Task A (M).**
-- *Metrics:* balanced accuracy (primary), ROC AUC, F1 for High, log loss, Brier score, per-month balanced accuracy, and the flip-subset score; unweighted and visit-weighted.
+- *A1 metrics:* log-loss per visit (primary), visit-weighted and unweighted MAE of the share, per-month log-loss, and calibration (predicted against observed share by decile of the prediction, visit-weighted). *A2 metrics:* balanced accuracy, ROC AUC, F1 for High, and the flip-subset score; unweighted and visit-weighted.
 - *Intervals:* the bootstrap resamples whole test months (2,000 draws, fixed seed) because rows in a month share market conditions; paired differences against the best baseline on the same resampled months.
-- *Serving rule (DL-41):* a trained model is promoted only if the 1.67th percentile of its paired improvement over the best baseline is above zero (Bonferroni for three core and optional trained models) and its balanced accuracy is above 0.5; the best promoted model serves, otherwise the best baseline serves and the site says so.
-- *Checks:* calibration (when the model says 70%, is it right about 70% of the time), error analysis (which segments flip, where it fails), and the Step 5 sensitivity exclusions.
-- *Explanation:* permutation importance, SHAP (tree models) and effects by specialty and age for the best trained model, whether or not it is promoted, labelled **not causal** and compared with the Step 4 effects; disagreements are written down.
+- *Serving rule (DL-41, applied to A1):* a trained model is promoted only if the 1.67th percentile of its paired log-loss improvement over the best baseline is above zero (Bonferroni for three trained models); the best promoted model serves, otherwise the best baseline serves and the site says so. A2 is reported with the same intervals as supporting evidence and does not decide serving.
+- *Tie-break (DL-50):* among promoted models the simplest serves (order: logistic, gradient boosting, forest) unless a more complex one is clearly better, meaning the 1.67th percentile of its paired log-loss improvement over the simpler one is above zero.
+- *Judging rules (fixed 8 Oct 2026, before the Step 9 runs).* Each is evaluated on the baseline run and on three exclusions (PEDIATRICS removed before the dataset is built, so the market share is recomputed; the COVID months and the Mar to Jul 2024 dip removed from training and scoring rows, with lag features left as they are). A conclusion is **robust** only if its rule holds in all four runs, otherwise **fragile**.
+  - **J1, promotion holds:** the serving model's paired log-loss improvement over the best baseline has its 1.67th percentile above zero.
+  - **J2, share error is lower:** the serving model's visit-weighted and unweighted MAE are both lower than last month's share's.
+  - **J3, High or Low beats persistence:** the serving model's derived balanced accuracy beats persistence with the 1.67th percentile of the paired difference above zero.
+  - **J4, calibration:** the serving model's calibration slope (observed against predicted on the logit scale, visit-weighted) lies between 0.8 and 1.2. This one is informational for promotion but is reported with its verdict.
+- *Further checks, reported and not gating:* in how many of the test months the serving model beats the best baseline; the improvement by size of the segment's visits last month (to test the claim that small segments gain most); the decile calibration table; how many stable segments the High or Low prediction wrongly flips alongside how many real flips it catches; ROC AUC and F1 for High; error analysis by specialty (where the model fails).
+- *Explanation (SHAP is not installed and stays on the cut list):* permutation importance by feature group on the test folds, the logistic regression's standardized coefficients, and observed against predicted share by specialty and age band, compared with the Step 4 adjusted shares by rank agreement. Labelled **not causal**; disagreements with Step 4 are written down.
 - *Gate:* the verdict holds in all views, or the exceptions are reported.
 
-**Step 10: Task B, the share forecast with intervals (M).**
-- *Baselines:* same as last month; same month last year. *Trained:* ETS with damped additive trend; ETS with damped trend and additive yearly seasonality; ridge regression on lags 1 to 3, the shifted 3-month mean and month sin/cos (alpha in {0.1, 1, 10}). A fold where an ETS fit fails falls back to the baseline forecast, and fallbacks are counted.
-- *Intervals (fixed):* 80% and 90% prediction intervals for every model (ETS from simulation; baselines from the expanding-window empirical residuals).
-- *Scoring:* MAE in percentage points (primary), RMSE, MASE, **interval coverage and width**, with the same month-bootstrap comparison against the best baseline and the same serving rule (1.67th percentile).
-- *Why this matters:* the intervals are what Step 11 monitors, so a tie with "same as last month" is still a useful result.
-- *Gate:* coverage is close to nominal (an 80% interval contains the actual about 80% of the time) or the miscalibration is reported.
+**Step 10: Task B, the share forecast with intervals (M).** Details fixed 8 Oct 2026, before any Task B run (DL-52).
+- *Series and protocol:* the monthly Zilretta visit share from Gold, in percentage points (share x 100), 72 months. Walk-forward, expanding window, 24-month minimum, one month ahead, a fresh model per month: 48 test months (Aug 2021 to Jul 2025).
+- *Baselines:* **last month** (forecast = last month's value) and **same month last year** (needs 12 months). Their 80% and 90% intervals are the forecast plus the empirical 10th/90th and 5th/95th percentiles of the baseline's own one-step errors over the training window.
+- *Trained models:* **ETS damped** (statsmodels `ETSModel`, additive error, damped additive trend, no seasonality); **ETS damped seasonal** (the same with additive seasonality, period 12); **ridge regression** on lags 1 to 3, the shifted 3-month mean (identical information to the three lags, kept as the plan lists it) and month sin/cos, inputs standardized. A month where an ETS fit fails or returns non-finite values falls back to last month's forecast and interval, and fallbacks are counted and reported.
+- *Ridge tuning:* alpha in {0.1, 1, 10}, chosen inside the training window by one-step rolling-origin squared error over its last 12 months (ties go to the larger alpha, the simpler model); re-chosen every 6 test months. With so few rows a single validation split would be too thin, so each of the last 12 months is predicted from a model fitted on the months before it.
+- *Intervals:* ETS from the model's own analytic prediction intervals; ridge from the empirical one-step errors of its rolling-origin forecasts over the training window (from the first origin with 12 months of history); baselines as above.
+- *Scoring:* MAE in percentage points (primary), RMSE, MASE (each month's absolute error scaled by the training window's in-sample one-step "last month" MAE, then averaged), empirical coverage and mean width of the 80% and 90% intervals, and the interval (Winkler) score.
+- *Inference:* a **moving-block bootstrap** of the 48 monthly absolute errors (block length 6, 2,000 draws, seed 0; lengths 3 and 12 as sensitivity checks), paired against the best baseline, because forecast errors in one series are serially dependent and resampling single months would overstate certainty. The best baseline is the one with the lowest pooled MAE.
+- *Serving rule:* a trained model is promoted only if the 1.67th percentile of its paired MAE improvement over the best baseline is above zero (Bonferroni for three models); among promoted models the simplest serves unless a more complex one is clearly better (order: ETS damped, ridge, ETS damped seasonal; DL-50); otherwise the best baseline serves and the site says so.
+- *Why this matters:* the intervals are what Step 11 monitors, so a tie with "last month" is still a useful result.
+- *Gate:* coverage is near nominal, defined as within two binomial standard errors for 48 months (80% interval: 68% to 92%; 90% interval: 81% to 99%), or the miscalibration is reported.
 
 ### Part 3: Monitoring and closure
 
@@ -139,7 +164,7 @@ Walk-forward by month, expanding window, 24-month minimum, one month ahead, a fr
 
 - **Q1:** what the trend is, where it bent, and how much of the fall comes from the specialty mix changing versus Zilretta's own share within specialties.
 - **Q2:** no reliable direction signal, by how much the classifier falls short of persistence, and what the test could have detected.
-- **Q3:** which specialties sit above or below the market after adjusting for age, gender and month, whether that ranking is stable over time, and whether High/Low can be predicted beyond "same as last month", mainly on segments that flip.
+- **Q3:** which specialties sit above or below the market after adjusting for age, gender and month, whether that ranking is stable over time, and whether a segment's share next month can be predicted better than "same as last month" or its own history (A1), and High/Low beyond "same as last month", mainly on segments that flip (A2).
 - **Q4:** how often the direction predictions matched, the accuracy at which to raise a flag, and a forecast-interval alarm whose false-alarm rate is known.
 
 ## Models in one view
@@ -147,7 +172,7 @@ Walk-forward by month, expanding window, 24-month minimum, one month ahead, a fr
 | Purpose | Models |
 |---|---|
 | Inference (Q1, Q3) | Two-term decomposition; piecewise-linear change points; binomial model with month fixed effects |
-| Segment prediction (Task A) | Baselines: majority, persistence, specialty rule. Trained: logistic regression, gradient boosting; random forest if time; XGBoost last |
+| Segment prediction (Task A) | A1, next month's share: baselines market, last month, segment history, specialty history; trained binomial logistic regression and gradient boosting (random forest if time, XGBoost last). A2, High/Low: derived from A1, against majority, persistence and the specialty rule |
 | Share forecast (Task B, feeds Q4) | Baselines: last month, same month last year. Trained: ETS (damped), ETS (damped, seasonal), ridge on lags |
 | Direction (Q2, done) | Logistic regression and four baselines, closed with a power statement |
 
