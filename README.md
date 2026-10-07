@@ -71,6 +71,9 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 | [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model feature: its definition, the EDA finding behind it, and the leakage rule that governs it |
 | [`docs/evaluation_protocol.md`](docs/evaluation_protocol.md) | How models are tested (walk-forward, metrics, McNemar), the baselines, and their results on the real data |
 | [`docs/model_card_logistic_regression.md`](docs/model_card_logistic_regression.md) | The first trained model: settings, data, results against the baselines and chance, overfitting, and limits |
+| [`docs/phase4_modeling_plan.md`](docs/phase4_modeling_plan.md) | The Phase 4 plan: how each of the four business questions is answered, the models, the test protocol and the rule that decides what serves, fixed before the analyses run |
+| [`docs/decision_log.md`](docs/decision_log.md) | Every significant decision, why it was made, and what was rejected |
+| [`docs/deployment.md`](docs/deployment.md) | How the public site is deployed (hosting, secrets, domain) |
 
 ## Status
 

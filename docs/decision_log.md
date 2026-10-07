@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-37, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-43, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -184,6 +184,24 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-37 · 6 Oct 2026 · Version 1 defaults for the Claude question box.** Decided as defaults; change them through Q-06 and Q-07.
 *Defaults:* answers come only from four read-only tools that return aggregate summaries (no SQL, no rows); the default model is Claude Haiku 4.5 (cheap and fast; configurable by a host secret); at most 8 questions per visitor per hour, 200 per hour for the whole site, and 300,000 tokens per day; an optional shared access code (off unless a secret is set). The API key lives only in the host's secrets, never in the repository. *Your action:* create the API key with a monthly spend limit in the Anthropic console; the in-app limits are a second line of defence, not a replacement.
+
+**DL-38 · 7 Oct 2026 · Phase 4 is redone inference first, prediction second, and mapped to the four business questions in the course project document.** Decided (your direction: the first pass was not enough and the results must be reliable for stakeholders).
+*What:* Q1 trend and change points plus a decomposition of the share decline into specialty-mix and within-specialty adoption effects; Q3 a binomial model of specialty, age and gender effects with intervals and a stability check; predictive Task A (segment High/Low) and Task B (share forecast with intervals) tested against the strongest simple baselines; Q4 monitoring; Q2 closed with a statement of what the test could detect. *Why:* the data is six years of aggregated counts for one drug, which supports careful inference with honest uncertainty far better than precise prediction; the first plan also left Q4 uncovered and treated Q1 only descriptively. Full plan: [`phase4_modeling_plan.md`](phase4_modeling_plan.md). *Rejected:* more variants of the direction classifier (more tries, not more evidence); making ML models the headline result.
+
+**DL-39 · 7 Oct 2026 · Q3 uses a binomial model with month fixed effects, and Task A uses a three-label scheme (High, Low, undetermined) from Wilson intervals, adopted only if it passes a pre-modeling audit.** Decided; the label scheme is conditional on the audit gate in Step 6, with a stated fallback (two labels, segments with at least 100 visits).
+*Why:* "above the market share" flips by chance for small segments, so part of persistence's 0.77 balanced accuracy is stickiness of noise and part of any model's error is unpredictable chance. Using the counts directly (binomial) and labelling only segments that are clearly above or below removes that noise. *Rejected:* the simple two-label rule as the primary label, and the top third of segments each month (forces a fixed 33% High). Changes the earlier default for Q-04.
+
+**DL-40 · 7 Oct 2026 · Models: a small core, tested carefully.** Decided.
+*Core:* logistic regression and gradient boosting (scikit-learn) for Task A; damped ETS and "same as last month" for Task B. *If time:* random forest, seasonal ETS, ridge. *Last, first cut:* XGBoost. Inference uses a decomposition, change points and a binomial model. *Why:* reliability does not come from the number of models; a few models with pre-specified grids, month-level intervals and strong baselines are stronger than many tuned loosely. Resolves Q-05 in favour of ETS. *Rejected:* deep learning (too little data), a model per specialty (17 specialties), SARIMA (72 months).
+
+**DL-41 · 7 Oct 2026 · The test protocol and the serving rule for Phase 4 are fixed before the analyses run.** Decided.
+*What:* features use month t−1 or earlier only; tuning happens inside the training window with grids fixed in the plan; test months never influence a choice; confidence intervals resample whole months (rows within a month are not independent); a trained model is promoted only if the lower end (1.67th percentile, Bonferroni for three trained models) of its paired improvement over the best baseline is above zero, and for Task A its balanced accuracy is above 0.5. Extra variants are reported as exploratory. Every headline conclusion is re-run without the known data problems (PEDIATRICS from Oct 2024, the COVID months, the Mar to Jul 2024 dip) and labelled robust or fragile. *Why:* this is what makes a positive result believable and a negative one honest. It extends DL-32 and the evaluation protocol.
+
+**DL-42 · 7 Oct 2026 · The v1 site is deployed in parallel with the Phase 4 redo; it does not wait for it.** Decided as the default.
+*Why:* the site already shows the honest current panel, and the new results appear on it at the next publish with no site change beyond the Model results tab. Refines the sequencing in PD-09. The schedule for Phase 4 itself is left open until you set your dates.
+
+**DL-43 · 7 Oct 2026 · Q4 monitoring has two parts, Q2 is closed with a power statement, and Q1's FDA question is stated as untestable as worded.** Decided.
+*Q4:* (a) the direction model's month-by-month match rate with a review threshold from a block bootstrap, as the question is worded (wide, with 35 test months); (b) a forecast-interval alarm, flagging when at least 3 of the last 6 months fall outside the 90% interval (about 1.6% false alarms if the intervals are calibrated), which is the monitor to rely on. Backtest predictions fill the empty `predicted_direction` / `actual_direction` Gold columns, labelled as backtest. *Q2:* a simulation states the smallest improvement over persistence that 35 test months could have detected, so "no signal" is not confused with "too little data". *Q1:* Zilretta's approval (Oct 2017) predates the data (Aug 2019), so its entry cannot be observed. RA stays descriptive (about 1,283 visits). Task B is promoted from lowest priority because it feeds Q4.
 
 ## Known loose ends (not decisions)
 
