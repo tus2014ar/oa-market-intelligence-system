@@ -33,6 +33,7 @@ from oa_market_intelligence.modeling.evaluation import (
     walk_forward_predict,
     walk_forward_splits,
 )
+from oa_market_intelligence.modeling.models import make_logistic_regression
 
 
 def _month_ids(n, year=2019, month=8):
@@ -86,8 +87,17 @@ def test_predict_requires_time_ordered_rows():
         lambda: KNeighborsClassifier(n_neighbors=1),  # memorizes any row it is allowed to see
         lambda: StratifiedRandomBaseline(random_state=3),
         SeasonalBaseline,
+        make_logistic_regression,  # the primary model, scaler included
     ],
-    ids=["majority", "persistence", "logistic", "nearest-neighbour", "random", "seasonal"],
+    ids=[
+        "majority",
+        "persistence",
+        "logistic",
+        "nearest-neighbour",
+        "random",
+        "seasonal",
+        "primary",
+    ],
 )
 @pytest.mark.parametrize("t", [28, 33])
 def test_prediction_for_month_t_ignores_later_months(make_model, t):

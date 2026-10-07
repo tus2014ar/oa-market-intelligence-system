@@ -83,4 +83,4 @@ On the real data the intervals are wide (persistence: balanced accuracy 0.41 wit
 ## Not yet built
 
 - The classical time-series check (SARIMA or ETS on the share series, with the label derived from its forecast).
-- The trained models (logistic regression, random forest, gradient boosting), MLflow tracking and SHAP.
+- Random forest and gradient boosting, MLflow tracking and SHAP. (The first trained model, a logistic regression, did not beat the baselines or chance; see [`model_card_logistic_regression.md`](model_card_logistic_regression.md).)

@@ -277,3 +277,36 @@ def simulate_scores(
         )
         rows.append(score_predictions(run["y_true"], run["y_pred"]))
     return pd.DataFrame(rows, index=pd.Index(seeds, name="seed"))
+
+
+def in_sample_scores(
+    frame: pd.DataFrame,
+    make_model: Callable[[], object],
+    *,
+    target: str = TARGET,
+    min_train: int = DEFAULT_MIN_TRAIN,
+) -> pd.DataFrame:
+    """For each walk-forward fold, how well the freshly trained model scores on its *own*
+    training months. Set beside the out-of-sample scores, a large gap means overfitting:
+    the model memorised the months it saw instead of learning something that carries over.
+    Indexed by the test month the fold goes on to predict."""
+    features = frame.drop(columns=target)
+    labels = frame[target]
+    rows = []
+    for train, test in walk_forward_splits(len(frame), min_train=min_train):
+        model = make_model()
+        model.fit(features.iloc[train], labels.iloc[train])
+        scored = score_predictions(labels.iloc[train], model.predict(features.iloc[train]))
+        rows.append(
+            {
+                "train_accuracy": scored["accuracy"],
+                "train_balanced_accuracy": scored["balanced_accuracy"],
+                "train_macro_f1": scored["macro_f1"],
+                "train_recall_down": scored["recall_down"],
+            }
+        )
+    index = pd.Index(
+        [frame.index[t] for _, t in walk_forward_splits(len(frame), min_train=min_train)],
+        name=frame.index.name or "month_id",
+    )
+    return pd.DataFrame(rows, index=index)

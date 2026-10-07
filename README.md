@@ -2,7 +2,7 @@
 
 A monthly-refreshable, production-oriented classification system that tracks and predicts visit-share direction between branded specialty injectables and generic pain therapies in Osteoarthritis (OA) and Rheumatoid Arthritis (RA), built on real IQVIA National Medical and Treatment Audit (NMTA) patient-visit data.
 
-**Status:** data pipeline, exploratory analysis, feature engineering and the evaluation harness with baselines and confidence intervals complete; the classifier models are next (see [Status](#status)).
+**Status:** data pipeline, exploratory analysis, feature engineering and the evaluation harness complete; a first trained model (logistic regression) does not beat the simple baselines or chance on the available data (see [Status](#status)) (see [Status](#status)).
 
 Built as a capstone project for **DAAN 888 — Design and Implementation of Analytics System**, Penn State University, School of Graduate Professional Studies (Fall 2026).
 
@@ -22,7 +22,7 @@ Each item is tagged **[Built]** (implemented and tested in this repo), **[In pro
 - **[Built]** Three executed EDA notebooks (raw data, the cleaned warehouse, and RA) whose findings shaped the cleaning rules and the label definition
 - **[Built]** Leak-safe, model-ready feature matrices computed from the Gold tables (a monthly matrix for the classifier and a segment matrix with a specialty-level target encoding), each guarded by a test that rewrites every later month and requires the features not to move
 - **[Built]** A walk-forward evaluation harness (24-month minimum window, one month ahead, McNemar's test, bootstrap confidence intervals) with four baselines (random by class mix, always-majority, persistence, a seasonal rule) on the real data; its leakage test fails if the harness trains on the month it predicts
-- **[Planned]** Classifies next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against a persistence baseline and a classical time-series (SARIMA/ETS) validation check. This is the next step: the target label, the feature matrices, the evaluation harness and the baselines are built, but no model has been trained yet
+- **[In progress]** Classifies next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against four baselines and a classical time-series (SARIMA/ETS) validation check. A first model, a regularized logistic regression with settings fixed in advance, has been trained and tested; it does not beat the baselines or chance, and it overfits (see [`docs/model_card_logistic_regression.md`](docs/model_card_logistic_regression.md)). The label may not be predictable at this sample size; the next step is deciding how to proceed
 - **[Planned]** Segments provider specialties/demographics by adoption level (High vs. Low) — stretch objective. The segment-level Gold table it will read is built; the adoption labels are not
 - **[Planned]** Monitors its own predictions against actual results monthly, and flags meaningful misses (the Gold table has empty placeholder columns for predictions and actuals)
 - **[Planned]** Serves a public, multi-user website (open signup, access-code gated) with a dashboard and a Q&A / on-demand visualization layer: Claude connected through the Model Context Protocol (MCP) to scoped, read-only tools over the Gold tables, plus a RAG tool for methodology and regulatory questions — never raw SQL
@@ -68,6 +68,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 | [`docs/silver_gold_data_dictionary.md`](docs/silver_gold_data_dictionary.md) | What every Silver and Gold column means and where its value comes from |
 | [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model feature: its definition, the EDA finding behind it, and the leakage rule that governs it |
 | [`docs/evaluation_protocol.md`](docs/evaluation_protocol.md) | How models are tested (walk-forward, metrics, McNemar), the baselines, and their results on the real data |
+| [`docs/model_card_logistic_regression.md`](docs/model_card_logistic_regression.md) | The first trained model: settings, data, results against the baselines and chance, overfitting, and limits |
 
 ## Status
 
@@ -80,7 +81,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 - **Silver builder**: upserts the 4 dimension tables (stable surrogate keys) and full-refresh-overwrites the 2 fact tables
 - **Gold builder**: computes `visit_share`, the Up/Down/Flat direction label, lag/rolling features, and the FDA-derived competitive-context features
 - **Pipeline orchestration**: `pipeline.py` ties every stage together behind one CLI command, with a scheduled + manually-triggerable GitHub Actions workflow
-- 227 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
+- 239 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
 
 **Phase 3's EDA sub-phase is complete** — three notebooks, each executed end to end against the real warehouse with zero errors:
 
@@ -92,7 +93,9 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 
 **Evaluation harness and baselines are built** — [`src/oa_market_intelligence/modeling/`](src/oa_market_intelligence/modeling/) runs an expanding walk-forward backtest (24-month minimum window, one month ahead), scores models on recall for the Down class, balanced accuracy and macro-F1, and puts bootstrap confidence intervals on every score; results are in [`notebooks/04_evaluation_and_baselines.ipynb`](notebooks/04_evaluation_and_baselines.ipynb) and [`docs/evaluation_protocol.md`](docs/evaluation_protocol.md). On the 35 test months (25 Flat, 6 Down, 4 Up), always-Flat reaches 71% accuracy but never catches a Down month, and persistence and the seasonal rule each catch 1 of 6, which sits inside the range that random guessing produces (balanced accuracy 0.21 to 0.46 over 1,000 random runs). So no baseline can be told apart from luck at this sample size, the intervals are wide, and a model should be judged against that chance band (balanced accuracy above about 0.46, recall on Down above about 33%).
 
-**Remaining in Phase 3** — the classifier itself: logistic regression, random forest and gradient boosting, run through that harness against the two baselines and compared via McNemar's test, with MLflow tracking and SHAP explainability. Later phases: knowledge graph (stretch), monitoring and promotion, MCP/RAG serving layer, website, and deployment.
+**First model trained** — a regularized logistic regression, with its settings (`C = 0.1`, balanced class weights, all 22 features) fixed before any result was seen, run through the walk-forward harness ([`notebooks/05_logistic_regression.ipynb`](notebooks/05_logistic_regression.ipynb), [model card](docs/model_card_logistic_regression.md)). **It does not beat the baselines or chance:** balanced accuracy 0.37 (inside the 0.21 to 0.46 range random guessing produces), recall on Down 1 of 6, accuracy 40% against 71% for always-Flat. It also overfits, scoring about 0.86 balanced accuracy on the months it trained on and 0.37 on unseen months. Exploratory variants (other regularization strengths, class weights, feature subsets) were run and reported in full but none is a finding, since the best clears the chance ceiling by a hair and is one of about a dozen tries. The pipeline, features and harness are sound; the evidence is that this label is not predictable from these features at 59 months.
+
+**Remaining in Phase 3** — decide how to proceed given that result. Options not yet run: reframe the question (for example "Down versus not Down", or the size of the change), a much simpler model on a few features chosen in advance, more history, or reporting the null result as the project's finding. Random forest and gradient boosting, MLflow tracking and SHAP remain planned, though more flexible models are unlikely to help at this sample size. Later phases: knowledge graph (stretch), monitoring and promotion, MCP/RAG serving layer, website, and deployment.
 
 Development is local-first: cloud infrastructure (the DVC remote, the hosted website) is stood up only once there is something ready to demo publicly. See [`docs/PROPOSAL.md`](docs/PROPOSAL.md) §8 for the course roadmap and §19.6 for the persistence model.
 

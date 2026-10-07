@@ -60,6 +60,34 @@ MONTHLY_FEATURES = [
 ]
 
 
+# For ablations: which families of features a model can lean on. Every monthly feature is in
+# exactly one group.
+FEATURE_GROUPS = {
+    "share_history": [
+        "share_lag_1",
+        "share_lag_2",
+        "share_lag_3",
+        "share_mean_prior_3m",
+        "share_mean_prior_6m",
+        "share_gap_to_prior_6m",
+        "share_change_lag_1",
+        "share_change_lag_2",
+        "share_change_std_prior_12m",
+        "share_rolling_z_lag_1",
+    ],
+    "volume": [
+        "branded_injectable_growth_lag_1",
+        "generic_corticosteroid_growth_lag_1",
+        "nsaid_otc_growth_lag_1",
+        "nsaid_mix_lag_1",
+        "office_mix_lag_1",
+        "telehealth_mix_lag_1",
+    ],
+    "calendar": ["month_sin", "month_cos", "is_december", "is_january", "months_since_launch"],
+    "events": ["covid_shock", "dip_2024"],
+}
+
+
 def load_monthly_gold(engine: Engine) -> pd.DataFrame:
     with engine.connect() as conn:
         return pd.read_sql("SELECT * FROM gold_visit_share_monthly ORDER BY month_id", conn)
