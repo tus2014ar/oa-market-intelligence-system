@@ -9,11 +9,12 @@ import json
 
 import pandas as pd
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
-from oa_market_intelligence.publish import publish
+from oa_market_intelligence.publish import parse_args, publish
 from oa_market_intelligence.serving.model_panel import load_stored_panel
 from oa_market_intelligence.serving.queries import data_status
+from oa_market_intelligence.serving.results import load_result
 from tiny_gold import build_tiny_gold
 
 MONTHS_2 = (201908, 201909)
@@ -40,6 +41,22 @@ def _fake_panel(engine, **_):
     }
 
 
+def _fake_results(engine, precision):
+    """Minimal stand-ins for the five stored results; the direction one carries backtest rows."""
+    return {
+        "findings": {"trend": {"break_months": [202203]}},
+        "segment_model": {"decision": {"serving": "logistic"}},
+        "forecast": {"decision": {"serving": "last_month"}},
+        "direction": {
+            "decision": {"serving": "seasonal"},
+            "predictions": [
+                {"month_id": 201909, "y_true": "Up", "seasonal": "Flat", "persistence": "Up"}
+            ],
+        },
+        "monitoring": {"status": "ok", "banner": None},
+    }
+
+
 def _publish(tmp_path, month_ids, **overrides):
     return publish(
         raw_dir=tmp_path / "raw",
@@ -47,6 +64,7 @@ def _publish(tmp_path, month_ids, **overrides):
         published_dir=tmp_path / "published",
         run_pipeline_fn=overrides.pop("run_pipeline_fn", _fake_pipeline(month_ids)),
         panel_fn=overrides.pop("panel_fn", _fake_panel),
+        results_fn=overrides.pop("results_fn", _fake_results),
         **overrides,
     )
 
@@ -135,3 +153,47 @@ def test_the_log_is_append_only_json_lines(tmp_path, count):
         _publish(tmp_path, MONTHS_2)
     assert len(_log(tmp_path)) == count
     assert {"status", "started_at", "finished_at"} <= set(_log(tmp_path)[0])
+
+
+def test_every_result_is_stored_in_the_published_file_with_its_precision(tmp_path):
+    record = _publish(tmp_path, MONTHS_2, precision="fast")
+    assert record["status"] == "ok" and record["precision"] == "fast"
+    engine = create_engine(f"sqlite:///{_db(tmp_path).as_posix()}")
+    for key in ("findings", "segment_model", "forecast", "direction", "monitoring"):
+        stored = load_result(engine, key)
+        assert stored is not None and stored["precision"] == "fast", key
+    assert load_result(engine, "findings")["trend"]["break_months"] == [202203]
+    assert record["monitoring_status"] == "ok"
+
+
+def test_the_backtest_predictions_are_written_to_the_gold_columns_before_the_swap(tmp_path):
+    _publish(tmp_path, MONTHS_2)
+    engine = create_engine(f"sqlite:///{_db(tmp_path).as_posix()}")
+    with engine.connect() as conn:
+        rows = conn.execute(
+            text("SELECT month_id, predicted_direction, actual_direction, model_version "
+                 "FROM gold_visit_share_monthly ORDER BY month_id")
+        ).fetchall()
+    assert rows[0] == (201908, "Flat", "Up", "backtest walk-forward: seasonal")
+    assert rows[1][1:] == (None, None, None)
+
+
+def test_a_failing_results_stage_keeps_the_last_good_database(tmp_path):
+    _publish(tmp_path, MONTHS_2)
+    before = _db(tmp_path).read_bytes()
+
+    def broken(engine, precision):
+        raise RuntimeError("segment model did not converge")
+
+    record = _publish(tmp_path, MONTHS_3, results_fn=broken)
+    assert record["status"] == "failed"
+    assert "did not converge" in record["error"]
+    assert _db(tmp_path).read_bytes() == before
+    assert [entry["status"] for entry in _log(tmp_path)] == ["ok", "failed"]
+
+
+def test_the_command_line_takes_a_precision_and_defaults_to_full():
+    assert parse_args([]).precision == "full"
+    assert parse_args(["--precision", "fast"]).precision == "fast"
+    with pytest.raises(SystemExit):
+        parse_args(["--precision", "sloppy"])

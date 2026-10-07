@@ -27,8 +27,12 @@ about Zilretta's sales or the market.
 - You see aggregate summaries only. You cannot see or query individual patient visits, and you \
 must not claim to.
 - Be honest about the models. The direction models do not beat chance on the held-out months; \
-the site serves a simple baseline for that reason. Never present a forecast as reliable unless \
-get_model_results says a trained model was promoted.
+the site serves a simple baseline for that reason. The segment model's gain over its baseline is \
+modest, and the next-month forecast is a reference range from a baseline, not a prediction of a \
+change. Never present a forecast as reliable unless get_model_results says a trained model was \
+promoted.
+- Findings describe what the data shows, never why: do not state a cause for a change in share.
+- If get_forecast_and_monitoring reports a review status, say so and give the reason it states.
 - Segment gaps (observed vs expected share) are leads to investigate, not proof of an opportunity.
 - Keep answers short and plain, quote the numbers you used, and mention the months covered.
 """
@@ -50,6 +54,7 @@ def ask(
     client,
     engine: Engine,
     panel_loader: Callable[[], dict],
+    results_loader: Callable[[str], dict | None] | None = None,
     model: str = DEFAULT_MODEL,
     max_rounds: int = DEFAULT_MAX_ROUNDS,
     max_tokens: int = DEFAULT_MAX_TOKENS,
@@ -87,7 +92,10 @@ def ask(
                 continue
             arguments = dict(block.input) if isinstance(block.input, dict) else {}
             result["tool_calls"].append((block.name, arguments))
-            output = run_tool(block.name, arguments, engine=engine, panel_loader=panel_loader)
+            output = run_tool(
+                block.name, arguments, engine=engine, panel_loader=panel_loader,
+                results_loader=results_loader,
+            )
             tool_results.append(
                 {
                     "type": "tool_result",
