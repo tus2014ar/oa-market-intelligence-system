@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-47, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-48, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -214,6 +214,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-47 · 7 Oct 2026 · Part 1 of Phase 4 (Q1 and Q3 inference) passed its sensitivity checks: all five headline conclusions are robust.** Decided (result recorded).
 *Rules* were fixed in the plan before the run and applied to a baseline and to three exclusions (PEDIATRICS, the COVID months, the Mar to Jul 2024 dip), at 300 bootstrap draws (100 for stability). *Verdicts:* **T1** a trend break in early 2022 holds (Jan to Mar 2022 in every run, intervals from May or June 2021 to June or August 2022); **D1** the decline is within-specialty, with the rate effect 4 to 18 times the mix effect; **A1** specialty carries 50 to 52% of explainable variation; **A2** all eight clearly-above or clearly-below specialties keep their side; **A3** split-half rank correlation 0.78 at baseline, 0.85 to 0.88 without the COVID or dip months. *Noted:* the PEDIATRICS anomaly inflates the grouped "other specialties" share (1.70% to 1.08% once removed) and leaves every named specialty unchanged; the net year 1 to 6 decline shrinks from 0.317 to 0.221 percentage points without the COVID months, while the larger peak-to-latest decline (1.114 points) is unaffected. *Limit:* the exclusions are small perturbations, so "robust" means not driven by these known problems, not robust to every perturbation. Bootstrap fits that did not converge (levels with no events in a resample) are excluded and were not counted in this run.
+
+**DL-48 · 7 Oct 2026 · The Task A label audit failed for the interval scheme, so the pre-specified two-label fallback is used, with a last-month volume rule.** Decided (applying the plan's own gate).
+*Audit (8,450 prediction rows, 70 months, 150 segments):* the 95% interval scheme leaves 2,355 scored rows (28%), below the 3,000 gate; the High share (62%) and Low share (38%) pass. A 90% interval would scrape through (3,009), and is **not** adopted, because the gate and fallback were fixed before the data was seen. The scored rows are also almost trivially persistent (93% accuracy, 164 label changes in 70 months), because only clearly-above or clearly-below segments are labelled. *Fallback:* two labels, segments with at least 100 category visits last month: 5,436 rows, 47% High, persistence 0.82 balanced accuracy, 979 label changes (18%), median 14 a month. *Clarification:* the plan said "segments with at least 100 visits" without a month; last month's volume is used because it is known at prediction time (using the outcome month's volume gives nearly the same rows, 5,245, and persistence 0.82). *Checks:* feature leakage tests (including a deliberately injected leak that must be caught), a rewrite-the-future check on the real table at three cut months (maximum difference 0), and five rows recomputed independently from the raw counts. *Consequence:* the bar to beat is persistence at 0.82, with about 979 label changes to learn from, so power to show a gain is limited; see the Step 6 report.
 
 ## Known loose ends (not decisions)
 
