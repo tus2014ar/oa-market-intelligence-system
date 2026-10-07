@@ -12,6 +12,7 @@ import pandas as pd
 import pytest
 
 from oa_market_intelligence.features.segment_task import (
+    COUNT_COLUMNS,
     OUTCOME_COLUMNS,
     TASK_A_FEATURES,
     audit_labels,
@@ -81,6 +82,9 @@ def test_features_for_a_row_are_computed_from_last_month_and_earlier():
     assert a["seg_log_visits_lag1"] == pytest.approx(np.log1p(100))
     assert a["seg_prior_share"] == pytest.approx(12 / 300)
     assert a["specialty_prior_share"] == pytest.approx(12 / 300)
+    # the counts behind the two history shares, used to smooth them in the baselines
+    assert (a["seg_prior_z"], a["seg_prior_t"]) == (12, 300)
+    assert (a["spec_prior_z"], a["spec_prior_t"]) == (12, 300)
     b = _row(rows, 201904, "S2")
     assert b["seg_high_lag1"] == 1  # 10% is above the 8% market
 
@@ -152,7 +156,7 @@ def _features_unchanged(build, frame, cut):
     before = before[before["month_id"] <= cut].sort_values(keys).reset_index(drop=True)
     after = after[after["month_id"] <= cut].sort_values(keys).reset_index(drop=True)
     shared = before.merge(after, on=keys, suffixes=("_a", "_b"))
-    columns = [c for c in TASK_A_FEATURES if c not in ("specialty_grouped",)]
+    columns = [c for c in [*TASK_A_FEATURES, *COUNT_COLUMNS] if c != "specialty_grouped"]
     for column in columns:
         left, right = shared[f"{column}_a"].to_numpy(float), shared[f"{column}_b"].to_numpy(float)
         if not np.allclose(left, right, equal_nan=True):
@@ -181,6 +185,8 @@ def test_the_leakage_check_fails_when_a_leak_is_injected():
 def test_the_feature_columns_are_exactly_the_declared_ones():
     rows = build_task_a_rows(_synthetic())
     assert set(TASK_A_FEATURES) <= set(rows.columns)
+    assert set(COUNT_COLUMNS) <= set(rows.columns)
+    assert set(COUNT_COLUMNS).isdisjoint(TASK_A_FEATURES)
     assert "log_total_visits" not in rows.columns  # the same-month volume column is gone
 
 

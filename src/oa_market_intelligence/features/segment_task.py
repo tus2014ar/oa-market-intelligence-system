@@ -50,6 +50,8 @@ TASK_A_FEATURES = [
     "month_sin",
     "month_cos",
 ]
+# cumulative Zilretta and category visits to last month, kept so history shares can be smoothed
+COUNT_COLUMNS = ["seg_prior_z", "seg_prior_t", "spec_prior_z", "spec_prior_t"]
 OUTCOME_COLUMNS = ["y_label", "y_raw_above", "y_share", "y_visits", "y_market"]
 _ID_COLUMNS = ["month_id", "specialty_name", "age_band", "gender", "segment"]
 
@@ -115,15 +117,20 @@ def build_task_a_rows(
 
     # history that ends at t-1: the segment's and its specialty's earlier cumulative shares
     own = seg.groupby("segment")[["z", "t"]].cumsum()
-    seg["seg_prior_share"] = (
-        (own["z"] - seg["z"]) / (own["t"] - seg["t"]).replace(0, np.nan)
-    )
+    seg["seg_prior_z"] = own["z"] - seg["z"]
+    seg["seg_prior_t"] = own["t"] - seg["t"]
+    seg["seg_prior_share"] = seg["seg_prior_z"] / seg["seg_prior_t"].replace(0, np.nan)
     by_specialty = seg.groupby(["specialty_name", "mi"])[["z", "t"]].sum().reset_index()
     cumulative = by_specialty.groupby("specialty_name")[["z", "t"]].cumsum()
-    earlier_t = (cumulative["t"] - by_specialty["t"]).replace(0, np.nan)
-    by_specialty["specialty_prior_share"] = (cumulative["z"] - by_specialty["z"]) / earlier_t
+    by_specialty["spec_prior_z"] = cumulative["z"] - by_specialty["z"]
+    by_specialty["spec_prior_t"] = cumulative["t"] - by_specialty["t"]
+    by_specialty["specialty_prior_share"] = (
+        by_specialty["spec_prior_z"] / by_specialty["spec_prior_t"].replace(0, np.nan)
+    )
     seg = seg.merge(
-        by_specialty[["specialty_name", "mi", "specialty_prior_share"]],
+        by_specialty[
+            ["specialty_name", "mi", "specialty_prior_share", "spec_prior_z", "spec_prior_t"]
+        ],
         on=["specialty_name", "mi"], how="left",
     )
 
@@ -161,7 +168,7 @@ def build_task_a_rows(
         keep &= seg["t_l1"] >= min_visits_two_label  # last month's volume: known at prediction time
         seg["y_label"] = np.where(seg["y_raw_above"] == 1, HIGH, LOW)
 
-    rows = seg.loc[keep, _ID_COLUMNS + TASK_A_FEATURES + OUTCOME_COLUMNS]
+    rows = seg.loc[keep, _ID_COLUMNS + TASK_A_FEATURES + COUNT_COLUMNS + OUTCOME_COLUMNS]
     return rows.sort_values(["month_id", "segment"]).reset_index(drop=True)
 
 

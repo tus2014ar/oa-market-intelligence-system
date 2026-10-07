@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-49, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-50, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -220,6 +220,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-49 · 7 Oct 2026 · Task A's primary test predicts each segment's share next month; High/Low becomes the secondary test.** Decided (your direction, after the Step 6 audit).
 *Why:* the High/Low label barely changes (persistence 0.82 balanced accuracy, about 980 changes in 70 months), so a test on the label alone has little power to show a real gain. Predicting the share from the visit counts uses all 8,450 prediction rows and the actual counts, and a model that weighs recent history against longer history and the specialty's level should beat naive "same as last month" on noisy small segments, a known property of shrinkage that can be tested out of sample. *Fixed in advance (plan Steps 7 to 9):* the primary metric (binomial log-loss per visit on the test months), four baselines (market share, last month's share, segment history, specialty history; best baseline = lowest pooled log-loss), the models and grids, the walk-forward protocol with tuning only inside the training window, and the serving rule (the 1.67th percentile of the paired month-bootstrap improvement over the best baseline above zero). *A2:* High/Low derived from the A1 prediction (High if above last month's market share), scored on balanced accuracy and the flip subset against majority, persistence and the specialty rule; supporting evidence only. *Rejected:* adopting the 90% interval to rescue the three-label scheme (the gate was fixed beforehand), and a label-only Task A as the headline.
+
+**DL-50 · 8 Oct 2026 · Step 8 results for Task A, and a tie-break for the serving rule.** Decided (results recorded; tie-break as I proposed, applied unless you object).
+*Results (46 test months, Oct 2021 to Jul 2025, 5,522 rows; two identical full runs):* the best baseline is last month's smoothed share (log-loss 0.11317 per visit). Logistic regression, gradient boosting and random forest each score about 0.11274, an improvement of +0.00044 per visit (+0.39%) with the 1.67th percentile at +0.00037, so all three clear the serving rule. Share error against last month's share falls 12 to 14% visit-weighted and 22 to 25% unweighted, mostly on small segments. For High or Low (A2), balanced accuracy rises from 0.847 (persistence) to 0.870 to 0.874, lower bound +0.012 to +0.015. The High/Low persistence baseline reproduces the Step 6 audit (0.8194 on all 5,436 rows). *Tie-break:* the three trained models differ by at most 5 in the sixth decimal, so the rule's "lowest loss" pick is arbitrary. Among promoted models, the simplest (order: logistic, gradient boosting, forest) serves unless a more complex one is clearly better, meaning the 1.67th percentile of its paired improvement over the simpler one is above zero. *Note:* the A2 flip-subset score is vacuous against persistence (zero by definition), so A2 is judged on balanced accuracy and on both the flips caught and the stable segments wrongly flipped. *Run log:* JSON records; MLflow is optional and not installed, and no dependency was added.
 
 ## Known loose ends (not decisions)
 
