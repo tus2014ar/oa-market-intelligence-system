@@ -6,17 +6,19 @@ Goal (DL-34, DL-35): a public website on the internet, on free hosting, reachabl
 
 ```
 data/raw/*.xlsx ──► python -m oa_market_intelligence.publish ──► data/published/warehouse.db
-   (committed)        (staging build, checks, model stage,          (tables + model panel in one
-                       atomic swap, run log)                          file, committed to main)
+   (committed)        (staging build, checks, Phase 4 results,      (tables + model panel + stored
+                       atomic swap, run log)                          results in one file, on main)
                                                                           │
                                        push to main redeploys ◄───────────┘
                                                   │
                                     app/streamlit_app.py (Streamlit Community Cloud)
                                                   │
-                          visitors ─► tables, charts, model panel, Ask Claude box
+                          visitors ─► trend, specialties, forecast & monitoring, model results, Ask Claude
 ```
 
 The monthly workflow (`.github/workflows/monthly_pipeline.yml`) runs the publish step on the 10th of each month, or on demand from the Actions tab. A failed run turns red, commits nothing, and the site keeps serving the last good file.
+
+**What the publish step computes (DL-58).** After rebuilding and checking the tables it computes, once, every number the site and the Claude tools show: the trend and change-point analysis, the mix-versus-rate decomposition, adjusted specialty shares and robustness checks, the segment-share model, the next-month forecast with ranges, the direction panel with its power table, and the monitoring status. They are stored in the same database file (tables `serving_model_panel` and `serving_results`), so one file is one consistent version of the site and nothing is fitted while a visitor waits. If any stage fails, the run fails whole and the last good file stays live. With `--precision full` (the default, used by the monthly workflow) the draws match the notebooks and a run takes roughly 40 minutes of model fitting; `--precision fast` uses small draws for quick checks and is recorded inside the stored results (a full build is what gets committed to `main`).
 
 ## One-time setup
 
@@ -25,7 +27,8 @@ The monthly workflow (`.github/workflows/monthly_pipeline.yml`) runs the publish
 Either run it locally and commit the result:
 
 ```bash
-PYTHONPATH=src python -m oa_market_intelligence.publish
+PYTHONPATH=src python -m oa_market_intelligence.publish            # full precision, about 40 minutes
+PYTHONPATH=src python -m oa_market_intelligence.publish --precision fast --published-dir scratch/  # quick check, not for committing
 ```
 
 then commit `data/published/`, or merge the branch and run the **Monthly Pipeline** workflow once from the Actions tab (Run workflow). Check `data/published/run_log.jsonl` says `"status": "ok"`.
@@ -61,8 +64,9 @@ Visitors typing your domain land on the app; the address bar then shows the `str
 
 ## Checks before sharing the link
 
-- Open the site in a private window: every tab loads; the Model results tab shows the verdict without waiting.
-- Ask the three example questions. Check each answer quotes numbers that match the tables.
+- Open the site in a private window: every tab loads without waiting (Overview, Market trend, Segments, Forecast & monitoring, Model results); the Market trend tab shows the change around March 2022, and the Segments tab shows Physical Medicine & Rehab with the highest adjusted share (5.34 percent in the notebooks).
+- Check the stored results say `"precision": "full"` (not `"fast"`) in `serving_results`, and that the Forecast & monitoring tab shows the same status as the run log's `monitoring_status`.
+- Ask the four example questions. Check each answer quotes numbers that match the tables, says the forecast is a reference range and not a prediction of change, and never gives a cause for the share moving.
 - Ask something the tools cannot answer ("what was Zilretta's revenue?") and confirm the box says it cannot.
 - With an access code set, confirm a wrong code is refused.
 - Confirm no secret appears anywhere in the page, the repository, or the run log.
