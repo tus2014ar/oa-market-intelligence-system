@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-52, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-53, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -229,6 +229,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-52 · 8 Oct 2026 · Task B protocol fixed before any run, with a block bootstrap for the single series.** Decided.
 *What:* the share forecast is scored on 48 walk-forward months with last month and same-month-last-year as baselines, ETS (damped, and damped seasonal) and ridge as trained models, intervals for every model at 80% and 90%, and the serving rule and tie-break from DL-41 and DL-50. *Clarification of the earlier "month bootstrap":* for Task A each month holds many rows and months are resampled whole; for Task B each month is one error and neighbouring errors are dependent, so a moving-block bootstrap (block 6, with 3 and 12 as sensitivity) is used. *Ridge tuning:* one-step rolling-origin error over the last 12 training months, not a single split, because there are too few rows for one. *Calibration gate:* near nominal means within two binomial standard errors for 48 months (80% interval 68% to 92%; 90% interval 81% to 99%). Failures of an ETS fit fall back to last month's forecast and are counted.
+
+**DL-53 · 8 Oct 2026 · Task B (share forecast): no trained model beats "same as last month", so the baseline serves.** Decided (results recorded; protocol was fixed in DL-52 before the run).
+*Results (48 test months, Aug 2021 to Jul 2025; two identical full runs; no ETS fit failed):* MAE in percentage points: last month 0.125, ridge 0.147, ETS damped 0.158, ETS damped seasonal 0.158, same month last year 0.359. Paired MAE improvement over last month: ETS damped -0.034, ridge -0.022 (interval -0.052 to +0.017, inconclusive), ETS seasonal -0.033; the 1.67th percentile is below zero for all three, so none is promoted, and the result is the same with bootstrap blocks of 3, 6 and 12 months and without the Mar to Jul 2024 months. *Interval coverage (nominal 80% / 90%):* last month 83% / 96% (conservative, inside the pre-set band; it missed its 90% interval in 2 of 48 months, Jan and Mar 2023), ridge 77% / 90%, ETS damped 75% / 90%, ETS seasonal 71% / 81% (just under the 90% band), same month last year 69% / 73% (fails). *Why this is expected:* the share series is very smooth (lag-1 autocorrelation 0.90), so extra parameters add estimation noise, and a damped trend overreacts to the 2022 turn. *Served forecast:* last month's value with its empirical 80% and 90% intervals (90% width about 0.64 pp). *For Step 11:* with only 2 misses in 48 months the planned alarm (at least 3 of the last 6 months outside the 90% interval) would almost never fire; Step 11 will report its measured false-alarm and detection behaviour and whether the 80% interval or a lower count is justified.
 
 ## Known loose ends (not decisions)
 
