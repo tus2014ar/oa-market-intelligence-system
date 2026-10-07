@@ -127,13 +127,35 @@ def run_pipeline(
     db_path: Path = DEFAULT_DB_PATH,
     fetch_approval_date: FdaLookupFn = earliest_approval_date,
 ) -> dict:
+    """Runs the pipeline against `db_path`, always releasing the database file afterwards
+    (on Windows an open handle would stop the publish step from moving it into place)."""
+    engine = _make_engine(db_path)
+    try:
+        return _run_pipeline(
+            engine,
+            raw_dir=raw_dir,
+            reference_dir=reference_dir,
+            db_path=db_path,
+            fetch_approval_date=fetch_approval_date,
+        )
+    finally:
+        engine.dispose()
+
+
+def _run_pipeline(
+    engine: Engine,
+    *,
+    raw_dir: Path,
+    reference_dir: Path,
+    db_path: Path,
+    fetch_approval_date: FdaLookupFn,
+) -> dict:
     """Runs ingest -> validate -> Silver build -> Gold build against `db_path`,
     creating the schema first if it doesn't already exist (safe to call every run -
     schema.py's create_schema is checkfirst). Returns the combined build_silver/
     build_gold summaries plus wall-clock timing; logs progress as it goes rather than
     only reporting at the end, since a scheduled run's only visibility is its logs."""
     start = time.monotonic()
-    engine = _make_engine(db_path)
 
     visits, place_of_service, reference = ingest(raw_dir)
     visits, place_of_service, reference = validate(visits, place_of_service, reference)

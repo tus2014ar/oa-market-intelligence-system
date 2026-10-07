@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-33, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-37, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -171,6 +171,19 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 **PD-11 · Claude Q&A with scoped tools and guardrails.** Proposed. A fixed set of read-only functions over the summary tables (never raw rows and never open SQL), an access code, per-user rate limits, a monthly spend cap, and a test set of questions with expected answers. Plain Claude tool use first; MCP packaging only if time allows.
 
 **PD-12 · Scope cuts, in order, if time runs short.** Proposed. Accounts and sign-up (use one access code), then RAG over methodology documents, then the knowledge graph, then SHAP, then drift tooling beyond a simple custom check, then XGBoost. Not cut: a deployed site, the Claude Q&A box, the safe rerun, and at least one trained model served with its honest evaluation.
+
+**DL-34 · 6 Oct 2026 · Version 1 of the public site goes live by 15 Oct 2026; it is then improved day by day until the end-of-October deadline.** Decided (your direction). DL-28 still sets the hard deadline.
+*Why:* the project is to go on the resume and into job applications now, and stakeholder feedback should shape the improvements. *Consequence:* version 1 is deliberately small (status, trend, segment table, honest model panel, Claude question box, safe rerun). Everything else in the plan is added after it is live.
+
+**DL-35 · 6 Oct 2026 · The site must be public on the internet, on free hosting first, and reachable at the Cloudflare domain you own.** Decided (your direction). Refines DL-33.
+*How:* a free host first (Streamlit Community Cloud is the first choice; the app is plain Streamlit and can move to Hugging Face Spaces or Render), and a redirect or CNAME from the Cloudflare domain. The only unavoidable cost is Claude API usage, controlled by a spend cap you set in the Anthropic console (DL-37). *Free-tier trade-off:* the app sleeps when idle and takes some seconds to wake. *Still open:* the exact host, confirmed when the deployment is created (Q-07).
+
+**DL-36 · 6 Oct 2026 · The site reads one self-contained database file, `data/published/warehouse.db`, which the monthly workflow rebuilds and commits.** Decided; built on branch `feat/serving-layer-and-app`.
+*Why:* the model panel is stored inside the same file as the tables, so the site can never show new tables with an old model verdict, and the page loads without recomputing anything (the evaluation takes about 30 seconds). The publish step (`oa_market_intelligence.publish`) builds in a staging file, checks it (not empty, no fewer months, not moving backwards), runs the model stage, and swaps the file in atomically. A failed run leaves the last good file live and still writes a run log. Tests cover a crash in the pipeline, a crash in the model stage, a shrinking rebuild, an empty rebuild and a new month. This implements PD-10.
+*Rejected:* rebuilding at app start-up (slow first visit, depends on an outside service). *Trade-off:* each monthly commit adds about 7 MB to the repository; revisit with release assets or object storage if that grows.
+
+**DL-37 · 6 Oct 2026 · Version 1 defaults for the Claude question box.** Decided as defaults; change them through Q-06 and Q-07.
+*Defaults:* answers come only from four read-only tools that return aggregate summaries (no SQL, no rows); the default model is Claude Haiku 4.5 (cheap and fast; configurable by a host secret); at most 8 questions per visitor per hour, 200 per hour for the whole site, and 300,000 tokens per day; an optional shared access code (off unless a secret is set). The API key lives only in the host's secrets, never in the repository. *Your action:* create the API key with a monthly spend limit in the Anthropic console; the in-app limits are a second line of defence, not a replacement.
 
 ## Known loose ends (not decisions)
 
