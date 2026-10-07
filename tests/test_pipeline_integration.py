@@ -51,9 +51,11 @@ from oa_market_intelligence.modeling.evaluation import (
     bootstrap_difference,
     bootstrap_scores,
     compare_models,
+    in_sample_scores,
     score_table,
     simulate_scores,
 )
+from oa_market_intelligence.modeling.models import make_logistic_regression
 from oa_market_intelligence.warehouse.build_gold import build_gold
 from oa_market_intelligence.warehouse.build_silver import build_silver
 from oa_market_intelligence.warehouse.schema import create_schema
@@ -293,3 +295,27 @@ def test_seasonal_baseline_chance_band_and_intervals_on_real_data(gold_from_vali
         seed=0,
     )
     assert difference["lo"] < 0 < difference["hi"]  # no reliable difference between them
+
+
+def test_primary_logistic_regression_on_real_data_overfits_and_does_not_beat_chance(
+    gold_from_validated_pipeline,
+):
+    """Records the first trained model's result so a change to the data, features or model
+    that alters it is deliberate and visible: the pre-specified logistic regression scores
+    inside the range random guessing produces, and far better on its own training months
+    than on unseen ones. Bounds are loose because exact values can move slightly with the
+    scikit-learn version. If a later model genuinely beats chance, update this test."""
+    engine = gold_from_validated_pipeline
+    ready = model_ready_monthly(compute_monthly_features(load_monthly_gold(engine)))
+    predictions = compare_models(ready, {"logistic": make_logistic_regression}, min_train=24)
+    assert len(predictions) == 35
+
+    out_of_sample = score_table(predictions).loc["logistic"]
+    chance = simulate_scores(
+        ready, lambda seed: (lambda: StratifiedRandomBaseline(seed)), seeds=range(300), min_train=24
+    )
+    assert out_of_sample["balanced_accuracy"] < chance["balanced_accuracy"].quantile(0.95)
+
+    in_sample = in_sample_scores(ready, make_logistic_regression, min_train=24)
+    gap = in_sample["train_balanced_accuracy"].mean() - out_of_sample["balanced_accuracy"]
+    assert gap > 0.3

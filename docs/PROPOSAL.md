@@ -692,6 +692,8 @@ degenerate finding, but is no longer the default.
 
 **Honest expectation**: with only ~48 backtest folds for a 3-class problem, and given that monthly visit-share is highly autocorrelated (making the persistence baseline a genuinely strong competitor, not a token comparison), it is entirely possible the trained model does not beat the baseline with statistical significance. That outcome is a legitimate, anticipated finding to report honestly, not a failure of the project design.
 
+**Update (October 2026), first trained model.** The first trained model, a regularized logistic regression with settings fixed before any result was seen, did not beat the baselines or chance on the 35 backtest months (balanced accuracy 0.37 against a chance range of 0.21 to 0.46 over 1,000 random runs) and overfit (about 0.86 balanced accuracy on its training months against 0.37 on unseen months). This is the outcome the paragraph above anticipated. Details: `notebooks/05_logistic_regression.ipynb` and `docs/model_card_logistic_regression.md`.
+
 ### 18.5 FDA Approval-Date Verification (Objective 1)
 
 **Verified** via openFDA's Drugs@FDA bulk dataset (downloaded directly, not queried live): application **NDA208845**, sponsor **Pacira Pharms Inc**, original approval granted **October 6, 2017**.
