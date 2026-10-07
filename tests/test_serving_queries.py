@@ -10,77 +10,17 @@ the arithmetic is easy to follow:
 
 import pandas as pd
 import pytest
-from sqlalchemy import create_engine
 
 from oa_market_intelligence.serving.queries import (
     data_status,
     market_trend,
     segment_table,
 )
-from oa_market_intelligence.warehouse.schema import (
-    create_schema,
-    dim_demographics,
-    dim_month,
-    dim_specialty,
-    gold_segment_adoption,
-    gold_visit_share_monthly,
-)
 
 
 @pytest.fixture
-def engine():
-    eng = create_engine("sqlite:///:memory:")
-    create_schema(eng)
-    with eng.begin() as conn:
-        conn.execute(
-            dim_month.insert(),
-            [
-                dict(month_id=201908, calendar_date="2019-08-01", year=2019, quarter=3,
-                     month_number=8, month_name="August"),
-                dict(month_id=201909, calendar_date="2019-09-01", year=2019, quarter=3,
-                     month_number=9, month_name="September"),
-            ],
-        )
-        conn.execute(
-            dim_specialty.insert(),
-            [dict(specialty_id=1, specialty_name="A"), dict(specialty_id=2, specialty_name="B")],
-        )
-        conn.execute(
-            dim_demographics.insert(),
-            [
-                dict(demographic_id=1, age_band="65 TO 74", gender="FEMALE"),
-                dict(demographic_id=2, age_band="40 TO 59", gender="MALE"),
-            ],
-        )
-        conn.execute(
-            gold_visit_share_monthly.insert(),
-            [
-                dict(month_id=201908, branded_injectable_visits=10,
-                     generic_corticosteroid_visits=80, nsaid_otc_visits=10, visit_share=0.10,
-                     direction_label=None),
-                dict(month_id=201909, branded_injectable_visits=20,
-                     generic_corticosteroid_visits=160, nsaid_otc_visits=20, visit_share=0.10,
-                     direction_label="Flat"),
-            ],
-        )
-        conn.execute(
-            gold_segment_adoption.insert(),
-            [
-                dict(month_id=201908, specialty_id=1, demographic_id=1,
-                     branded_injectable_visits=8, total_category_visits=40,
-                     segment_visit_share=0.2),
-                dict(month_id=201908, specialty_id=2, demographic_id=2,
-                     branded_injectable_visits=2, total_category_visits=60,
-                     segment_visit_share=2 / 60),
-                dict(month_id=201909, specialty_id=1, demographic_id=1,
-                     branded_injectable_visits=20, total_category_visits=100,
-                     segment_visit_share=0.2),
-                dict(month_id=201909, specialty_id=2, demographic_id=2,
-                     branded_injectable_visits=0, total_category_visits=100,
-                     segment_visit_share=0.0),
-            ],
-        )
-    return eng
+def engine(tiny_gold_engine):
+    return tiny_gold_engine
 
 
 def test_data_status_summarises_what_the_site_is_showing(engine):

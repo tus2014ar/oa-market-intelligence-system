@@ -1,28 +1,24 @@
-# Runs the warehouse pipeline (src/oa_market_intelligence/pipeline.py) on a schedule,
-# per PROPOSAL.md §19.1: "GitHub Actions scheduled workflow, not a new orchestration
-# platform" - reusing the same CI infrastructure ci.yml already runs on, rather than
-# adopting a new one.
+# Monthly publish: rebuilds the whole warehouse from the raw extracts, runs the model stage,
+# and publishes the result for the public site (app/streamlit_app.py).
 #
-# What this workflow does NOT yet do, and why: the full production cycle (§19.1,
-# §745) also retrains/promotes a model, writes predictions back into
-# gold_visit_share_monthly, runs Evidently AI monitoring, and does `dvc pull`/`dvc
-# push` of warehouse.db + mlruns/ around the run so state survives the runner being
-# ephemeral (§19.6). None of that exists yet (later phases) or has a DVC remote
-# configured yet. Until it does, this workflow uploads warehouse.db as a build
-# artifact instead - a documented, honest stand-in for real persistence, not a claim
-# that this is the final production setup. This is the "designed and demonstrated
-# capability" §751 describes: proving the pipeline runs and completes successfully on
-# a schedule, not a claim it has run unattended in production for months (there is no
-# real monthly IQVIA extract arriving during this project).
+# Safety (src/oa_market_intelligence/publish.py): the build happens in a staging file and is
+# swapped in only if every stage and check passes. If anything fails the job turns red, no
+# commit is made, and the site keeps serving the last good database in data/published/.
+# On success the new database and run log are committed to main, which redeploys the site.
+#
+# NMTA extracts arrive on a ~40-day lag after month end (PROPOSAL.md 19.1), so the 10th of
+# each month leaves a comfortable buffer, at 06:00 UTC (a quiet-hours choice, not
+# data-driven). There is no live feed during this project: a "new month" means new extracts
+# committed to data/raw/ (the rerun path is proven by tests/test_publish.py, not by a demo).
 name: Monthly Pipeline
 
 on:
   schedule:
-    # NMTA extracts arrive on a ~40-day lag after month end (§19.1). The 10th of each
-    # month gives a comfortable buffer past a typical prior-month delivery, at 06:00
-    # UTC (a quiet-hours choice, not a data-driven one).
     - cron: "0 6 10 * *"
-  workflow_dispatch: {}  # manual trigger, so the run can be demonstrated on demand
+  workflow_dispatch: {}  # manual trigger, so a rebuild can be run on demand
+
+permissions:
+  contents: write  # to commit the published database
 
 jobs:
   run-pipeline:
@@ -38,14 +34,28 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run pipeline
+      - name: Rebuild and publish
         env:
           PYTHONPATH: src
-        run: python -m oa_market_intelligence.pipeline
+        run: python -m oa_market_intelligence.publish
 
-      - name: Upload warehouse.db
+      - name: Commit the published database
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/published
+          if git diff --cached --quiet; then
+            echo "Nothing to publish."
+          else
+            git commit -m "Publish warehouse $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Keep the run log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: warehouse-db
-          path: data/processed/warehouse.db
+          name: publish-run-log
+          path: data/published/run_log.jsonl
+          if-no-files-found: ignore
           retention-days: 90

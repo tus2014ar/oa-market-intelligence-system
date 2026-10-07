@@ -6,8 +6,12 @@ default.
 
 from __future__ import annotations
 
+import json
+from datetime import datetime, timezone
+
 import pandas as pd
-from sqlalchemy import Engine
+from sqlalchemy import Engine, text
+from sqlalchemy.exc import OperationalError
 
 from oa_market_intelligence.features.monthly import (
     compute_monthly_features,
@@ -114,3 +118,60 @@ def model_panel(
         "n_test": int(len(predictions)),
         "label_counts": predictions["y_true"].value_counts().to_dict(),
     }
+
+
+def panel_to_json(panel: dict) -> str:
+    return json.dumps(
+        {
+            "scores": panel["scores"].to_dict(orient="split"),
+            "chance": panel["chance"].to_dict(orient="split"),
+            "decision": panel["decision"],
+            "n_test": panel["n_test"],
+            "label_counts": panel["label_counts"],
+        }
+    )
+
+
+def panel_from_json(payload: str) -> dict:
+    raw = json.loads(payload)
+    return {
+        "scores": pd.DataFrame(**raw["scores"]),
+        "chance": pd.DataFrame(**raw["chance"]),
+        "decision": raw["decision"],
+        "n_test": raw["n_test"],
+        "label_counts": raw["label_counts"],
+    }
+
+
+def store_panel(engine: Engine, panel: dict) -> None:
+    """Keep the panel inside the database file, so one file is one consistent version of the
+    site: the website never pairs new tables with an old panel."""
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "CREATE TABLE IF NOT EXISTS serving_model_panel "
+                "(id INTEGER PRIMARY KEY, built_at TEXT NOT NULL, payload TEXT NOT NULL)"
+            )
+        )
+        conn.execute(
+            text(
+                "INSERT OR REPLACE INTO serving_model_panel (id, built_at, payload) "
+                "VALUES (1, :built_at, :payload)"
+            ),
+            {
+                "built_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                "payload": panel_to_json(panel),
+            },
+        )
+
+
+def load_stored_panel(engine: Engine) -> dict | None:
+    """The panel saved at publish time, or None if this database has none."""
+    try:
+        with engine.connect() as conn:
+            row = conn.execute(
+                text("SELECT payload FROM serving_model_panel WHERE id = 1")
+            ).fetchone()
+    except OperationalError:
+        return None
+    return panel_from_json(row[0]) if row else None

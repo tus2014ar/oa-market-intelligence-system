@@ -8,8 +8,13 @@ best baseline serves, and the site says so.
 
 import pandas as pd
 import pytest
+from sqlalchemy import create_engine
 
-from oa_market_intelligence.serving.model_panel import serving_decision
+from oa_market_intelligence.serving.model_panel import (
+    load_stored_panel,
+    serving_decision,
+    store_panel,
+)
 
 
 def _scores(**balanced_accuracy):
@@ -65,3 +70,34 @@ def test_missing_a_baseline_is_an_error_not_a_silent_promotion(missing):
     baselines = {k: v for k, v in BASELINES.items() if k != missing}
     with pytest.raises(ValueError, match="baseline"):
         serving_decision(_scores(**baselines, logistic=0.9), chance_p95=0.461)
+
+
+def _panel():
+    return {
+        "scores": _scores(**BASELINES, logistic=0.369),
+        "chance": pd.DataFrame({"mean": [0.33], "p95": [0.46]}, index=["balanced_accuracy"]),
+        "decision": {"promoted": False, "serving": "seasonal", "reason": "not above chance"},
+        "n_test": 35,
+        "label_counts": {"Flat": 25, "Down": 6, "Up": 4},
+    }
+
+
+def test_a_stored_panel_round_trips_through_the_database():
+    engine = create_engine("sqlite:///:memory:")
+    assert load_stored_panel(engine) is None  # nothing stored yet
+    panel = _panel()
+    store_panel(engine, panel)
+    loaded = load_stored_panel(engine)
+    pd.testing.assert_frame_equal(loaded["scores"], panel["scores"])
+    pd.testing.assert_frame_equal(loaded["chance"], panel["chance"])
+    assert loaded["decision"] == panel["decision"]
+    assert loaded["n_test"] == 35 and loaded["label_counts"] == panel["label_counts"]
+
+
+def test_storing_again_replaces_the_panel():
+    engine = create_engine("sqlite:///:memory:")
+    store_panel(engine, _panel())
+    newer = _panel()
+    newer["n_test"] = 36
+    store_panel(engine, newer)
+    assert load_stored_panel(engine)["n_test"] == 36

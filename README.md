@@ -23,6 +23,8 @@ Each item is tagged **[Built]** (implemented and tested in this repo), **[In pro
 - **[Built]** Leak-safe, model-ready feature matrices computed from the Gold tables (a monthly matrix for the classifier and a segment matrix with a specialty-level target encoding), each guarded by a test that rewrites every later month and requires the features not to move
 - **[Built]** A walk-forward evaluation harness (24-month minimum window, one month ahead, McNemar's test, bootstrap confidence intervals) with four baselines (random by class mix, always-majority, persistence, a seasonal rule) on the real data; its leakage test fails if the harness trains on the month it predicts
 - **[In progress]** Classifies next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against four baselines and a classical time-series (SARIMA/ETS) validation check. A first model, a regularized logistic regression with settings fixed in advance, has been trained and tested; it does not beat the baselines or chance, and it overfits (see [`docs/model_card_logistic_regression.md`](docs/model_card_logistic_regression.md)). The label may not be predictable at this sample size; the next step is deciding how to proceed
+- **[Built, not yet deployed]** A safe publish step (`python -m oa_market_intelligence.publish`): rebuilds the warehouse in a staging file, checks it, runs the model evaluation, and swaps it in atomically; a failed run keeps the last good database and writes a run log. The monthly workflow runs it and commits the result
+- **[Built, not yet deployed]** A Streamlit analytics site (`app/streamlit_app.py`) with the market trend, a specialty/age/gender comparison, an honest model panel (a trained model serves only if it beats chance and every baseline; today the seasonal baseline serves), and a Claude question box over four read-only aggregate tools with an access code, rate limits and a daily token budget. Deployment steps: [`docs/deployment.md`](docs/deployment.md)
 - **[Planned]** Segments provider specialties/demographics by adoption level (High vs. Low) — stretch objective. The segment-level Gold table it will read is built; the adoption labels are not
 - **[Planned]** Monitors its own predictions against actual results monthly, and flags meaningful misses (the Gold table has empty placeholder columns for predictions and actuals)
 - **[Planned]** Serves a public, multi-user website (open signup, access-code gated) with a dashboard and a Q&A / on-demand visualization layer: Claude connected through the Model Context Protocol (MCP) to scoped, read-only tools over the Gold tables, plus a RAG tool for methodology and regulatory questions — never raw SQL
@@ -81,7 +83,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA dataset.
 - **Silver builder**: upserts the 4 dimension tables (stable surrogate keys) and full-refresh-overwrites the 2 fact tables
 - **Gold builder**: computes `visit_share`, the Up/Down/Flat direction label, lag/rolling features, and the FDA-derived competitive-context features
 - **Pipeline orchestration**: `pipeline.py` ties every stage together behind one CLI command, with a scheduled + manually-triggerable GitHub Actions workflow
-- 239 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
+- 298 tests (real-data integration tests included, not just mocks), `ruff`-clean, CI green on every PR
 
 **Phase 3's EDA sub-phase is complete** — three notebooks, each executed end to end against the real warehouse with zero errors:
 
