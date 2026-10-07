@@ -80,7 +80,22 @@ On the real data the intervals are wide (persistence: balanced accuracy 0.41 wit
 
 **Power is very low.** With 6 Down months, a model must be right where the baseline is wrong on at least 6 months, and never wrong where the baseline is right, to reach p < 0.05. So results are reported as effect sizes with confidence intervals (recall on Down, balanced accuracy, macro-F1) alongside the p-value, compared against the chance band, and "no significant difference" is treated as a legitimate, expected finding (§18.4).
 
+## Protocols added in Phase 4 (8 Oct 2026)
+
+The harness above is for the one-row-per-month direction task. Phase 4 added three more evaluations, each with its protocol and pass/fail rules fixed in [`phase4_modeling_plan.md`](phase4_modeling_plan.md) before the real run:
+
+| Task | Unit and test | Primary metric | Uncertainty and serving rule | Code | Card |
+|---|---|---|---|---|---|
+| **Segment share (Task A)** | One row per segment and month; walk-forward over 46 test months, training on every earlier row, tuning inside the training window | Binomial log-loss per visit; also share error, visit-weighted and unweighted | Months resampled whole (2,000 draws), paired against the best baseline; promoted if the 1.67th percentile of the improvement is above zero; simplest promoted model serves unless a more complex one is clearly better | `modeling/segment_eval.py`, `segment_models.py`, `segment_task_run.py`, `segment_judge.py` | [`model_card_segment_share.md`](model_card_segment_share.md) |
+| **Share forecast (Task B)** | One value per month; walk-forward over 48 months, one step ahead | Mean absolute error (pp); also RMSE, MASE, interval coverage and width, Winkler score | Moving-block bootstrap (block 6) because errors in one series are dependent; same serving rule; coverage gate within two binomial standard errors of nominal | `modeling/forecast.py` | [`model_card_share_forecast.md`](model_card_share_forecast.md) |
+| **Direction, other families (Q2)** | The original 35 test months | Balanced accuracy, with the DL-32 rule against the chance band | Paired bootstrap and McNemar against persistence; a power simulation | `modeling/direction_models.py`, `power.py` | [`model_card_logistic_regression.md`](model_card_logistic_regression.md) |
+
+**Monitoring (Q4)** reuses the walk-forward outputs: a data-based review threshold for the direction classifier's rolling six-month accuracy, and an interval-miss alarm on the served forecast (`modeling/monitoring.py`). Specific rules for judging Task A under the known data problems (J1 to J4) and for the Q1 and Q3 analyses (T1, D1, A1 to A3) are in the plan.
+
+**Statistical analyses (Q1 and Q3)** are not predictive and have their own methods: a bootstrap-calibrated change-point test, a mix-versus-rate decomposition and a binomial specialty model (`src/oa_market_intelligence/analysis/`; notebooks 06 and 07).
+
 ## Not yet built
 
-- The classical time-series check (SARIMA or ETS on the share series, with the label derived from its forecast).
-- Random forest and gradient boosting, MLflow tracking and SHAP. (The first trained model, a logistic regression, did not beat the baselines or chance; see [`model_card_logistic_regression.md`](model_card_logistic_regression.md).)
+- MLflow tracking, SHAP and Optuna (none is installed; a JSON run log, permutation importance and small fixed tuning grids were used instead), and XGBoost.
+- A cumulative-sum monitor for slow drift in the forecast.
+- An exploratory model of each segment's share relative to the market.

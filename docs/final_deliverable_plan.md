@@ -23,25 +23,25 @@ flowchart LR
 
 The website always reads the last published, fully checked database. A failed run never shows half-updated numbers; it shows a banner with the reason.
 
-## Where we stand
+## Where we stand (updated 8 October 2026)
 
 | Piece | Status |
 |---|---|
-| Ingest, validate, Silver, Gold, features, evaluation harness, baselines | Built and tested (239 tests, CI on every change) |
-| Rerun on new data | Reruns on demand and monthly on a schedule, but only saves the database as a file |
-| Safe swap, run log, failure handling | Not built |
-| Model training inside the pipeline, experiment tracking, a rule for which model serves | Not built (the logistic regression ran in a notebook) |
-| Deployed website, Claude Q&A, access code, spend cap | Not started |
+| Ingest, validate, Silver, Gold, features, evaluation harness, baselines | Built and tested (455 tests, CI on every change) |
+| Rerun on new data | **Built:** a publish step builds the warehouse in a staging file, checks it, runs a model evaluation, swaps it in atomically and writes a run log; the monthly workflow runs it and commits the result. Tested for a crash in the pipeline, a crash in the model stage, a shrinking rebuild, an empty rebuild and a new month |
+| Models and a rule for which one serves | **Built and tested in library code and notebooks** (Phase 4: see below and [`phase4_results.md`](phase4_results.md)). **Not yet in the publish step:** only the direction panel is computed there today (Step 14) |
+| Website, Claude Q&A, access code and spend limits | **Built** (Streamlit site, four read-only aggregate tools, access code, rate limits, token budget) and tested with a scripted client. **Not deployed:** it needs the API key, the hosting account and the domain redirect (`docs/deployment.md`) |
+| Monitoring | Tools built and tested (a review threshold for the direction classifier; an interval alarm for the forecast, with stated blind spots). Not yet called by the publish step (Step 14) |
 
-## The trained models inside the pipeline
+## The trained models (as built)
 
-| Task | Models | Compared against | Serves |
+| Task | Models | Compared against | Serves (result) |
 |---|---|---|---|
-| Segment adoption (the stretch objective) | Random forest, gradient boosting (scikit-learn) | The specialty's own track record | Whichever beats the baseline out of time; otherwise the baseline, stated on the page |
-| Share-level forecast | ETS or SARIMA | "Same as last month" | Same rule, with prediction ranges |
-| Monthly direction (Up / Flat / Down) | Logistic regression | Persistence, seasonal rule, chance band | Informational only: it does not currently clear the bar (null result, DL-26) |
+| Segment share next month (Task A) | Logistic regression, gradient boosting, random forest | Market share, last month's share, the segment's and the specialty's history | **Logistic regression** (all three beat the best baseline modestly; indistinguishable, so the simplest serves) |
+| Overall share forecast (Task B) | ETS (damped, and damped seasonal), ridge | "Same as last month", same month last year | **"Same as last month"** (no trained model beats it), with prediction intervals |
+| Monthly direction (Up / Flat / Down) | Logistic regression, random forest, gradient boosting | Majority, persistence, seasonal rule, chance band | **The seasonal rule** (no trained model clears the bar; a power statement says what 35 test months could detect) |
 
-Every model is scored out of time with confidence intervals, and a rule fixed in advance decides what serves. The site shows the evidence either way.
+Every model is scored out of time with confidence intervals, and a rule fixed in advance decides what serves. The site shows the evidence either way. XGBoost, SHAP and MLflow were not used (cut list; none installed).
 
 ## Milestones
 
@@ -51,6 +51,8 @@ Every model is scored out of time with confidence intervals, and a rule fixed in
 | **M2** | 14 to 20 Oct | **A deployed thin slice.** Hosting and budgets decided on 14 Oct (Q-07). | A public URL shows one table with its "as of" date and last-run status; a Claude question box answers questions about that table only; an access code and a spend cap are on; the publish workflow makes the site pick up a new database file. |
 | **M3** | 21 to 27 Oct | **Widen and harden.** | Market trend and share forecast with ranges; segment gap table; a model panel with baselines, intervals and the honest verdict; data-quality notes; run history; Claude tools over every table; a set of test questions with expected answers; guardrail tests (no raw rows, no open SQL, off-topic and prompt-injection refusals); basic data-quality and drift checks; cost limits verified. |
 | **M4** | 28 to 31 Oct | **Rehearse and buffer.** No new features after 28 Oct. | A clean-checkout dry run end to end; README, model card and decision log updated; refreshed slide deck and script; demo script; fix list cleared. |
+
+**Status note (8 October 2026):** the dates above were a first draft. The owner set a target of version 1 live by 15 October (DL-34) and Phase 4 modeling is finished; what remains is the deployment (the owner's accounts and secrets), the Step 14 integration of the Phase 4 results into the publish step and the site, and a later round of improvement with extra data (DL-57). The cut list below is unchanged.
 
 ## Cut list, in this order, if time runs short
 
@@ -75,7 +77,9 @@ Every model is scored out of time with confidence intervals, and a rule fixed in
 
 ## Decisions still needed
 
-| By | Decision |
+| Decision | Status |
 |---|---|
-| 14 Oct | Hosting platform; Claude API budget and monthly spend cap; one shared access code or open access (Q-06, Q-07) |
-| Before M1's ML stage | ETS or SARIMA for the forecast (Q-05); confirm the segment model, the forecast, or both are served (Q-08) |
+| Hosting platform; Claude API budget and monthly spend cap; one shared access code or open access (Q-06, Q-07) | **Open.** Streamlit Community Cloud is the first choice; the owner creates the key (with a spend limit) and the app; steps in `docs/deployment.md` |
+| ETS or SARIMA for the forecast (Q-05) | **Resolved:** ETS, and it does not beat "same as last month" (DL-40, DL-53) |
+| Whether the segment model, the forecast or both are served (Q-08) | **Resolved:** the segment model serves (logistic regression); the forecast is the baseline (DL-50, DL-53) |
+| Extra data (payer, geography, price, volume) | **Deferred until Phase 4 was documented** (DL-57); next improvement |
