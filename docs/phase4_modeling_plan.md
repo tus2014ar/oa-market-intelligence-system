@@ -47,8 +47,8 @@ Effort: S small, M medium, L large.
 
 **Step 2: Q1, trend and change points (M).**
 - Analyze the monthly share of each OA treatment category (branded injectable, generic corticosteroid, NSAID).
-- *Method (fixed):* fit up to two breakpoints to the Zilretta share series (piecewise linear, at least 12 months per segment), choose the number of breaks (0, 1 or 2) by BIC, and attach a 90% interval to each break month by block bootstrap of the residuals.
-- *Events, listed before the analysis runs:* COVID shock (Mar to May 2020), the Change Healthcare outage window (Mar to Jul 2024), and any competitor approval dates inside the data window from the openFDA enrichment. Break intervals are compared with this list only.
+- *Method (fixed; revised 7 Oct 2026, DL-44):* fit up to two breakpoints to each category's share series (piecewise linear, own intercept and slope per segment, at least 12 months per segment). The number of breaks is chosen by **sequential tests calibrated by a block bootstrap** (a break is kept only if the improvement in fit beats what noise produces in 95% of 1,000 simulated series), not by BIC, which in testing reported breaks that were not there. Each break month gets a 90% interval from a second block bootstrap (1,000 draws) of the residuals. Block lengths 3 and 12 are run as sensitivity checks; a conclusion that changes with the block length is reported as fragile.
+- *Events, listed before the analysis runs:* COVID shock (Mar to May 2020), the Change Healthcare outage window (Mar to Jul 2024), and any competitor approval dates inside the data window. The approval dates were looked up on 7 Oct 2026 (70 branded products, openFDA; DL-45) and none falls inside the window, so the list is the two events. Break intervals are compared with this list only.
 - *Limits stated up front:* Zilretta was approved in Oct 2017, before the data starts in Aug 2019, so its market entry cannot be observed and the FDA part of Q1 is answered by saying so. A break near an event is consistent with an effect, not proof of one.
 - *Gate:* break locations are stable across the bootstrap, or the instability is reported as the result.
 
@@ -58,16 +58,27 @@ Effort: S small, M medium, L large.
 - *Segmentation:* specialty (17) is primary; the 139-segment version (specialty × age × gender) is a robustness check.
 - *Method:* the standard two-term (Kitagawa) decomposition, so mix + rate equals the total change exactly; uncertainty by resampling months within each window (1,000 draws); per-specialty contributions shown so one specialty cannot hide.
 - *Caveat:* a mix effect says the mix moved, not why.
+- *Pre-specified vs exploratory:* the consecutive pairs and the first window against the last are fixed here. Splits at the peak year (year 1 to 3, year 3 to 6) were added after the Step 2 break was seen and are labelled **exploratory**. Run 7 Oct 2026: the segment table reconciles to monthly Gold exactly, and in every comparison the rate effect dominates (see the Step 3 results in the notebook).
 - *Gate:* a hand-computed example proves mix + rate equals the total change; the totals reconcile to Gold.
 
 **Step 4: Q3, does adoption vary by specialty, and is the pattern stable? (L).**
 - *Model (fixed):* a binomial model on the counts, Zilretta visits out of category visits for every segment-month, with month fixed effects (which absorb the market-wide level), plus specialty, age band and gender. It uses the counts as they are, so small segments carry less weight instead of being thrown away.
 - *Outputs:* adjusted Zilretta share by specialty (standardized to a common age and gender mix) with intervals; the share of the explained variation due to specialty, age and gender; a test of whether the specialty effect is needed.
-- *Uncertainty:* month-level bootstrap (1,000 refits) as the primary interval, with cluster-robust standard errors by segment as a cross-check; the wider of the two is reported, because visits are not independent.
+- *Uncertainty (revised 7 Oct 2026, DL-46):* two bootstraps of 1,000 refits each, one resampling months and one resampling whole segments; the wider of the two intervals is reported for every specialty, because visits are not independent. (Cluster-robust standard errors were the planned cross-check; a segment bootstrap gives the same protection on the quantity actually reported, the adjusted share.)
+- *Specialty grouping and the test (DL-46):* specialties under 0.5% of category visits are grouped as RARE, which keeps Pain Medicine, Sports Medicine, Rheumatology and Orthopedic Surgery (the four the question names) separate. The specialty term is tested with a quasi-likelihood F test scaled by the model's dispersion, because the data varies more than a plain binomial allows.
 - *Stability check:* fit on the first 36 months and on the last 36 and compare the specialty effects. A "focus on specialty X" message is only reliable if the ranking holds across both halves.
 - *Gate:* the model reproduces the observed totals; the two uncertainty methods are compared and the difference reported.
 
-**Step 5: Sensitivity to known data problems (M).** Re-run Steps 2, 3 and 4 excluding, in turn: the PEDIATRICS specialty (suspected mis-coded prescriber from Oct 2024), the COVID months (Mar to May 2020), and the Mar to Jul 2024 dip. A headline conclusion is reported as **robust** only if its direction and significance survive all three; otherwise it is reported as **fragile**, with the reason. *Gate:* a robust/fragile verdict for every headline conclusion.
+**Step 5: Sensitivity to known data problems (M).** Re-run Steps 2, 3 and 4 excluding, in turn: the PEDIATRICS specialty (suspected mis-coded prescriber from Oct 2024), the COVID months (Mar to May 2020), and the Mar to Jul 2024 dip. A headline conclusion is reported as **robust** only if its direction and significance survive all three; otherwise it is reported as **fragile**, with the reason. *Verdict rules (fixed 7 Oct 2026, before the run).* Each headline conclusion has one rule, evaluated on a baseline re-run and on each of the three exclusions; it is **robust** only if the rule holds in all four, otherwise **fragile**, and the verdict names which exclusion broke it.
+- **T1, Zilretta's share has a trend break in early 2022:** the first break test has p < 0.05 and the selected break month lies inside the baseline run's 90% interval.
+- **D1, the decline is within-specialty, not mix:** for year 1 to 6 and for year 3 to 6 (the latter exploratory), the rate effect is negative and at least twice the size of the mix effect in absolute terms.
+- **A1, adoption varies by specialty:** the specialty term carries at least 25% of the explainable deviance and the quasi-F test has p < 0.01.
+- **A2, the clear positions hold:** every specialty whose 90% interval excludes the overall share in the baseline run stays on the same side with the interval still excluding it. Reported per specialty.
+- **A3, the pattern is stable over time:** the split-half rank correlation is at least 0.6.
+
+*How the exclusions are applied:* PEDIATRICS is removed as a specialty from the segment-level data and from the monthly series (rebuilt from segment counts); the COVID and 2024-dip months are removed from the windows and the adoption data, and linearly interpolated in the share series used for the change-point fit. Sensitivity runs use 300 bootstrap draws per interval (100 for the stability interval) instead of 1,000, and the baseline is re-run at the same settings so like is compared with like.
+
+*Gate:* a robust/fragile verdict for every headline conclusion.
 
 ### Part 2: Prediction (tested against the strongest simple alternatives)
 
