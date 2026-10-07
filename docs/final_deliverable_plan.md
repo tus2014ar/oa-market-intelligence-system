@@ -29,9 +29,9 @@ The website always reads the last published, fully checked database. A failed ru
 |---|---|
 | Ingest, validate, Silver, Gold, features, evaluation harness, baselines | Built and tested (455 tests, CI on every change) |
 | Rerun on new data | **Built:** a publish step builds the warehouse in a staging file, checks it, runs a model evaluation, swaps it in atomically and writes a run log; the monthly workflow runs it and commits the result. Tested for a crash in the pipeline, a crash in the model stage, a shrinking rebuild, an empty rebuild and a new month |
-| Models and a rule for which one serves | **Built and tested in library code and notebooks** (Phase 4: see below and [`phase4_results.md`](phase4_results.md)). **Not yet in the publish step:** only the direction panel is computed there today (Step 14) |
+| Models and a rule for which one serves | **Built and tested in library code and notebooks** (Phase 4: see below and [`phase4_results.md`](phase4_results.md)). **In the publish step since Step 14 (DL-58):** every Phase 4 result is computed at publish, stored in the database file, and shown on the site and to Claude |
 | Website, Claude Q&A, access code and spend limits | **Built** (Streamlit site, four read-only aggregate tools, access code, rate limits, token budget) and tested with a scripted client. **Not deployed:** it needs the API key, the hosting account and the domain redirect (`docs/deployment.md`) |
-| Monitoring | Tools built and tested (a review threshold for the direction classifier; an interval alarm for the forecast, with stated blind spots). Not yet called by the publish step (Step 14) |
+| Monitoring | Tools built and tested (a review threshold for the direction classifier; an interval alarm for the forecast, with stated blind spots). Called by the publish step since Step 14: the status is stored, shown as a banner on the site and reported to Claude, and the backtest predictions are written to Gold |
 
 ## The trained models (as built)
 
