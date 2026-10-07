@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-45, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-46, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -208,6 +208,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-45 · 7 Oct 2026 · FDA approval dates were looked up for every branded product in the share formula; none was approved inside the data window.** Decided (your direction: run the lookup before Step 3).
 *What:* 70 branded and branded-generic products (the three share-formula categories plus the opioid-tagged ones, to check Anjeso) were queried against the public openFDA Drugs@FDA API with the existing client (earliest original-approval date per exact brand name); no errors. 33 had a date. In the share formula the dates run from 1951 (Hydrocortone) to Oct 2017 (Zilretta); the newest NSAID brands are Zipsor (2009) and Zorvolex (2013). The only approval inside Aug 2019 to Jul 2025 is Anjeso (20 Feb 2020), which is tagged `opioid_other`, outside the formula, and has 2 visits in the whole dataset. *Coverage:* products with a date are 60.8% of the competitive set's visits; branded products with no date found are 0.08% (compounded kits and truncated names); the other 39.1% are unbranded generics, which cannot be looked up by brand name. *Meaning for Q1:* no branded entrant appears in the window, so an FDA brand-entry event does not explain the 2022 turn in Zilretta's share. This does not rule out new generic approvals, label changes or formulary shifts, which the original-approval lookup cannot see. *Snapshot:* `data/reference/openfda_competitive_set_approvals_2026-10-07.csv`. The warehouse is unchanged.
+
+**DL-46 · 7 Oct 2026 · Step 4 details: 0.5% specialty grouping, quasi-F test, and a segment bootstrap in place of cluster-robust standard errors.** Decided.
+*Grouping:* a 1% cut would have merged Pain Medicine (0.77% of visits) into the rare group even though Q3 names it, so specialties under 0.5% of category visits are grouped (11 stay separate). *Test:* the full model's Pearson dispersion is about 1.5, so a plain likelihood-ratio test would overstate significance; the specialty term is tested with a quasi-likelihood F test scaled by that dispersion. *Intervals:* instead of cluster-robust standard errors as the cross-check, a second bootstrap that resamples whole segments is run on the same quantity (the adjusted share), and the wider interval is reported per specialty. *Solver:* a sparse iteratively-reweighted least-squares fit (about 100 times faster than statsmodels for the bootstraps), verified against statsmodels in a test.
 
 ## Known loose ends (not decisions)
 
