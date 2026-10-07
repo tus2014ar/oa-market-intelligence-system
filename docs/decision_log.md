@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-53, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-54, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -232,6 +232,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-53 · 8 Oct 2026 · Task B (share forecast): no trained model beats "same as last month", so the baseline serves.** Decided (results recorded; protocol was fixed in DL-52 before the run).
 *Results (48 test months, Aug 2021 to Jul 2025; two identical full runs; no ETS fit failed):* MAE in percentage points: last month 0.125, ridge 0.147, ETS damped 0.158, ETS damped seasonal 0.158, same month last year 0.359. Paired MAE improvement over last month: ETS damped -0.034, ridge -0.022 (interval -0.052 to +0.017, inconclusive), ETS seasonal -0.033; the 1.67th percentile is below zero for all three, so none is promoted, and the result is the same with bootstrap blocks of 3, 6 and 12 months and without the Mar to Jul 2024 months. *Interval coverage (nominal 80% / 90%):* last month 83% / 96% (conservative, inside the pre-set band; it missed its 90% interval in 2 of 48 months, Jan and Mar 2023), ridge 77% / 90%, ETS damped 75% / 90%, ETS seasonal 71% / 81% (just under the 90% band), same month last year 69% / 73% (fails). *Why this is expected:* the share series is very smooth (lag-1 autocorrelation 0.90), so extra parameters add estimation noise, and a damped trend overreacts to the 2022 turn. *Served forecast:* last month's value with its empirical 80% and 90% intervals (90% width about 0.64 pp). *For Step 11:* with only 2 misses in 48 months the planned alarm (at least 3 of the last 6 months outside the 90% interval) would almost never fire; Step 11 will report its measured false-alarm and detection behaviour and whether the 80% interval or a lower count is justified.
+
+**DL-54 · 8 Oct 2026 · Step 11 (monitoring) and Step 12 (Q2 closure) protocols fixed before any run; random forest and gradient boosting added for the direction task.** Decided (your direction).
+*Monitoring:* the direction hit series gets a rolling 6-month accuracy and a data-based review threshold (5th percentile under stable performance, block bootstrap), with a stricter random-guessing line. The forecast monitor is chosen between two rules fixed in advance, R90 (3 of 6 months outside the 90% interval) and R80 (4 of 6 outside the 80% interval), by detection of simulated volatility increases and steady drifts, provided there is no alarm in the real backtest; a level shift is not a scenario because a last-month forecaster adapts after one month. Backtest predictions are recorded in the Gold placeholder columns with `model_version` marking them as backtest; the publish step writes them in Step 14. *Why the two-rule choice:* Step 10 showed last month's 90% interval is conservative (2 misses in 48 months), so the planned rule would almost never fire; whether R80 is better is measured, not assumed. *Q2:* random forest and gradient boosting join logistic regression on the direction task under the existing walk-forward and the DL-32 rule, with a power statement from a McNemar simulation anchored on the observed discordance between persistence and the seasonal rule. The assignment names these model families; so far only logistic regression had been tried on direction.
 
 ## Known loose ends (not decisions)
 
