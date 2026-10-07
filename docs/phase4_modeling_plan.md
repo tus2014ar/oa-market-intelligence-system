@@ -58,6 +58,7 @@ Effort: S small, M medium, L large.
 - *Segmentation:* specialty (17) is primary; the 139-segment version (specialty × age × gender) is a robustness check.
 - *Method:* the standard two-term (Kitagawa) decomposition, so mix + rate equals the total change exactly; uncertainty by resampling months within each window (1,000 draws); per-specialty contributions shown so one specialty cannot hide.
 - *Caveat:* a mix effect says the mix moved, not why.
+- *Pre-specified vs exploratory:* the consecutive pairs and the first window against the last are fixed here. Splits at the peak year (year 1 to 3, year 3 to 6) were added after the Step 2 break was seen and are labelled **exploratory**. Run 7 Oct 2026: the segment table reconciles to monthly Gold exactly, and in every comparison the rate effect dominates (see the Step 3 results in the notebook).
 - *Gate:* a hand-computed example proves mix + rate equals the total change; the totals reconcile to Gold.
 
 **Step 4: Q3, does adoption vary by specialty, and is the pattern stable? (L).**
