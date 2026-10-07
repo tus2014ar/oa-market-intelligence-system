@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-46, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-47, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -211,6 +211,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-46 · 7 Oct 2026 · Step 4 details: 0.5% specialty grouping, quasi-F test, and a segment bootstrap in place of cluster-robust standard errors.** Decided.
 *Grouping:* a 1% cut would have merged Pain Medicine (0.77% of visits) into the rare group even though Q3 names it, so specialties under 0.5% of category visits are grouped (11 stay separate). *Test:* the full model's Pearson dispersion is about 1.5, so a plain likelihood-ratio test would overstate significance; the specialty term is tested with a quasi-likelihood F test scaled by that dispersion. *Intervals:* instead of cluster-robust standard errors as the cross-check, a second bootstrap that resamples whole segments is run on the same quantity (the adjusted share), and the wider interval is reported per specialty. *Solver:* a sparse iteratively-reweighted least-squares fit (about 100 times faster than statsmodels for the bootstraps), verified against statsmodels in a test.
+
+**DL-47 · 7 Oct 2026 · Part 1 of Phase 4 (Q1 and Q3 inference) passed its sensitivity checks: all five headline conclusions are robust.** Decided (result recorded).
+*Rules* were fixed in the plan before the run and applied to a baseline and to three exclusions (PEDIATRICS, the COVID months, the Mar to Jul 2024 dip), at 300 bootstrap draws (100 for stability). *Verdicts:* **T1** a trend break in early 2022 holds (Jan to Mar 2022 in every run, intervals from May or June 2021 to June or August 2022); **D1** the decline is within-specialty, with the rate effect 4 to 18 times the mix effect; **A1** specialty carries 50 to 52% of explainable variation; **A2** all eight clearly-above or clearly-below specialties keep their side; **A3** split-half rank correlation 0.78 at baseline, 0.85 to 0.88 without the COVID or dip months. *Noted:* the PEDIATRICS anomaly inflates the grouped "other specialties" share (1.70% to 1.08% once removed) and leaves every named specialty unchanged; the net year 1 to 6 decline shrinks from 0.317 to 0.221 percentage points without the COVID months, while the larger peak-to-latest decline (1.114 points) is unaffected. *Limit:* the exclusions are small perturbations, so "robust" means not driven by these known problems, not robust to every perturbation. Bootstrap fits that did not converge (levels with no events in a resample) are excluded and were not counted in this run.
 
 ## Known loose ends (not decisions)
 

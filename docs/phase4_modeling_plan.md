@@ -69,7 +69,16 @@ Effort: S small, M medium, L large.
 - *Stability check:* fit on the first 36 months and on the last 36 and compare the specialty effects. A "focus on specialty X" message is only reliable if the ranking holds across both halves.
 - *Gate:* the model reproduces the observed totals; the two uncertainty methods are compared and the difference reported.
 
-**Step 5: Sensitivity to known data problems (M).** Re-run Steps 2, 3 and 4 excluding, in turn: the PEDIATRICS specialty (suspected mis-coded prescriber from Oct 2024), the COVID months (Mar to May 2020), and the Mar to Jul 2024 dip. A headline conclusion is reported as **robust** only if its direction and significance survive all three; otherwise it is reported as **fragile**, with the reason. *Gate:* a robust/fragile verdict for every headline conclusion.
+**Step 5: Sensitivity to known data problems (M).** Re-run Steps 2, 3 and 4 excluding, in turn: the PEDIATRICS specialty (suspected mis-coded prescriber from Oct 2024), the COVID months (Mar to May 2020), and the Mar to Jul 2024 dip. A headline conclusion is reported as **robust** only if its direction and significance survive all three; otherwise it is reported as **fragile**, with the reason. *Verdict rules (fixed 7 Oct 2026, before the run).* Each headline conclusion has one rule, evaluated on a baseline re-run and on each of the three exclusions; it is **robust** only if the rule holds in all four, otherwise **fragile**, and the verdict names which exclusion broke it.
+- **T1, Zilretta's share has a trend break in early 2022:** the first break test has p < 0.05 and the selected break month lies inside the baseline run's 90% interval.
+- **D1, the decline is within-specialty, not mix:** for year 1 to 6 and for year 3 to 6 (the latter exploratory), the rate effect is negative and at least twice the size of the mix effect in absolute terms.
+- **A1, adoption varies by specialty:** the specialty term carries at least 25% of the explainable deviance and the quasi-F test has p < 0.01.
+- **A2, the clear positions hold:** every specialty whose 90% interval excludes the overall share in the baseline run stays on the same side with the interval still excluding it. Reported per specialty.
+- **A3, the pattern is stable over time:** the split-half rank correlation is at least 0.6.
+
+*How the exclusions are applied:* PEDIATRICS is removed as a specialty from the segment-level data and from the monthly series (rebuilt from segment counts); the COVID and 2024-dip months are removed from the windows and the adoption data, and linearly interpolated in the share series used for the change-point fit. Sensitivity runs use 300 bootstrap draws per interval (100 for the stability interval) instead of 1,000, and the baseline is re-run at the same settings so like is compared with like.
+
+*Gate:* a robust/fragile verdict for every headline conclusion.
 
 ### Part 2: Prediction (tested against the strongest simple alternatives)
 
