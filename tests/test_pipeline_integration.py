@@ -41,8 +41,19 @@ from oa_market_intelligence.ingestion.validation import (
     validate_place_of_service,
     validate_reference_table,
 )
-from oa_market_intelligence.modeling.baselines import MajorityClassBaseline, PersistenceBaseline
-from oa_market_intelligence.modeling.evaluation import compare_models, score_table
+from oa_market_intelligence.modeling.baselines import (
+    MajorityClassBaseline,
+    PersistenceBaseline,
+    SeasonalBaseline,
+    StratifiedRandomBaseline,
+)
+from oa_market_intelligence.modeling.evaluation import (
+    bootstrap_difference,
+    bootstrap_scores,
+    compare_models,
+    score_table,
+    simulate_scores,
+)
 from oa_market_intelligence.warehouse.build_gold import build_gold
 from oa_market_intelligence.warehouse.build_silver import build_silver
 from oa_market_intelligence.warehouse.schema import create_schema
@@ -240,3 +251,45 @@ def test_baselines_on_real_data_set_the_bar_a_model_must_clear(gold_from_validat
     assert scores.loc["persistence", "accuracy"] == pytest.approx(22 / 35)
     assert scores.loc["persistence", "recall_down"] == pytest.approx(1 / 6)
     assert scores.loc["persistence", "recall_up"] == pytest.approx(1 / 4)
+
+
+def test_seasonal_baseline_chance_band_and_intervals_on_real_data(gold_from_validated_pipeline):
+    """On the same 35 test months: the seasonal rule is only marginally better than
+    persistence, both sit inside the band random guessing produces (so neither can be told
+    apart from luck), and the bootstrap intervals are wide. The interval and chance-band
+    checks use loose bounds, since random streams are not guaranteed identical across
+    NumPy versions."""
+    engine = gold_from_validated_pipeline
+    ready = model_ready_monthly(compute_monthly_features(load_monthly_gold(engine)))
+    predictions = compare_models(
+        ready,
+        {"persistence": PersistenceBaseline, "seasonal": SeasonalBaseline},
+        min_train=24,
+    )
+    scores = score_table(predictions)
+    assert scores.loc["seasonal", "accuracy"] == pytest.approx(23 / 35)
+    assert scores.loc["seasonal", "recall_down"] == pytest.approx(1 / 6)
+    assert scores.loc["seasonal", "precision_down"] == pytest.approx(1 / 3)
+
+    chance = simulate_scores(
+        ready, lambda seed: (lambda: StratifiedRandomBaseline(seed)), seeds=range(300), min_train=24
+    )
+    assert chance["balanced_accuracy"].mean() == pytest.approx(0.325, abs=0.03)
+    p95 = chance["balanced_accuracy"].quantile(0.95)
+    assert scores.loc["persistence", "balanced_accuracy"] < p95
+    assert scores.loc["seasonal", "balanced_accuracy"] < p95
+
+    interval = bootstrap_scores(
+        predictions["y_true"], predictions["persistence"], n_boot=500, seed=0
+    ).loc["balanced_accuracy"]
+    assert interval["lo"] < 0.32 and interval["hi"] > 0.5
+
+    difference = bootstrap_difference(
+        predictions["y_true"],
+        predictions["seasonal"],
+        predictions["persistence"],
+        metric="balanced_accuracy",
+        n_boot=500,
+        seed=0,
+    )
+    assert difference["lo"] < 0 < difference["hi"]  # no reliable difference between them
