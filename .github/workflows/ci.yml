@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt -r app/requirements.txt  # the site's own list, so its page tests run
 
       - name: Lint (ruff)
         run: ruff check .

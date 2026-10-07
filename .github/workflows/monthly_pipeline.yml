@@ -5,6 +5,8 @@
 # swapped in only if every stage and check passes. If anything fails the job turns red, no
 # commit is made, and the site keeps serving the last good database in data/published/.
 # On success the new database and run log are committed to main, which redeploys the site.
+# The publish step also computes and stores every Phase 4 result (findings, segment model,
+# forecast, direction panel, monitoring status) inside the database file, at full precision.
 #
 # NMTA extracts arrive on a ~40-day lag after month end (PROPOSAL.md 19.1), so the 10th of
 # each month leaves a comfortable buffer, at 06:00 UTC (a quiet-hours choice, not
@@ -23,6 +25,7 @@ permissions:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 180  # the full publish includes the Phase 4 model fitting
     steps:
       - uses: actions/checkout@v4
 
