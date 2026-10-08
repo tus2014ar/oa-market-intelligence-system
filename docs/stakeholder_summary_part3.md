@@ -74,6 +74,6 @@ Adding promotion to the forecast was **skipped** because the lag test found noth
 
 ## What would help most
 
-1. From IQVIA or the instructor: whether the panel's coverage of Zilretta settings changed after 2021, and any prescription-volume or regional data.
+1. Panel coverage: whether IQVIA's NMTA documentation says anything about the coverage of Zilretta settings or specialties after 2021, especially physician assistants, orthopedic surgery and 2024. No answer is expected from the instructor, who does not hold IQVIA prescription-volume, regional or approval-status data, so the size of the decline stays unverified and is reported with that caveat.
 2. A look at Medicare coverage rules in the near-zero states.
 3. Pacira's own account of the 2022 to 2025 sales mix, if the brand team has it.

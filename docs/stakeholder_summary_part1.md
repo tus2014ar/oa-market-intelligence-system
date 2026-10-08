@@ -6,10 +6,10 @@
 
 ## The short version
 
-1. **Zilretta's share rose until early 2022 and has fallen since.** It peaked at 3.38% in December 2021 and averaged 1.88% in the year to July 2025. The turn is statistically clear and does not depend on method choices.
+1. **Zilretta's share rose until early 2022 and has fallen since.** It peaked at 3.38% in December 2021 and averaged 1.88% in the year to July 2025. The turn is statistically clear and does not depend on method choices. **Update (Part 3):** company sales kept rising while IQVIA's Zilretta visits fell, so the size of the fall is not confirmed by another source; read it as a statement about IQVIA's panel.
 2. **The fall happened inside specialties, not because of who is prescribing.** Zilretta lost share within the four largest specialties (about 90% of visits) and most smaller ones. The change in the mix of specialties (for example, more visits from physician assistants and fewer from orthopedic surgeons) did not cause it.
-3. **Adoption differs a lot by specialty, and the pattern is stable.** Physical Medicine & Rehab and Sports Medicine use Zilretta well above the market-wide share. Orthopedic Surgery, the largest specialty at 43% of visits, sits below it. Family Practice, Internal Medicine and Rheumatology are lower still.
-4. **We cannot say why.** The data has no payer, geography, price, promotion or competitor-activity information. Everything here describes *what* changed and *where*, not *why*.
+3. **Adoption differs a lot by specialty, and the pattern is stable.** Physical Medicine & Rehab and Sports Medicine use Zilretta well above the market-wide share. Orthopedic Surgery, the largest specialty at 43% of visits, sits below it. Family Practice, Internal Medicine and Rheumatology are lower still. **Update (Part 3):** Medicare billing ranks the specialties differently (rank correlation 0.35), so this ordering is true of IQVIA's population, not necessarily of every population.
+4. **We cannot say why.** The data has no payer, geography, price, promotion or competitor-activity information. Everything here describes *what* changed and *where*, not *why*. **Update (Part 3):** public data adds some context; see Part 3 for what it does and does not explain.
 
 ## Q1: How has share shifted, and where is the inflection point?
 

@@ -1,0 +1,170 @@
+{
+ "2024": {
+  "n_rows": 5308407,
+  "n_columns": 15,
+  "columns": {
+   "Utilization Type": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "MCOU": 2781645,
+     "FFSU": 2526762
+    }
+   },
+   "State": {
+    "n_empty": 0,
+    "n_distinct": 53,
+    "capped": false,
+    "top_values": {
+     "XX": 320216,
+     "CA": 164099,
+     "OH": 160949,
+     "NY": 154709,
+     "NC": 147875,
+     "MA": 145815,
+     "KY": 142287,
+     "VA": 136947,
+     "PA": 134562,
+     "IN": 133263,
+     "IL": 132996,
+     "MI": 131357,
+     "NJ": 129079,
+     "GA": 128049,
+     "MN": 125022,
+     "FL": 124897,
+     "MD": 121092,
+     "NV": 115471,
+     "MS": 112931,
+     "LA": 112657,
+     "TX": 111899,
+     "SC": 106728,
+     "WA": 105824,
+     "OK": 101529,
+     "OR": 99450
+    }
+   },
+   "NDC": {
+    "n_empty": 0
+   },
+   "Labeler Code": {
+    "n_empty": 0
+   },
+   "Product Code": {
+    "n_empty": 0
+   },
+   "Package Size": {
+    "n_empty": 0
+   },
+   "Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2024": 5308407
+    }
+   },
+   "Quarter": {
+    "n_empty": 0,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "3": 1331155,
+     "1": 1326779,
+     "2": 1326224,
+     "4": 1324249
+    }
+   },
+   "Suppression Used": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "true": 2666743,
+     "false": 2641664
+    }
+   },
+   "Product Name": {
+    "n_empty": 6837
+   },
+   "Units Reimbursed": {
+    "n_empty": 2666743,
+    "min": 0.006,
+    "max": 339316117.091,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Number of Prescriptions": {
+    "n_empty": 2666743,
+    "min": 11.0,
+    "max": 903008.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Total Amount Reimbursed": {
+    "n_empty": 2666743,
+    "min": 0.0,
+    "max": 443545315.77,
+    "n_negative": 0,
+    "n_zero": 13769,
+    "n_unparseable": 0
+   },
+   "Medicaid Amount Reimbursed": {
+    "n_empty": 2666743,
+    "min": 0.0,
+    "max": 436465105.6,
+    "n_negative": 0,
+    "n_zero": 16326,
+    "n_unparseable": 0
+   },
+   "Non Medicaid Amount Reimbursed": {
+    "n_empty": 2666743,
+    "min": 0.0,
+    "max": 14348356.85,
+    "n_negative": 0,
+    "n_zero": 1389318,
+    "n_unparseable": 0
+   }
+  },
+  "key": [
+   "Utilization Type",
+   "State",
+   "NDC",
+   "Year",
+   "Quarter"
+  ],
+  "duplicate_keys": 0,
+  "n_distinct_ndc": 50574,
+  "n_ndc_not_eleven_digits": 0,
+  "n_distinct_product_names": 15097,
+  "matching_product_names": {
+   "zilretta": [
+    "ZILRETTA",
+    "ZILRETTA 3",
+    "ZILRETTA S"
+   ],
+   "hyaluronic": [
+    "EUFLEXXA",
+    "EUFLEXXA 1",
+    "EUFLEXXA 2",
+    "MONOVISC",
+    "MONOVISC 8",
+    "ORTHOVISC",
+    "SYNVISC",
+    "SYNVISC ON",
+    "SYNVISC SY",
+    "SYNVISC-ON"
+   ],
+   "steroid": [
+    "CELESTONE",
+    "CELESTONE-",
+    "KENALOG 80",
+    "KENALOG-10",
+    "KENALOG-40",
+    "KENALOG-80"
+   ]
+  }
+ }
+}

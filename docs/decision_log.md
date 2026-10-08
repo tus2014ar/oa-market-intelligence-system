@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-63, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-64, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -268,6 +268,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-63 · 8 Oct 2026 · Reproducibility tooling for the public data and visibility of unmapped products.** Decided (your direction to build the tools first and run the end-to-end validation afterwards).
 *What:* the manifest of the 171 raw files (link, size, SHA-256; no data, no contact details) is committed to `data/reference/external_manifest.jsonl`; `python -m oa_market_intelligence.external.fetch` restores the raw folder from it (downloads what is missing, checks every file, keeps and reports any file that differs, lists the hand-downloaded files and the filtered API pull); the download scripts moved from scratch files into `scripts/external_data/` with repository-relative paths; the SEC contact address is read from `SEC_CONTACT_EMAIL` and is never stored in the repository; [`external_data_refresh.md`](external_data_refresh.md) says how to restore, rebuild, verify and what a new release changes (a protocol deviation, not a rerun). *Unmapped products:* the IQVIA pipeline keeps its design (PROPOSAL 18.10), a product with no taxonomy entry loads as "unclassified" and does not stop the run, but the publish run log and the monthly job summary now list it, so it is no longer visible only in a log line. *Not yet done (next):* end-to-end validation (a changed extract layout through `publish`, and one run of the monthly workflow from a throwaway branch). *Rejected:* failing the whole monthly run for one new product (it would block the publish for a taxonomy gap).
+
+**DL-64 · 8 Oct 2026 · No more IQVIA data is coming; the qualifiers from the public-data checks are written into the headline documents; the two optional files are profiled.** Decided (your information that the instructor does not hold IQVIA prescription-volume, regional or approval-status data).
+*What changed:* (1) The "ask the instructor" step in DL-57 is superseded: the data set is the NMTA extract plus the public data. Consequences: the state analysis (E3) stays a stand-alone public-data view because IQVIA has no geography, and the size of the IQVIA decline stays unverified (DL-62) and is reported with that caveat. (2) The Q1 and Q3 headline answers carry qualifiers (the size of the fall is not confirmed by company sales; the specialty order is true of IQVIA's population, Medicare ranks it differently), and the Q4 match rate of 66% is shown against the 71% of always predicting Flat and described as a baseline with no proven skill (Q2 stays closed as a negative result, DL-56). (3) The two optional files (Part D by provider and drug, Medicaid drug utilisation) were profiled, structure only, and are not loaded; the profile found that Zilretta appears by name in both, which corrects an earlier statement that it is Part B only (protocol section 1, notebook 10 section 11). No volumes were examined. *Not changed:* any rule, threshold or result.
 
 ## Known loose ends (not decisions)
 

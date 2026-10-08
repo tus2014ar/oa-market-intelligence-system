@@ -21,6 +21,7 @@ from collections.abc import Callable, Iterable, Iterator
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 from oa_market_intelligence.external.codes import (
@@ -136,6 +137,28 @@ def matching_names(series: pd.Series, pattern: str) -> pd.Series:
     """The non-empty values of a text column that match a case-insensitive pattern."""
     values = series[series.astype(str).str.strip().ne("")]
     return values[values.str.contains(pattern, case=False, regex=True, na=False)]
+
+
+class DuplicateCounter:
+    """Counts repeated keys across chunks using 8-byte row hashes, so a 25-million-row file needs
+    about 200 MB instead of a Python set of tuples."""
+
+    def __init__(self) -> None:
+        self._parts: list[np.ndarray] = []
+
+    def add(self, frame: pd.DataFrame) -> None:
+        self._parts.append(pd.util.hash_pandas_object(frame, index=False).to_numpy())
+
+    def duplicates(self) -> int:
+        if not self._parts:
+            return 0
+        values = np.concatenate(self._parts)
+        return int(len(values) - len(np.unique(values)))
+
+
+def is_ndc11(series: pd.Series) -> pd.Series:
+    """True where a drug code is exactly eleven digits (leading zeros kept, so read as text)."""
+    return series.astype(str).str.fullmatch(r"\d{11}")
 
 
 def observe(chunks: Iterable[pd.DataFrame], callback: Callable[[pd.DataFrame], None]) -> Iterator:
@@ -278,6 +301,132 @@ def profile_partd_geo(raw: Path, out: Path) -> None:
             for (f, b, g), y in sorted(drugs.items())
         ],
     )
+
+
+CHUNK = 250_000  # rows per chunk for the two large optional files (tests shrink it)
+PARTD_PROVIDER_ID_COLUMNS = ("Prscrbr_Last_Org_Name", "Prscrbr_First_Name", "Prscrbr_City")
+
+
+def profile_partd_provider(raw: Path, out: Path) -> None:
+    """Medicare Part D by Provider and Drug (optional, not loaded). Structure only: prescriber
+    names and cities are counted for empties and never listed, and there are no volumes by drug."""
+    folder = raw / "Medicare Part D Prescribers - by Provider and Drug"
+    key = ["Prscrbr_NPI", "Brnd_Name", "Gnrc_Name"]
+    track = (
+        "Prscrbr_State_Abrvtn",
+        "Prscrbr_Type_Src",
+        "GE65_Sprsn_Flag",
+        "GE65_Bene_Sprsn_Flag",
+    )
+    numeric = (
+        "Tot_Clms",
+        "Tot_30day_Fills",
+        "Tot_Day_Suply",
+        "Tot_Drug_Cst",
+        "Tot_Benes",
+        "GE65_Tot_Clms",
+        "GE65_Tot_Drug_Cst",
+    )
+    result: dict = {}
+    types_by_year: dict[int, Counter] = {}
+    for path in sorted(folder.rglob("*_NPIBN.csv")):
+        year = _year_of(path, r"_DY(\d{2})_NPIBN")
+        prescribers: set[str] = set()
+        pairs: set[tuple[str, str]] = set()
+        types: Counter = Counter()
+        duplicates = DuplicateCounter()
+
+        def inspect(
+            chunk,
+            prescribers=prescribers,
+            pairs=pairs,
+            types=types,
+            duplicates=duplicates,
+        ):
+            prescribers.update(chunk["Prscrbr_NPI"].unique())
+            pairs.update(zip(chunk["Brnd_Name"], chunk["Gnrc_Name"], strict=True))
+            types.update(chunk["Prscrbr_Type"].value_counts().to_dict())
+            duplicates.add(chunk[key])
+
+        profile = profile_chunks(
+            observe(iter_csv(path, chunksize=CHUNK), inspect), track=track, numeric=numeric
+        )
+        names = pd.Series([f"{b} {g}" for b, g in pairs], dtype="string")
+        profile.update(
+            n_distinct_prescribers=len(prescribers),
+            n_distinct_drug_names=len(pairs),
+            key=key,
+            duplicate_keys=duplicates.duplicates(),
+            n_prescriber_types=len(types),
+            n_nsaid_name_pairs=int(names.str.contains(NSAID_NAME_PATTERN, case=False).sum()),
+            n_oral_steroid_name_pairs=int(
+                names.str.contains(ORAL_STEROID_NAME_PATTERN, case=False).sum()
+            ),
+            zilretta_name_matches=int(names.str.contains(ZILRETTA_PATTERN, case=False).sum()),
+            zilretta_name_pairs=sorted(
+                [b, g] for b, g in pairs if re.search(ZILRETTA_PATTERN, f"{b} {g}", re.IGNORECASE)
+            ),
+            identifying_columns_not_listed=list(PARTD_PROVIDER_ID_COLUMNS),
+        )
+        result[year] = profile
+        types_by_year[year] = types
+    _write_json(out, "partd_provider", result)
+    _write_csv(
+        out,
+        "partd_provider_prescriber_types",
+        [
+            {"year": year, "prescriber_type": name, "n_rows": count}
+            for year, counter in sorted(types_by_year.items())
+            for name, count in sorted(counter.items())
+        ],
+    )
+
+
+def profile_sdud(raw: Path, out: Path) -> None:
+    """Medicaid State Drug Utilization (optional, not loaded). Structure only: no volumes or
+    amounts by product; product names are listed only where they match the approved name lists."""
+    key = ["Utilization Type", "State", "NDC", "Year", "Quarter"]
+    patterns = {
+        "zilretta": ZILRETTA_PATTERN,
+        "hyaluronic": HYALURONIC_PRODUCT_PATTERN,
+        "steroid": STEROID_PRODUCT_PATTERN,
+    }
+    result: dict = {}
+    for path in sorted(raw.glob("sdud*.csv")):
+        year = _year_of(path, r"sdud(\d{4})")
+        ndcs: set[str] = set()
+        products: set[str] = set()
+        bad_ndc = [0]
+
+        def inspect(chunk, ndcs=ndcs, products=products, bad_ndc=bad_ndc):
+            ndcs.update(chunk["NDC"].unique())
+            products.update(chunk["Product Name"].str.strip().unique())
+            bad_ndc[0] += int((~is_ndc11(chunk["NDC"])).sum())
+
+        profile = profile_chunks(
+            observe(iter_csv(path, chunksize=CHUNK), inspect),
+            track=("Utilization Type", "State", "Year", "Quarter", "Suppression Used"),
+            numeric=(
+                "Units Reimbursed",
+                "Number of Prescriptions",
+                "Total Amount Reimbursed",
+                "Medicaid Amount Reimbursed",
+                "Non Medicaid Amount Reimbursed",
+            ),
+            key=tuple(key),
+        )
+        names = pd.Series(sorted(products), dtype="string")
+        profile.update(
+            n_distinct_ndc=len(ndcs),
+            n_ndc_not_eleven_digits=bad_ndc[0],
+            n_distinct_product_names=len(products),
+            matching_product_names={
+                label: sorted(names[names.str.contains(pattern, case=False)].tolist())[:50]
+                for label, pattern in patterns.items()
+            },
+        )
+        result[year] = profile
+    _write_json(out, "medicaid_sdud", result)
 
 
 def profile_asp(raw: Path, out: Path) -> None:
@@ -555,6 +704,8 @@ SOURCES: dict[str, Callable[[Path, Path], None]] = {
     "partb_geo": profile_partb_geo,
     "partb_provider": profile_partb_provider,
     "partd_geo": profile_partd_geo,
+    "partd_provider": profile_partd_provider,
+    "sdud": profile_sdud,
     "asp": profile_asp,
     "geovar": profile_geovar,
     "places": profile_places,

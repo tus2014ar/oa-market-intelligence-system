@@ -1,0 +1,180 @@
+{
+ "2024": {
+  "n_rows": 28023892,
+  "n_columns": 22,
+  "columns": {
+   "Prscrbr_NPI": {
+    "n_empty": 0
+   },
+   "Prscrbr_Last_Org_Name": {
+    "n_empty": 0
+   },
+   "Prscrbr_First_Name": {
+    "n_empty": 0
+   },
+   "Prscrbr_City": {
+    "n_empty": 0
+   },
+   "Prscrbr_State_Abrvtn": {
+    "n_empty": 0,
+    "n_distinct": 61,
+    "capped": false,
+    "top_values": {
+     "CA": 2542300,
+     "FL": 2048452,
+     "TX": 1884229,
+     "NY": 1782202,
+     "PA": 1327818,
+     "OH": 1141987,
+     "NC": 1012015,
+     "MI": 977572,
+     "IL": 953733,
+     "GA": 815996,
+     "TN": 709180,
+     "NJ": 698389,
+     "MA": 651548,
+     "VA": 648719,
+     "IN": 633146,
+     "MO": 603726,
+     "WA": 557775,
+     "WI": 535255,
+     "KY": 529664,
+     "AZ": 525203,
+     "SC": 498587,
+     "MN": 488536,
+     "LA": 468423,
+     "AL": 467696,
+     "MD": 428737
+    }
+   },
+   "Prscrbr_State_FIPS": {
+    "n_empty": 1
+   },
+   "Prscrbr_Type": {
+    "n_empty": 17
+   },
+   "Prscrbr_Type_Src": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "Claim-Specialty": 25214046,
+     "NPPES-Specialty": 2228768,
+     "NPPES-Taxonomy": 581078
+    }
+   },
+   "Brnd_Name": {
+    "n_empty": 0
+   },
+   "Gnrc_Name": {
+    "n_empty": 0
+   },
+   "Tot_Clms": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 197417.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_30day_Fills": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 197547.1,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Day_Suply": {
+    "n_empty": 0,
+    "min": 7.0,
+    "max": 1262040.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Drug_Cst": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 48623836.5,
+    "n_negative": 0,
+    "n_zero": 28583,
+    "n_unparseable": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 15265060,
+    "min": 11.0,
+    "max": 181806.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "GE65_Sprsn_Flag": {
+    "n_empty": 15560390,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "#": 9374102,
+     "*": 3089400
+    }
+   },
+   "GE65_Tot_Clms": {
+    "n_empty": 12463502,
+    "min": 0.0,
+    "max": 186073.0,
+    "n_negative": 0,
+    "n_zero": 752537,
+    "n_unparseable": 0
+   },
+   "GE65_Tot_30day_Fills": {
+    "n_empty": 12463502
+   },
+   "GE65_Tot_Drug_Cst": {
+    "n_empty": 12463502,
+    "min": 0.0,
+    "max": 47630372.81,
+    "n_negative": 0,
+    "n_zero": 767057,
+    "n_unparseable": 0
+   },
+   "GE65_Tot_Day_Suply": {
+    "n_empty": 12463502
+   },
+   "GE65_Bene_Sprsn_Flag": {
+    "n_empty": 3385360,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "*": 16343778,
+     "#": 8294754
+    }
+   },
+   "GE65_Tot_Benes": {
+    "n_empty": 24638532
+   }
+  },
+  "n_distinct_prescribers": 1139455,
+  "n_distinct_drug_names": 3159,
+  "key": [
+   "Prscrbr_NPI",
+   "Brnd_Name",
+   "Gnrc_Name"
+  ],
+  "duplicate_keys": 0,
+  "n_prescriber_types": 183,
+  "n_nsaid_name_pairs": 57,
+  "n_oral_steroid_name_pairs": 47,
+  "zilretta_name_matches": 1,
+  "zilretta_name_pairs": [
+   [
+    "Zilretta",
+    "Triamcinolone Acetonide"
+   ]
+  ],
+  "identifying_columns_not_listed": [
+   "Prscrbr_Last_Org_Name",
+   "Prscrbr_First_Name",
+   "Prscrbr_City"
+  ]
+ }
+}
