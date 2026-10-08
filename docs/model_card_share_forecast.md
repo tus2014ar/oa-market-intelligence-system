@@ -41,5 +41,6 @@ To give next month's expected share with an honest range, and to supply the inte
 ## Limitations
 
 - 72 months of one drug; no payer, geography, price or prescription-volume inputs, which are the likeliest explanation for moves the history cannot predict.
+- Two extra feature sets (a seasonal gap and market outside features: price ratio, company sales growth, months since an event) were tested against "same as last month" and both were worse (DL-72, [`feature_results.md`](feature_results.md)). The served rule is unchanged.
 - The intervals are empirical and conservative; with 48 months, coverage figures are themselves uncertain (about ±6 points).
 - A negative result is a result for *these* models on *this* series; it does not show that no better forecast exists.

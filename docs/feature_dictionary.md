@@ -81,7 +81,9 @@ These are the inputs for predicting a segment's share next month (Phase 4, Task 
 
 Four count columns (`seg_prior_z`, `seg_prior_t`, `spec_prior_z`, `spec_prior_t`: cumulative Zilretta and category visits to last month) are kept so the history shares can be smoothed; they use only earlier months too. The outcome columns are `y_share`, `y_visits`, `y_market`, `y_raw_above` and `y_label` (High, Low or Undetermined from a 95% Wilson interval, or High or Low in the two-label fallback). **Leakage control:** a test rewrites every month from a cut onward and requires all earlier inputs not to move; it fails when a leak is injected on purpose, and the same check was run on the real table (largest change 0). One accepted detail: rare specialties are grouped from which specialties appear, never from visit counts or shares. Decisions: DL-48, DL-49.
 
-## Candidate families (built 8 Oct 2026, not yet run; DL-71)
+## Candidate families (built and tested 8 Oct 2026; DL-71, DL-72)
+
+**Outcome (DL-72, [`feature_results.md`](feature_results.md)):** FA3 and FA2 pass the pre-registered rule (about 0.06% of log-loss), FA4 is fragile, FA1, FA5, FA6 and FB1 do not pass. No family is adopted: none of these columns is a model input, and the serving models are unchanged.
 
 Built in `features/candidate_families.py` for the pre-registered test in [`feature_engineering_plan.md`](feature_engineering_plan.md). They are **candidates**: nothing here is a model input until a family passes the plan's test. Every column uses information from month *t-1* or earlier (the IQVIA-derived families are covered by the generic leakage test; the outside families read the as-of table of `mart.py`, so a value is used only once it was public). A column that can be missing is zero-filled with a `*_missing` indicator (1 where it could not be computed), so no NaN reaches a model. A family is added to the reference model through `extra_columns` (`segment_models.design_frame`, `fitter_for`, `fit_predict_for`, `TunedPredictor`); the default, with no extra columns, is unchanged.
 

@@ -32,6 +32,8 @@
 
 ## What would make it more useful
 
+**Extra features from the data we hold do not help.** A later pre-registered test of seven candidate feature families (DL-71, DL-72; [`feature_results.md`](feature_results.md)) found two that pass the rule at about 0.06% of log-loss and none that improve the national forecast; the serving models are unchanged.
+
 Extra data. The public part is done (DL-57, DL-59 to DL-62; [`external_data_results.md`](external_data_results.md)): it adds geography, price, promotion and company sales, and its most important result is a caution: company sales kept rising while IQVIA Zilretta visits fell by about half from their 2022 peak, and a pre-registered follow-up (DL-61, DL-62) found that age mix, care setting and value per visit do not account for the size of the gap. Still missing: payer or formulary changes (not public), IQVIA prescription volume, regional and approval-status data (not available: the instructor does not have them), and a longer history.
 
 ## Reproducing the results
