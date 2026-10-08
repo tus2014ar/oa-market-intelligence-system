@@ -257,11 +257,11 @@ Grain: period end x company x product.
 | Column | Source | Original column | Rule |
 |---|---|---|---|
 | `fact_ext_company_revenue.period_end` | SEC 10-K and 10-Q filings (hand-transcribed) | income statement period | ISO date of the period end |
-| `fact_ext_company_revenue.company` | SEC 10-K and 10-Q filings (hand-transcribed) | filer | Flexion Therapeutics or Pacira BioSciences (Zilretta); Bioventus or Anika (competitors) |
-| `fact_ext_company_revenue.product` | SEC 10-K and 10-Q filings (hand-transcribed) | revenue table row | Zilretta, or the competitor product line |
-| `fact_ext_company_revenue.period_type` | SEC 10-K and 10-Q filings (hand-transcribed) | income statement period | quarter, nine_months or year |
+| `fact_ext_company_revenue.company` | SEC 10-K and 10-Q filings (hand-transcribed) | filer | Flexion Therapeutics up to the third quarter of 2021, Pacira BioSciences from 2022; the combined label for the 2021 fourth quarter and 2021 year, which span the acquisition. Competitor revenue is not loaded (segment definitions are unstable) |
+| `fact_ext_company_revenue.product` | SEC 10-K and 10-Q filings (hand-transcribed) | revenue table row | Zilretta |
+| `fact_ext_company_revenue.period_type` | SEC 10-K and 10-Q filings (hand-transcribed) | income statement period | quarter, nine_months or year; part of the key, since the fourth quarter and the year share a period end |
 | `fact_ext_company_revenue.fiscal_label` | SEC 10-K and 10-Q filings (hand-transcribed) | income statement period | for example 2021Q3 or FY2022 |
-| `fact_ext_company_revenue.net_sales_usd` | SEC 10-K and 10-Q filings (hand-transcribed) | net product sales | dollars, transcribed by hand |
+| `fact_ext_company_revenue.net_sales_usd` | SEC 10-K and 10-Q filings (hand-transcribed) | net product sales | dollars (the filings report thousands), transcribed from the statement of operations (Flexion) or the disaggregated net product sales note (Pacira); the stated $102.7 million for 2021 is rounded to $0.1 million |
 | `fact_ext_company_revenue.source_accession` | SEC 10-K and 10-Q filings (hand-transcribed) | filing accession number | for example 0001564590-21-012050 |
 | `fact_ext_company_revenue.source_form` | SEC 10-K and 10-Q filings (hand-transcribed) | form type | 10-K or 10-Q |
 | `fact_ext_company_revenue.source_page` | SEC 10-K and 10-Q filings (hand-transcribed) | page or section | where the figure appears |

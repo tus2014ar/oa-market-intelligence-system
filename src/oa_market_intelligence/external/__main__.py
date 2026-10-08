@@ -19,6 +19,7 @@ from oa_market_intelligence.external.common import (
     open_external_engine,
 )
 from oa_market_intelligence.external.loaders.asp import load_asp
+from oa_market_intelligence.external.loaders.events import load_events
 from oa_market_intelligence.external.loaders.geovar import load_geovar
 from oa_market_intelligence.external.loaders.nppes import load_nppes
 from oa_market_intelligence.external.loaders.nucc import load_nucc
@@ -28,7 +29,9 @@ from oa_market_intelligence.external.loaders.partb_provider import load_partb_pr
 from oa_market_intelligence.external.loaders.partd_geo import load_partd_geo
 from oa_market_intelligence.external.loaders.places import load_places
 from oa_market_intelligence.external.loaders.reference import load_reference
+from oa_market_intelligence.external.loaders.revenue import load_revenue
 from oa_market_intelligence.external.verify import (
+    verify_hand_tables,
     verify_provider_sources,
     verify_reference,
     verify_small_sources,
@@ -45,6 +48,8 @@ SOURCES = (
     "partb_provider",
     "nppes",
     "openpay",
+    "events",
+    "revenue",
 )
 DESCRIPTIONS_CSV = REFERENCE_DIR / "external_profile" / "partb_geo_code_descriptions.csv"
 DEFAULT_WAREHOUSE = REFERENCE_DIR.parent / "published" / "warehouse.db"
@@ -106,6 +111,8 @@ def main(argv: list[str] | None = None) -> int:
         ("partb_provider", load_partb_provider),
         ("nppes", load_nppes),
         ("openpay", load_openpay),
+        ("events", lambda engine, raw: load_events(engine)),
+        ("revenue", lambda engine, raw: load_revenue(engine)),
     ):
         if name in loading:
             result = loader(engine, args.raw)
@@ -121,6 +128,7 @@ def main(argv: list[str] | None = None) -> int:
             verify_reference(engine, args.raw)
             + verify_small_sources(engine, args.raw, small)
             + verify_provider_sources(engine, args.raw, provider)
+            + verify_hand_tables(engine, [s for s in args.only if s in ("events", "revenue")])
         )
         for name, ok, detail in checks:
             print(f"{'PASS' if ok else 'FAIL'}  {name}: {detail}")

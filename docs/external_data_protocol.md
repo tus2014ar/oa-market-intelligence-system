@@ -18,6 +18,8 @@ IQVIA shows visits, but not geography, price, promotion or company results. Publ
 2. **H3 is already decided** by an existing result (the detected break is March 2022). It is reported as such; the new Medicare facility-versus-office view is description only.
 3. **Medicare data is not the IQVIA population.** It covers Original Medicare (mostly age 65 and over), has no diagnosis, and counts claims. We compare rankings and directions, never levels.
 4. **Open Payments files are the 2026 republication of every year**, so older years include later corrections.
+5. **H2 (price) is also not a fully clean test.** While loading and checking the price files we saw several Zilretta payment-limit values by chance (for example about $16.99 per mg in 2022Q3 and about $19.16 in 2026), so the H2 rule was fixed after a glimpse of its data. It stays as written and is reported with this label.
+6. **Company sales are national and all-payer.** Zilretta net sales (Flexion to the third quarter of 2021, Pacira from 2022) include commercial and other payers, not only Medicare or the IQVIA sample. The fourth quarter of each year is derived (the year minus the first nine months). The 2021 fourth quarter spans the 19 November 2021 acquisition and is derived from Pacira's stated full-year figure of $102.7 million (rounded to $0.1 million, so good to about plus or minus $0.05 million) minus Flexion's first nine months; it is flagged and kept in E2b.
 
 ## 1. Data used
 

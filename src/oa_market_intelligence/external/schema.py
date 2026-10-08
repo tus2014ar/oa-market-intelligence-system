@@ -280,7 +280,7 @@ fact_ext_company_revenue = _table(
     Column("period_end", Text, primary_key=True),
     Column("company", Text, primary_key=True),
     Column("product", Text, primary_key=True),
-    Column("period_type", Text, nullable=False),
+    Column("period_type", Text, primary_key=True),
     Column("fiscal_label", Text),
     Column("net_sales_usd", Float),
     Column("source_accession", Text, nullable=False),
