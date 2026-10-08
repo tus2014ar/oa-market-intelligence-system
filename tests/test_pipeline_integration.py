@@ -33,9 +33,6 @@ from oa_market_intelligence.features.segment import (
     group_rare_specialties,
     load_segment_gold,
 )
-from oa_market_intelligence.ingestion.nmta_loader import parse_pivot_sheet
-from oa_market_intelligence.ingestion.place_of_service_loader import parse_place_of_service
-from oa_market_intelligence.ingestion.reference_loader import parse_reference_table
 from oa_market_intelligence.ingestion.validation import (
     validate_nmta_visits,
     validate_place_of_service,
@@ -71,25 +68,10 @@ def _fake_fda(name: str):
 
 
 @pytest.fixture(scope="module")
-def raw_extracts():
-    """Parsed straight from the real files - no validation applied yet."""
-    oa_visits = parse_pivot_sheet(RAW / "Team1_M15_19_OA.xlsx")
-    ra_visits = parse_pivot_sheet(RAW / "Team1_M04_RA.xlsx")
-    visits = pd.concat([oa_visits, ra_visits], ignore_index=True)
-    pos = pd.concat(
-        [
-            parse_place_of_service(RAW / "Team1_M15_19_OA.xlsx"),
-            parse_place_of_service(RAW / "Team1_M04_RA.xlsx"),
-        ],
-        ignore_index=True,
-    )
-    reference = pd.concat(
-        [
-            parse_reference_table(RAW / "Branded Generic - OA.xlsx"),
-            parse_reference_table(RAW / "Branded Generic - RA.xlsx"),
-        ],
-        ignore_index=True,
-    )
+def raw_extracts(real_ingest):
+    """Parsed from the real files by the real ingest, once per test session (tests/conftest.py);
+    no validation applied yet."""
+    visits, pos, reference = real_ingest()
     taxonomy = pd.read_csv(REFERENCE_DIR / "product_taxonomy.csv")
     return visits, reference, taxonomy, pos
 

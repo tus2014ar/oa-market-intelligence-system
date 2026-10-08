@@ -45,3 +45,6 @@ build/
 # them in chunks and loads only the rows it needs into the warehouse; the documentation records
 # each source link, download date and column lineage instead of the raw files.
 data/raw/New Datasets/
+
+# parsed real extracts kept between test runs (tests/conftest.py)
+.test_cache/
