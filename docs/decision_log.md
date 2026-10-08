@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-68, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-69, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -283,6 +283,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-68 · 8 Oct 2026 · R2: an ML-ready layer of outside series with their availability, and a committed public subset to build it from.** Decided (your approval of the R2 scope and of the two-database design with a committed `external_subset.db`).
 *What:* `external/export.py` writes the 23 publishable external tables (6 MB, constraints kept, local-only tables never copied) to `data/published/external_subset.db`. `mart.py` builds `mart_signal` (12 series, each value with the month it became known, from the R1 rules) and `mart_signal_asof` (for each IQVIA month, the latest value known by the end of the previous month) in the warehouse on every run; a model reads only the second. *Choices:* the as-of lag is one month (the rule the IQVIA features already follow); a value known before its period ends (a price schedule) is allowed, the test is the month it became known; company sales use the filing date of the cited document, and a revenue row with an unknown filing is an error, not a guess; anything computed from IQVIA's own visits is left out so the target cannot enter the inputs; the pooled Medicare rate and state-level results are left out (they need later data or have no join key). *Findings:* with the real data only price and company sales are fresh enough for month-by-month use (known for all 72 months, ages ahead and 3 months); promotion is known for 61 months at an average age of 11 months and Medicare adoption for 31 months at 29 months. *Tests:* each series' availability on planted values, no IQVIA-derived series, an unknown filing refused, as-of selection (latest known, none in the future, per specialty group), a planted future value caught, an idempotent build, the committed subset, and the real subset with zero violations over every IQVIA month. *Not changed:* any model, result or rule; no feature has been chosen yet.
+
+**DL-69 · 8 Oct 2026 · R4: a golden regression test of the warehouse built from the real extracts.** Decided (your approval of the R4 scope).
+*What:* committed expected values (rows, column sums, a content hash) for 11 warehouse tables in `tests/golden/warehouse_golden.json`, a test that rebuilds the warehouse from the real extracts and compares, and `python -m oa_market_intelligence.golden --update` to accept an intended change (reviewed as a diff). *Choices:* the hash uses a canonical CSV with 6 significant digits so float noise between platforms is not a change; timestamped tables are excluded; the build uses a fixed approval-date lookup so it needs no network; the stored model results are not part of this snapshot (they are covered by their own tests and by the publish run). *Why:* the data layer and the models rest on these tables, so an unexpected change (a parser edit, a changed extract, a new category mapping) should fail loudly. *With R1 to R5 the data layer is complete:* availability rules (DL-65), ingest audit (DL-66), data-quality stage (DL-67), ML-ready layer (DL-68), golden regression (this entry). *Not changed:* any model, result or rule.
 
 ## Known loose ends (not decisions)
 

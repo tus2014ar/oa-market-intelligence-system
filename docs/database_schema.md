@@ -354,3 +354,9 @@ Two tables, built on every pipeline run from the committed public subset (`data/
 
 So only price and company sales are fresh enough to be useful month by month; promotion and Medicare adoption would be heavily lagged features, absent for the first part of the series.
 
+## 12. Golden regression (R4)
+
+`tests/golden/warehouse_golden.json` holds, for each of 11 tables of the warehouse built from the real extracts (the dimensions, the two facts, the two Gold tables, `dim_source_availability` and the two mart tables), the row count, the sum of every numeric column and a content hash (SHA-256 of a canonical CSV: rows sorted, floats to 6 significant digits). `tests/test_golden.py` rebuilds the warehouse and compares: any difference names the table and what moved (rows, a column's sum, or "content differs"). Timestamped tables (`bronze_ingest_files`, `dq_report`) are not snapshotted, and the approval-date lookup is the fixed one (no network).
+
+An **intended** change is accepted on purpose: `PYTHONPATH=src python -m oa_market_intelligence.golden --update` rewrites the file and the diff is reviewed in the pull request, so a change to the data or the tables is never silent. Float noise below 1e-6 (relative) is not a change.
+

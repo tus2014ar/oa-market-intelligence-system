@@ -1,0 +1,120 @@
+{
+ "dim_month": {
+  "rows": 72,
+  "sums": {
+   "month_id": 14559468.0,
+   "year": 145590.0,
+   "quarter": 180.0,
+   "month_number": 468.0
+  },
+  "sha256": "593a154c5edd948a62e10023804bbc5009dc96c71e13ece219c3fe507040ae0c"
+ },
+ "dim_product": {
+  "rows": 160,
+  "sums": {
+   "product_id": 12880.0
+  },
+  "sha256": "95941e0ec604860e70547e200d7d59578691ae504c37329a9244765697cd7593"
+ },
+ "dim_specialty": {
+  "rows": 50,
+  "sums": {
+   "specialty_id": 1275.0
+  },
+  "sha256": "d57a76e63817061c9813e99189b2c3ccce9178d69b29cfbf01f897b94dae33bd"
+ },
+ "dim_demographics": {
+  "rows": 27,
+  "sums": {
+   "demographic_id": 378.0
+  },
+  "sha256": "22921b0effc1e2fb68416bbe3cf6915faaf29a7a0b880ca60b9b3a4837300bad"
+ },
+ "fact_product_visits": {
+  "rows": 149141,
+  "sums": {
+   "month_id": 30157504634.0,
+   "product_id": 10797195.0,
+   "specialty_id": 1431767.0,
+   "demographic_id": 970006.0,
+   "patient_visits": 5546090.0
+  },
+  "sha256": "443fc2c830a52a6f75cd668bcc9a5aa36c3061bd052d9376a31a247a8c2e6e78"
+ },
+ "fact_place_of_service_visits": {
+  "rows": 286,
+  "sums": {
+   "month_id": 57834053.0,
+   "patient_visits": 7189004.0
+  },
+  "sha256": "feba271bce35d37a68ff9a3cf12ea314849905fcb221558d83665072a86e862e"
+ },
+ "gold_visit_share_monthly": {
+  "rows": 72,
+  "sums": {
+   "month_id": 14559468.0,
+   "branded_injectable_visits": 135119.0,
+   "generic_corticosteroid_visits": 4904897.0,
+   "nsaid_otc_visits": 394076.0,
+   "visit_share": 1.775604,
+   "visit_share_lag_1": 1.756767,
+   "visit_share_lag_2": 1.738783,
+   "visit_share_lag_3": 1.72137,
+   "visit_share_roll_3mo": 1.72077,
+   "visit_share_roll_6mo": 1.663912,
+   "months_since_launch": 4140.0,
+   "is_post_launch": 72.0,
+   "competitor_count_on_market": 72.0,
+   "months_since_last_competitor_event": 4140.0,
+   "hospital_visits": 211792.0,
+   "office_visits": 6815791.0,
+   "other_visits": 143744.0,
+   "telehealth_visits": 17677.0
+  },
+  "sha256": "8638293d3ebe69b70607614e9fd14406f938f4608c2559f3d22b7d311623c466"
+ },
+ "gold_segment_adoption": {
+  "rows": 21636,
+  "sums": {
+   "month_id": 4375067129.0,
+   "specialty_id": 296691.0,
+   "demographic_id": 156800.0,
+   "branded_injectable_visits": 135119.0,
+   "total_category_visits": 5434092.0,
+   "segment_visit_share": 442.322534
+  },
+  "sha256": "d8a50859a562f339cb26b36d3d6c75ddead55d1ee0c3246dd358b62227869341"
+ },
+ "dim_source_availability": {
+  "rows": 14,
+  "sums": {
+   "lag_months": 0.0,
+   "release_year_lag": 18.0,
+   "release_month": 84.0,
+   "fixed_month": 202609.0
+  },
+  "sha256": "8b168920e4dc388f88a31292fadda2aa6ecf94ca4183f3874f0555a196504972"
+ },
+ "mart_signal": {
+  "rows": 596,
+  "sums": {
+   "period_start_month": 120521358.0,
+   "period_end_month": 120523389.0,
+   "value": 779677905.578612,
+   "available_from_month": 120587953.0
+  },
+  "sha256": "7f8c72e84b1d4a34f4b25cb9570ea0e417912a12b8db6b5fbc932282be9038af"
+ },
+ "mart_signal_asof": {
+  "rows": 1603,
+  "sums": {
+   "month_id": 324343144.0,
+   "as_of_month": 324328605.0,
+   "value": 1819082109.865261,
+   "period_end_month": 324000544.0,
+   "available_from_month": 324226944.0,
+   "age_months": 32733.0
+  },
+  "sha256": "668195003a5d251b878e8bc46ce08a7cdaeae0740501e26d54a077827324c118"
+ }
+}
