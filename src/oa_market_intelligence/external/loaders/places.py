@@ -1,7 +1,8 @@
 """CDC PLACES county data, 2025 release: arthritis prevalence (DL-59, step 4c).
 
 ARTHRITIS only, age-adjusted prevalence only (comparable across counties with different age
-mixes, approved at the 4c plan), and the latest data year available for each location.
+mixes, approved at the 4c plan), the latest data year available for each location, and counties
+only (the national summary row is dropped).
 """
 
 from __future__ import annotations
@@ -28,6 +29,8 @@ VALUE_TYPE = "Age-adjusted prevalence"
 
 def clean_places(frame: pd.DataFrame) -> pd.DataFrame:
     frame = frame[(frame["MeasureId"] == MEASURE) & (frame["Data_Value_Type"] == VALUE_TYPE)]
+    # the file also carries one national summary row (state "US", no county name): not a county
+    frame = frame[frame["StateAbbr"].str.strip().ne("US")]
     frame = frame.sort_values("Year", ascending=False).drop_duplicates("LocationID")
     out = pd.DataFrame(
         {

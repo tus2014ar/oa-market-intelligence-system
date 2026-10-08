@@ -30,7 +30,7 @@ Plain-language write-ups for the brand manager: [`docs/stakeholder_summary_part1
 Each item is tagged **[Built]** (implemented and tested in this repo), **[Built, not yet deployed]**, or **[Planned]** (designed in [`docs/PROPOSAL.md`](docs/PROPOSAL.md), not yet implemented).
 
 - **[Built]** Ingests the four IQVIA NMTA Excel extracts, validates them with a Pandera gate, and builds a Bronze → Silver → Gold SQLite warehouse with a single CLI command; computes the monthly target and its Up / Down / Flat direction label (volatility-scaled threshold) plus lag and rolling features
-- **[Built]** Runs lint and tests on every push and pull request (GitHub Actions, `ruff` + `pytest`; 497 tests including real-data tests)
+- **[Built]** Runs lint and tests on every push and pull request (GitHub Actions, `ruff` + `pytest`; about 670 tests including real-data tests; the external-data ones that need the local raw files skip in CI)
 - **[Built]** Exploratory analysis in three executed notebooks (raw data, the cleaned warehouse, RA), whose findings shaped the cleaning rules and the label definition
 - **[Built]** Leak-safe feature sets (monthly and segment), each guarded by a test that rewrites every later month and requires the earlier features not to move, and that fails when a leak is injected on purpose
 - **[Built]** A walk-forward evaluation harness (24-month minimum window, one month ahead, McNemar's test, block-bootstrap intervals, a random-guessing band) with simple baselines, for both the monthly direction task and a segment-level share task
@@ -116,7 +116,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 **What remains:**
 
 1. **Deployment** (needs the owner's accounts and secrets): an Anthropic API key with a spend limit, the Streamlit Community Cloud app, and a domain redirect ([`docs/deployment.md`](docs/deployment.md)). Integration (Step 14) is done: the publish step computes and stores the Phase 4 results, writes the backtest predictions to Gold, and the site and the Claude tools read them.
-2. **Extra data (next improvement, DL-57):** the instructor may still have IQVIA prescription-volume, administered-versus-prescribed or regional data to provide; public CMS sources exist (billing data by specialty and state, quarterly average-sales-price files); a lead about Medicare outpatient pass-through payment status ending in March 2021 is unverified. Each addition gets a protocol fixed in the plan first.
+2. **Extra data (in progress, DL-57 and DL-59):** the public CMS, CDC, SEC and FDA data is downloaded, profiled and loaded into a separate local database (27 tables, every load reconciled to the raw files), and the protocol with its pass or fail rules is fixed ([`docs/external_data_protocol.md`](docs/external_data_protocol.md)). Remaining: the events and company-revenue tables, then the analyses (a Medicare cross-check of the specialty findings, a state adoption table, and four tested hypotheses about the 2022 turn). The instructor may still provide IQVIA prescription-volume or regional data.
 
 Development is local-first: cloud infrastructure (the hosted website) is stood up when the owner is ready. See [`docs/PROPOSAL.md`](docs/PROPOSAL.md) §8 for the course roadmap.
 
@@ -130,7 +130,7 @@ Development is local-first: cloud infrastructure (the hosted website) is stood u
 
 ```bash
 PYTHONPATH=src python -m oa_market_intelligence.publish     # builds data/published/warehouse.db (about 40 minutes at full precision; add --precision fast for a quick check)
-PYTHONPATH=src python -m pytest                             # 497 tests (about 10 minutes in CI)
+PYTHONPATH=src python -m pytest                             # about 670 tests (about 15 minutes locally with the real-data tests, about 13 in CI)
 streamlit run app/streamlit_app.py                          # the site, locally
 ```
 

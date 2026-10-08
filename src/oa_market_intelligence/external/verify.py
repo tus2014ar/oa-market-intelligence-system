@@ -324,7 +324,9 @@ def _check_places(engine: Engine, raw_root: Path) -> list[Check]:
         {
             r["LocationID"]
             for r in _rows(path)
-            if r["MeasureId"] == "ARTHRITIS" and r["Data_Value_Type"] == "Age-adjusted prevalence"
+            if r["MeasureId"] == "ARTHRITIS"
+            and r["Data_Value_Type"] == "Age-adjusted prevalence"
+            and r["StateAbbr"].strip() != "US"
         }
     )
     got = _count(engine, "SELECT count(*) FROM fact_ext_arthritis_prevalence")
@@ -333,8 +335,14 @@ def _check_places(engine: Engine, raw_root: Path) -> list[Check]:
         "SELECT count(*) FROM fact_ext_arthritis_prevalence "
         "WHERE prevalence_pct < 0 OR prevalence_pct > 100",
     )
+    in_dim_state = _count(
+        engine,
+        "SELECT count(*) FROM fact_ext_arthritis_prevalence "
+        "WHERE state_code NOT IN (SELECT state_code FROM dim_state)",
+    )
     return [
         ("arthritis locations equal a recount", got == expected, f"{got} (recount {expected})"),
+        ("every PLACES state is a known state", in_dim_state == 0, f"{in_dim_state} unknown"),
         ("prevalence between 0 and 100 percent", outside == 0, f"{outside} outside"),
     ]
 

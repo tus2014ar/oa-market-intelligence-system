@@ -304,7 +304,7 @@ Grain: data year x location x measure x value type (county; local only).
 | Column | Source | Original column | Rule |
 |---|---|---|---|
 | `fact_ext_arthritis_prevalence.data_year` | CDC PLACES county data, 2025 release | Year | latest data year for each location (the arthritis rows hold only 2023) |
-| `fact_ext_arthritis_prevalence.location_id` | CDC PLACES county data, 2025 release | LocationID | county FIPS code |
+| `fact_ext_arthritis_prevalence.location_id` | CDC PLACES county data, 2025 release | LocationID | county FIPS code; the national summary row (state US) is dropped |
 | `fact_ext_arthritis_prevalence.measure_id` | CDC PLACES county data, 2025 release | MeasureId | ARTHRITIS only |
 | `fact_ext_arthritis_prevalence.value_type` | CDC PLACES county data, 2025 release | Data_Value_Type | Age-adjusted prevalence only (approved at step 4c) |
 | `fact_ext_arthritis_prevalence.state_code` | CDC PLACES county data, 2025 release | StateAbbr | as is |
