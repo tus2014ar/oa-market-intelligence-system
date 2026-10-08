@@ -20,12 +20,30 @@ from oa_market_intelligence.external.common import (
 )
 from oa_market_intelligence.external.loaders.asp import load_asp
 from oa_market_intelligence.external.loaders.geovar import load_geovar
+from oa_market_intelligence.external.loaders.nppes import load_nppes
+from oa_market_intelligence.external.loaders.nucc import load_nucc
 from oa_market_intelligence.external.loaders.partb_geo import load_partb_geo
+from oa_market_intelligence.external.loaders.partb_provider import load_partb_provider
 from oa_market_intelligence.external.loaders.partd_geo import load_partd_geo
+from oa_market_intelligence.external.loaders.places import load_places
 from oa_market_intelligence.external.loaders.reference import load_reference
-from oa_market_intelligence.external.verify import verify_reference, verify_small_sources
+from oa_market_intelligence.external.verify import (
+    verify_provider_sources,
+    verify_reference,
+    verify_small_sources,
+)
 
-SOURCES = ("reference", "partb_geo", "partd_geo", "asp", "geovar")
+SOURCES = (
+    "reference",
+    "partb_geo",
+    "partd_geo",
+    "asp",
+    "geovar",
+    "nucc",
+    "places",
+    "partb_provider",
+    "nppes",
+)
 DESCRIPTIONS_CSV = REFERENCE_DIR / "external_profile" / "partb_geo_code_descriptions.csv"
 DEFAULT_WAREHOUSE = REFERENCE_DIR.parent / "published" / "warehouse.db"
 
@@ -64,6 +82,10 @@ def main(argv: list[str] | None = None) -> int:
         ("partd_geo", load_partd_geo),
         ("asp", load_asp),
         ("geovar", load_geovar),
+        ("nucc", load_nucc),
+        ("places", load_places),
+        ("partb_provider", load_partb_provider),
+        ("nppes", load_nppes),
     ):
         if name in args.only:
             result = loader(engine, args.raw)
@@ -71,8 +93,12 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{name}: {total} rows loaded")
     failed = 0
     if args.verify:
-        checks = verify_reference(engine, args.raw) + verify_small_sources(
-            engine, args.raw, [s for s in args.only if s != "reference"]
+        small = [s for s in args.only if s in ("partb_geo", "partd_geo", "asp", "geovar")]
+        provider = [s for s in args.only if s in ("nucc", "places", "partb_provider", "nppes")]
+        checks = (
+            verify_reference(engine, args.raw)
+            + verify_small_sources(engine, args.raw, small)
+            + verify_provider_sources(engine, args.raw, provider)
         )
         for name, ok, detail in checks:
             print(f"{'PASS' if ok else 'FAIL'}  {name}: {detail}")

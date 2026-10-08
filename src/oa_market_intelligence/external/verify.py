@@ -8,13 +8,14 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import zipfile
 from pathlib import Path
 
 from sqlalchemy import Engine, text
 
 from oa_market_intelligence.external.codes import ALL_CODES, classify_partd_drug
-from oa_market_intelligence.external.common import read_manifest, verify_file
+from oa_market_intelligence.external.common import REFERENCE_DIR, read_manifest, verify_file
 from oa_market_intelligence.external.loaders import asp, geovar, partb_geo, partd_geo
 from oa_market_intelligence.external.profile_all import asp_quarter, find_asp_header
 
@@ -228,6 +229,139 @@ def verify_small_sources(
     engine: Engine, raw_root: Path, sources: list[str] | None = None
 ) -> list[Check]:
     checks: list[Check] = []
-    for source in sources or list(_SMALL_CHECKS):
+    for source in sources if sources is not None else list(_SMALL_CHECKS):
         checks += _SMALL_CHECKS[source](engine, Path(raw_root))
+    return checks
+
+
+# ---------------------------------------------------------------- the provider-level sources (4c)
+#
+# References are independent of the loaders: the committed profiling outputs (made by a different
+# program) and plain recounts of the raw files.
+
+PROFILE_DIR = REFERENCE_DIR / "external_profile"
+J3304_PROVIDER_ROWS = {2019: 912, 2020: 1088, 2021: 1294, 2022: 1262, 2023: 1181}
+
+
+def _profile(name: str) -> dict:
+    return json.loads((PROFILE_DIR / f"{name}.json").read_text(encoding="utf-8"))
+
+
+def _check_partb_provider(engine: Engine, raw_root: Path) -> list[Check]:
+    expected = {int(y): v["n_rows"] for y, v in _profile("partb_provider").items()}
+    zilretta = {
+        int(y): n
+        for y, n in _loaded_by(
+            engine, "fact_ext_partb_provider WHERE hcpcs_code = 'J3304'", "year"
+        ).items()
+    }
+    return [
+        _compare(
+            "provider rows per year equal the profile",
+            expected,
+            _loaded_by(engine, "fact_ext_partb_provider", "year"),
+        ),
+        _compare(
+            "Zilretta provider rows 2019 to 2023 (912, 1,088, 1,294, 1,262, 1,181)",
+            J3304_PROVIDER_ROWS,
+            {y: n for y, n in zilretta.items() if y in J3304_PROVIDER_ROWS},
+        ),
+    ]
+
+
+def _check_nppes(engine: Engine, raw_root: Path) -> list[Check]:
+    profile = _profile("nppes")
+    row = _scalar(
+        engine,
+        "SELECT note, rows_read, rows_loaded FROM external_load_runs "
+        "WHERE source = 'nppes' AND status = 'ok' ORDER BY run_id DESC",
+    )
+    if row is None:
+        return [("registry load recorded", False, "no run in the log")]
+    stats = json.loads(row[0])
+    dropped = (
+        stats["not_individual"]
+        + stats["deactivated"]
+        + stats["blank_taxonomy"]
+        + stats["unmapped_state"]
+    )
+    individuals = int(profile["columns"]["Entity Type Code"]["top_values"]["1"])
+    counted = _count(
+        engine, "SELECT coalesce(sum(n_individual_providers), 0) FROM fact_ext_provider_counts"
+    )
+    covered = _count(
+        engine,
+        "SELECT coalesce(sum(n_individual_providers), 0) FROM fact_ext_provider_counts "
+        "WHERE taxonomy_code IN (SELECT taxonomy_code FROM bridge_taxonomy_specialty)",
+    )
+    return [
+        (
+            "registry rows read equal the profile",
+            stats["rows_read"] == profile["n_rows"],
+            f"{stats['rows_read']} (profile {profile['n_rows']})",
+        ),
+        (
+            "registry individuals equal the profile's entity type 1 count",
+            stats["rows_read"] - stats["not_individual"] == individuals,
+            f"{stats['rows_read'] - stats['not_individual']} (profile {individuals})",
+        ),
+        (
+            "every registry row is accounted for",
+            stats["rows_read"] == dropped + stats["counted"] and stats["counted"] == counted,
+            f"read {stats['rows_read']} = dropped {dropped} + counted {stats['counted']}",
+        ),
+        (
+            "at least 99% of counted providers have a taxonomy code in the NUCC list",
+            counted > 0 and covered / counted >= 0.99,
+            f"{covered / counted:.4f}" if counted else "no rows",
+        ),
+    ]
+
+
+def _check_places(engine: Engine, raw_root: Path) -> list[Check]:
+    path = next((raw_root / "CDC PLACES").glob("*.csv"))
+    expected = len(
+        {
+            r["LocationID"]
+            for r in _rows(path)
+            if r["MeasureId"] == "ARTHRITIS" and r["Data_Value_Type"] == "Age-adjusted prevalence"
+        }
+    )
+    got = _count(engine, "SELECT count(*) FROM fact_ext_arthritis_prevalence")
+    outside = _count(
+        engine,
+        "SELECT count(*) FROM fact_ext_arthritis_prevalence "
+        "WHERE prevalence_pct < 0 OR prevalence_pct > 100",
+    )
+    return [
+        ("arthritis locations equal a recount", got == expected, f"{got} (recount {expected})"),
+        ("prevalence between 0 and 100 percent", outside == 0, f"{outside} outside"),
+    ]
+
+
+def _check_nucc(engine: Engine, raw_root: Path) -> list[Check]:
+    path = next((raw_root / "NUCC Taxonomy").glob("*.csv"))
+    expected = sum(1 for _ in _rows(path))
+    got = _count(engine, "SELECT count(*) FROM src_nucc_taxonomy")
+    bridge = _count(engine, "SELECT count(*) FROM bridge_taxonomy_specialty")
+    return [
+        ("taxonomy codes equal a recount", got == expected, f"{got} (recount {expected})"),
+        ("one bridge row per taxonomy code", bridge == got, f"{bridge} bridge rows, {got} codes"),
+    ]
+
+
+_PROVIDER_CHECKS = {
+    "nucc": _check_nucc,
+    "places": _check_places,
+    "partb_provider": _check_partb_provider,
+    "nppes": _check_nppes,
+}
+
+
+def verify_provider_sources(
+    engine: Engine, raw_root: Path, sources: list[str] | None = None
+) -> list[Check]:
+    checks: list[Check] = []
+    for source in sources if sources is not None else list(_PROVIDER_CHECKS):
+        checks += _PROVIDER_CHECKS[source](engine, Path(raw_root))
     return checks
