@@ -13,7 +13,6 @@ import pandas as pd
 import pytest
 
 from live_service import skip_if_service_unavailable
-from oa_market_intelligence.ingestion.nmta_loader import parse_pivot_sheet
 from oa_market_intelligence.ingestion.openfda_client import build_approval_date_lookup
 from oa_market_intelligence.ingestion.place_of_service_loader import parse_place_of_service
 from oa_market_intelligence.ingestion.reference_loader import parse_reference_table
@@ -63,9 +62,9 @@ def _frame(base: dict, **overrides) -> pd.DataFrame:
 # ---------- real loader output must pass cleanly ----------
 
 
-def test_real_oa_and_ra_visits_pass():
-    oa = validate_nmta_visits(parse_pivot_sheet(RAW / "Team1_M15_19_OA.xlsx"))
-    ra = validate_nmta_visits(parse_pivot_sheet(RAW / "Team1_M04_RA.xlsx"))
+def test_real_oa_and_ra_visits_pass(real_oa_visits, real_ra_visits):
+    oa = validate_nmta_visits(real_oa_visits())
+    ra = validate_nmta_visits(real_ra_visits())
     assert len(oa) == 240_773
     assert len(ra) == 1_021
 

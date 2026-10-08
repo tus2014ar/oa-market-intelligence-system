@@ -23,13 +23,14 @@ RA_SHEET = "M04_RA_PAT_VISIT"
 
 
 @pytest.fixture(scope="module")
-def oa():
-    return parse_pivot_sheet(OA_FILE)
+def oa(real_oa_visits):
+    """The OA pivot as parse_pivot_sheet returns it, parsed once per test session."""
+    return real_oa_visits()
 
 
 @pytest.fixture(scope="module")
-def ra():
-    return parse_pivot_sheet(RA_FILE)
+def ra(real_ra_visits):
+    return real_ra_visits()
 
 
 # ---------- header parsing and disease-area detection ----------

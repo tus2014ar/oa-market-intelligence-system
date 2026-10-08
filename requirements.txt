@@ -20,3 +20,5 @@ statsmodels
 # Dev / CI
 ruff
 pytest
+pytest-xdist
+filelock
