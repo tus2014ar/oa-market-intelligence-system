@@ -1,0 +1,14 @@
+iqvia_group,medicare_name,relationship,note
+ANESTHESIOLOGY,Anesthesiology,exact,nurse anesthetists excluded
+FAMILY PRACTICE,Family Practice,exact,
+INTERNAL MEDICINE,Internal Medicine,exact,
+NURSE PRACTITIONER,Nurse Practitioner,exact,
+ORTHOPEDIC SURGERY,Orthopedic Surgery,exact,IQVIA spine-surgery group is separate and excluded
+OSTEOPATHIC MEDICINE,Osteopathic Manipulative Medicine,weak,different definitions: flag in results
+PAIN MEDICINE,Interventional Pain Management,combined,two Medicare names combined
+PAIN MEDICINE,Pain Management,combined,two Medicare names combined
+PHYSICAL MEDICINE & REHAB,Physical Medicine and Rehabilitation,exact,name differs and the specialty is the same
+PHYSICIAN ASSISTANT,Physician Assistant,exact,
+RHEUMATOLOGY,Rheumatology,exact,
+SPORTS MEDICINE,Sports Medicine,exact,
+RARE (grouped),NONE,excluded,grouped rare specialties have no Medicare counterpart
