@@ -244,6 +244,22 @@ bronze_ingest_files = Table(
     CheckConstraint("rows_parsed >= 0", name="ck_bif_rows"),
 )
 
+# The data-quality checks of the latest run (quality.py): errors stop the run, warnings are
+# recorded.
+dq_report = Table(
+    "dq_report",
+    metadata,
+    Column("check_id", Text, primary_key=True),
+    Column("severity", Text, nullable=False),
+    Column("status", Text, nullable=False),
+    Column("observed", Text),
+    Column("expected", Text),
+    Column("note", Text),
+    Column("checked_at", Text, nullable=False),
+    CheckConstraint("severity IN ('error','warning')", name="ck_dq_severity"),
+    CheckConstraint("status IN ('pass','fail','skipped')", name="ck_dq_status"),
+)
+
 
 def create_schema(engine: Engine) -> None:
     """Create every Silver table that doesn't already exist. Never drops or alters one

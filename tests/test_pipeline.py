@@ -102,6 +102,13 @@ def test_run_pipeline_writes_a_real_sqlite_file_with_expected_tables(tmp_path, c
     assert by_key[("Branded Generic - OA.xlsx", "reference_table")][4] == 834
     assert summary["ingest_files"][0].keys() >= {"file_name", "role", "sha256", "rows_parsed"}
 
+    # the data-quality stage (R3): every check recorded, none failing on the real extracts
+    with engine.connect() as conn:
+        statuses = dict(conn.execute(text("SELECT check_id, status FROM dq_report")).all())
+    assert len(statuses) == 11 and "fail" not in statuses.values()
+    assert statuses["history_restated"] == "skipped"  # no previous database in this run
+    assert summary["quality"]["n_errors"] == 0 and summary["quality"]["n_warnings"] == 0
+
 
 def test_run_pipeline_is_safe_to_rerun_against_an_existing_db_file(tmp_path, cached_ingest):
     db_path = tmp_path / "warehouse.db"

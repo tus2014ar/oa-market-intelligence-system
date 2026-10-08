@@ -33,6 +33,14 @@ def summarise(log_path: Path | str = DEFAULT_LOG) -> str:
     if files:
         listing = ", ".join(f"{name} ({digest[:12]})" for name, digest in files.items())
         out.append(f"Input extracts (SHA-256 prefix): {listing}")
+    quality = run.get("quality") or {}
+    if quality:
+        out.append(
+            f"Data-quality checks: {quality.get('n_checks')} run, "
+            f"{quality.get('n_errors')} errors, {quality.get('n_warnings')} warnings"
+        )
+        for warning in quality.get("warnings", []):
+            out.append(f"Warning `{warning['check_id']}`: {warning['note']}")
     unmapped = run.get("unmapped_products") or []
     if unmapped:
         out.append(

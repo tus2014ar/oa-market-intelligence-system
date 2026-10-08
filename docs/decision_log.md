@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-66, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-67, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -277,6 +277,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-66 · 8 Oct 2026 · R5: every pipeline run records exactly which IQVIA extracts it ingested.** Decided (your approval of the R5 scope).
 *What:* a table `bronze_ingest_files` (six rows per run: file, role, SHA-256, size, rows parsed, month span, visit sum, the parser checks already passed, time) built by `ingestion/audit.py` from the parsed extracts; the same hashes go into the publish run log and the monthly job summary. *Design choices:* the table holds the latest run only and the run log keeps the history (a published database is replaced whole each month, so a history table inside it would not survive); `visits_sum` is deliberately not called a total, because visits are distinct counts and rows overlap; the file names moved to one small module (`ingestion/files.py`) so the pipeline and the audit share them; the audit is computed from the already parsed frames, so it adds no parsing time. *Why:* lineage and audit for the main data (the public side already has `bronze_external_files`), and a changed extract becomes visible as a changed hash. *Tests:* hashes and counts on synthetic files and frames, a missing file named in the error, an extract with no rows recorded as zero, an idempotent table reload, the run log and job summary, and the real run (six rows, hashes equal to the real files, row counts equal to `ingest`). *Not changed:* any model, result or rule.
+
+**DL-67 · 8 Oct 2026 · R3: a data-quality stage between validation and the build, with a stored baseline and report.** Decided (your approval of the R3 scope and the error-versus-warning split).
+*What:* `quality.py` adds eleven dataset-level checks after the Pandera validation (see `database_schema.md` section 10), a committed baseline of the profiled extracts (`data/reference/iqvia_baseline.json`, regenerated only on purpose), a stored `dq_report` table, a `quality` summary in the publish run log and a warnings list in the monthly job summary. *Policy:* **errors stop the run** (a gap in the months, a missing disease area): the last good database stays live. **Warnings are recorded** (a new category, a month's volume outside the baseline range, place-of-service months that differ, history restated by more than 0.5% since the previous published database). Skipped checks are never reported as passed. *Judgement calls, stated:* the volume tolerances (0.5 times the lowest and 1.5 times the highest month seen) and the 0.5% restatement tolerance are not tuned to any result; the revision check needs the previous published database, which `publish` now passes in. *Why:* a bad or changed extract is caught or flagged before it becomes a bad model, and a restated history becomes visible. *Real run:* all checks pass or are skipped on the committed extracts. *Not changed:* any model, result or rule.
 
 ## Known loose ends (not decisions)
 

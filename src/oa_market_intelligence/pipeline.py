@@ -37,7 +37,7 @@ import time
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine, create_engine, text
 
 from oa_market_intelligence.availability import AVAILABILITY_CSV, refresh_source_availability
 from oa_market_intelligence.ingestion.audit import (
@@ -58,6 +58,15 @@ from oa_market_intelligence.ingestion.validation import (
     validate_nmta_visits,
     validate_place_of_service,
     validate_reference_table,
+)
+from oa_market_intelligence.quality import (
+    BASELINE_JSON,
+    load_baseline,
+    raise_on_errors,
+    refresh_dq_report,
+    revision_check,
+    run_quality_checks,
+    summarise_quality,
 )
 from oa_market_intelligence.warehouse.build_gold import build_gold
 from oa_market_intelligence.warehouse.build_silver import FdaLookupFn, build_silver
@@ -127,12 +136,33 @@ def _make_engine(db_path: Path) -> Engine:
     return create_engine(f"sqlite:///{db_path.resolve().as_posix()}")
 
 
+def _monthly_gold(path: Path | None = None, *, engine: Engine | None = None) -> pd.DataFrame | None:
+    """The monthly Gold table of a database file (the previous published one) or of an engine;
+    None when there is no readable file."""
+    columns = "month_id, branded_injectable_visits, generic_corticosteroid_visits, nsaid_otc_visits"
+    own = None
+    try:
+        if engine is None:
+            if path is None or not Path(path).exists():
+                return None
+            own = engine = create_engine(f"sqlite:///{Path(path).resolve().as_posix()}")
+        with engine.connect() as conn:
+            return pd.read_sql(text(f"SELECT {columns} FROM gold_visit_share_monthly"), conn)
+    except Exception:  # noqa: BLE001 - an unreadable old file must not block a good rebuild
+        logger.warning("Could not read the previous database; skipping the restatement check.")
+        return None
+    finally:
+        if own is not None:
+            own.dispose()
+
+
 def run_pipeline(
     *,
     raw_dir: Path = DEFAULT_RAW_DIR,
     reference_dir: Path = DEFAULT_REFERENCE_DIR,
     db_path: Path = DEFAULT_DB_PATH,
     fetch_approval_date: FdaLookupFn = earliest_approval_date,
+    previous_db: Path | None = None,
 ) -> dict:
     """Runs the pipeline against `db_path`, always releasing the database file afterwards
     (on Windows an open handle would stop the publish step from moving it into place)."""
@@ -144,6 +174,7 @@ def run_pipeline(
             reference_dir=reference_dir,
             db_path=db_path,
             fetch_approval_date=fetch_approval_date,
+            previous_db=previous_db,
         )
     finally:
         engine.dispose()
@@ -156,6 +187,7 @@ def _run_pipeline(
     reference_dir: Path,
     db_path: Path,
     fetch_approval_date: FdaLookupFn,
+    previous_db: Path | None = None,
 ) -> dict:
     """Runs ingest -> validate -> Silver build -> Gold build against `db_path`,
     creating the schema first if it doesn't already exist (safe to call every run -
@@ -168,6 +200,11 @@ def _run_pipeline(
     audit_rows = build_ingest_audit(raw_dir, visits, place_of_service, reference)
     visits, place_of_service, reference = validate(visits, place_of_service, reference)
     taxonomy = pd.read_csv(reference_dir / TAXONOMY_FILE)
+
+    baseline_json = reference_dir / "iqvia_baseline.json"
+    baseline = load_baseline(baseline_json if baseline_json.exists() else BASELINE_JSON)
+    quality_report = run_quality_checks(visits, place_of_service, reference, baseline)
+    raise_on_errors(quality_report)  # a gap in the months or a missing disease area stops the run
 
     logger.info("Creating schema (if not already present) at %s...", db_path)
     create_schema(engine)
@@ -199,6 +236,11 @@ def _run_pipeline(
 
     logger.info("Building Gold tables...")
     gold_summary = build_gold(engine)
+    quality_report.append(revision_check(_monthly_gold(previous_db), _monthly_gold(engine=engine)))
+    refresh_dq_report(engine, quality_report)
+    quality = summarise_quality(quality_report)
+    if quality["n_warnings"]:
+        logger.warning("Data-quality warnings: %s", quality["warnings"])
 
     elapsed = time.monotonic() - start
     ingest_files = [
@@ -209,6 +251,7 @@ def _run_pipeline(
         "silver": silver_summary,
         "gold": gold_summary,
         "ingest_files": ingest_files,
+        "quality": quality,
         "elapsed_seconds": elapsed,
     }
     logger.info("Pipeline run complete in %.1fs: %s", elapsed, summary)

@@ -126,7 +126,10 @@ def publish(
         with tempfile.TemporaryDirectory(dir=published_dir, prefix=".staging-") as staging:
             staged_db = Path(staging) / DB_NAME
             summary = run_pipeline_fn(
-                raw_dir=raw_dir, reference_dir=reference_dir, db_path=staged_db
+                raw_dir=raw_dir,
+                reference_dir=reference_dir,
+                db_path=staged_db,
+                previous_db=published_db if published_db.exists() else None,
             )
 
             staged = _coverage(staged_db)
@@ -157,6 +160,7 @@ def publish(
             # run (PROPOSAL 18.10); recording it here makes the gap visible in the run log
             # the extracts behind this database: file, role, SHA-256, size, rows parsed
             ingest_files=(summary or {}).get("ingest_files", []),
+            quality=(summary or {}).get("quality"),
             unmapped_products=sorted(
                 (summary or {}).get("silver", {}).get("unmapped_products", [])
             ),

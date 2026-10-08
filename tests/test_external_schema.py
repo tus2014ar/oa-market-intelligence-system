@@ -34,6 +34,7 @@ IQVIA_TABLES = {
     "gold_segment_adoption",
     "dim_source_availability",
     "bronze_ingest_files",
+    "dq_report",
 }
 
 

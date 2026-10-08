@@ -310,3 +310,20 @@ The rule is applied by `oa_market_intelligence.availability.available_from_month
 
 The run log entry for a successful publish carries `ingest_files` (file, role, SHA-256, size, rows parsed), and the monthly job summary lists each extract with a hash prefix. Tests check the real run: six rows, hashes equal to the real files' hashes, row counts equal to `ingest`'s.
 
+## 10. Data-quality report (R3)
+
+`dq_report` holds the data-quality checks of the latest pipeline run (one row per check: `check_id`, `severity`, `status`, `observed`, `expected`, `note`, `checked_at`). The checks (`src/oa_market_intelligence/quality.py`) run after the per-row validation and before anything is built, and look at the extract as a whole:
+
+| Check | Severity | What it asks |
+|---|---|---|
+| `month_continuity` | **error** | Are the months consecutive from the first to the last, with none missing? |
+| `disease_areas_present` | **error** | Are OA and RA both in the visits and in the reference table? |
+| `new_specialties`, `new_products`, `new_age_bands`, `new_genders`, `new_place_of_service` | warning | Is every category already in the baseline? New ones are named. |
+| `visits_per_month_in_range`, `rows_per_month_in_range` | warning | Is each month's volume between 0.5 times the lowest and 1.5 times the highest month in the baseline, per disease area? |
+| `pos_months_match_visit_months` | warning | Do the place-of-service and visit extracts cover the same months? |
+| `history_restated` | warning | After the Gold build: did any month's branded, generic or NSAID visits move by more than 0.5% since the previous published database? New months are not a restatement. |
+
+**Policy.** An error stops the run before the database is built, so the last good published database stays live. A warning is recorded in the table, in the publish run log (`quality`: counts and the warning notes) and in the monthly job summary, and the run goes on. A check that cannot run (no baseline, no previous database) is `skipped`, never `pass`.
+
+**The baseline** `data/reference/iqvia_baseline.json` holds the categories and the monthly ranges of the extracts profiled so far (generated from the real extracts, 201908 to 202507: 50 specialties, 158 products, 10 age bands, 3 genders, 4 places of service). Regenerate it on purpose with `python -m oa_market_intelligence.quality --write-baseline`; a changed baseline is a visible diff in review. The tolerances (0.5, 1.5 and 0.5%) are in that file and are judgement calls, not tuned to results. Real run on the committed extracts: all 11 checks pass or are skipped.
+
