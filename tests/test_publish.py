@@ -197,3 +197,21 @@ def test_the_command_line_takes_a_precision_and_defaults_to_full():
     assert parse_args(["--precision", "fast"]).precision == "fast"
     with pytest.raises(SystemExit):
         parse_args(["--precision", "sloppy"])
+
+
+def test_unmapped_products_are_recorded_in_the_run_log_and_do_not_stop_the_run(tmp_path):
+    inner = _fake_pipeline(MONTHS_2)
+
+    def pipeline_with_a_new_product(**kwargs):
+        inner(**kwargs)
+        return {"silver": {"unmapped_products": ["NEWDRUG B", "NEWDRUG A"]}}
+
+    record = _publish(tmp_path, MONTHS_2, run_pipeline_fn=pipeline_with_a_new_product)
+    assert record["status"] == "ok"
+    assert record["unmapped_products"] == ["NEWDRUG A", "NEWDRUG B"]
+    assert _log(tmp_path)[-1]["unmapped_products"] == ["NEWDRUG A", "NEWDRUG B"]
+
+
+def test_a_run_without_unmapped_products_records_an_empty_list(tmp_path):
+    record = _publish(tmp_path, MONTHS_2)
+    assert record["unmapped_products"] == []

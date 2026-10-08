@@ -54,6 +54,12 @@ jobs:
             git push
           fi
 
+      - name: Summarise the run
+        if: always()
+        env:
+          PYTHONPATH: src
+        run: python -m oa_market_intelligence.run_summary >> "$GITHUB_STEP_SUMMARY"
+
       - name: Keep the run log
         if: always()
         uses: actions/upload-artifact@v4

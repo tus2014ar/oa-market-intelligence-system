@@ -79,6 +79,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 | [`docs/phase4_modeling_plan.md`](docs/phase4_modeling_plan.md) | The Phase 4 plan: methods, models, test protocol and pass/fail rules, fixed before the analyses ran |
 | [`docs/external_data_lineage.md`](docs/external_data_lineage.md) | Every column of the external-data database with its source file, original column and rule |
 | [`docs/external_data_protocol.md`](docs/external_data_protocol.md) | The protocol for the public datasets (CMS, CDC, SEC, FDA): code sets, specialty crosswalk, pass or fail rules, warehouse extension and disclosures, fixed before any analysis |
+| [`docs/external_data_refresh.md`](docs/external_data_refresh.md) | How to restore the raw public files from the committed manifest, rebuild and verify the external database, and what a new release changes (`scripts/external_data/`, `python -m oa_market_intelligence.external.fetch`) |
 | [`docs/external_data_results.md`](docs/external_data_results.md) | Results of the public-data analyses (E1 to E4): each pre-registered rule, its verdict, the numbers, the limits |
 | [`docs/stakeholder_summary_part1.md`](docs/stakeholder_summary_part1.md), [`part2`](docs/stakeholder_summary_part2.md), [`part3`](docs/stakeholder_summary_part3.md) | Plain-language summaries for the brand manager |
 | [`docs/model_card_segment_share.md`](docs/model_card_segment_share.md) | Segment share model (served: logistic regression): data, results, robustness, limits |
