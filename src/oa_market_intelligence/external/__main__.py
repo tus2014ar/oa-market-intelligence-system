@@ -18,10 +18,14 @@ from oa_market_intelligence.external.common import (
     REFERENCE_DIR,
     open_external_engine,
 )
+from oa_market_intelligence.external.loaders.asp import load_asp
+from oa_market_intelligence.external.loaders.geovar import load_geovar
+from oa_market_intelligence.external.loaders.partb_geo import load_partb_geo
+from oa_market_intelligence.external.loaders.partd_geo import load_partd_geo
 from oa_market_intelligence.external.loaders.reference import load_reference
-from oa_market_intelligence.external.verify import verify_reference
+from oa_market_intelligence.external.verify import verify_reference, verify_small_sources
 
-SOURCES = ("reference",)
+SOURCES = ("reference", "partb_geo", "partd_geo", "asp", "geovar")
 DESCRIPTIONS_CSV = REFERENCE_DIR / "external_profile" / "partb_geo_code_descriptions.csv"
 DEFAULT_WAREHOUSE = REFERENCE_DIR.parent / "published" / "warehouse.db"
 
@@ -55,9 +59,22 @@ def main(argv: list[str] | None = None) -> int:
             product_names=_product_names(args.warehouse),
         )
         print("reference:", ", ".join(f"{t}={n}" for t, n in counts.items()))
+    for name, loader in (
+        ("partb_geo", load_partb_geo),
+        ("partd_geo", load_partd_geo),
+        ("asp", load_asp),
+        ("geovar", load_geovar),
+    ):
+        if name in args.only:
+            result = loader(engine, args.raw)
+            total = sum(result.values()) if isinstance(result, dict) else result
+            print(f"{name}: {total} rows loaded")
     failed = 0
     if args.verify:
-        for name, ok, detail in verify_reference(engine, args.raw):
+        checks = verify_reference(engine, args.raw) + verify_small_sources(
+            engine, args.raw, [s for s in args.only if s != "reference"]
+        )
+        for name, ok, detail in checks:
             print(f"{'PASS' if ok else 'FAIL'}  {name}: {detail}")
             failed += 0 if ok else 1
     return 1 if failed else 0

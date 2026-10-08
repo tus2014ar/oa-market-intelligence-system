@@ -6,11 +6,17 @@ drifts from them fails here.
 
 from __future__ import annotations
 
+import csv
+import io
+import zipfile
 from pathlib import Path
 
 from sqlalchemy import Engine, text
 
+from oa_market_intelligence.external.codes import ALL_CODES, classify_partd_drug
 from oa_market_intelligence.external.common import read_manifest, verify_file
+from oa_market_intelligence.external.loaders import asp, geovar, partb_geo, partd_geo
+from oa_market_intelligence.external.profile_all import asp_quarter, find_asp_header
 
 Check = tuple[str, bool, str]
 
@@ -61,4 +67,141 @@ def verify_reference(engine: Engine, raw_root: Path) -> list[Check]:
             "all match" if not unreadable else "; ".join(unreadable[:3]),
         )
     )
+    return checks
+
+
+# ---------------------------------------------------------------- the small sources (4b)
+#
+# Each check recounts the raw file with the plain `csv` module, a different code path from the
+# loaders (which use pandas), then compares with what was loaded.
+
+
+def _rows(path: Path):
+    with open(path, newline="", encoding="utf-8", errors="replace") as handle:
+        yield from csv.DictReader(handle)
+
+
+def _loaded_by(engine: Engine, table: str, column: str) -> dict:
+    with engine.connect() as conn:
+        rows = conn.execute(text(f"SELECT {column}, count(*) FROM {table} GROUP BY {column}"))
+        return {key: n for key, n in rows}
+
+
+def _compare(name: str, expected: dict, got: dict) -> Check:
+    keys = set(expected) | set(got)
+    bad = {k: (expected.get(k), got.get(k)) for k in keys if expected.get(k) != got.get(k)}
+    if bad:
+        return (name, False, f"differences: {dict(list(bad.items())[:4])}")
+    return (name, True, f"{sum(got.values())} rows in {len(got)} groups")
+
+
+def _scalar(engine: Engine, sql: str):
+    with engine.connect() as conn:
+        return conn.execute(text(sql)).first()
+
+
+def _check_partb_geo(engine: Engine, raw_root: Path) -> list[Check]:
+    expected = {
+        year: sum(1 for r in _rows(path) if r["HCPCS_Cd"] in ALL_CODES)
+        for year, path in partb_geo.files(raw_root)
+    }
+    row = _scalar(
+        engine,
+        "SELECT n_providers, benes, services FROM fact_ext_partb_geo WHERE year = 2024 "
+        "AND geo_level = 'National' AND hcpcs_code = 'J3304' AND setting = 'O'",
+    )
+    return [
+        _compare(
+            "Part B geography rows per year",
+            expected,
+            _loaded_by(engine, "fact_ext_partb_geo", "year"),
+        ),
+        (
+            "Zilretta national office row, 2024 (4,878 providers, 47,150 patients)",
+            row is not None and tuple(row) == (4878, 47150, 3431291.6),
+            str(tuple(row) if row else None),
+        ),
+    ]
+
+
+def _check_partd_geo(engine: Engine, raw_root: Path) -> list[Check]:
+    expected = {
+        year: sum(1 for r in _rows(path) if classify_partd_drug(r["Gnrc_Name"]))
+        for year, path in partd_geo.files(raw_root)
+    }
+    return [
+        _compare(
+            "Part D geography rows per year",
+            expected,
+            _loaded_by(engine, "fact_ext_partd_geo", "year"),
+        )
+    ]
+
+
+def _check_asp(engine: Engine, raw_root: Path) -> list[Check]:
+    expected = {}
+    for path in sorted((raw_root / asp.FOLDER).rglob("*.zip")):
+        with zipfile.ZipFile(path) as archive:
+            member = next(n for n in archive.namelist() if n.lower().endswith(".csv"))
+            lines = archive.read(member).decode("latin-1").splitlines()
+        start = find_asp_header(lines)
+        reader = csv.reader(io.StringIO("\n".join(lines[start + 1 :])))
+        expected[asp_quarter(path.name)] = sum(1 for r in reader if r and r[0].strip() in ALL_CODES)
+    with_limit = _scalar(
+        engine,
+        "SELECT count(DISTINCT quarter_id) FROM fact_ext_asp_price "
+        "WHERE hcpcs_code = 'J3304' AND payment_limit IS NOT NULL",
+    )[0]
+    return [
+        _compare(
+            "price-file rows per quarter",
+            expected,
+            _loaded_by(engine, "fact_ext_asp_price", "quarter_id"),
+        ),
+        (
+            "Zilretta has a payment limit in all 26 quarters",
+            with_limit == 26 == len(expected),
+            f"{with_limit} of {len(expected)}",
+        ),
+    ]
+
+
+def _check_geovar(engine: Engine, raw_root: Path) -> list[Check]:
+    path = next((raw_root / geovar.FOLDER).glob("*.csv"))
+    expected = sum(
+        1
+        for r in _rows(path)
+        if r["BENE_GEO_LVL"] == "National"
+        or (r["BENE_GEO_LVL"] == "State" and r["BENE_GEO_CD"].strip())
+    )
+    got = _count(engine, "SELECT count(*) FROM fact_ext_geo_variation")
+    outside = _count(
+        engine,
+        "SELECT count(*) FROM fact_ext_geo_variation "
+        "WHERE ma_participation_rate < 0 OR ma_participation_rate > 1",
+    )
+    return [
+        (
+            "Geographic Variation national and state rows",
+            got == expected,
+            f"{got} (recount {expected})",
+        ),
+        ("Advantage participation rates all between 0 and 1", outside == 0, f"{outside} outside"),
+    ]
+
+
+_SMALL_CHECKS = {
+    "partb_geo": _check_partb_geo,
+    "partd_geo": _check_partd_geo,
+    "asp": _check_asp,
+    "geovar": _check_geovar,
+}
+
+
+def verify_small_sources(
+    engine: Engine, raw_root: Path, sources: list[str] | None = None
+) -> list[Check]:
+    checks: list[Check] = []
+    for source in sources or list(_SMALL_CHECKS):
+        checks += _SMALL_CHECKS[source](engine, Path(raw_root))
     return checks
