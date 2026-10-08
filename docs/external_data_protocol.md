@@ -192,3 +192,12 @@ The rules above were not changed. Where the text left a detail open, the choice 
 **Fixed handling.** Thresholds are not tuned after seeing results. A change made after results exist is a deviation: it is logged in the decision log with the reason, and both versions are shown. Results are stored in `gold_ext_verdicts` (check ids D1 to D4, with the changes in the `value` and `note` columns; no schema change) under a run id, run twice with identical output.
 
 **Limits stated now.** Medicare is Original Medicare only. IQVIA's 65+ bands include patients with Advantage plans. Two years are compared, so year-specific noise is not averaged out. None of this identifies a cause.
+
+**Implementation choices and one post-hoc addition (recorded after the run, DL-62).** No rule or threshold was changed.
+- The unspecified IQVIA age band is in neither the 65+ nor the under-65 group (it is in the all-ages totals).
+- Medicare patients seen in both settings are counted twice in the combined figures (the office-only sensitivity run removes this; D2 uses both settings by definition).
+- Medicare "services" for J3304 are milligram units (the code is per 1 mg), so "services per patient" is milligrams per patient; only the change is used.
+- The net fall in D4 is the sum over all groups of 2021 visits minus 2024 visits, so a group that gained offsets the others; a group's fall can exceed the net fall.
+- Specialties outside the 11 approved groups are one group, "other".
+- **Added after the results were seen, descriptive only:** (1) a size check beside D3, value per Medicare patient (services per patient times payment per service) against sales per IQVIA visit, because the D3 rule tests direction only and "sales per visit" rises almost mechanically when IQVIA visits fall; (2) a year-by-year table of IQVIA and sales growth, because a two-year comparison hides when the gap opens. Neither changes a verdict.
+- Results and the correction they forced: the earlier statement that the 2024 capture issue could not explain the gap (notebook 11) was too strong, since by full years the gap opens in 2023 and is largest in 2024.

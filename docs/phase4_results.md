@@ -32,7 +32,7 @@
 
 ## What would make it more useful
 
-Extra data. The public part is done (DL-57, DL-59, DL-60; [`external_data_results.md`](external_data_results.md)): it adds geography, price, promotion and company sales, and its most important result is a caution, that company sales rose after 2022 while IQVIA Zilretta visits fell by about half. Still missing: payer or formulary changes (not public), IQVIA prescription volume or regional data (awaiting the instructor), and a longer history.
+Extra data. The public part is done (DL-57, DL-59 to DL-62; [`external_data_results.md`](external_data_results.md)): it adds geography, price, promotion and company sales, and its most important result is a caution: company sales kept rising while IQVIA Zilretta visits fell by about half from their 2022 peak, and a pre-registered follow-up (DL-61, DL-62) found that age mix, care setting and value per visit do not account for the size of the gap. Still missing: payer or formulary changes (not public), IQVIA prescription volume or regional data (awaiting the instructor), and a longer history.
 
 ## Reproducing the results
 
