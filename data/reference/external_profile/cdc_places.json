@@ -1,0 +1,185 @@
+{
+ "n_rows": 229298,
+ "n_columns": 22,
+ "columns": {
+  "Year": {
+   "n_empty": 0,
+   "n_distinct": 2,
+   "capped": false,
+   "top_values": {
+    "2023": 197848,
+    "2022": 31450
+   }
+  },
+  "StateAbbr": {
+   "n_empty": 0
+  },
+  "StateDesc": {
+   "n_empty": 0
+  },
+  "LocationName": {
+   "n_empty": 80
+  },
+  "DataSource": {
+   "n_empty": 0,
+   "n_distinct": 1,
+   "capped": false,
+   "top_values": {
+    "BRFSS": 229298
+   }
+  },
+  "Category": {
+   "n_empty": 0,
+   "n_distinct": 6,
+   "capped": false,
+   "top_values": {
+    "Health Outcomes": 71366,
+    "Prevention": 42534,
+    "Disability": 41412,
+    "Health-Related Social Needs": 32200,
+    "Health Risk Behaviors": 24038,
+    "Health Status": 17748
+   }
+  },
+  "Measure": {
+   "n_empty": 0,
+   "n_distinct": 40,
+   "capped": false,
+   "top_values": {
+    "Colorectal cancer screening among adults aged 45\u201375 years": 6290,
+    "Mammography use among women aged 50-74 years": 6290,
+    "All teeth lost among adults aged >=65 years": 6290,
+    "Visited dentist or dental clinic in the past year among adults": 6290,
+    "Short sleep duration among adults": 6290,
+    "Arthritis among adults": 5916,
+    "Current asthma among adults": 5916,
+    "Stroke among adults": 5916,
+    "Any disability among adults": 5916,
+    "Obesity among adults": 5916,
+    "Diagnosed diabetes among adults": 5916,
+    "Depression among adults": 5916,
+    "Hearing disability among adults": 5916,
+    "Binge drinking among adults": 5916,
+    "High blood pressure among adults": 5916,
+    "Vision disability among adults": 5916,
+    "Mobility disability among adults": 5916,
+    "Self-care disability among adults": 5916,
+    "Frequent mental distress among adults": 5916,
+    "High cholesterol among adults who have ever been screened": 5916,
+    "Frequent physical distress among adults": 5916,
+    "No leisure-time physical activity among adults": 5916,
+    "Chronic obstructive pulmonary disease among adults": 5916,
+    "Independent living disability among adults": 5916,
+    "Coronary heart disease among adults": 5916
+   }
+  },
+  "Data_Value_Unit": {
+   "n_empty": 0
+  },
+  "Data_Value_Type": {
+   "n_empty": 0,
+   "n_distinct": 2,
+   "capped": false,
+   "top_values": {
+    "Crude prevalence": 114649,
+    "Age-adjusted prevalence": 114649
+   }
+  },
+  "Data_Value": {
+   "n_empty": 66,
+   "min": 1.7,
+   "max": 93.3,
+   "n_negative": 0,
+   "n_zero": 0,
+   "n_unparseable": 0
+  },
+  "Data_Value_Footnote_Symbol": {
+   "n_empty": 229218,
+   "n_distinct": 2,
+   "capped": false,
+   "top_values": {
+    "*": 66,
+    "#": 14
+   }
+  },
+  "Data_Value_Footnote": {
+   "n_empty": 229218
+  },
+  "Low_Confidence_Limit": {
+   "n_empty": 66,
+   "min": 1.5,
+   "max": 92.2,
+   "n_negative": 0,
+   "n_zero": 0,
+   "n_unparseable": 0
+  },
+  "High_Confidence_Limit": {
+   "n_empty": 66,
+   "min": 1.9,
+   "max": 94.2,
+   "n_negative": 0,
+   "n_zero": 0,
+   "n_unparseable": 0
+  },
+  "TotalPopulation": {
+   "n_empty": 0
+  },
+  "TotalPop18plus": {
+   "n_empty": 0
+  },
+  "LocationID": {
+   "n_empty": 0
+  },
+  "CategoryID": {
+   "n_empty": 0
+  },
+  "MeasureId": {
+   "n_empty": 0,
+   "n_distinct": 40,
+   "capped": false,
+   "top_values": {
+    "COLON_SCREEN": 6290,
+    "MAMMOUSE": 6290,
+    "TEETHLOST": 6290,
+    "DENTAL": 6290,
+    "SLEEP": 6290,
+    "ARTHRITIS": 5916,
+    "CASTHMA": 5916,
+    "STROKE": 5916,
+    "DISABILITY": 5916,
+    "OBESITY": 5916,
+    "DIABETES": 5916,
+    "DEPRESSION": 5916,
+    "HEARING": 5916,
+    "BINGE": 5916,
+    "BPHIGH": 5916,
+    "VISION": 5916,
+    "MOBILITY": 5916,
+    "SELFCARE": 5916,
+    "MHLTH": 5916,
+    "HIGHCHOL": 5916,
+    "PHLTH": 5916,
+    "LPA": 5916,
+    "COPD": 5916,
+    "INDEPLIVE": 5916,
+    "CHD": 5916
+   }
+  },
+  "DataValueTypeID": {
+   "n_empty": 0
+  },
+  "Short_Question_Text": {
+   "n_empty": 0
+  },
+  "Geolocation": {
+   "n_empty": 80
+  }
+ },
+ "key": [
+  "LocationID",
+  "MeasureId",
+  "DataValueTypeID",
+  "Year"
+ ],
+ "duplicate_keys": 0
+}

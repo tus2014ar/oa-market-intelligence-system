@@ -1,0 +1,1441 @@
+{
+ "2019": {
+  "n_rows": 10558933,
+  "n_columns": 20,
+  "columns": {
+   "Change_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "UNCHANGED": 10462313,
+     "CHANGED": 95858,
+     "NEW": 762
+    }
+   },
+   "Covered_Recipient_Type": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Covered Recipient Physician": 10509389,
+     "Covered Recipient Teaching Hospital": 49544
+    }
+   },
+   "Covered_Recipient_NPI": {
+    "n_empty": 54480
+   },
+   "Recipient_State": {
+    "n_empty": 464,
+    "n_distinct": 58,
+    "capped": false,
+    "top_values": {
+     "CA": 1097530,
+     "TX": 954075,
+     "FL": 841607,
+     "NY": 754357,
+     "PA": 508896,
+     "OH": 435901,
+     "NJ": 402152,
+     "IL": 401705,
+     "GA": 346027,
+     "MI": 331720,
+     "NC": 325099,
+     "TN": 276901,
+     "VA": 259639,
+     "IN": 246741,
+     "MO": 237584,
+     "AZ": 227817,
+     "MD": 220168,
+     "AL": 204911,
+     "LA": 202860,
+     "SC": 188921,
+     "KY": 184529,
+     "MA": 164789,
+     "CT": 157432,
+     "OK": 139339,
+     "CO": 128800
+    }
+   },
+   "Covered_Recipient_Specialty_1": {
+    "n_empty": 49544,
+    "n_distinct": 275,
+    "capped": false,
+    "top_values": {
+     "Allopathic & Osteopathic Physicians|Family Medicine": 1399538,
+     "Allopathic & Osteopathic Physicians|Internal Medicine": 1319119,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Cardiovascular Disease": 545842,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Neurology": 511684,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Psychiatry": 387997,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Gastroenterology": 380605,
+     "Allopathic & Osteopathic Physicians|Dermatology": 352483,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Hematology & Oncology": 347192,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Pulmonary Disease": 300532,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Rheumatology": 298624,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Endocrinology, Diabetes & Metabolism": 294872,
+     "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology": 274876,
+     "Allopathic & Osteopathic Physicians|Orthopaedic Surgery": 245109,
+     "Eye and Vision Services Providers|Optometrist": 233533,
+     "Allopathic & Osteopathic Physicians|Urology": 214352,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Interventional Cardiology": 194301,
+     "Allopathic & Osteopathic Physicians|Surgery": 187812,
+     "Allopathic & Osteopathic Physicians|Ophthalmology": 183194,
+     "Allopathic & Osteopathic Physicians|Pediatrics": 162595,
+     "Allopathic & Osteopathic Physicians|General Practice": 157515,
+     "Dental Providers|Dentist|General Practice": 126432,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Nephrology": 116928,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Clinical Cardiac Electrophysiology": 103662,
+     "Dental Providers|Dentist": 97749,
+     "Allopathic & Osteopathic Physicians|Allergy & Immunology": 91593
+    }
+   },
+   "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": {
+    "n_empty": 0
+   },
+   "Total_Amount_of_Payment_USDollars": {
+    "n_empty": 0,
+    "min": 0.01,
+    "max": 300000000.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Date_of_Payment": {
+    "n_empty": 0,
+    "min": "2019-01-01",
+    "max": "2019-12-31",
+    "n_unparseable": 0
+   },
+   "Number_of_Payments_Included_in_Total_Amount": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 898.0,
+    "n_negative": 0,
+    "n_zero": 1,
+    "n_unparseable": 0
+   },
+   "Form_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 6,
+    "capped": false,
+    "top_values": {
+     "In-kind items and services": 8902110,
+     "Cash or cash equivalent": 1655980,
+     "Stock option": 453,
+     "Stock, stock option, or any other ownership interest": 266,
+     "Dividend, profit or other return on investment": 92,
+     "Stock": 32
+    }
+   },
+   "Nature_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 15,
+    "capped": false,
+    "top_values": {
+     "Food and Beverage": 9211221,
+     "Travel and Lodging": 629429,
+     "Compensation for services other than consulting, including serving as faculty or as a speaker at a venue other than a continuing education program": 253411,
+     "Education": 194757,
+     "Consulting Fee": 148081,
+     "Gift": 43582,
+     "Honoraria": 18803,
+     "Royalty or License": 16394,
+     "Space rental or facility fees (teaching hospital only)": 12182,
+     "Entertainment": 9793,
+     "Grant": 8653,
+     "Compensation for serving as faculty or as a speaker for a non-accredited and noncertified continuing education program": 7491,
+     "Compensation for serving as faculty or as a speaker for an accredited or certified continuing education program": 2606,
+     "Charitable Contribution": 1693,
+     "Current or prospective ownership or investment interest": 837
+    }
+   },
+   "Dispute_Status_for_Publication": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "No": 10558211,
+     "Yes": 722
+    }
+   },
+   "Related_Product_Indicator": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Yes": 10014741,
+     "No": 544192
+    }
+   },
+   "Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 752634,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "Drug": 6069067,
+     "Device": 2242588,
+     "Biological": 1483809,
+     "Medical Supply": 10835
+    }
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 780946
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2": {
+    "n_empty": 8733497
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3": {
+    "n_empty": 9924254
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4": {
+    "n_empty": 10340268
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5": {
+    "n_empty": 10432432
+   },
+   "Program_Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2019": 10558933
+    }
+   }
+  }
+ },
+ "2020": {
+  "n_rows": 5851438,
+  "n_columns": 20,
+  "columns": {
+   "Change_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "UNCHANGED": 5795956,
+     "CHANGED": 54097,
+     "NEW": 1385
+    }
+   },
+   "Covered_Recipient_Type": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Covered Recipient Physician": 5818681,
+     "Covered Recipient Teaching Hospital": 32757
+    }
+   },
+   "Covered_Recipient_NPI": {
+    "n_empty": 36259
+   },
+   "Recipient_State": {
+    "n_empty": 248,
+    "n_distinct": 57,
+    "capped": false,
+    "top_values": {
+     "CA": 616006,
+     "TX": 555635,
+     "FL": 500111,
+     "NY": 417219,
+     "PA": 264641,
+     "NJ": 234676,
+     "OH": 222233,
+     "GA": 216757,
+     "IL": 205264,
+     "MI": 171864,
+     "NC": 171478,
+     "TN": 162568,
+     "VA": 142547,
+     "AL": 140173,
+     "AZ": 128289,
+     "MO": 125653,
+     "IN": 124962,
+     "LA": 118640,
+     "MD": 113763,
+     "SC": 108771,
+     "KY": 105983,
+     "OK": 79259,
+     "MA": 76685,
+     "CT": 75729,
+     "CO": 71493
+    }
+   },
+   "Covered_Recipient_Specialty_1": {
+    "n_empty": 32757,
+    "n_distinct": 273,
+    "capped": false,
+    "top_values": {
+     "Allopathic & Osteopathic Physicians|Family Medicine": 890969,
+     "Allopathic & Osteopathic Physicians|Internal Medicine": 807579,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Neurology": 309612,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Cardiovascular Disease": 277041,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Psychiatry": 192152,
+     "Allopathic & Osteopathic Physicians|Dermatology": 188820,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Gastroenterology": 186335,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Endocrinology, Diabetes & Metabolism": 166976,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Hematology & Oncology": 166391,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Pulmonary Disease": 161794,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Rheumatology": 150546,
+     "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology": 135813,
+     "Eye and Vision Services Providers|Optometrist": 124847,
+     "Allopathic & Osteopathic Physicians|Orthopaedic Surgery": 119018,
+     "Allopathic & Osteopathic Physicians|Urology": 109269,
+     "Allopathic & Osteopathic Physicians|Ophthalmology": 104754,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Interventional Cardiology": 104303,
+     "Allopathic & Osteopathic Physicians|Surgery": 87454,
+     "Dental Providers|Dentist|General Practice": 84914,
+     "Allopathic & Osteopathic Physicians|Pediatrics": 80177,
+     "Allopathic & Osteopathic Physicians|General Practice": 78303,
+     "Dental Providers|Dentist": 64335,
+     "Allopathic & Osteopathic Physicians|Allergy & Immunology": 61598,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Nephrology": 60579,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Clinical Cardiac Electrophysiology": 56545
+    }
+   },
+   "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": {
+    "n_empty": 0
+   },
+   "Total_Amount_of_Payment_USDollars": {
+    "n_empty": 0,
+    "min": 0.01,
+    "max": 16029083.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Date_of_Payment": {
+    "n_empty": 0,
+    "min": "2020-01-01",
+    "max": "2020-12-31",
+    "n_unparseable": 0
+   },
+   "Number_of_Payments_Included_in_Total_Amount": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 619.0,
+    "n_negative": 0,
+    "n_zero": 7,
+    "n_unparseable": 0
+   },
+   "Form_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 6,
+    "capped": false,
+    "top_values": {
+     "In-kind items and services": 4837091,
+     "Cash or cash equivalent": 1013664,
+     "Stock option": 396,
+     "Dividend, profit or other return on investment": 130,
+     "Stock, stock option, or any other ownership interest": 129,
+     "Stock": 28
+    }
+   },
+   "Nature_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 15,
+    "capped": false,
+    "top_values": {
+     "Food and Beverage": 5123590,
+     "Compensation for services other than consulting, including serving as faculty or as a speaker at a venue other than a continuing education program": 178836,
+     "Travel and Lodging": 166893,
+     "Consulting Fee": 141697,
+     "Education": 121881,
+     "Gift": 50875,
+     "Honoraria": 18595,
+     "Royalty or License": 14972,
+     "Charitable Contribution": 14516,
+     "Grant": 5965,
+     "Compensation for serving as faculty or as a speaker for a non-accredited and noncertified continuing education program": 5774,
+     "Space rental or facility fees (teaching hospital only)": 4228,
+     "Compensation for serving as faculty or as a speaker for an accredited or certified continuing education program": 1855,
+     "Current or prospective ownership or investment interest": 927,
+     "Entertainment": 834
+    }
+   },
+   "Dispute_Status_for_Publication": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "No": 5851214,
+     "Yes": 224
+    }
+   },
+   "Related_Product_Indicator": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Yes": 5559555,
+     "No": 291883
+    }
+   },
+   "Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 395721,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "Drug": 3417217,
+     "Device": 1181290,
+     "Biological": 829065,
+     "Medical Supply": 28145
+    }
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 410319
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2": {
+    "n_empty": 4784526
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3": {
+    "n_empty": 5529045
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4": {
+    "n_empty": 5746442
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5": {
+    "n_empty": 5812065
+   },
+   "Program_Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2020": 5851438
+    }
+   }
+  }
+ },
+ "2021": {
+  "n_rows": 11558469,
+  "n_columns": 20,
+  "columns": {
+   "Change_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "UNCHANGED": 11466135,
+     "CHANGED": 86087,
+     "NEW": 6247
+    }
+   },
+   "Covered_Recipient_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "Covered Recipient Physician": 7944340,
+     "Covered Recipient Non-Physician Practitioner": 3578840,
+     "Covered Recipient Teaching Hospital": 35289
+    }
+   },
+   "Covered_Recipient_NPI": {
+    "n_empty": 40812
+   },
+   "Recipient_State": {
+    "n_empty": 463,
+    "n_distinct": 58,
+    "capped": false,
+    "top_values": {
+     "TX": 1089305,
+     "CA": 1047623,
+     "FL": 1013524,
+     "NY": 773172,
+     "PA": 502879,
+     "GA": 464035,
+     "OH": 442880,
+     "NC": 406074,
+     "TN": 387879,
+     "NJ": 382186,
+     "IL": 375011,
+     "MI": 336575,
+     "AL": 287652,
+     "VA": 281395,
+     "AZ": 273521,
+     "IN": 266122,
+     "MO": 256080,
+     "LA": 248175,
+     "KY": 242370,
+     "SC": 233848,
+     "MD": 210765,
+     "MS": 165821,
+     "OK": 157985,
+     "CO": 146434,
+     "CT": 141166
+    }
+   },
+   "Covered_Recipient_Specialty_1": {
+    "n_empty": 35289,
+    "n_distinct": 382,
+    "capped": false,
+    "top_values": {
+     "Allopathic & Osteopathic Physicians|Family Medicine": 1149632,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Family": 1014138,
+     "Allopathic & Osteopathic Physicians|Internal Medicine": 1011543,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant": 798309,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner": 583495,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Neurology": 410751,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Cardiovascular Disease": 389012,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Gastroenterology": 319290,
+     "Allopathic & Osteopathic Physicians|Dermatology": 276206,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Psychiatry": 264311,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Adult Health": 257786,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant|Medical": 255793,
+     "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology": 216185,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Hematology & Oncology": 203008,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Psychiatric/Mental Health": 201665,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Pulmonary Disease": 191407,
+     "Eye and Vision Services Providers|Optometrist": 191365,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Endocrinology, Diabetes & Metabolism": 191167,
+     "Allopathic & Osteopathic Physicians|Orthopaedic Surgery": 188223,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Rheumatology": 187202,
+     "Allopathic & Osteopathic Physicians|Urology": 171176,
+     "Allopathic & Osteopathic Physicians|Ophthalmology": 153558,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Interventional Cardiology": 145915,
+     "Allopathic & Osteopathic Physicians|General Practice": 140193,
+     "Physician Assistants & Advanced Practice Nursing Providers|Clinical Nurse Specialist|Family Health": 135578
+    }
+   },
+   "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": {
+    "n_empty": 0
+   },
+   "Total_Amount_of_Payment_USDollars": {
+    "n_empty": 0,
+    "min": 0.01,
+    "max": 234417199.03,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Date_of_Payment": {
+    "n_empty": 0,
+    "min": "2021-01-01",
+    "max": "2021-12-31",
+    "n_unparseable": 0
+   },
+   "Number_of_Payments_Included_in_Total_Amount": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 426.0,
+    "n_negative": 0,
+    "n_zero": 2,
+    "n_unparseable": 0
+   },
+   "Form_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 6,
+    "capped": false,
+    "top_values": {
+     "In-kind items and services": 10044196,
+     "Cash or cash equivalent": 1513398,
+     "Stock option": 405,
+     "Dividend, profit or other return on investment": 249,
+     "Stock, stock option, or any other ownership interest": 158,
+     "Stock": 63
+    }
+   },
+   "Nature_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 17,
+    "capped": false,
+    "top_values": {
+     "Food and Beverage": 10591658,
+     "Travel and Lodging": 247822,
+     "Compensation for services other than consulting, including serving as faculty or as a speaker at a venue other than a continuing education program": 235827,
+     "Education": 179901,
+     "Consulting Fee": 174301,
+     "Gift": 44544,
+     "Honoraria": 22045,
+     "Royalty or License": 15168,
+     "Debt forgiveness": 12115,
+     "Long term medical supply or device loan": 8089,
+     "Compensation for serving as faculty or as a speaker for a medical education program": 8047,
+     "Space rental or facility fees (teaching hospital only)": 7024,
+     "Grant": 6147,
+     "Entertainment": 3402,
+     "Current or prospective ownership or investment interest": 875,
+     "Charitable Contribution": 811,
+     "Acquisitions": 693
+    }
+   },
+   "Dispute_Status_for_Publication": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "No": 11558160,
+     "Yes": 309
+    }
+   },
+   "Related_Product_Indicator": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Yes": 11037995,
+     "No": 520474
+    }
+   },
+   "Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 742720,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "Drug": 7129050,
+     "Device": 2008499,
+     "Biological": 1632015,
+     "Medical Supply": 46185
+    }
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 753659
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2": {
+    "n_empty": 9555033
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3": {
+    "n_empty": 11061972
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4": {
+    "n_empty": 11331560
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5": {
+    "n_empty": 11444155
+   },
+   "Program_Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2021": 11558469
+    }
+   }
+  }
+ },
+ "2022": {
+  "n_rows": 13322266,
+  "n_columns": 20,
+  "columns": {
+   "Change_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "UNCHANGED": 13161114,
+     "CHANGED": 145347,
+     "NEW": 15805
+    }
+   },
+   "Covered_Recipient_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "Covered Recipient Physician": 9038980,
+     "Covered Recipient Non-Physician Practitioner": 4244122,
+     "Covered Recipient Teaching Hospital": 39164
+    }
+   },
+   "Covered_Recipient_NPI": {
+    "n_empty": 51728
+   },
+   "Recipient_State": {
+    "n_empty": 529,
+    "n_distinct": 57,
+    "capped": false,
+    "top_values": {
+     "TX": 1265320,
+     "CA": 1185714,
+     "FL": 1153714,
+     "NY": 897157,
+     "PA": 578533,
+     "OH": 530428,
+     "GA": 511570,
+     "NC": 471243,
+     "TN": 440584,
+     "NJ": 432623,
+     "IL": 432161,
+     "MI": 406252,
+     "VA": 326232,
+     "AZ": 321551,
+     "AL": 309750,
+     "IN": 307031,
+     "MO": 287968,
+     "LA": 285720,
+     "KY": 273492,
+     "SC": 269678,
+     "MD": 254394,
+     "OK": 182065,
+     "MS": 176437,
+     "CO": 176306,
+     "MA": 169984
+    }
+   },
+   "Covered_Recipient_Specialty_1": {
+    "n_empty": 39164,
+    "n_distinct": 386,
+    "capped": false,
+    "top_values": {
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Family": 1208108,
+     "Allopathic & Osteopathic Physicians|Internal Medicine": 1086149,
+     "Allopathic & Osteopathic Physicians|Family Medicine": 1073585,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant": 977564,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner": 738285,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Neurology": 453247,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Cardiovascular Disease": 433898,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Gastroenterology": 390080,
+     "Allopathic & Osteopathic Physicians|Dermatology": 376015,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant|Medical": 310259,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Adult Health": 300449,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Psychiatry": 284171,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Psychiatric/Mental Health": 265958,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Hematology & Oncology": 261864,
+     "Eye and Vision Services Providers|Optometrist": 252333,
+     "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology": 244399,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Rheumatology": 223814,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Pulmonary Disease": 221074,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Endocrinology, Diabetes & Metabolism": 213388,
+     "Allopathic & Osteopathic Physicians|Urology": 206386,
+     "Allopathic & Osteopathic Physicians|Orthopaedic Surgery": 205212,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Interventional Cardiology": 189939,
+     "Allopathic & Osteopathic Physicians|Ophthalmology": 183619,
+     "Allopathic & Osteopathic Physicians|Surgery": 163430,
+     "Allopathic & Osteopathic Physicians|General Practice": 147156
+    }
+   },
+   "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": {
+    "n_empty": 0
+   },
+   "Total_Amount_of_Payment_USDollars": {
+    "n_empty": 0,
+    "min": 0.01,
+    "max": 253024419.26,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Date_of_Payment": {
+    "n_empty": 0,
+    "min": "2022-01-01",
+    "max": "2022-12-31",
+    "n_unparseable": 0
+   },
+   "Number_of_Payments_Included_in_Total_Amount": {
+    "n_empty": 0,
+    "min": 1.0,
+    "max": 700.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Form_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 6,
+    "capped": false,
+    "top_values": {
+     "In-kind items and services": 11477078,
+     "Cash or cash equivalent": 1844161,
+     "Stock option": 556,
+     "Dividend, profit or other return on investment": 225,
+     "Stock, stock option, or any other ownership interest": 182,
+     "Stock": 64
+    }
+   },
+   "Nature_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 17,
+    "capped": false,
+    "top_values": {
+     "Food and Beverage": 12150254,
+     "Travel and Lodging": 475182,
+     "Compensation for services other than consulting, including serving as faculty or as a speaker at a venue other than a continuing education program": 232709,
+     "Consulting Fee": 170135,
+     "Education": 167482,
+     "Gift": 34579,
+     "Honoraria": 18905,
+     "Compensation for serving as faculty or as a speaker for a medical education program": 17841,
+     "Royalty or License": 16142,
+     "Long term medical supply or device loan": 11490,
+     "Space rental or facility fees (teaching hospital only)": 7256,
+     "Grant": 6938,
+     "Debt forgiveness": 6143,
+     "Entertainment": 4836,
+     "Acquisitions": 870,
+     "Charitable Contribution": 764,
+     "Current or prospective ownership or investment interest": 740
+    }
+   },
+   "Dispute_Status_for_Publication": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "No": 13321823,
+     "Yes": 443
+    }
+   },
+   "Related_Product_Indicator": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Yes": 12593584,
+     "No": 728682
+    }
+   },
+   "Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 969497,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "Drug": 7580689,
+     "Device": 2555063,
+     "Biological": 2131434,
+     "Medical Supply": 85583
+    }
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 988341
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2": {
+    "n_empty": 11155127
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3": {
+    "n_empty": 12741074
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4": {
+    "n_empty": 13038113
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5": {
+    "n_empty": 13193937
+   },
+   "Program_Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2022": 13322266
+    }
+   }
+  }
+ },
+ "2023": {
+  "n_rows": 14734121,
+  "n_columns": 20,
+  "columns": {
+   "Change_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "UNCHANGED": 14554633,
+     "CHANGED": 145835,
+     "NEW": 33653
+    }
+   },
+   "Covered_Recipient_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "Covered Recipient Physician": 9685211,
+     "Covered Recipient Non-Physician Practitioner": 5016210,
+     "Covered Recipient Teaching Hospital": 32700
+    }
+   },
+   "Covered_Recipient_NPI": {
+    "n_empty": 45567
+   },
+   "Recipient_State": {
+    "n_empty": 619,
+    "n_distinct": 59,
+    "capped": false,
+    "top_values": {
+     "TX": 1405561,
+     "FL": 1299957,
+     "CA": 1287050,
+     "NY": 979296,
+     "PA": 643949,
+     "OH": 583746,
+     "GA": 561468,
+     "NC": 522892,
+     "IL": 498702,
+     "TN": 478444,
+     "NJ": 476632,
+     "MI": 451795,
+     "VA": 362042,
+     "AZ": 348345,
+     "IN": 340941,
+     "MO": 325263,
+     "AL": 323904,
+     "LA": 317131,
+     "KY": 309356,
+     "SC": 302806,
+     "MD": 286586,
+     "MA": 201226,
+     "CO": 197081,
+     "OK": 195992,
+     "CT": 192519
+    }
+   },
+   "Covered_Recipient_Specialty_1": {
+    "n_empty": 32700,
+    "n_distinct": 386,
+    "capped": false,
+    "top_values": {
+     "Allopathic & Osteopathic Physicians|Internal Medicine": 1319324,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Family": 1304001,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant": 1253458,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner": 1130607,
+     "Allopathic & Osteopathic Physicians|Family Medicine": 1098942,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Cardiovascular Disease": 463554,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Neurology": 459865,
+     "Allopathic & Osteopathic Physicians|Dermatology": 457517,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Gastroenterology": 420697,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Psychiatric/Mental Health": 371411,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant|Medical": 317714,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Psychiatry": 309508,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Hematology & Oncology": 309215,
+     "Eye and Vision Services Providers|Optometrist": 256092,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Rheumatology": 224349,
+     "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology": 214630,
+     "Allopathic & Osteopathic Physicians|Orthopaedic Surgery": 213432,
+     "Allopathic & Osteopathic Physicians|Urology": 211920,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Endocrinology, Diabetes & Metabolism": 211413,
+     "Allopathic & Osteopathic Physicians|Ophthalmology": 195399,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Pulmonary Disease": 192915,
+     "Allopathic & Osteopathic Physicians|General Practice": 181698,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Interventional Cardiology": 177062,
+     "Allopathic & Osteopathic Physicians|Surgery": 172608,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Adult Health": 158402
+    }
+   },
+   "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": {
+    "n_empty": 0
+   },
+   "Total_Amount_of_Payment_USDollars": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 88377304.59,
+    "n_negative": 0,
+    "n_zero": 3,
+    "n_unparseable": 0
+   },
+   "Date_of_Payment": {
+    "n_empty": 0,
+    "min": "2023-01-01",
+    "max": "2023-12-31",
+    "n_unparseable": 0
+   },
+   "Number_of_Payments_Included_in_Total_Amount": {
+    "n_empty": 0,
+    "min": 1.0,
+    "max": 640.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Form_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 6,
+    "capped": false,
+    "top_values": {
+     "In-kind items and services": 12670958,
+     "Cash or cash equivalent": 2062631,
+     "Dividend, profit or other return on investment": 265,
+     "Stock, stock option, or any other ownership interest": 157,
+     "Stock option": 57,
+     "Stock": 53
+    }
+   },
+   "Nature_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 16,
+    "capped": false,
+    "top_values": {
+     "Food and Beverage": 13480670,
+     "Travel and Lodging": 556538,
+     "Compensation for services other than consulting, including serving as faculty or as a speaker at a venue other than a continuing education program": 237963,
+     "Consulting Fee": 174745,
+     "Education": 165045,
+     "Gift": 31903,
+     "Honoraria": 21096,
+     "Royalty or License": 16380,
+     "Compensation for serving as faculty or as a speaker for a medical education program": 12269,
+     "Long term medical supply or device loan": 8801,
+     "Entertainment": 8051,
+     "Space rental or facility fees (teaching hospital only)": 7489,
+     "Grant": 6509,
+     "Debt forgiveness": 5308,
+     "Charitable Contribution": 730,
+     "Acquisitions": 624
+    }
+   },
+   "Dispute_Status_for_Publication": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "No": 14733870,
+     "Yes": 251
+    }
+   },
+   "Related_Product_Indicator": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Yes": 13896065,
+     "No": 838056
+    }
+   },
+   "Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 1130804,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "Drug": 8257958,
+     "Device": 3024687,
+     "Biological": 2211889,
+     "Medical Supply": 108783
+    }
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 1225669
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2": {
+    "n_empty": 12190134
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3": {
+    "n_empty": 13981765
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4": {
+    "n_empty": 14423369
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5": {
+    "n_empty": 14583147
+   },
+   "Program_Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2023": 14734121
+    }
+   }
+  }
+ },
+ "2024": {
+  "n_rows": 15498687,
+  "n_columns": 20,
+  "columns": {
+   "Change_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "UNCHANGED": 15074113,
+     "NEW": 273413,
+     "CHANGED": 151161
+    }
+   },
+   "Covered_Recipient_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "Covered Recipient Physician": 9965643,
+     "Covered Recipient Non-Physician Practitioner": 5495656,
+     "Covered Recipient Teaching Hospital": 37388
+    }
+   },
+   "Covered_Recipient_NPI": {
+    "n_empty": 51278
+   },
+   "Recipient_State": {
+    "n_empty": 468,
+    "n_distinct": 59,
+    "capped": false,
+    "top_values": {
+     "TX": 1454605,
+     "CA": 1382359,
+     "FL": 1357553,
+     "NY": 1041113,
+     "PA": 670866,
+     "OH": 606843,
+     "GA": 595474,
+     "NC": 538585,
+     "IL": 527260,
+     "NJ": 519991,
+     "TN": 502387,
+     "MI": 478537,
+     "VA": 379310,
+     "AZ": 368038,
+     "IN": 353005,
+     "AL": 334617,
+     "MO": 328736,
+     "LA": 324860,
+     "KY": 323646,
+     "SC": 314984,
+     "MD": 301309,
+     "MA": 220865,
+     "CT": 207976,
+     "CO": 205887,
+     "OK": 200102
+    }
+   },
+   "Covered_Recipient_Specialty_1": {
+    "n_empty": 37388,
+    "n_distinct": 388,
+    "capped": false,
+    "top_values": {
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Family": 1499092,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant": 1394057,
+     "Allopathic & Osteopathic Physicians|Internal Medicine": 1190407,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner": 1126224,
+     "Allopathic & Osteopathic Physicians|Family Medicine": 1120019,
+     "Allopathic & Osteopathic Physicians|Dermatology": 527325,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Neurology": 462531,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Gastroenterology": 457577,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Cardiovascular Disease": 455620,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Psychiatric/Mental Health": 431955,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant|Medical": 340750,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Hematology & Oncology": 333164,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Psychiatry": 318811,
+     "Eye and Vision Services Providers|Optometrist": 260532,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Rheumatology": 243344,
+     "Allopathic & Osteopathic Physicians|General Practice": 239840,
+     "Allopathic & Osteopathic Physicians|Orthopaedic Surgery": 225068,
+     "Allopathic & Osteopathic Physicians|Urology": 212181,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Endocrinology, Diabetes & Metabolism": 203907,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Pulmonary Disease": 203298,
+     "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology": 201937,
+     "Allopathic & Osteopathic Physicians|Ophthalmology": 199806,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Interventional Cardiology": 186496,
+     "Allopathic & Osteopathic Physicians|Surgery": 181574,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Adult Health": 172554
+    }
+   },
+   "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": {
+    "n_empty": 0
+   },
+   "Total_Amount_of_Payment_USDollars": {
+    "n_empty": 0,
+    "min": 0.01,
+    "max": 91082706.03,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Date_of_Payment": {
+    "n_empty": 0,
+    "min": "0002-11-30",
+    "max": "2024-12-31",
+    "n_unparseable": 0
+   },
+   "Number_of_Payments_Included_in_Total_Amount": {
+    "n_empty": 0,
+    "min": 1.0,
+    "max": 195.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Form_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 6,
+    "capped": false,
+    "top_values": {
+     "In-kind items and services": 13428176,
+     "Cash or cash equivalent": 2069911,
+     "Dividend, profit or other return on investment": 255,
+     "Stock, stock option, or any other ownership interest": 214,
+     "Stock option": 104,
+     "Stock": 27
+    }
+   },
+   "Nature_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 16,
+    "capped": false,
+    "top_values": {
+     "Food and Beverage": 14178579,
+     "Travel and Lodging": 608178,
+     "Compensation for services other than consulting, including serving as faculty or as a speaker at a venue other than a continuing education program": 241927,
+     "Consulting Fee": 189386,
+     "Education": 156118,
+     "Gift": 28441,
+     "Long term medical supply or device loan": 18781,
+     "Honoraria": 16603,
+     "Royalty or License": 15479,
+     "Compensation for serving as faculty or as a speaker for a medical education program": 14125,
+     "Space rental or facility fees (teaching hospital only)": 8060,
+     "Debt forgiveness": 7704,
+     "Grant": 7510,
+     "Entertainment": 6562,
+     "Charitable Contribution": 807,
+     "Acquisitions": 427
+    }
+   },
+   "Dispute_Status_for_Publication": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "No": 15498360,
+     "Yes": 327
+    }
+   },
+   "Related_Product_Indicator": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Yes": 14537723,
+     "No": 960964
+    }
+   },
+   "Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 1241265,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "Drug": 8566252,
+     "Device": 3200678,
+     "Biological": 2403628,
+     "Medical Supply": 86864
+    }
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 1351394
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2": {
+    "n_empty": 12786853
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3": {
+    "n_empty": 14891278
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4": {
+    "n_empty": 15224903
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5": {
+    "n_empty": 15337144
+   },
+   "Program_Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2024": 15498687
+    }
+   }
+  }
+ },
+ "2025": {
+  "n_rows": 16131856,
+  "n_columns": 20,
+  "columns": {
+   "Change_Type": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "NEW": 16126871,
+     "ADD": 4985
+    }
+   },
+   "Covered_Recipient_Type": {
+    "n_empty": 0,
+    "n_distinct": 3,
+    "capped": false,
+    "top_values": {
+     "Covered Recipient Physician": 10129623,
+     "Covered Recipient Non-Physician Practitioner": 5966664,
+     "Covered Recipient Teaching Hospital": 35569
+    }
+   },
+   "Covered_Recipient_NPI": {
+    "n_empty": 42823
+   },
+   "Recipient_State": {
+    "n_empty": 493,
+    "n_distinct": 59,
+    "capped": false,
+    "top_values": {
+     "TX": 1518471,
+     "CA": 1450114,
+     "FL": 1436414,
+     "NY": 1089903,
+     "PA": 689644,
+     "OH": 631547,
+     "GA": 609383,
+     "NJ": 551520,
+     "NC": 551170,
+     "IL": 535247,
+     "TN": 513325,
+     "MI": 497356,
+     "VA": 397902,
+     "AZ": 382339,
+     "IN": 370774,
+     "AL": 345482,
+     "LA": 345182,
+     "MO": 331289,
+     "SC": 326520,
+     "KY": 325665,
+     "MD": 315851,
+     "MA": 230757,
+     "CT": 218668,
+     "OK": 213935,
+     "CO": 213572
+    }
+   },
+   "Covered_Recipient_Specialty_1": {
+    "n_empty": 35569,
+    "n_distinct": 390,
+    "capped": false,
+    "top_values": {
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Family": 1596475,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant": 1485671,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner": 1198181,
+     "Allopathic & Osteopathic Physicians|Internal Medicine": 1154027,
+     "Allopathic & Osteopathic Physicians|Family Medicine": 1038830,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Psychiatric/Mental Health": 586011,
+     "Allopathic & Osteopathic Physicians|Dermatology": 552371,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Neurology": 462505,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Gastroenterology": 453464,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Cardiovascular Disease": 408951,
+     "Physician Assistants & Advanced Practice Nursing Providers|Physician Assistant|Medical": 364927,
+     "Allopathic & Osteopathic Physicians|Psychiatry & Neurology|Psychiatry": 353086,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Hematology & Oncology": 325125,
+     "Eye and Vision Services Providers|Optometrist": 308933,
+     "Allopathic & Osteopathic Physicians|General Practice": 286239,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Rheumatology": 252703,
+     "Allopathic & Osteopathic Physicians|Ophthalmology": 234927,
+     "Allopathic & Osteopathic Physicians|Orthopaedic Surgery": 233732,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Pulmonary Disease": 232926,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Endocrinology, Diabetes & Metabolism": 218111,
+     "Allopathic & Osteopathic Physicians|Urology": 216733,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Interventional Cardiology": 212388,
+     "Allopathic & Osteopathic Physicians|Obstetrics & Gynecology": 203248,
+     "Physician Assistants & Advanced Practice Nursing Providers|Nurse Practitioner|Adult Health": 168545,
+     "Allopathic & Osteopathic Physicians|Internal Medicine|Nephrology": 162980
+    }
+   },
+   "Applicable_Manufacturer_or_Applicable_GPO_Making_Payment_Name": {
+    "n_empty": 0
+   },
+   "Total_Amount_of_Payment_USDollars": {
+    "n_empty": 0,
+    "min": 0.01,
+    "max": 400000000.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Date_of_Payment": {
+    "n_empty": 0,
+    "min": "2025-01-01",
+    "max": "2025-12-31",
+    "n_unparseable": 0
+   },
+   "Number_of_Payments_Included_in_Total_Amount": {
+    "n_empty": 0,
+    "min": 1.0,
+    "max": 200.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Form_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 6,
+    "capped": false,
+    "top_values": {
+     "In-kind items and services": 13911080,
+     "Cash or cash equivalent": 2220038,
+     "Stock, stock option, or any other ownership interest": 287,
+     "Dividend, profit or other return on investment": 262,
+     "Stock option": 159,
+     "Stock": 30
+    }
+   },
+   "Nature_of_Payment_or_Transfer_of_Value": {
+    "n_empty": 0,
+    "n_distinct": 16,
+    "capped": false,
+    "top_values": {
+     "Food and Beverage": 14764648,
+     "Travel and Lodging": 623496,
+     "Compensation for services other than consulting, including serving as faculty or as a speaker at a venue other than a continuing education program": 249154,
+     "Consulting Fee": 205079,
+     "Education": 161500,
+     "Gift": 26637,
+     "Honoraria": 25134,
+     "Long term medical supply or device loan": 16837,
+     "Royalty or License": 15496,
+     "Compensation for serving as faculty or as a speaker for a medical education program": 15039,
+     "Space rental or facility fees (teaching hospital only)": 8371,
+     "Grant": 7352,
+     "Debt forgiveness": 6179,
+     "Entertainment": 5849,
+     "Charitable Contribution": 680,
+     "Acquisitions": 405
+    }
+   },
+   "Dispute_Status_for_Publication": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "No": 16131551,
+     "Yes": 305
+    }
+   },
+   "Related_Product_Indicator": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Yes": 15100964,
+     "No": 1030892
+    }
+   },
+   "Indicate_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 1293547,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "Drug": 8934112,
+     "Device": 3252629,
+     "Biological": 2574533,
+     "Medical Supply": 77035
+    }
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_1": {
+    "n_empty": 1306641
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_2": {
+    "n_empty": 13786344
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_3": {
+    "n_empty": 15602807
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_4": {
+    "n_empty": 15847921
+   },
+   "Name_of_Drug_or_Biological_or_Device_or_Medical_Supply_5": {
+    "n_empty": 15946890
+   },
+   "Program_Year": {
+    "n_empty": 0,
+    "n_distinct": 1,
+    "capped": false,
+    "top_values": {
+     "2025": 16131856
+    }
+   }
+  }
+ }
+}

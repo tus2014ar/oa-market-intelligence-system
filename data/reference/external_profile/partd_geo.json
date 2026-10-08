@@ -1,0 +1,602 @@
+{
+ "2019": {
+  "n_rows": 114645,
+  "n_columns": 22,
+  "columns": {
+   "Prscrbr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 111101,
+     "National": 3544
+    }
+   },
+   "Prscrbr_Geo_Cd": {
+    "n_empty": 3544
+   },
+   "Prscrbr_Geo_Desc": {
+    "n_empty": 0
+   },
+   "Brnd_Name": {
+    "n_empty": 0
+   },
+   "Gnrc_Name": {
+    "n_empty": 0
+   },
+   "Tot_Prscrbrs": {
+    "n_empty": 0
+   },
+   "Tot_Clms": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 54668647.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_30day_Fills": {
+    "n_empty": 0
+   },
+   "Tot_Drug_Cst": {
+    "n_empty": 0,
+    "min": 0.04,
+    "max": 7304509695.2,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 20948,
+    "min": 11.0,
+    "max": 12984063.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "GE65_Sprsn_Flag": {
+    "n_empty": 93811
+   },
+   "GE65_Tot_Clms": {
+    "n_empty": 20834
+   },
+   "GE65_Tot_30day_Fills": {
+    "n_empty": 20834
+   },
+   "GE65_Tot_Drug_Cst": {
+    "n_empty": 20834
+   },
+   "GE65_Bene_Sprsn_Flag": {
+    "n_empty": 67076
+   },
+   "GE65_Tot_Benes": {
+    "n_empty": 47569
+   },
+   "LIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "NonLIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "Opioid_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Opioid_LA_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antbtc_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antpsyct_Drug_Flag": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Prscrbr_Geo_Lvl",
+   "Prscrbr_Geo_Cd",
+   "Brnd_Name",
+   "Gnrc_Name"
+  ],
+  "duplicate_keys": 0
+ },
+ "2020": {
+  "n_rows": 115410,
+  "n_columns": 22,
+  "columns": {
+   "Prscrbr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 111828,
+     "National": 3582
+    }
+   },
+   "Prscrbr_Geo_Cd": {
+    "n_empty": 3609
+   },
+   "Prscrbr_Geo_Desc": {
+    "n_empty": 27
+   },
+   "Brnd_Name": {
+    "n_empty": 0
+   },
+   "Gnrc_Name": {
+    "n_empty": 0
+   },
+   "Tot_Prscrbrs": {
+    "n_empty": 0
+   },
+   "Tot_Clms": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 58185117.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_30day_Fills": {
+    "n_empty": 0
+   },
+   "Tot_Drug_Cst": {
+    "n_empty": 0,
+    "min": 3.52,
+    "max": 9935134545.7,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 22066,
+    "min": 11.0,
+    "max": 13873338.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "GE65_Sprsn_Flag": {
+    "n_empty": 94450
+   },
+   "GE65_Tot_Clms": {
+    "n_empty": 20960
+   },
+   "GE65_Tot_30day_Fills": {
+    "n_empty": 20960
+   },
+   "GE65_Tot_Drug_Cst": {
+    "n_empty": 20960
+   },
+   "GE65_Bene_Sprsn_Flag": {
+    "n_empty": 66682
+   },
+   "GE65_Tot_Benes": {
+    "n_empty": 48728
+   },
+   "LIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "NonLIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "Opioid_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Opioid_LA_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antbtc_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antpsyct_Drug_Flag": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Prscrbr_Geo_Lvl",
+   "Prscrbr_Geo_Cd",
+   "Brnd_Name",
+   "Gnrc_Name"
+  ],
+  "duplicate_keys": 0
+ },
+ "2021": {
+  "n_rows": 114891,
+  "n_columns": 22,
+  "columns": {
+   "Prscrbr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 111324,
+     "National": 3567
+    }
+   },
+   "Prscrbr_Geo_Cd": {
+    "n_empty": 3567
+   },
+   "Prscrbr_Geo_Desc": {
+    "n_empty": 0
+   },
+   "Brnd_Name": {
+    "n_empty": 0
+   },
+   "Gnrc_Name": {
+    "n_empty": 0
+   },
+   "Tot_Prscrbrs": {
+    "n_empty": 0
+   },
+   "Tot_Clms": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 61087156.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_30day_Fills": {
+    "n_empty": 0
+   },
+   "Tot_Drug_Cst": {
+    "n_empty": 0,
+    "min": 0.09,
+    "max": 12573469192.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 21890,
+    "min": 11.0,
+    "max": 14952712.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "GE65_Sprsn_Flag": {
+    "n_empty": 94060
+   },
+   "GE65_Tot_Clms": {
+    "n_empty": 20831
+   },
+   "GE65_Tot_30day_Fills": {
+    "n_empty": 20831
+   },
+   "GE65_Tot_Drug_Cst": {
+    "n_empty": 20831
+   },
+   "GE65_Bene_Sprsn_Flag": {
+    "n_empty": 66271
+   },
+   "GE65_Tot_Benes": {
+    "n_empty": 48620
+   },
+   "LIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "NonLIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "Opioid_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Opioid_LA_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antbtc_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antpsyct_Drug_Flag": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Prscrbr_Geo_Lvl",
+   "Prscrbr_Geo_Cd",
+   "Brnd_Name",
+   "Gnrc_Name"
+  ],
+  "duplicate_keys": 0
+ },
+ "2022": {
+  "n_rows": 115396,
+  "n_columns": 22,
+  "columns": {
+   "Prscrbr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 111812,
+     "National": 3584
+    }
+   },
+   "Prscrbr_Geo_Cd": {
+    "n_empty": 3584
+   },
+   "Prscrbr_Geo_Desc": {
+    "n_empty": 0
+   },
+   "Brnd_Name": {
+    "n_empty": 0
+   },
+   "Gnrc_Name": {
+    "n_empty": 0
+   },
+   "Tot_Prscrbrs": {
+    "n_empty": 0
+   },
+   "Tot_Clms": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 64780673.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_30day_Fills": {
+    "n_empty": 0
+   },
+   "Tot_Drug_Cst": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 15216720040.0,
+    "n_negative": 0,
+    "n_zero": 1,
+    "n_unparseable": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 21743,
+    "min": 11.0,
+    "max": 15881368.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "GE65_Sprsn_Flag": {
+    "n_empty": 94350
+   },
+   "GE65_Tot_Clms": {
+    "n_empty": 21046
+   },
+   "GE65_Tot_30day_Fills": {
+    "n_empty": 21046
+   },
+   "GE65_Tot_Drug_Cst": {
+    "n_empty": 21046
+   },
+   "GE65_Bene_Sprsn_Flag": {
+    "n_empty": 66517
+   },
+   "GE65_Tot_Benes": {
+    "n_empty": 48879
+   },
+   "LIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "NonLIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "Opioid_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Opioid_LA_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antbtc_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antpsyct_Drug_Flag": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Prscrbr_Geo_Lvl",
+   "Prscrbr_Geo_Cd",
+   "Brnd_Name",
+   "Gnrc_Name"
+  ],
+  "duplicate_keys": 0
+ },
+ "2023": {
+  "n_rows": 115936,
+  "n_columns": 22,
+  "columns": {
+   "Prscrbr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 112329,
+     "National": 3607
+    }
+   },
+   "Prscrbr_Geo_Cd": {
+    "n_empty": 3608
+   },
+   "Prscrbr_Geo_Desc": {
+    "n_empty": 1
+   },
+   "Brnd_Name": {
+    "n_empty": 0
+   },
+   "Gnrc_Name": {
+    "n_empty": 0
+   },
+   "Tot_Prscrbrs": {
+    "n_empty": 0
+   },
+   "Tot_Clms": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 68467282.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_30day_Fills": {
+    "n_empty": 0
+   },
+   "Tot_Drug_Cst": {
+    "n_empty": 0,
+    "min": 15.06,
+    "max": 18266125074.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 21596,
+    "min": 11.0,
+    "max": 16770381.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "GE65_Sprsn_Flag": {
+    "n_empty": 94873
+   },
+   "GE65_Tot_Clms": {
+    "n_empty": 21063
+   },
+   "GE65_Tot_30day_Fills": {
+    "n_empty": 21063
+   },
+   "GE65_Tot_Drug_Cst": {
+    "n_empty": 21063
+   },
+   "GE65_Bene_Sprsn_Flag": {
+    "n_empty": 67088
+   },
+   "GE65_Tot_Benes": {
+    "n_empty": 48848
+   },
+   "LIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "NonLIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "Opioid_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Opioid_LA_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antbtc_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antpsyct_Drug_Flag": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Prscrbr_Geo_Lvl",
+   "Prscrbr_Geo_Cd",
+   "Brnd_Name",
+   "Gnrc_Name"
+  ],
+  "duplicate_keys": 0
+ },
+ "2024": {
+  "n_rows": 117661,
+  "n_columns": 22,
+  "columns": {
+   "Prscrbr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 114029,
+     "National": 3632
+    }
+   },
+   "Prscrbr_Geo_Cd": {
+    "n_empty": 3633
+   },
+   "Prscrbr_Geo_Desc": {
+    "n_empty": 1
+   },
+   "Brnd_Name": {
+    "n_empty": 0
+   },
+   "Gnrc_Name": {
+    "n_empty": 0
+   },
+   "Tot_Prscrbrs": {
+    "n_empty": 0
+   },
+   "Tot_Clms": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 73326209.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_30day_Fills": {
+    "n_empty": 0
+   },
+   "Tot_Drug_Cst": {
+    "n_empty": 0,
+    "min": 16.3,
+    "max": 20769270635.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 21951,
+    "min": 11.0,
+    "max": 17824798.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "GE65_Sprsn_Flag": {
+    "n_empty": 95939
+   },
+   "GE65_Tot_Clms": {
+    "n_empty": 21722
+   },
+   "GE65_Tot_30day_Fills": {
+    "n_empty": 21722
+   },
+   "GE65_Tot_Drug_Cst": {
+    "n_empty": 21722
+   },
+   "GE65_Bene_Sprsn_Flag": {
+    "n_empty": 67619
+   },
+   "GE65_Tot_Benes": {
+    "n_empty": 50042
+   },
+   "LIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "NonLIS_Bene_Cst_Shr": {
+    "n_empty": 0
+   },
+   "Opioid_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Opioid_LA_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antbtc_Drug_Flag": {
+    "n_empty": 0
+   },
+   "Antpsyct_Drug_Flag": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Prscrbr_Geo_Lvl",
+   "Prscrbr_Geo_Cd",
+   "Brnd_Name",
+   "Gnrc_Name"
+  ],
+  "duplicate_keys": 0
+ }
+}

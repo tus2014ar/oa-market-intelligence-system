@@ -1,0 +1,1163 @@
+{
+ "2019": {
+  "n_rows": 185295,
+  "n_columns": 18,
+  "columns": {
+   "Rndrng_NPI": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Ent_Cd": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "I": 184610,
+     "O": 685
+    }
+   },
+   "Rndrng_Prvdr_State_Abrvtn": {
+    "n_empty": 0,
+    "n_distinct": 59,
+    "capped": false,
+    "top_values": {
+     "TX": 15688,
+     "FL": 13664,
+     "CA": 12555,
+     "NY": 8998,
+     "TN": 7458,
+     "NC": 7299,
+     "GA": 7285,
+     "PA": 7278,
+     "OH": 6478,
+     "IL": 6424,
+     "MI": 5878,
+     "NJ": 5273,
+     "AL": 5020,
+     "VA": 4941,
+     "AZ": 4388,
+     "IN": 4359,
+     "SC": 4105,
+     "KY": 3687,
+     "LA": 3678,
+     "OK": 3673,
+     "MO": 3399,
+     "MD": 3311,
+     "MS": 3220,
+     "MA": 3051,
+     "WA": 3030
+    }
+   },
+   "Rndrng_Prvdr_State_FIPS": {
+    "n_empty": 95
+   },
+   "Rndrng_Prvdr_Type": {
+    "n_empty": 0,
+    "n_distinct": 68,
+    "capped": false,
+    "top_values": {
+     "Orthopedic Surgery": 43135,
+     "Family Practice": 26651,
+     "Physician Assistant": 23278,
+     "Nurse Practitioner": 17668,
+     "Internal Medicine": 13136,
+     "Rheumatology": 8879,
+     "Physical Medicine and Rehabilitation": 7901,
+     "Podiatry": 7773,
+     "Dermatology": 4284,
+     "Pain Management": 4150,
+     "Anesthesiology": 3660,
+     "Sports Medicine": 3549,
+     "Interventional Pain Management": 3465,
+     "Hematology-Oncology": 3282,
+     "Diagnostic Radiology": 2938,
+     "Hand Surgery": 2057,
+     "Emergency Medicine": 1260,
+     "Medical Oncology": 1089,
+     "General Practice": 1085,
+     "Neurology": 845,
+     "Ambulatory Surgical Center": 680,
+     "Pulmonary Disease": 678,
+     "Otolaryngology": 637,
+     "Ophthalmology": 523,
+     "Plastic and Reconstructive Surgery": 304
+    }
+   },
+   "Rndrng_Prvdr_Mdcr_Prtcptg_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Y": 185274,
+     "N": 21
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0,
+    "n_distinct": 23,
+    "capped": false,
+    "top_values": {
+     "20610": 47251,
+     "J3301": 35245,
+     "J1100": 25543,
+     "J1030": 20169,
+     "J1040": 15160,
+     "J0702": 10703,
+     "20611": 7609,
+     "J2930": 4008,
+     "J7324": 2734,
+     "J7323": 2681,
+     "J7325": 2661,
+     "J7321": 2184,
+     "J1020": 2147,
+     "J7327": 1406,
+     "J7326": 1389,
+     "J2920": 1092,
+     "J3304": 912,
+     "J7328": 785,
+     "J7318": 500,
+     "J7320": 500,
+     "J1720": 320,
+     "J7322": 294,
+     "J7329": 2
+    }
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "O": 177326,
+     "F": 7969
+    }
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 1870.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 10.5,
+    "max": 240576.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 1766.2805357,
+    "n_negative": 0,
+    "n_zero": 2,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   },
+   "code_group": {
+    "n_empty": 0,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "A_primary": 109879,
+     "C_denominator_procedures": 54860,
+     "B_context_hyaluronic": 15136,
+     "D_sensitivity_iv_steroids": 5420
+    }
+   }
+  },
+  "key": [
+   "Rndrng_NPI",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2020": {
+  "n_rows": 156538,
+  "n_columns": 18,
+  "columns": {
+   "Rndrng_NPI": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Ent_Cd": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "I": 155977,
+     "O": 561
+    }
+   },
+   "Rndrng_Prvdr_State_Abrvtn": {
+    "n_empty": 0,
+    "n_distinct": 59,
+    "capped": false,
+    "top_values": {
+     "TX": 12518,
+     "FL": 12060,
+     "CA": 10881,
+     "NY": 7613,
+     "NC": 6233,
+     "PA": 6223,
+     "TN": 6073,
+     "GA": 6018,
+     "IL": 5544,
+     "OH": 5510,
+     "MI": 4546,
+     "NJ": 4538,
+     "VA": 4265,
+     "AL": 4235,
+     "AZ": 3869,
+     "IN": 3615,
+     "SC": 3407,
+     "KY": 2964,
+     "LA": 2946,
+     "MD": 2945,
+     "MO": 2892,
+     "OK": 2783,
+     "MS": 2716,
+     "MA": 2676,
+     "WA": 2589
+    }
+   },
+   "Rndrng_Prvdr_State_FIPS": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Type": {
+    "n_empty": 0,
+    "n_distinct": 67,
+    "capped": false,
+    "top_values": {
+     "Orthopedic Surgery": 39819,
+     "Physician Assistant": 19921,
+     "Family Practice": 19679,
+     "Nurse Practitioner": 13635,
+     "Internal Medicine": 9494,
+     "Rheumatology": 7625,
+     "Podiatry": 7113,
+     "Physical Medicine and Rehabilitation": 7047,
+     "Pain Management": 3919,
+     "Dermatology": 3836,
+     "Sports Medicine": 3525,
+     "Anesthesiology": 3285,
+     "Interventional Pain Management": 3130,
+     "Hematology-Oncology": 3042,
+     "Diagnostic Radiology": 2177,
+     "Hand Surgery": 1957,
+     "Medical Oncology": 1057,
+     "Emergency Medicine": 855,
+     "General Practice": 739,
+     "Neurology": 699,
+     "Ambulatory Surgical Center": 553,
+     "Otolaryngology": 451,
+     "Pulmonary Disease": 411,
+     "Ophthalmology": 404,
+     "Plastic and Reconstructive Surgery": 287
+    }
+   },
+   "Rndrng_Prvdr_Mdcr_Prtcptg_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Y": 156525,
+     "N": 13
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0,
+    "n_distinct": 25,
+    "capped": false,
+    "top_values": {
+     "20610": 41389,
+     "J3301": 30523,
+     "J1100": 20629,
+     "J1030": 16581,
+     "J1040": 11812,
+     "J0702": 9275,
+     "20611": 7271,
+     "J2930": 2503,
+     "J7323": 2052,
+     "J7325": 1867,
+     "J7324": 1753,
+     "J1020": 1710,
+     "J7326": 1652,
+     "J7321": 1369,
+     "J3304": 1088,
+     "J7327": 996,
+     "J2920": 953,
+     "J7320": 876,
+     "J7318": 660,
+     "J7328": 650,
+     "J7322": 619,
+     "J1720": 258,
+     "J7332": 46,
+     "J7329": 4,
+     "J7331": 2
+    }
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "O": 150088,
+     "F": 6450
+    }
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 1724.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 10.5,
+    "max": 196725.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0055172414,
+    "max": 1545.9557746,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   },
+   "code_group": {
+    "n_empty": 0,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "A_primary": 91618,
+     "C_denominator_procedures": 48660,
+     "B_context_hyaluronic": 12546,
+     "D_sensitivity_iv_steroids": 3714
+    }
+   }
+  },
+  "key": [
+   "Rndrng_NPI",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2021": {
+  "n_rows": 163580,
+  "n_columns": 18,
+  "columns": {
+   "Rndrng_NPI": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Ent_Cd": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "I": 163015,
+     "O": 565
+    }
+   },
+   "Rndrng_Prvdr_State_Abrvtn": {
+    "n_empty": 0,
+    "n_distinct": 59,
+    "capped": false,
+    "top_values": {
+     "TX": 12836,
+     "FL": 12489,
+     "CA": 11392,
+     "NY": 8139,
+     "PA": 6698,
+     "NC": 6282,
+     "GA": 6240,
+     "TN": 6191,
+     "IL": 5951,
+     "OH": 5795,
+     "NJ": 4857,
+     "MI": 4649,
+     "VA": 4479,
+     "AL": 4135,
+     "AZ": 4048,
+     "IN": 3720,
+     "SC": 3564,
+     "MD": 3191,
+     "MO": 3139,
+     "KY": 3030,
+     "MA": 3007,
+     "LA": 2976,
+     "OK": 2842,
+     "MS": 2762,
+     "WA": 2714
+    }
+   },
+   "Rndrng_Prvdr_State_FIPS": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Type": {
+    "n_empty": 0,
+    "n_distinct": 65,
+    "capped": false,
+    "top_values": {
+     "Orthopedic Surgery": 41490,
+     "Physician Assistant": 22790,
+     "Family Practice": 18851,
+     "Nurse Practitioner": 14895,
+     "Internal Medicine": 8689,
+     "Rheumatology": 7599,
+     "Physical Medicine and Rehabilitation": 7524,
+     "Podiatry": 7454,
+     "Pain Management": 4341,
+     "Sports Medicine": 4152,
+     "Dermatology": 4102,
+     "Anesthesiology": 3529,
+     "Interventional Pain Management": 3264,
+     "Hematology-Oncology": 3059,
+     "Diagnostic Radiology": 2528,
+     "Hand Surgery": 2209,
+     "Medical Oncology": 1000,
+     "Emergency Medicine": 838,
+     "Neurology": 674,
+     "General Practice": 668,
+     "Ambulatory Surgical Center": 554,
+     "Otolaryngology": 450,
+     "Ophthalmology": 400,
+     "Pulmonary Disease": 349,
+     "Plastic and Reconstructive Surgery": 298
+    }
+   },
+   "Rndrng_Prvdr_Mdcr_Prtcptg_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Y": 163570,
+     "N": 10
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0,
+    "n_distinct": 24,
+    "capped": false,
+    "top_values": {
+     "20610": 42721,
+     "J3301": 34205,
+     "J1100": 21240,
+     "J1030": 16303,
+     "J1040": 11469,
+     "J0702": 9367,
+     "20611": 7973,
+     "J2930": 2426,
+     "J7323": 2190,
+     "J7326": 2095,
+     "J7325": 1842,
+     "J1020": 1675,
+     "J7324": 1664,
+     "J3304": 1294,
+     "J7321": 1203,
+     "J7320": 1200,
+     "J7327": 970,
+     "J2920": 916,
+     "J7318": 866,
+     "J7328": 738,
+     "J7322": 667,
+     "J1720": 258,
+     "J7332": 192,
+     "J7329": 106
+    }
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "O": 156622,
+     "F": 6958
+    }
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 1961.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 7.0,
+    "max": 241050.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0051724138,
+    "max": 1003.8823529,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   },
+   "code_group": {
+    "n_empty": 0,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "A_primary": 95553,
+     "C_denominator_procedures": 50694,
+     "B_context_hyaluronic": 13733,
+     "D_sensitivity_iv_steroids": 3600
+    }
+   }
+  },
+  "key": [
+   "Rndrng_NPI",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2022": {
+  "n_rows": 164243,
+  "n_columns": 18,
+  "columns": {
+   "Rndrng_NPI": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Ent_Cd": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "I": 163682,
+     "O": 561
+    }
+   },
+   "Rndrng_Prvdr_State_Abrvtn": {
+    "n_empty": 0,
+    "n_distinct": 58,
+    "capped": false,
+    "top_values": {
+     "TX": 13219,
+     "FL": 12605,
+     "CA": 11800,
+     "NY": 8190,
+     "PA": 6793,
+     "GA": 6318,
+     "NC": 6257,
+     "TN": 6172,
+     "IL": 5986,
+     "OH": 5636,
+     "NJ": 4925,
+     "MI": 4501,
+     "VA": 4359,
+     "AZ": 4198,
+     "AL": 4138,
+     "IN": 3713,
+     "SC": 3671,
+     "MD": 3174,
+     "MO": 3068,
+     "KY": 3035,
+     "LA": 3008,
+     "MA": 2955,
+     "MS": 2767,
+     "OK": 2719,
+     "WA": 2667
+    }
+   },
+   "Rndrng_Prvdr_State_FIPS": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Type": {
+    "n_empty": 0,
+    "n_distinct": 65,
+    "capped": false,
+    "top_values": {
+     "Orthopedic Surgery": 40925,
+     "Physician Assistant": 25030,
+     "Family Practice": 17650,
+     "Nurse Practitioner": 16014,
+     "Internal Medicine": 7948,
+     "Physical Medicine and Rehabilitation": 7631,
+     "Podiatry": 7429,
+     "Rheumatology": 7205,
+     "Sports Medicine": 4555,
+     "Pain Management": 4536,
+     "Dermatology": 3973,
+     "Anesthesiology": 3599,
+     "Interventional Pain Management": 3192,
+     "Hematology-Oncology": 3039,
+     "Diagnostic Radiology": 2412,
+     "Hand Surgery": 2194,
+     "Medical Oncology": 968,
+     "Emergency Medicine": 864,
+     "Neurology": 633,
+     "General Practice": 597,
+     "Ambulatory Surgical Center": 552,
+     "Ophthalmology": 443,
+     "Otolaryngology": 436,
+     "Pulmonary Disease": 329,
+     "Plastic and Reconstructive Surgery": 284
+    }
+   },
+   "Rndrng_Prvdr_Mdcr_Prtcptg_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Y": 164232,
+     "N": 11
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0,
+    "n_distinct": 25,
+    "capped": false,
+    "top_values": {
+     "20610": 41950,
+     "J3301": 39153,
+     "J1100": 22566,
+     "J1030": 12483,
+     "J0702": 10038,
+     "J1040": 8455,
+     "20611": 8365,
+     "J2930": 2607,
+     "J7323": 2278,
+     "J7326": 2030,
+     "J7325": 1781,
+     "J7324": 1596,
+     "J7321": 1312,
+     "J3304": 1262,
+     "J7327": 1260,
+     "J1020": 1219,
+     "J7318": 1059,
+     "J7329": 1025,
+     "J7320": 973,
+     "J2920": 953,
+     "J7328": 659,
+     "J7322": 596,
+     "J7332": 239,
+     "J1720": 230,
+     "J7331": 154
+    }
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "O": 157460,
+     "F": 6783
+    }
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 2129.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 10.0,
+    "max": 195225.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 991.60944444,
+    "n_negative": 0,
+    "n_zero": 1,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   },
+   "code_group": {
+    "n_empty": 0,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "A_primary": 95176,
+     "C_denominator_procedures": 50315,
+     "B_context_hyaluronic": 14962,
+     "D_sensitivity_iv_steroids": 3790
+    }
+   }
+  },
+  "key": [
+   "Rndrng_NPI",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2023": {
+  "n_rows": 162299,
+  "n_columns": 18,
+  "columns": {
+   "Rndrng_NPI": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Ent_Cd": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "I": 161774,
+     "O": 525
+    }
+   },
+   "Rndrng_Prvdr_State_Abrvtn": {
+    "n_empty": 0,
+    "n_distinct": 58,
+    "capped": false,
+    "top_values": {
+     "TX": 13254,
+     "FL": 12374,
+     "CA": 11624,
+     "NY": 8233,
+     "PA": 6781,
+     "GA": 6380,
+     "NC": 6124,
+     "TN": 6105,
+     "IL": 5923,
+     "OH": 5550,
+     "NJ": 5007,
+     "MI": 4376,
+     "VA": 4283,
+     "AL": 4245,
+     "AZ": 4159,
+     "SC": 3658,
+     "IN": 3572,
+     "MD": 3162,
+     "MA": 2977,
+     "LA": 2957,
+     "MO": 2892,
+     "KY": 2879,
+     "MS": 2719,
+     "OK": 2695,
+     "WA": 2583
+    }
+   },
+   "Rndrng_Prvdr_State_FIPS": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Type": {
+    "n_empty": 0,
+    "n_distinct": 65,
+    "capped": false,
+    "top_values": {
+     "Orthopedic Surgery": 38972,
+     "Physician Assistant": 26813,
+     "Nurse Practitioner": 17050,
+     "Family Practice": 16671,
+     "Podiatry": 7564,
+     "Physical Medicine and Rehabilitation": 7549,
+     "Internal Medicine": 7401,
+     "Rheumatology": 6564,
+     "Sports Medicine": 4794,
+     "Pain Management": 4504,
+     "Dermatology": 3911,
+     "Anesthesiology": 3506,
+     "Hematology-Oncology": 2928,
+     "Interventional Pain Management": 2917,
+     "Diagnostic Radiology": 2252,
+     "Hand Surgery": 2166,
+     "Emergency Medicine": 950,
+     "Medical Oncology": 950,
+     "Neurology": 609,
+     "General Practice": 529,
+     "Ambulatory Surgical Center": 517,
+     "Ophthalmology": 424,
+     "Otolaryngology": 399,
+     "Pulmonary Disease": 313,
+     "Plastic and Reconstructive Surgery": 279
+    }
+   },
+   "Rndrng_Prvdr_Mdcr_Prtcptg_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Y": 162292,
+     "N": 7
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0,
+    "n_distinct": 25,
+    "capped": false,
+    "top_values": {
+     "20610": 41202,
+     "J3301": 38718,
+     "J1100": 23467,
+     "J1030": 12325,
+     "J0702": 9286,
+     "20611": 8600,
+     "J1040": 8549,
+     "J2930": 2460,
+     "J7323": 2315,
+     "J7325": 1793,
+     "J7326": 1610,
+     "J7324": 1509,
+     "J7321": 1492,
+     "J7327": 1365,
+     "J7318": 1209,
+     "J1020": 1207,
+     "J3304": 1181,
+     "J7329": 962,
+     "J2920": 928,
+     "J7322": 509,
+     "J7328": 490,
+     "J7320": 462,
+     "J7331": 293,
+     "J7332": 213,
+     "J1720": 154
+    }
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "O": 155680,
+     "F": 6619
+    }
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 2427.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 9.0,
+    "max": 326002.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0008172043,
+    "max": 570.98,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   },
+   "code_group": {
+    "n_empty": 0,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "A_primary": 94733,
+     "C_denominator_procedures": 49802,
+     "B_context_hyaluronic": 14222,
+     "D_sensitivity_iv_steroids": 3542
+    }
+   }
+  },
+  "key": [
+   "Rndrng_NPI",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2024": {
+  "n_rows": 164940,
+  "n_columns": 18,
+  "columns": {
+   "Rndrng_NPI": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Ent_Cd": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "I": 164402,
+     "O": 538
+    }
+   },
+   "Rndrng_Prvdr_State_Abrvtn": {
+    "n_empty": 0,
+    "n_distinct": 58,
+    "capped": false,
+    "top_values": {
+     "TX": 13714,
+     "FL": 12555,
+     "CA": 12076,
+     "NY": 8447,
+     "PA": 6934,
+     "GA": 6554,
+     "NC": 6106,
+     "IL": 6105,
+     "TN": 6099,
+     "OH": 5473,
+     "NJ": 5224,
+     "MI": 4327,
+     "VA": 4293,
+     "AZ": 4265,
+     "AL": 4188,
+     "SC": 3874,
+     "IN": 3514,
+     "MD": 3189,
+     "MA": 3042,
+     "LA": 2961,
+     "MO": 2910,
+     "KY": 2818,
+     "MS": 2775,
+     "OK": 2737,
+     "CO": 2655
+    }
+   },
+   "Rndrng_Prvdr_State_FIPS": {
+    "n_empty": 0
+   },
+   "Rndrng_Prvdr_Type": {
+    "n_empty": 0,
+    "n_distinct": 68,
+    "capped": false,
+    "top_values": {
+     "Orthopedic Surgery": 39852,
+     "Physician Assistant": 28960,
+     "Nurse Practitioner": 17444,
+     "Family Practice": 15843,
+     "Physical Medicine and Rehabilitation": 7771,
+     "Podiatry": 7750,
+     "Internal Medicine": 6757,
+     "Rheumatology": 6288,
+     "Sports Medicine": 5353,
+     "Pain Management": 4731,
+     "Dermatology": 3818,
+     "Anesthesiology": 3558,
+     "Hematology-Oncology": 2965,
+     "Interventional Pain Management": 2793,
+     "Hand Surgery": 2338,
+     "Diagnostic Radiology": 2060,
+     "Medical Oncology": 957,
+     "Emergency Medicine": 954,
+     "Neurology": 614,
+     "Ambulatory Surgical Center": 529,
+     "General Practice": 486,
+     "Ophthalmology": 399,
+     "Otolaryngology": 382,
+     "Pulmonary Disease": 309,
+     "Plastic and Reconstructive Surgery": 301
+    }
+   },
+   "Rndrng_Prvdr_Mdcr_Prtcptg_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "Y": 164933,
+     "N": 7
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0,
+    "n_distinct": 27,
+    "capped": false,
+    "top_values": {
+     "20610": 40751,
+     "J3301": 38775,
+     "J1100": 23371,
+     "J1010": 16363,
+     "20611": 9091,
+     "J0702": 8966,
+     "J1030": 5515,
+     "J1040": 3470,
+     "J2919": 2343,
+     "J7323": 2143,
+     "J7325": 1653,
+     "J7326": 1492,
+     "J7321": 1483,
+     "J7327": 1481,
+     "J7318": 1475,
+     "J7324": 1442,
+     "J3304": 1076,
+     "J7329": 766,
+     "J7322": 671,
+     "J2930": 525,
+     "J7328": 444,
+     "J1020": 401,
+     "J7320": 347,
+     "J7332": 276,
+     "J2920": 261
+    }
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "O": 158290,
+     "F": 6650
+    }
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 2178.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 8.5,
+    "max": 308602.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.000125,
+    "max": 559.05125,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   },
+   "code_group": {
+    "n_empty": 0,
+    "n_distinct": 4,
+    "capped": false,
+    "top_values": {
+     "A_primary": 97937,
+     "C_denominator_procedures": 49842,
+     "B_context_hyaluronic": 13848,
+     "D_sensitivity_iv_steroids": 3313
+    }
+   }
+  },
+  "key": [
+   "Rndrng_NPI",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ }
+}
