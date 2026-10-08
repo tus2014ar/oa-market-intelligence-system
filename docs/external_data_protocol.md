@@ -36,7 +36,7 @@ IQVIA shows visits, but not geography, price, promotion or company results. Publ
 | SEC filings (Flexion, Pacira, Bioventus, Anika), 86 documents | 2019 to 2026 | Zilretta and competitor revenue, transcribed by hand | fact_ext_company_revenue |
 | FDA, CMS and event documents | various | dated event table | dim_event |
 
-Not used for any rule: Part D by provider (2024) and Medicaid drug utilisation (2024); both were downloaded and are optional context only.
+Not used for any rule: Part D by provider (2024) and Medicaid drug utilisation (2024); both were downloaded and are optional context only. Both were profiled afterwards, structure and quality only (notebook 10, section 11): neither is loaded. The profile found that Zilretta appears **by name** in both files (so at least some Zilretta is billed through Part D; how much was not examined), which corrects an earlier statement that it is Part B only. No volumes were examined; any use needs a rule written here first.
 
 **Verified dates** (from primary documents): FDA approval 6 October 2017 (signed letter; the package cover sheet's "14 December 2017" is treated as a cover-sheet discrepancy); OPPS pass-through status 1 April 2018 to 31 March 2021 (CMS Transmittal 3988, Table 5; Transmittal 10666, Table 11). Pass-through is a hospital outpatient payment rule; office-based payment is unaffected.
 
