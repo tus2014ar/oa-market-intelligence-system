@@ -29,7 +29,7 @@ def engine():
     return eng
 
 
-def test_create_schema_creates_all_nine_tables(engine):
+def test_create_schema_creates_all_ten_tables(engine):
     from sqlalchemy import inspect
 
     tables = set(inspect(engine).get_table_names())
@@ -43,6 +43,7 @@ def test_create_schema_creates_all_nine_tables(engine):
         "gold_visit_share_monthly",
         "gold_segment_adoption",
         "dim_source_availability",
+        "bronze_ingest_files",
     }
 
 

@@ -155,6 +155,8 @@ def publish(
             monitoring_status=results["monitoring"]["status"],
             # a product with no taxonomy entry is loaded as 'unclassified' and does not stop the
             # run (PROPOSAL 18.10); recording it here makes the gap visible in the run log
+            # the extracts behind this database: file, role, SHA-256, size, rows parsed
+            ingest_files=(summary or {}).get("ingest_files", []),
             unmapped_products=sorted(
                 (summary or {}).get("silver", {}).get("unmapped_products", [])
             ),

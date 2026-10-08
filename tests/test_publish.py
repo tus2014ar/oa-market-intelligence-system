@@ -171,8 +171,10 @@ def test_the_backtest_predictions_are_written_to_the_gold_columns_before_the_swa
     engine = create_engine(f"sqlite:///{_db(tmp_path).as_posix()}")
     with engine.connect() as conn:
         rows = conn.execute(
-            text("SELECT month_id, predicted_direction, actual_direction, model_version "
-                 "FROM gold_visit_share_monthly ORDER BY month_id")
+            text(
+                "SELECT month_id, predicted_direction, actual_direction, model_version "
+                "FROM gold_visit_share_monthly ORDER BY month_id"
+            )
         ).fetchall()
     assert rows[0] == (201908, "Flat", "Up", "backtest walk-forward: seasonal")
     assert rows[1][1:] == (None, None, None)
@@ -215,3 +217,25 @@ def test_unmapped_products_are_recorded_in_the_run_log_and_do_not_stop_the_run(t
 def test_a_run_without_unmapped_products_records_an_empty_list(tmp_path):
     record = _publish(tmp_path, MONTHS_2)
     assert record["unmapped_products"] == []
+
+
+def test_the_extract_hashes_are_recorded_in_the_run_log(tmp_path):
+    inner = _fake_pipeline(MONTHS_2)
+    files = [
+        {
+            "file_name": "Team1_M15_19_OA.xlsx",
+            "role": "nmta_pivot",
+            "sha256": "ab" * 32,
+            "size_bytes": 10,
+            "rows_parsed": 3,
+        }
+    ]
+
+    def pipeline_with_audit(**kwargs):
+        inner(**kwargs)
+        return {"ingest_files": files}
+
+    record = _publish(tmp_path, MONTHS_2, run_pipeline_fn=pipeline_with_audit)
+    assert record["ingest_files"] == files
+    assert _log(tmp_path)[-1]["ingest_files"] == files
+    assert _publish(tmp_path / "again", MONTHS_2)["ingest_files"] == []  # no audit: empty list

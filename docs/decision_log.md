@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-65, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-66, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -274,6 +274,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-65 · 8 Oct 2026 · R1: every data source has a recorded availability rule (when it could have been known).** Decided (your approval of the R1 design).
 *What:* a table `dim_source_availability` (14 sources) in the warehouse, loaded from `data/reference/source_availability.csv`, and a tested function `available_from_month` giving the first month a value could have been known. Four rule types (lag after the period, release year plus lag in a fixed month, the record's own date, a snapshot date); each rule has a basis, **documented** (every period's date is in the files we hold: SEC filings, events, the registry snapshot) or **assumed** (a rule applied from anchor points or project documents: all the others), with the evidence written next to it. *Findings recorded:* Medicare provider files are known about two years after the data year (release = data year + 2 in every file name); Open Payments in June of the next year, and the files we hold are the June 2026 refresh with later corrections; the registry only from its September 2026 snapshot; ASP files before their quarter, with the 2019 and 2020 files being later revisions; and, **if the assumed 40-day IQVIA lag holds (PROPOSAL 19.1), month t is known around the 10th of month t+2, so a forecast of month t is made after month t has ended.** The evaluation is unaffected, but "next month" should be read as the month just ended or in progress; the lag has not been confirmed with IQVIA. *Why:* leakage-safe model inputs (R2) depend on it. *Tests:* each rule on planted cases, the documented claims against the committed download manifest, completeness against every table a model could read, and the table loading idempotently. *Not changed:* any model, result or rule.
+
+**DL-66 · 8 Oct 2026 · R5: every pipeline run records exactly which IQVIA extracts it ingested.** Decided (your approval of the R5 scope).
+*What:* a table `bronze_ingest_files` (six rows per run: file, role, SHA-256, size, rows parsed, month span, visit sum, the parser checks already passed, time) built by `ingestion/audit.py` from the parsed extracts; the same hashes go into the publish run log and the monthly job summary. *Design choices:* the table holds the latest run only and the run log keeps the history (a published database is replaced whole each month, so a history table inside it would not survive); `visits_sum` is deliberately not called a total, because visits are distinct counts and rows overlap; the file names moved to one small module (`ingestion/files.py`) so the pipeline and the audit share them; the audit is computed from the already parsed frames, so it adds no parsing time. *Why:* lineage and audit for the main data (the public side already has `bronze_external_files`), and a changed extract becomes visible as a changed hash. *Tests:* hashes and counts on synthetic files and frames, a missing file named in the error, an extract with no rows recorded as zero, an idempotent table reload, the run log and job summary, and the real run (six rows, hashes equal to the real files, row counts equal to `ingest`). *Not changed:* any model, result or rule.
 
 ## Known loose ends (not decisions)
 

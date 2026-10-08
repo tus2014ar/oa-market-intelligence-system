@@ -293,3 +293,20 @@ The six `gold_ext_*` tables are filled by `PYTHONPATH=src python -m oa_market_in
 The rule is applied by `oa_market_intelligence.availability.available_from_month(rule, period_end_month, record_date=None)`, which returns the first month (YYYYMM) a value could have been known, and `is_available(rule, period, as_of_month=...)`. Tests keep the documented claims true against the committed download manifest (for example, every Part B and Part D file name says release year = data year + 2) and check that every table a model could read is covered by a source row.
 
 **What it shows.** Medicare provider files are known about two years after the data year, Open Payments in June of the next year (and the files we hold include later corrections), the registry only from its September 2026 snapshot, and company filings and events on their own dates. For IQVIA, if the assumed lag of about 40 days holds (PROPOSAL 19.1), month *t* is known around the 10th of month *t*+2, so a forecast of month *t* made from data through *t*-1 is made after month *t* has ended. The evaluation is unchanged (it predicts month *t* from data through *t*-1); what changes is what "next month" means to a reader.
+
+## 9. IQVIA ingest audit (R5)
+
+`bronze_ingest_files` records what was ingested from the raw IQVIA extracts in the latest pipeline run: one row per parsed output of each raw file (six rows: the OA and RA pivot, the OA and RA place-of-service sheets, the OA and RA reference tables). It is replaced on every run; the history lives in the publish run log (`data/published/run_log.jsonl`), whose entries carry the same file hashes, so any published database can be traced to the exact extracts that produced it.
+
+| Column | Meaning |
+|---|---|
+| `file_name`, `role` (key) | The raw file and what was parsed from it: `nmta_pivot`, `place_of_service` or `reference_table`. A workbook appears under two roles. |
+| `disease_area` | OA or RA. |
+| `sha256`, `size_bytes` | The file's content hash and size. |
+| `rows_parsed`, `first_month`, `last_month`, `n_months` | Rows the parser produced and the month span (YYYYMM; blank for the reference tables, which have no months). |
+| `visits_sum` | The sum of `patient_visits` over the parsed rows. It is **not** a Grand Total: visits are distinct counts, so rows overlap (the pivot's Grand Total is reconciled by the parser itself). Useful for spotting a changed extract between runs. |
+| `parser_checks` | Which checks the parser had already passed before the row was recorded (Grand Total reconciliation, manufacturer subtotals, known place-of-service labels...). |
+| `ingested_at` | UTC time of the run. |
+
+The run log entry for a successful publish carries `ingest_files` (file, role, SHA-256, size, rows parsed), and the monthly job summary lists each extract with a hash prefix. Tests check the real run: six rows, hashes equal to the real files' hashes, row counts equal to `ingest`'s.
+
