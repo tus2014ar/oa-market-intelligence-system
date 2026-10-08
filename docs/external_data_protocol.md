@@ -1,6 +1,6 @@
 # Protocol: external public data (DL-57, DL-59)
 
-**Status: approved before any analysis ran.** Everything in sections 1 to 6 is fixed here. Any change made after results are seen is recorded as a deviation (DL-60 onward) with the reason. Raw-data profiling (step 0) is described in [`notebooks/10_external_raw_data_profile.ipynb`](../notebooks/10_external_raw_data_profile.ipynb) and its outputs in [`data/reference/external_profile/`](../data/reference/external_profile/).
+**Status: approved before any analysis ran.** (Section 8 was added afterwards, to record the implementation choices made while running step 6; it changes no rule.) Everything in sections 1 to 6 is fixed here. Any change made after results are seen is recorded as a deviation (DL-60 onward) with the reason. Raw-data profiling (step 0) is described in [`notebooks/10_external_raw_data_profile.ipynb`](../notebooks/10_external_raw_data_profile.ipynb) and its outputs in [`data/reference/external_profile/`](../data/reference/external_profile/).
 
 ## 0. Purpose and scope
 
@@ -149,3 +149,21 @@ Tests first, one pull request per step, your acceptance between steps:
 - The registry is a single 2026 snapshot, so provider denominators describe today, not the past.
 - A code set that shifts over time (J1010) and new products appearing mid-period (for example Trivisc) are handled in the validity table, not assumed away.
 - AMA copyright covers code descriptions and the taxonomy list: raw copies stay local, and the repository holds only derived tables and our own mapping.
+
+## 8. Implementation choices made while running step 6 (recorded afterwards, DL-60)
+
+The rules above were not changed. Where the text left a detail open, the choice made in code is listed here, with whether it was made before or after related numbers had been seen.
+
+- **H4, pooled or month by month.** The rule says "all three categories at least 10% below the same months of 2023". The code pools March to July (sum of 2024 against sum of 2023, per category). This was chosen *after* the monthly IQVIA counts had been looked at while exploring, so it is not a clean choice. Read one month at a time, the rule fails in July 2024 (NSAID and OTC visits down only 2%). Both readings are stored (`all_three_below`, `months_all_three_below`); the verdict uses the pooled one.
+- **E2b, the first quarter.** IQVIA starts in August 2019, so its third quarter of 2019 has two months. The third quarter of 2020 is compared with the year before on August and September only. Company sales use full quarters. Decided before E2b was run.
+- **E2b, fourth quarters.** Fourth-quarter sales are derived (the year minus nine months) and used, including the fourth quarter of 2021 that spans the acquisition (see disclosure 6). An earlier plan was to treat that quarter as partial and leave it out; it was kept after the derivation was verified.
+- **H1, practitioners.** Nurse practitioners and assistants appear in Open Payments only from January 2021. The sensitivity run (physicians plus practitioners) therefore starts then, and only months from December 2021 can be tested against the 12-month look-back.
+- **H1, the lag test.** Promotion is the number of distinct physicians with a Zilretta payment in the month; the comparison series is IQVIA's monthly visit share. The correlation is Pearson on first differences, promotion leading share by 0 to 6 months; blocks of 6 consecutive months of the promotion changes are shuffled (2,000 permutations, seed 0); the p-value is two-sided, (1 + count of permuted correlations at least as large in absolute size) / 2,001; Bonferroni level 0.05 / 7.
+- **H2, units.** The J3304 limit is per 1 mg and the J3301 limit is per 10 mg, so J3301 is divided by 10 before the ratio is formed. The change is judged in either direction.
+- **H3.** The stored break (March 2022, the only one in the published findings) is compared with April 2021.
+- **E3, national rate.** The national rate used for headroom is pooled over all visible provider-years in the 50 states and DC, including state-years below the 30-provider reporting line (all states reach 30 in every year in the real data, so this made no difference).
+- **E3, the gate.** The rank correlation is taken between each state's 2022 and 2024 adoption rate among states with at least 30 visible providers in both years; the verdict uses the point estimate, the paired bootstrap interval is information.
+- **E3, Advantage-adjusted sensitivity.** The protocol names the run without defining it. The code regresses 2024 state adoption on the state's all-ages Advantage participation rate (Geographic Variation file, same year), adds the residual to the national rate, recomputes headroom, and reports the rank correlation with the unadjusted headroom (stable if 0.7 or more, the same line as the gate). Arthritis prevalence is the 2023 county estimate, population-weighted to state level, with no year dimension.
+- **E1, extra readings.** Limiting IQVIA to ages 65 and over and dropping the osteopathic group are sensitivity runs added to E1; the E1 verdict comes from the all-ages, all-groups run.
+- **Provider attributes.** A provider's state and specialty in a year are taken from their first row for that year.
+

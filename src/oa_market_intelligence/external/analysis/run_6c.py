@@ -256,8 +256,23 @@ def build_rows(
             "threshold": None,
             "rule": RULE_H4,
             "verdict": h4["verdict"],
-            "note": f"{spread}. The rule is met when all three fall, but the sizes differ a "
-            "great deal, so a capture problem alone does not explain the whole branded fall.",
+            "note": f"Pooled over March to July. {spread}. The rule is met when all three fall, "
+            "but the sizes differ a great deal, so a capture problem alone does not explain the "
+            "whole branded fall.",
+        }
+    )
+    rows.append(
+        {
+            "check_id": "H4",
+            "metric": "months_all_three_below",
+            "value": float(h4["months_all_below"]),
+            "threshold": f"{h4['n_months']} of {h4['n_months']}",
+            "rule": RULE_H4 + " (read month by month instead of pooled)",
+            "verdict": "supported" if h4["months_all_below"] == h4["n_months"] else "not_supported",
+            "note": "Sensitivity to how the rule is read. The protocol does not say whether the "
+            "months are pooled; the pooled reading gives the verdict above. Taken one month at "
+            f"a time, all three fall by 10% or more in {h4['months_all_below']} of "
+            f"{h4['n_months']} months (July 2024 NSAID and OTC visits are down only 2%).",
         }
     )
 

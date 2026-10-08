@@ -32,7 +32,7 @@
 
 ## What would make it more useful
 
-Extra data: payer or formulary changes, geography, price and prescription volume (public CMS sources exist; DL-57), and a longer history. This is the next planned improvement.
+Extra data. The public part is done (DL-57, DL-59, DL-60; [`external_data_results.md`](external_data_results.md)): it adds geography, price, promotion and company sales, and its most important result is a caution, that company sales rose after 2022 while IQVIA Zilretta visits fell by about half. Still missing: payer or formulary changes (not public), IQVIA prescription volume or regional data (awaiting the instructor), and a longer history.
 
 ## Reproducing the results
 
