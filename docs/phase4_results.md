@@ -37,6 +37,6 @@ Extra data. The public part is done (DL-57, DL-59, DL-60; [`external_data_result
 ## Reproducing the results
 
 - Warehouse and stored results: `PYTHONPATH=src python -m oa_market_intelligence.publish` (builds `data/published/warehouse.db`; about 40 minutes at full precision, `--precision fast` for a quick check). The full-precision stored results equal the notebook numbers (break March 2022, Physical Medicine & Rehab adjusted share 5.34%, logistic regression serving the segment task, "same as last month" the forecast, the seasonal rule direction).
-- Tests: `PYTHONPATH=src python -m pytest` (497 tests; about 10 minutes in CI).
+- Tests: `PYTHONPATH=src python -m pytest` (about 770 tests now, 497 at the end of Phase 4; about 13 minutes in CI).
 - Notebooks 06 to 09 read `data/published/warehouse.db` and run with the registered kernel (see the repository README); the live runs take about 2, 15, 10 and 10 minutes.
 - Every random choice uses a fixed seed; two full runs of Tasks A, B and C gave identical results.
