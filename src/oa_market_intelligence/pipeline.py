@@ -39,6 +39,7 @@ from pathlib import Path
 import pandas as pd
 from sqlalchemy import Engine, create_engine
 
+from oa_market_intelligence.availability import AVAILABILITY_CSV, refresh_source_availability
 from oa_market_intelligence.ingestion.nmta_loader import parse_pivot_sheet
 from oa_market_intelligence.ingestion.openfda_client import earliest_approval_date
 from oa_market_intelligence.ingestion.place_of_service_loader import parse_place_of_service
@@ -163,6 +164,10 @@ def _run_pipeline(
 
     logger.info("Creating schema (if not already present) at %s...", db_path)
     create_schema(engine)
+    availability_csv = reference_dir / "source_availability.csv"
+    refresh_source_availability(
+        engine, availability_csv if availability_csv.exists() else AVAILABILITY_CSV
+    )
 
     logger.info("Building Silver tables...")
     silver_summary = build_silver(

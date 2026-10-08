@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-64, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-65, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -271,6 +271,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-64 · 8 Oct 2026 · No more IQVIA data is coming; the qualifiers from the public-data checks are written into the headline documents; the two optional files are profiled.** Decided (your information that the instructor does not hold IQVIA prescription-volume, regional or approval-status data).
 *What changed:* (1) The "ask the instructor" step in DL-57 is superseded: the data set is the NMTA extract plus the public data. Consequences: the state analysis (E3) stays a stand-alone public-data view because IQVIA has no geography, and the size of the IQVIA decline stays unverified (DL-62) and is reported with that caveat. (2) The Q1 and Q3 headline answers carry qualifiers (the size of the fall is not confirmed by company sales; the specialty order is true of IQVIA's population, Medicare ranks it differently), and the Q4 match rate of 66% is shown against the 71% of always predicting Flat and described as a baseline with no proven skill (Q2 stays closed as a negative result, DL-56). (3) The two optional files (Part D by provider and drug, Medicaid drug utilisation) were profiled, structure only, and are not loaded; the profile found that Zilretta appears by name in both, which corrects an earlier statement that it is Part B only (protocol section 1, notebook 10 section 11). No volumes were examined. *Not changed:* any rule, threshold or result.
+
+**DL-65 · 8 Oct 2026 · R1: every data source has a recorded availability rule (when it could have been known).** Decided (your approval of the R1 design).
+*What:* a table `dim_source_availability` (14 sources) in the warehouse, loaded from `data/reference/source_availability.csv`, and a tested function `available_from_month` giving the first month a value could have been known. Four rule types (lag after the period, release year plus lag in a fixed month, the record's own date, a snapshot date); each rule has a basis, **documented** (every period's date is in the files we hold: SEC filings, events, the registry snapshot) or **assumed** (a rule applied from anchor points or project documents: all the others), with the evidence written next to it. *Findings recorded:* Medicare provider files are known about two years after the data year (release = data year + 2 in every file name); Open Payments in June of the next year, and the files we hold are the June 2026 refresh with later corrections; the registry only from its September 2026 snapshot; ASP files before their quarter, with the 2019 and 2020 files being later revisions; and, **if the assumed 40-day IQVIA lag holds (PROPOSAL 19.1), month t is known around the 10th of month t+2, so a forecast of month t is made after month t has ended.** The evaluation is unaffected, but "next month" should be read as the month just ended or in progress; the lag has not been confirmed with IQVIA. *Why:* leakage-safe model inputs (R2) depend on it. *Tests:* each rule on planted cases, the documented claims against the committed download manifest, completeness against every table a model could read, and the table loading idempotently. *Not changed:* any model, result or rule.
 
 ## Known loose ends (not decisions)
 

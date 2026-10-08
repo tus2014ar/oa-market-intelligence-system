@@ -188,6 +188,37 @@ gold_segment_adoption = Table(
     CheckConstraint("adoption_label IN ('High','Low')", name="ck_gsa_adoption_label"),
 )
 
+# One row per data source: the rule that gives the first month a value could have been known.
+# Loaded from data/reference/source_availability.csv on every run (availability.py).
+dim_source_availability = Table(
+    "dim_source_availability",
+    metadata,
+    Column("source_id", Text, primary_key=True),
+    Column("dataset", Text, nullable=False),
+    Column("stored_in", Text, nullable=False),  # comma-separated table names
+    Column("period_grain", Text, nullable=False),
+    Column("period_covered", Text),
+    Column("rule_type", Text, nullable=False),
+    Column("lag_months", Integer),
+    Column("release_year_lag", Integer),
+    Column("release_month", Integer),
+    Column("fixed_month", Integer),
+    Column("basis", Text, nullable=False),  # documented: from the files held; assumed: a rule
+    Column("evidence", Text, nullable=False),
+    Column("revision_note", Text),
+    Column("leakage_note", Text),
+    CheckConstraint(
+        "period_grain IN ('month','quarter','year','event','snapshot')",
+        name="ck_dsa_period_grain",
+    ),
+    CheckConstraint(
+        "rule_type IN ('lag_months','release_year_lag','per_record_date','snapshot_date')",
+        name="ck_dsa_rule_type",
+    ),
+    CheckConstraint("basis IN ('documented','assumed')", name="ck_dsa_basis"),
+    CheckConstraint("release_month IS NULL OR release_month BETWEEN 1 AND 12", name="ck_dsa_month"),
+)
+
 
 def create_schema(engine: Engine) -> None:
     """Create every Silver table that doesn't already exist. Never drops or alters one

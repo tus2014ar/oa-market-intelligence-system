@@ -277,3 +277,19 @@ Implementation order each monthly run: **upsert dimensions first → then full-r
 The public datasets added under DL-59 live in a **second SQLite file**, `data/processed/external.db` (git-ignored), defined in `src/oa_market_intelligence/external/schema.py` with its own metadata. It shares no table with the warehouse above and is never created or altered by `create_schema` or the pipeline. 27 tables: conformed dimensions and bridges, ten `fact_ext_*` fact tables, six `gold_ext_*` tables, a download catalogue and a run log. Four tables stay local (the NPI-level provider fact, county-level prevalence, the NUCC taxonomy text and the run log); the rest are copied into the published database by the publish step. Tables join to this warehouse by natural keys (month `YYYYMM`, specialty name, two-letter state). Every column, with its source file, original column and rule, is in [`external_data_lineage.md`](external_data_lineage.md).
 
 The six `gold_ext_*` tables are filled by `PYTHONPATH=src python -m oa_market_intelligence.external.analysis` (steps 6a to 6c: specialty triangulation, state adoption, monthly promotion with the IQVIA share, quarterly price ratio, company sales against IQVIA visits, and `gold_ext_verdicts`, which keeps one row per rule under each run id and is never overwritten). Results: [`external_data_results.md`](external_data_results.md).
+
+## 8. Source availability (R1)
+
+`dim_source_availability` (14 rows, one per data source) says when each source could have been known, so a model never uses a value that was not public yet. It sits in the IQVIA warehouse and is reloaded on every pipeline run from `data/reference/source_availability.csv` (the source of truth; an invalid file stops the run).
+
+| Column | Meaning |
+|---|---|
+| `source_id` (key), `dataset`, `stored_in` | The source, its name, and the tables that hold it (comma-separated; "not loaded" for the optional files). |
+| `period_grain`, `period_covered` | month, quarter, year, event or snapshot, and the span held. |
+| `rule_type` and its numbers | `lag_months` (period end plus a lag; negative means known before the period ends), `release_year_lag` (the period's year plus N years, in `release_month`), `per_record_date` (the record's own date) or `snapshot_date` (one `fixed_month` for every period). |
+| `basis` | **documented**: every period's date comes from the files we hold (SEC filing dates, event dates, the registry snapshot). **assumed**: a rule applied from anchor points or project documents (all the others). |
+| `evidence`, `revision_note`, `leakage_note` | What supports the rule, whether the values we hold are later revisions, and what could leak. |
+
+The rule is applied by `oa_market_intelligence.availability.available_from_month(rule, period_end_month, record_date=None)`, which returns the first month (YYYYMM) a value could have been known, and `is_available(rule, period, as_of_month=...)`. Tests keep the documented claims true against the committed download manifest (for example, every Part B and Part D file name says release year = data year + 2) and check that every table a model could read is covered by a source row.
+
+**What it shows.** Medicare provider files are known about two years after the data year, Open Payments in June of the next year (and the files we hold include later corrections), the registry only from its September 2026 snapshot, and company filings and events on their own dates. For IQVIA, if the assumed lag of about 40 days holds (PROPOSAL 19.1), month *t* is known around the 10th of month *t*+2, so a forecast of month *t* made from data through *t*-1 is made after month *t* has ended. The evaluation is unchanged (it predicts month *t* from data through *t*-1); what changes is what "next month" means to a reader.
