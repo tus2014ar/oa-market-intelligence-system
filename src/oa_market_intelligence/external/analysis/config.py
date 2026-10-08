@@ -39,3 +39,9 @@ H2_FROM, H2_TO = "2020Q2", "2021Q2"
 H3_WINDOW_MONTHS = 6
 H3_ANCHOR_MONTH = 202104  # the month after the end of pass-through status (31 March 2021)
 H4_DROP = 0.10
+
+# details the protocol text implies
+H2_J3301_MG_PER_UNIT = 10  # J3301 is quoted per 10 mg, J3304 per 1 mg
+H4_MONTHS = (3, 7)  # March to July
+H4_YEAR, H4_BASE_YEAR = 2024, 2023
+E2B_QUARTERS = ("2020Q3", "2025Q2")
