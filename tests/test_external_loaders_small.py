@@ -183,7 +183,8 @@ def test_part_b_geography_loads_idempotently_logs_the_run_and_marks_the_file(tmp
     with engine.connect() as conn:
         run = conn.execute(
             text(
-                "SELECT source, data_year, rows_read, rows_loaded, status FROM external_load_runs ORDER BY run_id DESC"
+                "SELECT source, data_year, rows_read, rows_loaded, status "
+                "FROM external_load_runs ORDER BY run_id DESC"
             )
         ).first()
     assert tuple(run) == ("partb_geo", 2024, 5, 4, "ok")

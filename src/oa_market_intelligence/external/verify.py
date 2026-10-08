@@ -180,7 +180,7 @@ def _check_geovar(engine: Engine, raw_root: Path) -> list[Check]:
         "SELECT count(*) FROM fact_ext_geo_variation "
         "WHERE ma_participation_rate < 0 OR ma_participation_rate > 1",
     )
-    return [
+    checks = [
         (
             "Geographic Variation national and state rows",
             got == expected,
@@ -188,6 +188,32 @@ def _check_geovar(engine: Engine, raw_root: Path) -> list[Check]:
         ),
         ("Advantage participation rates all between 0 and 1", outside == 0, f"{outside} outside"),
     ]
+    ma_files = list((raw_root / "Medicare Advantage Geographic Variation").glob("*.csv"))
+    if ma_files:
+        with engine.connect() as conn:
+            loaded = {
+                (int(y), code): n
+                for y, code, n in conn.execute(
+                    text(
+                        "SELECT year, geo_code, benes_ma FROM fact_ext_geo_variation "
+                        "WHERE geo_level = 'State' AND age_level = 'All' AND benes_ma IS NOT NULL"
+                    )
+                )
+            }
+        joined = mismatched = 0
+        for row in _rows(ma_files[0]):
+            key = (int(row["YEAR"]), row["BENE_GEO_CD"].strip())
+            if key in loaded and row["BENES_MA_CNT"].strip().isdigit():
+                joined += 1
+                mismatched += int(loaded[key] != int(row["BENES_MA_CNT"]))
+        checks.append(
+            (
+                "Advantage counts agree between the two Medicare files (state-years)",
+                joined >= 400 and mismatched == 0,
+                f"{joined} compared, {mismatched} differ",
+            )
+        )
+    return checks
 
 
 _SMALL_CHECKS = {
