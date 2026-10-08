@@ -1,6 +1,6 @@
 # Protocol: external public data (DL-57, DL-59)
 
-**Status: approved before any analysis ran.** (Section 8 was added afterwards, to record the implementation choices made while running step 6; it changes no rule.) Everything in sections 1 to 6 is fixed here. Any change made after results are seen is recorded as a deviation (DL-60 onward) with the reason. Raw-data profiling (step 0) is described in [`notebooks/10_external_raw_data_profile.ipynb`](../notebooks/10_external_raw_data_profile.ipynb) and its outputs in [`data/reference/external_profile/`](../data/reference/external_profile/).
+**Status: approved before any analysis ran.** (Section 8 was added afterwards, to record the implementation choices made while running step 6; it changes no rule. Section 9 is a follow-up analysis whose rules were fixed before it was run.) Everything in sections 1 to 6 is fixed here. Any change made after results are seen is recorded as a deviation (DL-60 onward) with the reason. Raw-data profiling (step 0) is described in [`notebooks/10_external_raw_data_profile.ipynb`](../notebooks/10_external_raw_data_profile.ipynb) and its outputs in [`data/reference/external_profile/`](../data/reference/external_profile/).
 
 ## 0. Purpose and scope
 
@@ -138,6 +138,7 @@ Tests first, one pull request per step, your acceptance between steps:
 5. Reference tables (company revenue, events).
 6. Analyses E1 to E4 in notebook 11; E5 only if triggered.
 7. Results documents, stakeholder summary, README and plan updates.
+8. Gap diagnosis (section 9): protocol, then code and results.
 
 **Acceptance:** (a) reconciliation tests pass; (b) the lineage test passes; (c) every analysis ends in a verdict label by the rule above; (d) negative and weakened results are reported in the same place as positive ones; (e) the full test suite and CI are green.
 
@@ -167,3 +168,27 @@ The rules above were not changed. Where the text left a detail open, the choice 
 - **E1, extra readings.** Limiting IQVIA to ages 65 and over and dropping the osteopathic group are sensitivity runs added to E1; the E1 verdict comes from the all-ages, all-groups run.
 - **Provider attributes.** A provider's state and specialty in a year are taken from their first row for that year.
 
+## 9. Follow-up: why do company sales and IQVIA visits diverge? (DL-61; rules fixed before the run)
+
+**Question.** From 2022 company net sales of Zilretta rose while IQVIA Zilretta visits fell by about half (E2b), and Medicare provider adoption eased by about a sixth (E2a). Which explanations can the data we hold support? All checks are descriptive and association only.
+
+**What the structure already tells us (before any run).** The IQVIA *share* is a ratio of Zilretta to steroid injections and NSAIDs, so an even loss of panel coverage cannot move it; only a Zilretta-specific coverage change or a real fall in use can. IQVIA's place-of-service table covers the whole OA market, not Zilretta, so any setting check is context only. IQVIA has no hyaluronic injectables, so Zilretta against those can only be shown in Medicare (E6).
+
+**Disclosures.** Already seen before writing these rules: the quarterly sales and visits table (E2b), the roughly 50% fall in IQVIA Zilretta visits since 2022, the 2024 monthly counts of all three IQVIA categories (H4), Medicare provider counts by year (E2a), and the 2024 national Zilretta office row (4,878 providers, 47,150 patients). Not seen: IQVIA by age band or specialty over time, Medicare patients and services per patient over time, and the Medicare facility-versus-office trend. D1 and D3 therefore had a glimpse of one 2024 level but of no trend.
+
+**Common frame.** Calendar years 2021 and 2024 (2021 is Medicare's peak year; 2024 is the last Medicare year; IQVIA has both years complete, and its 2025 is partial). *Change* = value in 2024 divided by value in 2021, minus one; changes are compared as differences in percentage points. IQVIA Zilretta visits = `patient_visits` of the product ZILRETTA, summed over the 12 months, from the published warehouse. Medicare patients, services and payments = the national rows for J3304 in `fact_ext_partb_geo`, summed over the office and facility settings (a patient seen in both settings is counted twice, a stated limit; an office-only version is the sensitivity run).
+
+| Check | Explanation | Measures | Rule (primary thresholds) |
+|---|---|---|---|
+| **D1** | The populations differ (age or payer mix) | IQVIA Zilretta visits at ages 65 and over (bands 65 TO 74, 75 TO 84, 85 +) against Medicare Zilretta patients per 1,000 Original Medicare beneficiaries (national, all ages, `benes_original_medicare` in `fact_ext_geo_variation`; the denominator removes the shrinking fee-for-service base as Advantage grows) | *Supported* if (a) the IQVIA 65+ change is within 15 percentage points of the Medicare change, **and** (b) the IQVIA under-65 change is at least 15 points lower than the IQVIA 65+ change |
+| **D2** | Zilretta moved to a setting IQVIA covers poorly | Facility share of Medicare Zilretta services (facility services / office plus facility); IQVIA hospital share of all visits is shown beside it as context, with no rule | *Supported* if the facility share rose by 10 points or more |
+| **D3** | Each visit is worth more | Company net sales for the calendar year (the year rows in `fact_ext_company_revenue`) per IQVIA Zilretta visit; Medicare services per patient; Medicare average payment per service (service-weighted across settings) | *Supported* if sales per visit rose by 25% or more **and** either Medicare services per patient or payment per service rose by 10% or more |
+| **D4** | The fall is concentrated in a few specialties | IQVIA Zilretta visits by specialty group (the 11 groups of the approved crosswalk; every other specialty is one group "other") | *Concentrated* if the two groups with the largest falls account for at least 50% of the net fall in IQVIA visits. Medicare's change in Zilretta providers in the same groups is shown beside it, with no rule |
+
+**Overall row.** *Supported* if at least one of D1 to D3 is supported (some candidate explanation has support); otherwise *not supported*, and the size of the IQVIA decline stays unverified. D4 describes where the fall sits and does not count toward this row. Explanations that need company data we do not have (inventory, gross-to-net adjustments, channel mix) are recorded as untestable.
+
+**Sensitivity grid (reported next to every verdict; the primary thresholds decide the verdict).** D1 window 10 / **15** / 20 points (and the same for part b); D2 5 / **10** / 15 points; D3 sales per visit 15% / **25%** / 35% together with the Medicare measure 5% / **10%** / 15%; D4 40% / **50%** / 60%. Also: base year 2022 instead of 2021 (the IQVIA peak), and Medicare office setting only. If a verdict changes across neighbouring settings, that is stated beside it.
+
+**Fixed handling.** Thresholds are not tuned after seeing results. A change made after results exist is a deviation: it is logged in the decision log with the reason, and both versions are shown. Results are stored in `gold_ext_verdicts` (check ids D1 to D4, with the changes in the `value` and `note` columns; no schema change) under a run id, run twice with identical output.
+
+**Limits stated now.** Medicare is Original Medicare only. IQVIA's 65+ bands include patients with Advantage plans. Two years are compared, so year-specific noise is not averaged out. None of this identifies a cause.
