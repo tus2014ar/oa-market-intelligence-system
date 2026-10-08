@@ -34,6 +34,10 @@ Four checks written down before any code ran (protocol section 9), comparing 202
 
 **Not tested:** panel coverage of Zilretta settings or specialties, and company-side causes (inventory, gross-to-net adjustments, channel mix).
 
+## E6 (descriptive): Zilretta against the hyaluronic injectables in Medicare
+
+Done in [`notebook 13`](../notebooks/13_eda_unified_data.ipynb) section 6; descriptive tables, no pass or fail. Zilretta's Medicare patients rose from about 36,500 (2019) to 53,400 (2021) and eased to 47,200 (2024), about 12% below the peak, while its billed services stayed flat from 2022 (about 3.4 million units a year), so units per patient rose. The hyaluronic injectables do not move as one: Durolane grew almost threefold in patients (19,700 to 57,100), Monovisc recovered to its 2019 level, Gel-One peaked in 2021 and eased, and Synvisc, Hyalgan and Euflexxa fell in 2020 and stayed below their 2019 level. Zilretta did not dip in 2020, when most hyaluronic codes did. Services are billing units that differ by code, so they are compared only within a code over time; patients and providers are per code and summed over the office and facility settings. Position, not cause.
+
 ## What to take from it
 
 1. **The IQVIA specialty ranking is not confirmed by Medicare billing.** The two sources measure different populations (Original Medicare, mostly 65 and over, against IQVIA's panel), so this says the ranking depends on the population. It does not say IQVIA is wrong.

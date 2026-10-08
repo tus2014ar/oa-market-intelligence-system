@@ -14,7 +14,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 | D. How we work | PR-01 to PR-03 |
 | E. Direction from here (proposed) | PD-01 to PD-08 |
 | F. Open questions | Q-01 to Q-05 |
-| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-69, PD-09 to PD-12, Q-06 to Q-08 |
+| G. Final deliverable and plan (Oct 2026) | DL-28 to DL-70, PD-09 to PD-12, Q-06 to Q-08 |
 
 ---
 
@@ -286,6 +286,9 @@ What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deli
 
 **DL-69 · 8 Oct 2026 · R4: a golden regression test of the warehouse built from the real extracts.** Decided (your approval of the R4 scope).
 *What:* committed expected values (rows, column sums, a content hash) for 11 warehouse tables in `tests/golden/warehouse_golden.json`, a test that rebuilds the warehouse from the real extracts and compares, and `python -m oa_market_intelligence.golden --update` to accept an intended change (reviewed as a diff). *Choices:* the hash uses a canonical CSV with 6 significant digits so float noise between platforms is not a change; timestamped tables are excluded; the build uses a fixed approval-date lookup so it needs no network; the stored model results are not part of this snapshot (they are covered by their own tests and by the publish run). *Why:* the data layer and the models rest on these tables, so an unexpected change (a parser edit, a changed extract, a new category mapping) should fail loudly. *With R1 to R5 the data layer is complete:* availability rules (DL-65), ingest audit (DL-66), data-quality stage (DL-67), ML-ready layer (DL-68), golden regression (this entry). *Not changed:* any model, result or rule.
+
+**DL-70 · 8 Oct 2026 · EDA of the unified data (notebook 13), including E6.** Decided (your approval to start EDA).
+*What:* a descriptive notebook that runs from committed files only (the published warehouse, the public subset, the availability rules, the download manifest): the share series, seasonality and persistence, what changes month to month, the segment panel, the outside series on their availability dates, E6 (Zilretta against the hyaluronic injectables in Medicare, pre-registered in the protocol as descriptive, now done) and the data issues any model has to live with. *Rules:* no hypothesis tested, no threshold applied, no model fitted, no result changed; patterns are listed as candidates to be tested later under a rule written first. *What it shows:* the share is very persistent (autocorrelation 0.88 at one month) but that mostly reflects the trend and the 2022 turn; its monthly changes pull back slightly (-0.19 at one month) with a hint of an annual pattern (+0.27 at twelve; December, March and April high), from only five or six observations per calendar month; monthly moves differ in size by year (0.28 points in 2020, 0.11 in 2025); about 60% of segment-months have fewer than 20 visits and 65% have no Zilretta visit; only price and company sales are known for all 72 months while promotion and Medicare adoption start in July 2020 and January 2023 and are heavily lagged; and the hyaluronic injectables do not move as one (Durolane tripled, Synvisc fell, Zilretta rose then eased and did not dip in 2020). *Candidates for the next stage (none tested):* month-of-year, combinations with last month's value, partial pooling and count models for the segment estimator, a very short list of outside features, a competitor-specific share, volatility-scaled labels, handling of the 2024 dip. *Not changed:* any reported result.
 
 ## Known loose ends (not decisions)
 

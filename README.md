@@ -104,7 +104,8 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 | [`07_q3_specialty_adoption_and_robustness`](notebooks/07_q3_specialty_adoption_and_robustness.ipynb) | Q3: adjusted shares by specialty, stability, and the robustness re-runs |
 | [`08_segment_share_prediction`](notebooks/08_segment_share_prediction.ipynb) | Segment share prediction: label audit, baselines, models, judging |
 | [`09_forecast_monitoring_and_direction`](notebooks/09_forecast_monitoring_and_direction.ipynb) | Share forecast, Q4 monitoring, Q2 closure and the power statement |
-| [`10_external_raw_data_profile`](notebooks/10_external_raw_data_profile.ipynb), [`11_external_analysis_results`](notebooks/11_external_analysis_results.ipynb), [`12_gap_diagnosis`](notebooks/12_gap_diagnosis.ipynb) | Public data: raw-file profile (structure only), the pre-registered analyses E1 to E4, then the sales-versus-visits gap diagnosis. These two run only on the author's machine because the external database is local and git-ignored; their saved outputs are in the files |
+| [`10_external_raw_data_profile`](notebooks/10_external_raw_data_profile.ipynb), [`11_external_analysis_results`](notebooks/11_external_analysis_results.ipynb), [`12_gap_diagnosis`](notebooks/12_gap_diagnosis.ipynb) | Public data: raw-file profile (structure only), the pre-registered analyses E1 to E4, then the sales-versus-visits gap diagnosis.
+| [`13_eda_unified_data`](notebooks/13_eda_unified_data.ipynb) | Descriptive EDA of the unified data before feature engineering: the share series, seasonality and persistence, the segment panel, the outside series on their availability dates, and E6 (Zilretta against the hyaluronic injectables in Medicare). Runs from committed files only. | These two run only on the author's machine because the external database is local and git-ignored; their saved outputs are in the files |
 
 ## Status
 
