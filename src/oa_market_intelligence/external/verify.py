@@ -437,3 +437,49 @@ def verify_provider_sources(
     for source in sources if sources is not None else list(_PROVIDER_CHECKS):
         checks += _PROVIDER_CHECKS[source](engine, Path(raw_root))
     return checks
+
+
+# ---------------------------------------------------------------- the hand-built tables (step 5)
+
+
+def verify_hand_tables(engine: Engine, sources: list[str] | None = None) -> list[Check]:
+    from oa_market_intelligence.external.loaders.events import events_frame
+    from oa_market_intelligence.external.loaders.revenue import revenue_frame, revenue_problems
+
+    checks: list[Check] = []
+    wanted = sources if sources is not None else ["events", "revenue"]
+    if "events" in wanted:
+        csv_events = events_frame(REFERENCE_DIR)
+        loaded = _count(engine, "SELECT count(*) FROM dim_event")
+        verified = _count(engine, "SELECT count(*) FROM dim_event WHERE verified = 1")
+        checks.append(
+            ("events equal the reference table", loaded == len(csv_events), f"{loaded} rows")
+        )
+        checks.append(
+            (
+                "every event has a source",
+                _count(engine, "SELECT count(*) FROM dim_event WHERE trim(source) = ''") == 0,
+                f"{verified} of {loaded} verified from a primary document",
+            )
+        )
+    if "revenue" in wanted:
+        frame = revenue_frame(REFERENCE_DIR)
+        loaded = _count(engine, "SELECT count(*) FROM fact_ext_company_revenue")
+        quarters = _count(
+            engine, "SELECT count(*) FROM fact_ext_company_revenue WHERE period_type = 'quarter'"
+        )
+        problems = revenue_problems(frame)
+        checks.append(
+            ("revenue rows equal the reference table", loaded == len(frame), f"{loaded} rows")
+        )
+        checks.append(
+            (
+                "quarters add up to nine months and the year",
+                not problems,
+                "; ".join(problems) or "all years",
+            )
+        )
+        checks.append(
+            ("30 quarterly Zilretta figures (2019Q1 to 2026Q2)", quarters == 30, f"{quarters}")
+        )
+    return checks

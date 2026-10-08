@@ -1,0 +1,46 @@
+period_end,company,product,period_type,fiscal_label,net_sales_usd,source_accession,source_form,source_page,derived,note
+2018-12-31,Flexion Therapeutics,Zilretta,year,FY2018,22524000,0001564590-19-005465,10-K,"Consolidated statements of operations: product revenue, net",0,
+2019-03-31,Flexion Therapeutics,Zilretta,quarter,2019Q1,10564000,0001564590-19-017182,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2019-06-30,Flexion Therapeutics,Zilretta,quarter,2019Q2,16953000,0001564590-19-029323,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2019-09-30,Flexion Therapeutics,Zilretta,quarter,2019Q3,21786000,0001564590-19-041713,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2019-09-30,Flexion Therapeutics,Zilretta,nine_months,20199M,49303000,0001564590-19-041713,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2019-12-31,Flexion Therapeutics,Zilretta,quarter,2019Q4,23654000,0001564590-20-010490,10-K,"Consolidated statements of operations: product revenue, net",1,fiscal year minus the first nine months (10-Q accession 0001564590-19-041713)
+2019-12-31,Flexion Therapeutics,Zilretta,year,FY2019,72957000,0001564590-20-010490,10-K,"Consolidated statements of operations: product revenue, net",0,
+2020-03-31,Flexion Therapeutics,Zilretta,quarter,2020Q1,20127000,0001564590-20-022827,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2020-06-30,Flexion Therapeutics,Zilretta,quarter,2020Q2,15451000,0001564590-20-036837,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2020-09-30,Flexion Therapeutics,Zilretta,quarter,2020Q3,23664000,0001564590-20-050458,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2020-09-30,Flexion Therapeutics,Zilretta,nine_months,20209M,59242000,0001564590-20-050458,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2020-12-31,Flexion Therapeutics,Zilretta,quarter,2020Q4,26310000,0001564590-21-012050,10-K,"Consolidated statements of operations: product revenue, net",1,fiscal year minus the first nine months (10-Q accession 0001564590-20-050458)
+2020-12-31,Flexion Therapeutics,Zilretta,year,FY2020,85552000,0001564590-21-012050,10-K,"Consolidated statements of operations: product revenue, net",0,
+2021-03-31,Flexion Therapeutics,Zilretta,quarter,2021Q1,24589000,0001564590-21-026980,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2021-06-30,Flexion Therapeutics,Zilretta,quarter,2021Q2,28175000,0000950170-21-000785,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2021-09-30,Flexion Therapeutics,Zilretta,quarter,2021Q3,21326000,0000950170-21-004377,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2021-09-30,Flexion Therapeutics,Zilretta,nine_months,20219M,74090000,0000950170-21-004377,10-Q,"Consolidated statements of operations: product revenue, net",0,
+2021-12-31,Flexion Therapeutics and Pacira BioSciences,Zilretta,quarter,2021Q4,28610000,0001396814-22-000021,10-K,"Business section, minus the first nine months from Flexion's third-quarter 10-Q",1,"full-year 2021 as stated ($102.7 million, rounded to $0.1 million so this figure is good to about plus or minus $0.05 million) minus Flexion's first nine months ($74.09 million); spans the 19 November 2021 closing"
+2021-12-31,Flexion Therapeutics and Pacira BioSciences,Zilretta,year,FY2021,102700000,0001396814-22-000021,10-K,"Business section: Zilretta net product sales for the year ended December 31, 2021",0,"stated as $102.7 million for the whole year, mostly before the 19 November 2021 closing; of this $12.683 million fell after the closing (Pacira's own revenue note)"
+2022-03-31,Pacira BioSciences,Zilretta,quarter,2022Q1,23635000,0001396814-22-000033,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2022-06-30,Pacira BioSciences,Zilretta,quarter,2022Q2,27417000,0001396814-22-000050,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2022-09-30,Pacira BioSciences,Zilretta,quarter,2022Q3,26494000,0001396814-22-000068,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2022-09-30,Pacira BioSciences,Zilretta,nine_months,20229M,77546000,0001396814-22-000068,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2022-12-31,Pacira BioSciences,Zilretta,quarter,2022Q4,27971000,0001396814-23-000010,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",1,fiscal year minus the first nine months (10-Q accession 0001396814-22-000068)
+2022-12-31,Pacira BioSciences,Zilretta,year,FY2022,105517000,0001396814-23-000010,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2023-03-31,Pacira BioSciences,Zilretta,quarter,2023Q1,24334000,0001396814-23-000022,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2023-06-30,Pacira BioSciences,Zilretta,quarter,2023Q2,29261000,0001396814-23-000037,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2023-09-30,Pacira BioSciences,Zilretta,quarter,2023Q3,28798000,0001396814-23-000079,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2023-09-30,Pacira BioSciences,Zilretta,nine_months,20239M,82393000,0001396814-23-000079,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2023-12-31,Pacira BioSciences,Zilretta,quarter,2023Q4,28705000,0001396814-24-000030,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",1,fiscal year minus the first nine months (10-Q accession 0001396814-23-000079)
+2023-12-31,Pacira BioSciences,Zilretta,year,FY2023,111098000,0001396814-24-000030,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2024-03-31,Pacira BioSciences,Zilretta,quarter,2024Q1,25839000,0001396814-24-000045,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2024-06-30,Pacira BioSciences,Zilretta,quarter,2024Q2,30707000,0001396814-24-000098,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2024-09-30,Pacira BioSciences,Zilretta,quarter,2024Q3,28420000,0001396814-24-000141,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2024-09-30,Pacira BioSciences,Zilretta,nine_months,20249M,84966000,0001396814-24-000141,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2024-12-31,Pacira BioSciences,Zilretta,quarter,2024Q4,33123000,0001396814-25-000041,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",1,fiscal year minus the first nine months (10-Q accession 0001396814-24-000141)
+2024-12-31,Pacira BioSciences,Zilretta,year,FY2024,118089000,0001396814-25-000041,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2025-03-31,Pacira BioSciences,Zilretta,quarter,2025Q1,23338000,0001396814-25-000061,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2025-06-30,Pacira BioSciences,Zilretta,quarter,2025Q2,31334000,0001396814-25-000102,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2025-09-30,Pacira BioSciences,Zilretta,quarter,2025Q3,28982000,0001628280-25-050176,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2025-09-30,Pacira BioSciences,Zilretta,nine_months,20259M,83654000,0001628280-25-050176,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2025-12-31,Pacira BioSciences,Zilretta,quarter,2025Q4,32979000,0001628280-26-012297,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",1,fiscal year minus the first nine months (10-Q accession 0001628280-25-050176)
+2025-12-31,Pacira BioSciences,Zilretta,year,FY2025,116633000,0001628280-26-012297,10-K,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2026-03-31,Pacira BioSciences,Zilretta,quarter,2026Q1,26767000,0001628280-26-028871,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
+2026-06-30,Pacira BioSciences,Zilretta,quarter,2026Q2,32648000,0001628280-26-052635,10-Q,"Notes to the financial statements: disaggregated net product sales, Zilretta",0,
