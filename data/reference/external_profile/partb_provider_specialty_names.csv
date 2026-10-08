@@ -1,0 +1,399 @@
+year,specialty,n_rows_all_approved_codes
+2019,Addiction Medicine,5
+2019,Allergy/ Immunology,263
+2019,Ambulatory Surgical Center,680
+2019,Anesthesiology,3660
+2019,Cardiac Surgery,4
+2019,Cardiology,104
+2019,Certified Clinical Nurse Specialist,74
+2019,Certified Nurse Midwife,1
+2019,Certified Registered Nurse Anesthetist (CRNA),37
+2019,Clinic or Group Practice,1
+2019,Clinical Laboratory,1
+2019,Colorectal Surgery (Proctology),2
+2019,Critical Care (Intensivists),49
+2019,Dermatology,4284
+2019,Diagnostic Radiology,2938
+2019,Emergency Medicine,1260
+2019,Endocrinology,18
+2019,Family Practice,26651
+2019,Gastroenterology,45
+2019,General Practice,1085
+2019,General Surgery,188
+2019,Geriatric Medicine,133
+2019,Gynecological Oncology,109
+2019,Hand Surgery,2057
+2019,Hematology,112
+2019,Hematology-Oncology,3282
+2019,Hematopoietic Cell Transplantation and Cellular Therapy,17
+2019,Hospice and Palliative Care,12
+2019,Hospitalist,47
+2019,Independent Diagnostic Testing Facility (IDTF),4
+2019,Infectious Disease,35
+2019,Internal Medicine,13136
+2019,Interventional Cardiology,7
+2019,Interventional Pain Management,3465
+2019,Interventional Radiology,223
+2019,Maxillofacial Surgery,2
+2019,Medical Oncology,1089
+2019,Nephrology,80
+2019,Neurology,845
+2019,Neuropsychiatry,3
+2019,Neurosurgery,117
+2019,Nuclear Medicine,6
+2019,Nurse Practitioner,17668
+2019,Obstetrics & Gynecology,95
+2019,Ophthalmology,523
+2019,Oral Surgery (Dentist only),1
+2019,Orthopedic Surgery,43135
+2019,Osteopathic Manipulative Medicine,185
+2019,Otolaryngology,637
+2019,Pain Management,4150
+2019,Pathology,11
+2019,Pediatric Medicine,151
+2019,Physical Medicine and Rehabilitation,7901
+2019,Physical Therapist in Private Practice,1
+2019,Physician Assistant,23278
+2019,Plastic and Reconstructive Surgery,304
+2019,Podiatry,7773
+2019,Preventive Medicine,58
+2019,Psychiatry,17
+2019,Pulmonary Disease,678
+2019,Radiation Oncology,72
+2019,Rheumatology,8879
+2019,Sleep Medicine,5
+2019,Sports Medicine,3549
+2019,Surgical Oncology,6
+2019,Undefined Physician type,13
+2019,Urology,61
+2019,Vascular Surgery,13
+2020,Addiction Medicine,5
+2020,Allergy/ Immunology,175
+2020,Ambulatory Surgical Center,553
+2020,Anesthesiology,3285
+2020,Cardiac Surgery,3
+2020,Cardiology,64
+2020,Certified Clinical Nurse Specialist,55
+2020,Certified Registered Nurse Anesthetist (CRNA),42
+2020,Clinic or Group Practice,1
+2020,Colorectal Surgery (Proctology),1
+2020,Critical Care (Intensivists),28
+2020,Dermatology,3836
+2020,Diagnostic Radiology,2177
+2020,Emergency Medicine,855
+2020,Endocrinology,15
+2020,Family Practice,19679
+2020,Gastroenterology,37
+2020,General Practice,739
+2020,General Surgery,156
+2020,Geriatric Medicine,92
+2020,Gynecological Oncology,92
+2020,Hand Surgery,1957
+2020,Hematology,91
+2020,Hematology-Oncology,3042
+2020,Hematopoietic Cell Transplantation and Cellular Therapy,15
+2020,Hospice and Palliative Care,7
+2020,Hospitalist,38
+2020,Independent Diagnostic Testing Facility (IDTF),8
+2020,Infectious Disease,33
+2020,Internal Medicine,9494
+2020,Interventional Cardiology,7
+2020,Interventional Pain Management,3130
+2020,Interventional Radiology,169
+2020,Maxillofacial Surgery,1
+2020,Medical Oncology,1057
+2020,Micrographic Dermatologic Surgery,1
+2020,Nephrology,43
+2020,Neurology,699
+2020,Neurosurgery,104
+2020,Nuclear Medicine,2
+2020,Nurse Practitioner,13635
+2020,Obstetrics & Gynecology,79
+2020,Ophthalmology,404
+2020,Orthopedic Surgery,39819
+2020,Osteopathic Manipulative Medicine,168
+2020,Otolaryngology,451
+2020,Pain Management,3919
+2020,Pathology,11
+2020,Pediatric Medicine,116
+2020,Physical Medicine and Rehabilitation,7047
+2020,Physical Therapist in Private Practice,2
+2020,Physician Assistant,19921
+2020,Plastic and Reconstructive Surgery,287
+2020,Podiatry,7113
+2020,Preventive Medicine,47
+2020,Psychiatry,14
+2020,Pulmonary Disease,411
+2020,Radiation Oncology,60
+2020,Rheumatology,7625
+2020,Sleep Medicine,3
+2020,Sports Medicine,3525
+2020,Surgical Oncology,6
+2020,Thoracic Surgery,1
+2020,Undefined Physician type,21
+2020,Undersea and Hyperbaric Medicine,1
+2020,Urology,49
+2020,Vascular Surgery,15
+2021,Addiction Medicine,4
+2021,Allergy/ Immunology,167
+2021,Ambulatory Surgical Center,554
+2021,Anesthesiology,3529
+2021,Cardiac Surgery,3
+2021,Cardiology,61
+2021,Certified Clinical Nurse Specialist,55
+2021,Certified Registered Nurse Anesthetist (CRNA),53
+2021,Clinic or Group Practice,1
+2021,Critical Care (Intensivists),21
+2021,Dermatology,4102
+2021,Diagnostic Radiology,2528
+2021,Emergency Medicine,838
+2021,Endocrinology,22
+2021,Family Practice,18851
+2021,Gastroenterology,32
+2021,General Practice,668
+2021,General Surgery,135
+2021,Geriatric Medicine,81
+2021,Gynecological Oncology,81
+2021,Hand Surgery,2209
+2021,Hematology,79
+2021,Hematology-Oncology,3059
+2021,Hematopoietic Cell Transplantation and Cellular Therapy,14
+2021,Hospice and Palliative Care,7
+2021,Hospitalist,45
+2021,Independent Diagnostic Testing Facility (IDTF),11
+2021,Infectious Disease,29
+2021,Internal Medicine,8689
+2021,Interventional Cardiology,9
+2021,Interventional Pain Management,3264
+2021,Interventional Radiology,183
+2021,Maxillofacial Surgery,1
+2021,Medical Oncology,1000
+2021,Micrographic Dermatologic Surgery,80
+2021,Nephrology,34
+2021,Neurology,674
+2021,Neurosurgery,97
+2021,Nuclear Medicine,1
+2021,Nurse Practitioner,14895
+2021,Obstetrics & Gynecology,71
+2021,Ophthalmology,400
+2021,Oral Surgery (Dentist only),1
+2021,Orthopedic Surgery,41490
+2021,Osteopathic Manipulative Medicine,184
+2021,Otolaryngology,450
+2021,Pain Management,4341
+2021,Pathology,10
+2021,Pediatric Medicine,108
+2021,Physical Medicine and Rehabilitation,7524
+2021,Physician Assistant,22790
+2021,Plastic and Reconstructive Surgery,298
+2021,Podiatry,7454
+2021,Preventive Medicine,31
+2021,Psychiatry,15
+2021,Pulmonary Disease,349
+2021,Radiation Oncology,60
+2021,Rheumatology,7599
+2021,Sleep Medicine,2
+2021,Sports Medicine,4152
+2021,Surgical Oncology,4
+2021,Thoracic Surgery,2
+2021,Undefined Physician type,25
+2021,Urology,44
+2021,Vascular Surgery,10
+2022,Addiction Medicine,4
+2022,Allergy/ Immunology,151
+2022,Ambulatory Surgical Center,552
+2022,Anesthesiology,3599
+2022,Cardiac Surgery,3
+2022,Cardiology,54
+2022,Certified Clinical Nurse Specialist,49
+2022,Certified Registered Nurse Anesthetist (CRNA),50
+2022,Clinic or Group Practice,1
+2022,Critical Care (Intensivists),24
+2022,Dermatology,3973
+2022,Diagnostic Radiology,2412
+2022,Emergency Medicine,864
+2022,Endocrinology,14
+2022,Family Practice,17650
+2022,Gastroenterology,32
+2022,General Practice,597
+2022,General Surgery,125
+2022,Geriatric Medicine,76
+2022,Gynecological Oncology,79
+2022,Hand Surgery,2194
+2022,Hematology,75
+2022,Hematology-Oncology,3039
+2022,Hematopoietic Cell Transplantation and Cellular Therapy,12
+2022,Hospice and Palliative Care,9
+2022,Hospitalist,60
+2022,Independent Diagnostic Testing Facility (IDTF),9
+2022,Infectious Disease,28
+2022,Internal Medicine,7948
+2022,Interventional Cardiology,8
+2022,Interventional Pain Management,3192
+2022,Interventional Radiology,177
+2022,Maxillofacial Surgery,2
+2022,Medical Oncology,968
+2022,Micrographic Dermatologic Surgery,76
+2022,Nephrology,32
+2022,Neurology,633
+2022,Neurosurgery,90
+2022,Nuclear Medicine,4
+2022,Nurse Practitioner,16014
+2022,Obstetrics & Gynecology,52
+2022,Ophthalmology,443
+2022,Oral Surgery (Dentist only),2
+2022,Orthopedic Surgery,40925
+2022,Osteopathic Manipulative Medicine,177
+2022,Otolaryngology,436
+2022,Pain Management,4536
+2022,Pathology,10
+2022,Pediatric Medicine,120
+2022,Physical Medicine and Rehabilitation,7631
+2022,Physician Assistant,25030
+2022,Plastic and Reconstructive Surgery,284
+2022,Podiatry,7429
+2022,Preventive Medicine,38
+2022,Psychiatry,18
+2022,Pulmonary Disease,329
+2022,Radiation Oncology,56
+2022,Rheumatology,7205
+2022,Sleep Medicine,3
+2022,Sports Medicine,4555
+2022,Surgical Oncology,3
+2022,Thoracic Surgery,1
+2022,Undefined Physician type,22
+2022,Urology,44
+2022,Vascular Surgery,15
+2023,Addiction Medicine,6
+2023,Allergy/ Immunology,142
+2023,Ambulatory Surgical Center,517
+2023,Anesthesiology,3506
+2023,Cardiac Surgery,3
+2023,Cardiology,47
+2023,Certified Clinical Nurse Specialist,53
+2023,Certified Registered Nurse Anesthetist (CRNA),56
+2023,Chiropractic,1
+2023,Critical Care (Intensivists),26
+2023,Dentist,1
+2023,Dermatology,3911
+2023,Diagnostic Radiology,2252
+2023,Emergency Medicine,950
+2023,Endocrinology,13
+2023,Family Practice,16671
+2023,Gastroenterology,27
+2023,General Practice,529
+2023,General Surgery,112
+2023,Geriatric Medicine,63
+2023,Gynecological Oncology,71
+2023,Hand Surgery,2166
+2023,Hematology,80
+2023,Hematology-Oncology,2928
+2023,Hematopoietic Cell Transplantation and Cellular Therapy,9
+2023,Hospice and Palliative Care,11
+2023,Hospitalist,67
+2023,Independent Diagnostic Testing Facility (IDTF),8
+2023,Infectious Disease,25
+2023,Internal Medicine,7401
+2023,Interventional Cardiology,11
+2023,Interventional Pain Management,2917
+2023,Interventional Radiology,164
+2023,Maxillofacial Surgery,1
+2023,Medical Oncology,950
+2023,Micrographic Dermatologic Surgery,84
+2023,Nephrology,30
+2023,Neurology,609
+2023,Neurosurgery,92
+2023,Nuclear Medicine,1
+2023,Nurse Practitioner,17050
+2023,Obstetrics & Gynecology,59
+2023,Ophthalmology,424
+2023,Oral Surgery (Dentist only),1
+2023,Orthopedic Surgery,38972
+2023,Osteopathic Manipulative Medicine,177
+2023,Otolaryngology,399
+2023,Pain Management,4504
+2023,Pathology,8
+2023,Pediatric Medicine,131
+2023,Physical Medicine and Rehabilitation,7549
+2023,Physician Assistant,26813
+2023,Plastic and Reconstructive Surgery,279
+2023,Podiatry,7564
+2023,Preventive Medicine,38
+2023,Psychiatry,22
+2023,Pulmonary Disease,313
+2023,Radiation Oncology,53
+2023,Rheumatology,6564
+2023,Sleep Medicine,4
+2023,Sports Medicine,4794
+2023,Surgical Oncology,3
+2023,Undefined Physician type,15
+2023,Urology,39
+2023,Vascular Surgery,13
+2024,Addiction Medicine,7
+2024,Allergy/ Immunology,125
+2024,Ambulatory Surgical Center,529
+2024,Anesthesiology,3558
+2024,Cardiac Surgery,2
+2024,Cardiology,49
+2024,Certified Clinical Nurse Specialist,53
+2024,Certified Registered Nurse Anesthetist (CRNA),62
+2024,Chiropractic,1
+2024,Colorectal Surgery (Proctology),1
+2024,Critical Care (Intensivists),23
+2024,Dermatology,3818
+2024,Diagnostic Radiology,2060
+2024,Emergency Medicine,954
+2024,Endocrinology,10
+2024,Family Practice,15843
+2024,Gastroenterology,27
+2024,General Practice,486
+2024,General Surgery,129
+2024,Geriatric Medicine,57
+2024,Gynecological Oncology,65
+2024,Hand Surgery,2338
+2024,Hematology,81
+2024,Hematology-Oncology,2965
+2024,Hematopoietic Cell Transplantation and Cellular Therapy,11
+2024,Hospice and Palliative Care,14
+2024,Hospitalist,63
+2024,Independent Diagnostic Testing Facility (IDTF),9
+2024,Infectious Disease,19
+2024,Internal Medicine,6757
+2024,Interventional Cardiology,10
+2024,Interventional Pain Management,2793
+2024,Interventional Radiology,154
+2024,Maxillofacial Surgery,2
+2024,Medical Oncology,957
+2024,Micrographic Dermatologic Surgery,85
+2024,Nephrology,30
+2024,Neurology,614
+2024,Neurosurgery,87
+2024,Nuclear Medicine,2
+2024,Nurse Practitioner,17444
+2024,Obstetrics & Gynecology,63
+2024,Ophthalmology,399
+2024,Optometry,1
+2024,Oral Surgery (Dentist only),2
+2024,Orofacial Pain,2
+2024,Orthopedic Surgery,39852
+2024,Osteopathic Manipulative Medicine,172
+2024,Otolaryngology,382
+2024,Pain Management,4731
+2024,Pathology,7
+2024,Pediatric Medicine,137
+2024,Physical Medicine and Rehabilitation,7771
+2024,Physician Assistant,28960
+2024,Plastic and Reconstructive Surgery,301
+2024,Podiatry,7750
+2024,Preventive Medicine,41
+2024,Psychiatry,17
+2024,Pulmonary Disease,309
+2024,Radiation Oncology,39
+2024,Rheumatology,6288
+2024,Sleep Medicine,3
+2024,Sports Medicine,5353
+2024,Surgical Oncology,3
+2024,Undefined Physician type,10
+2024,Unknown Supplier/Provider Specialty,1
+2024,Urology,40
+2024,Vascular Surgery,12

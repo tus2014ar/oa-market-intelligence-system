@@ -1,0 +1,795 @@
+{
+ "n_rows": 36994,
+ "n_columns": 246,
+ "columns": {
+  "YEAR": {
+   "n_empty": 0,
+   "n_distinct": 11,
+   "capped": false,
+   "top_values": {
+    "2022": 3365,
+    "2023": 3365,
+    "2024": 3365,
+    "2021": 3364,
+    "2015": 3363,
+    "2014": 3362,
+    "2016": 3362,
+    "2017": 3362,
+    "2018": 3362,
+    "2019": 3362,
+    "2020": 3362
+   }
+  },
+  "BENE_GEO_LVL": {
+   "n_empty": 0,
+   "n_distinct": 3,
+   "capped": false,
+   "top_values": {
+    "County": 35146,
+    "State": 1815,
+    "National": 33
+   }
+  },
+  "BENE_GEO_DESC": {
+   "n_empty": 0
+  },
+  "BENE_GEO_CD": {
+   "n_empty": 99
+  },
+  "BENE_AGE_LVL": {
+   "n_empty": 0,
+   "n_distinct": 3,
+   "capped": false,
+   "top_values": {
+    "All": 35762,
+    "<65": 616,
+    ">=65": 616
+   }
+  },
+  "BENES_TOTAL_CNT": {
+   "n_empty": 0,
+   "min": 12.0,
+   "max": 71035683.0,
+   "n_negative": 0,
+   "n_zero": 0,
+   "n_unparseable": 635
+  },
+  "BENES_WTH_PTAPTB_CNT": {
+   "n_empty": 0
+  },
+  "BENES_OM_CNT": {
+   "n_empty": 0
+  },
+  "BENES_MA_CNT": {
+   "n_empty": 0,
+   "min": 0.0,
+   "max": 33677969.0,
+   "n_negative": 0,
+   "n_zero": 79,
+   "n_unparseable": 1240
+  },
+  "MA_PRTCPTN_RATE": {
+   "n_empty": 0,
+   "min": 0.0,
+   "max": 0.9755,
+   "n_negative": 0,
+   "n_zero": 79,
+   "n_unparseable": 1240
+  },
+  "BENE_AVG_AGE": {
+   "n_empty": 0
+  },
+  "BENE_FEML_PCT": {
+   "n_empty": 0
+  },
+  "BENE_MALE_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_WHT_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_BLACK_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_HSPNC_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_OTHR_PCT": {
+   "n_empty": 0
+  },
+  "BENE_DUAL_PCT": {
+   "n_empty": 0
+  },
+  "TOT_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "TOT_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "TOT_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "TOT_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "IP_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "IP_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "IP_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "IP_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "IP_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "IP_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "IP_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "IP_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_IP_CVRD_STAY_CNT": {
+   "n_empty": 0
+  },
+  "BENES_IP_PCT": {
+   "n_empty": 0
+  },
+  "IP_CVRD_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "IP_CVRD_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "ACUTE_HOSP_READMSN_CNT": {
+   "n_empty": 0
+  },
+  "ACUTE_HOSP_READMSN_PCT": {
+   "n_empty": 0
+  },
+  "BENES_ER_VISITS_CNT": {
+   "n_empty": 0
+  },
+  "ER_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_ER_VISITS_PCT": {
+   "n_empty": 0
+  },
+  "OP_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "OP_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "OP_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "OP_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "OP_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "OP_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "OP_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "OP_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_OP_CNT": {
+   "n_empty": 0
+  },
+  "BENES_OP_PCT": {
+   "n_empty": 0
+  },
+  "OP_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "ASC_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_ASC_CNT": {
+   "n_empty": 0
+  },
+  "BENES_ASC_PCT": {
+   "n_empty": 0
+  },
+  "ASC_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "SNF_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_SNF_CNT": {
+   "n_empty": 0
+  },
+  "BENES_SNF_PCT": {
+   "n_empty": 0
+  },
+  "SNF_CVRD_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "SNF_CVRD_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "IRF_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_IRF_CNT": {
+   "n_empty": 0
+  },
+  "BENES_IRF_PCT": {
+   "n_empty": 0
+  },
+  "IRF_CVRD_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "IRF_CVRD_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "LTCH_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_LTCH_CNT": {
+   "n_empty": 0
+  },
+  "BENES_LTCH_PCT": {
+   "n_empty": 0
+  },
+  "LTCH_CVRD_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "LTCH_CVRD_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "HH_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "HH_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "HH_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "HH_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "HH_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "HH_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "HH_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "HH_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_HH_CNT": {
+   "n_empty": 0
+  },
+  "BENES_HH_PCT": {
+   "n_empty": 0
+  },
+  "HH_EPISODES_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "HH_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "HOSPC_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_HOSPC_CNT": {
+   "n_empty": 0
+  },
+  "BENES_HOSPC_PCT": {
+   "n_empty": 0
+  },
+  "HOSPC_CVRD_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "HOSPC_CVRD_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "EM_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "EM_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "EM_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "EM_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "EM_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "EM_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "EM_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "EM_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_EM_CNT": {
+   "n_empty": 0
+  },
+  "BENES_EM_PCT": {
+   "n_empty": 0
+  },
+  "EM_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "PRCDRS_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_PRCDRS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_PRCDRS_PCT": {
+   "n_empty": 0
+  },
+  "PRCDR_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "TESTS_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_TESTS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_TESTS_PCT": {
+   "n_empty": 0
+  },
+  "TESTS_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "IMGNG_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_IMGNG_CNT": {
+   "n_empty": 0
+  },
+  "BENES_IMGNG_PCT": {
+   "n_empty": 0
+  },
+  "IMGNG_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "DME_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "DME_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "DME_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "DME_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "DME_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "DME_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "DME_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "DME_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_DME_CNT": {
+   "n_empty": 0
+  },
+  "BENES_DME_PCT": {
+   "n_empty": 0
+  },
+  "DME_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "OP_DLYS_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_OP_DLYS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_OP_DLYS_PCT": {
+   "n_empty": 0
+  },
+  "OP_DLYS_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_MDCR_STDZD_PYMT_PU": {
+   "n_empty": 0
+  },
+  "BENES_FQHC_RHC_CNT": {
+   "n_empty": 0
+  },
+  "BENES_FQHC_RHC_PCT": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "AMBLNC_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_AMBLNC_CNT": {
+   "n_empty": 0
+  },
+  "BENES_AMBLNC_PCT": {
+   "n_empty": 0
+  },
+  "AMBLNC_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_PYMT_PC": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_STDZD_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_STDZD_PYMT_PCT": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_STDZD_PYMT_PC": {
+   "n_empty": 0
+  },
+  "TRTMNTS_MDCR_STDZD_PYMT_PER_USER": {
+   "n_empty": 0
+  },
+  "BENES_TRTMNTS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_TRTMNTS_PCT": {
+   "n_empty": 0
+  },
+  "TRTMNTS_EVNTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "PTB_OTHR_SRVCS_MDCR_PYMT_AMT": {
+   "n_empty": 0
+  },
+  "PTB_OTHR_SRVCS_MDCR_STDZD_PYMT": {
+   "n_empty": 0
+  },
+  "TOT_PBPMT_RDCTN_AMT": {
+   "n_empty": 0
+  },
+  "TOT_PBPMT_RDCTN_PCC": {
+   "n_empty": 0
+  },
+  "PQI03_DBTS_AGE_LT_65": {
+   "n_empty": 0
+  },
+  "PQI03_DBTS_AGE_65_74": {
+   "n_empty": 0
+  },
+  "PQI03_DBTS_AGE_GE_75": {
+   "n_empty": 0
+  },
+  "PQI05_COPD_ASTHMA_AGE_40_64": {
+   "n_empty": 0
+  },
+  "PQI05_COPD_ASTHMA_AGE_65_74": {
+   "n_empty": 0
+  },
+  "PQI05_COPD_ASTHMA_AGE_GE_75": {
+   "n_empty": 0
+  },
+  "PQI07_HYPRTNSN_AGE_LT_65": {
+   "n_empty": 0
+  },
+  "PQI07_HYPRTNSN_AGE_65_74": {
+   "n_empty": 0
+  },
+  "PQI07_HYPRTNSN_AGE_GE_75": {
+   "n_empty": 0
+  },
+  "PQI08_CHF_AGE_LT_65": {
+   "n_empty": 0
+  },
+  "PQI08_CHF_AGE_65_74": {
+   "n_empty": 0
+  },
+  "PQI08_CHF_AGE_GE_75": {
+   "n_empty": 0
+  },
+  "PQI11_BCTRL_PNA_AGE_LT_65": {
+   "n_empty": 0
+  },
+  "PQI11_BCTRL_PNA_AGE_65_74": {
+   "n_empty": 0
+  },
+  "PQI11_BCTRL_PNA_AGE_GE_75": {
+   "n_empty": 0
+  },
+  "PQI12_UTI_AGE_LT_65": {
+   "n_empty": 0
+  },
+  "PQI12_UTI_AGE_65_74": {
+   "n_empty": 0
+  },
+  "PQI12_UTI_AGE_GE_75": {
+   "n_empty": 0
+  },
+  "PQI15_ASTHMA_AGE_LT_40": {
+   "n_empty": 0
+  },
+  "PQI16_LWRXTRMTY_AMPUTN_AGE_LT_65": {
+   "n_empty": 0
+  },
+  "PQI16_LWRXTRMTY_AMPUTN_AGE_65_74": {
+   "n_empty": 0
+  },
+  "PQI16_LWRXTRMTY_AMPUTN_AGE_GE_75": {
+   "n_empty": 0
+  }
+ },
+ "key": [
+  "YEAR",
+  "BENE_GEO_LVL",
+  "BENE_GEO_CD",
+  "BENE_AGE_LVL"
+ ],
+ "duplicate_keys": 33
+}

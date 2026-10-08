@@ -1,0 +1,722 @@
+{
+ "2019": {
+  "n_rows": 273211,
+  "n_columns": 15,
+  "columns": {
+   "Rndrng_Prvdr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 260217,
+     "National": 12994
+    }
+   },
+   "Rndrng_Prvdr_Geo_Cd": {
+    "n_empty": 12994
+   },
+   "Rndrng_Prvdr_Geo_Desc": {
+    "n_empty": 0,
+    "n_distinct": 62,
+    "capped": false,
+    "top_values": {
+     "National": 12994,
+     "California": 8893,
+     "Florida": 8389,
+     "Texas": 8141,
+     "New York": 7773,
+     "Pennsylvania": 7218,
+     "Ohio": 6844,
+     "Illinois": 6840,
+     "North Carolina": 6638,
+     "Michigan": 6505,
+     "New Jersey": 6432,
+     "Massachusetts": 6276,
+     "Georgia": 6257,
+     "Virginia": 6101,
+     "Tennessee": 6042,
+     "Arizona": 6017,
+     "Maryland": 5929,
+     "Washington": 5859,
+     "Indiana": 5851,
+     "Missouri": 5777,
+     "Minnesota": 5596,
+     "Colorado": 5353,
+     "Alabama": 5351,
+     "Wisconsin": 5336,
+     "South Carolina": 5277
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "N": 260701,
+     "Y": 12510
+    }
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "F": 149325,
+     "O": 123886
+    }
+   },
+   "Tot_Rndrng_Prvdrs": {
+    "n_empty": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 23594693.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 134513237.2,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0045454545,
+    "max": 49501.502697,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Rndrng_Prvdr_Geo_Lvl",
+   "Rndrng_Prvdr_Geo_Cd",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2020": {
+  "n_rows": 268149,
+  "n_columns": 15,
+  "columns": {
+   "Rndrng_Prvdr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 255061,
+     "National": 13088
+    }
+   },
+   "Rndrng_Prvdr_Geo_Cd": {
+    "n_empty": 13103
+   },
+   "Rndrng_Prvdr_Geo_Desc": {
+    "n_empty": 15,
+    "n_distinct": 62,
+    "capped": false,
+    "top_values": {
+     "National": 13088,
+     "California": 8843,
+     "Florida": 8353,
+     "Texas": 8079,
+     "New York": 7663,
+     "Pennsylvania": 7132,
+     "Ohio": 6702,
+     "Illinois": 6694,
+     "North Carolina": 6587,
+     "New Jersey": 6286,
+     "Michigan": 6239,
+     "Georgia": 6135,
+     "Massachusetts": 6095,
+     "Virginia": 6075,
+     "Arizona": 6006,
+     "Tennessee": 5952,
+     "Maryland": 5866,
+     "Washington": 5766,
+     "Indiana": 5656,
+     "Missouri": 5649,
+     "Minnesota": 5509,
+     "Colorado": 5380,
+     "Alabama": 5253,
+     "Wisconsin": 5235,
+     "South Carolina": 5194
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "N": 255866,
+     "Y": 12283
+    }
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "F": 143690,
+     "O": 124459
+    }
+   },
+   "Tot_Rndrng_Prvdrs": {
+    "n_empty": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 21794074.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 122129390.5,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0013195548,
+    "max": 40603.953941,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Rndrng_Prvdr_Geo_Lvl",
+   "Rndrng_Prvdr_Geo_Cd",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2021": {
+  "n_rows": 271635,
+  "n_columns": 15,
+  "columns": {
+   "Rndrng_Prvdr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 258353,
+     "National": 13282
+    }
+   },
+   "Rndrng_Prvdr_Geo_Cd": {
+    "n_empty": 13282
+   },
+   "Rndrng_Prvdr_Geo_Desc": {
+    "n_empty": 0,
+    "n_distinct": 62,
+    "capped": false,
+    "top_values": {
+     "National": 13282,
+     "California": 9003,
+     "Florida": 8413,
+     "Texas": 8202,
+     "New York": 7774,
+     "Pennsylvania": 7222,
+     "Ohio": 6769,
+     "Illinois": 6767,
+     "North Carolina": 6623,
+     "New Jersey": 6451,
+     "Michigan": 6296,
+     "Massachusetts": 6242,
+     "Georgia": 6143,
+     "Arizona": 6113,
+     "Virginia": 6104,
+     "Maryland": 6001,
+     "Tennessee": 5991,
+     "Washington": 5855,
+     "Minnesota": 5642,
+     "Missouri": 5599,
+     "Indiana": 5591,
+     "Colorado": 5513,
+     "Alabama": 5283,
+     "South Carolina": 5253,
+     "Wisconsin": 5244
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "N": 259057,
+     "Y": 12578
+    }
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "F": 144227,
+     "O": 127408
+    }
+   },
+   "Tot_Rndrng_Prvdrs": {
+    "n_empty": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 21890951.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 114532369.1,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 41624.174414,
+    "n_negative": 0,
+    "n_zero": 1,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Rndrng_Prvdr_Geo_Lvl",
+   "Rndrng_Prvdr_Geo_Cd",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2022": {
+  "n_rows": 270673,
+  "n_columns": 15,
+  "columns": {
+   "Rndrng_Prvdr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 257351,
+     "National": 13322
+    }
+   },
+   "Rndrng_Prvdr_Geo_Cd": {
+    "n_empty": 13325
+   },
+   "Rndrng_Prvdr_Geo_Desc": {
+    "n_empty": 3,
+    "n_distinct": 62,
+    "capped": false,
+    "top_values": {
+     "National": 13322,
+     "California": 8963,
+     "Florida": 8442,
+     "Texas": 8279,
+     "New York": 7791,
+     "Pennsylvania": 7155,
+     "Illinois": 6723,
+     "Ohio": 6722,
+     "North Carolina": 6494,
+     "New Jersey": 6482,
+     "Massachusetts": 6242,
+     "Michigan": 6217,
+     "Georgia": 6139,
+     "Virginia": 6112,
+     "Arizona": 6087,
+     "Tennessee": 6005,
+     "Maryland": 5990,
+     "Washington": 5819,
+     "Minnesota": 5616,
+     "Indiana": 5530,
+     "Missouri": 5521,
+     "Colorado": 5488,
+     "Alabama": 5266,
+     "Wisconsin": 5251,
+     "South Carolina": 5249
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "N": 257515,
+     "Y": 13158
+    }
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "F": 142041,
+     "O": 128632
+    }
+   },
+   "Tot_Rndrng_Prvdrs": {
+    "n_empty": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 21459588.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 103325663.6,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 46612.600952,
+    "n_negative": 0,
+    "n_zero": 1,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Rndrng_Prvdr_Geo_Lvl",
+   "Rndrng_Prvdr_Geo_Cd",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2023": {
+  "n_rows": 268634,
+  "n_columns": 15,
+  "columns": {
+   "Rndrng_Prvdr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 255256,
+     "National": 13378
+    }
+   },
+   "Rndrng_Prvdr_Geo_Cd": {
+    "n_empty": 13383
+   },
+   "Rndrng_Prvdr_Geo_Desc": {
+    "n_empty": 5,
+    "n_distinct": 62,
+    "capped": false,
+    "top_values": {
+     "National": 13378,
+     "California": 8981,
+     "Florida": 8482,
+     "Texas": 8248,
+     "New York": 7855,
+     "Pennsylvania": 7090,
+     "Ohio": 6795,
+     "Illinois": 6727,
+     "North Carolina": 6508,
+     "New Jersey": 6486,
+     "Massachusetts": 6212,
+     "Arizona": 6167,
+     "Michigan": 6157,
+     "Virginia": 6088,
+     "Georgia": 6072,
+     "Maryland": 5964,
+     "Tennessee": 5899,
+     "Washington": 5845,
+     "Minnesota": 5563,
+     "Colorado": 5437,
+     "Missouri": 5422,
+     "Indiana": 5415,
+     "Wisconsin": 5246,
+     "South Carolina": 5226,
+     "Alabama": 5149
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "N": 254313,
+     "Y": 14321
+    }
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "F": 140641,
+     "O": 127993
+    }
+   },
+   "Tot_Rndrng_Prvdrs": {
+    "n_empty": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 21122940.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 153467461.2,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0,
+    "max": 42892.266667,
+    "n_negative": 0,
+    "n_zero": 1,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Rndrng_Prvdr_Geo_Lvl",
+   "Rndrng_Prvdr_Geo_Cd",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ },
+ "2024": {
+  "n_rows": 268350,
+  "n_columns": 15,
+  "columns": {
+   "Rndrng_Prvdr_Geo_Lvl": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "State": 254887,
+     "National": 13463
+    }
+   },
+   "Rndrng_Prvdr_Geo_Cd": {
+    "n_empty": 13468
+   },
+   "Rndrng_Prvdr_Geo_Desc": {
+    "n_empty": 5,
+    "n_distinct": 62,
+    "capped": false,
+    "top_values": {
+     "National": 13463,
+     "California": 9132,
+     "Florida": 8476,
+     "Texas": 8235,
+     "New York": 7807,
+     "Pennsylvania": 7041,
+     "Illinois": 6750,
+     "Ohio": 6702,
+     "New Jersey": 6550,
+     "North Carolina": 6411,
+     "Massachusetts": 6256,
+     "Arizona": 6209,
+     "Georgia": 6073,
+     "Virginia": 6064,
+     "Michigan": 6039,
+     "Maryland": 5976,
+     "Tennessee": 5938,
+     "Washington": 5748,
+     "Minnesota": 5576,
+     "Colorado": 5438,
+     "Indiana": 5352,
+     "Missouri": 5352,
+     "Wisconsin": 5170,
+     "South Carolina": 5168,
+     "Alabama": 5102
+    }
+   },
+   "HCPCS_Cd": {
+    "n_empty": 0
+   },
+   "HCPCS_Desc": {
+    "n_empty": 0
+   },
+   "HCPCS_Drug_Ind": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "N": 252915,
+     "Y": 15435
+    }
+   },
+   "Place_Of_Srvc": {
+    "n_empty": 0,
+    "n_distinct": 2,
+    "capped": false,
+    "top_values": {
+     "F": 140017,
+     "O": 128333
+    }
+   },
+   "Tot_Rndrng_Prvdrs": {
+    "n_empty": 0
+   },
+   "Tot_Benes": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 21005950.0,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Srvcs": {
+    "n_empty": 0,
+    "min": 11.0,
+    "max": 98923627.2,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Tot_Bene_Day_Srvcs": {
+    "n_empty": 0
+   },
+   "Avg_Sbmtd_Chrg": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Alowd_Amt": {
+    "n_empty": 0
+   },
+   "Avg_Mdcr_Pymt_Amt": {
+    "n_empty": 0,
+    "min": 0.0023764668,
+    "max": 49678.564211,
+    "n_negative": 0,
+    "n_zero": 0,
+    "n_unparseable": 0
+   },
+   "Avg_Mdcr_Stdzd_Amt": {
+    "n_empty": 0
+   }
+  },
+  "key": [
+   "Rndrng_Prvdr_Geo_Lvl",
+   "Rndrng_Prvdr_Geo_Cd",
+   "HCPCS_Cd",
+   "Place_Of_Srvc"
+  ],
+  "duplicate_keys": 0
+ }
+}

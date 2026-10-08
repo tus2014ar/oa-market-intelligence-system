@@ -1,0 +1,241 @@
+{
+ "n_rows": 432,
+ "n_columns": 61,
+ "columns": {
+  "YEAR": {
+   "n_empty": 0,
+   "n_distinct": 8,
+   "capped": false,
+   "top_values": {
+    "2016": 54,
+    "2017": 54,
+    "2018": 54,
+    "2019": 54,
+    "2020": 54,
+    "2021": 54,
+    "2022": 54,
+    "2023": 54
+   }
+  },
+  "STATE": {
+   "n_empty": 0,
+   "n_distinct": 54,
+   "capped": false,
+   "top_values": {
+    "AK": 8,
+    "AL": 8,
+    "AR": 8,
+    "AZ": 8,
+    "CA": 8,
+    "CO": 8,
+    "CT": 8,
+    "DC": 8,
+    "DE": 8,
+    "FL": 8,
+    "GA": 8,
+    "HI": 8,
+    "IA": 8,
+    "ID": 8,
+    "IL": 8,
+    "IN": 8,
+    "KS": 8,
+    "KY": 8,
+    "LA": 8,
+    "MA": 8,
+    "MD": 8,
+    "ME": 8,
+    "MI": 8,
+    "MN": 8,
+    "MO": 8
+   }
+  },
+  "BENE_GEO_CD": {
+   "n_empty": 8
+  },
+  "BENES_MA_CNT": {
+   "n_empty": 0,
+   "min": 194.0,
+   "max": 31848969.0,
+   "n_negative": 0,
+   "n_zero": 0,
+   "n_unparseable": 0
+  },
+  "BENE_AVG_AGE": {
+   "n_empty": 0
+  },
+  "BENE_FEML_PCT": {
+   "n_empty": 0
+  },
+  "BENE_MALE_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_WHT_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_BLACK_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_HSPNC_PCT": {
+   "n_empty": 0
+  },
+  "BENE_RACE_OTHR_PCT": {
+   "n_empty": 0
+  },
+  "BENE_DUAL_PCT": {
+   "n_empty": 0
+  },
+  "BENES_IP_STAY_CNT": {
+   "n_empty": 0
+  },
+  "BENES_IP_PCT": {
+   "n_empty": 0
+  },
+  "IP_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "IP_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_IRF_CNT": {
+   "n_empty": 0
+  },
+  "BENES_IRF_PCT": {
+   "n_empty": 0
+  },
+  "IRF_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "IRF_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_LTC_CNT": {
+   "n_empty": 0
+  },
+  "BENES_LTC_PCT": {
+   "n_empty": 0
+  },
+  "LTC_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "LTC_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_SNF_CNT": {
+   "n_empty": 0
+  },
+  "BENES_SNF_PCT": {
+   "n_empty": 0
+  },
+  "SNF_STAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "SNF_DAYS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_EM_CNT": {
+   "n_empty": 0
+  },
+  "BENES_EM_PCT": {
+   "n_empty": 0
+  },
+  "EM_EVENTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_PRCDRS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_PRCDRS_PCT": {
+   "n_empty": 0
+  },
+  "PRCDRS_EVENTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_TESTS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_TESTS_PCT": {
+   "n_empty": 0
+  },
+  "TESTS_EVENTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_IMGNG_CNT": {
+   "n_empty": 0
+  },
+  "BENES_IMGNG_PCT": {
+   "n_empty": 0
+  },
+  "IMGNG_EVENTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_DME_CNT": {
+   "n_empty": 0
+  },
+  "BENES_DME_PCT": {
+   "n_empty": 0
+  },
+  "DME_EVENTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_AMBLNC_CNT": {
+   "n_empty": 0
+  },
+  "BENES_AMBLNC_PCT": {
+   "n_empty": 0
+  },
+  "AMBLNC_EVENTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_TRTMNT_CNT": {
+   "n_empty": 0
+  },
+  "BENES_TRTMNT_PCT": {
+   "n_empty": 0
+  },
+  "TRTMNT_EVENTS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_OP_DLYS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_OP_DLYS_PCT": {
+   "n_empty": 0
+  },
+  "OP_DLYS_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_FQHC_RHC_CNT": {
+   "n_empty": 0
+  },
+  "BENES_FQHC_RHC_PCT": {
+   "n_empty": 0
+  },
+  "FQHC_RHC_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_OP_CNT": {
+   "n_empty": 0
+  },
+  "BENES_OP_PCT": {
+   "n_empty": 0
+  },
+  "OP_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  },
+  "BENES_ER_VISITS_CNT": {
+   "n_empty": 0
+  },
+  "BENES_ER_VISITS_PCT": {
+   "n_empty": 0
+  },
+  "ER_VISITS_PER_1000_BENES": {
+   "n_empty": 0
+  }
+ },
+ "key": [
+  "YEAR",
+  "STATE",
+  "BENE_GEO_CD"
+ ],
+ "duplicate_keys": 0
+}
