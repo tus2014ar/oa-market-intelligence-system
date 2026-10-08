@@ -30,7 +30,7 @@ Plain-language write-ups for the brand manager: [`docs/stakeholder_summary_part1
 Each item is tagged **[Built]** (implemented and tested in this repo), **[Built, not yet deployed]**, or **[Planned]** (designed in [`docs/PROPOSAL.md`](docs/PROPOSAL.md), not yet implemented).
 
 - **[Built]** Ingests the four IQVIA NMTA Excel extracts, validates them with a Pandera gate, and builds a Bronze → Silver → Gold SQLite warehouse with a single CLI command; computes the monthly target and its Up / Down / Flat direction label (volatility-scaled threshold) plus lag and rolling features
-- **[Built]** Runs lint and tests on every push and pull request (GitHub Actions, `ruff` + `pytest`; about 670 tests including real-data tests; the external-data ones that need the local raw files skip in CI)
+- **[Built]** Runs lint and tests on every push and pull request (GitHub Actions, `ruff` + `pytest`; about 770 tests including real-data tests; the external-data ones that need the local raw files skip in CI)
 - **[Built]** Exploratory analysis in three executed notebooks (raw data, the cleaned warehouse, RA), whose findings shaped the cleaning rules and the label definition
 - **[Built]** Leak-safe feature sets (monthly and segment), each guarded by a test that rewrites every later month and requires the earlier features not to move, and that fails when a leak is injected on purpose
 - **[Built]** A walk-forward evaluation harness (24-month minimum window, one month ahead, McNemar's test, block-bootstrap intervals, a random-guessing band) with simple baselines, for both the monthly direction task and a segment-level share task
@@ -132,7 +132,7 @@ Development is local-first: cloud infrastructure (the hosted website) is stood u
 
 ```bash
 PYTHONPATH=src python -m oa_market_intelligence.publish     # builds data/published/warehouse.db (about 40 minutes at full precision; add --precision fast for a quick check)
-PYTHONPATH=src python -m pytest                             # about 670 tests (about 15 minutes locally with the real-data tests, about 13 in CI)
+PYTHONPATH=src python -m pytest                             # about 770 tests (about 15 minutes locally with the real-data tests, about 13 in CI)
 streamlit run app/streamlit_app.py                          # the site, locally
 ```
 
