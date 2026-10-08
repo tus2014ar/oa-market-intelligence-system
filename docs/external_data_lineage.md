@@ -90,7 +90,7 @@ Grain: one row per provider taxonomy code.
 | Column | Source | Original column | Rule |
 |---|---|---|---|
 | `bridge_taxonomy_specialty.taxonomy_code` | NUCC taxonomy 26.1 | Code | ten-character taxonomy code |
-| `bridge_taxonomy_specialty.specialty_group` | Hand-built reference (protocol) | mapping built from the NUCC classification | an IQVIA group or OTHER |
+| `bridge_taxonomy_specialty.specialty_group` | Hand-built reference (protocol) | mapping built from the NUCC classification and specialization | an IQVIA group or OTHER; approximate for Sports Medicine, Pain Medicine and Osteopathic Medicine |
 | `bridge_taxonomy_specialty.medicare_name` | Hand-built reference (protocol) | mapping built from the NUCC classification | matching Medicare specialty name, if any |
 
 ## `src_nucc_taxonomy` *(local only)*
@@ -220,7 +220,7 @@ Grain: quarter x billing code.
 | `fact_ext_asp_price.coinsurance_pct` | Part B payment limit (ASP) files (CMS) | Co-insurance Percentage | present only in 2023Q2 onward; otherwise NULL |
 | `fact_ext_asp_price.notes` | Part B payment limit (ASP) files (CMS) | Notes | as is |
 | `fact_ext_asp_price.source_file` | Download manifest | file | file name the row came from |
-| `fact_ext_asp_price.source_release` | Part B payment limit (ASP) files (CMS) | file name | the 'updated MMDDYY' date in the file name or its CSV member name, where present |
+| `fact_ext_asp_price.source_release` | Part B payment limit (ASP) files (CMS) | file name | the 'updated' date in the file name, where present |
 
 ## `fact_ext_openpay_month`
 
@@ -295,7 +295,7 @@ Grain: snapshot x state x primary taxonomy code.
 | `fact_ext_provider_counts.snapshot_date` | NPPES registry, Sept 2026 (CMS) | file name | date of the monthly file (September 2026) |
 | `fact_ext_provider_counts.state_code` | NPPES registry, Sept 2026 (CMS) | Provider Business Practice Location Address State Name | cleaned to a two-letter state (R11); unmapped values are dropped |
 | `fact_ext_provider_counts.taxonomy_code` | NPPES registry, Sept 2026 (CMS) | Healthcare Provider Taxonomy Code_1 | primary taxonomy code as is |
-| `fact_ext_provider_counts.n_individual_providers` | NPPES registry, Sept 2026 (CMS) | Entity Type Code, NPI Deactivation Date | count of individual providers (entity type 1) with no deactivation date |
+| `fact_ext_provider_counts.n_individual_providers` | NPPES registry, Sept 2026 (CMS) | Entity Type Code, NPI Deactivation Date | count of individual providers (entity type 1) with no deactivation date, a taxonomy code and a state that maps to two letters; every excluded row is tallied in the run log |
 
 ## `fact_ext_arthritis_prevalence` *(local only)*
 
@@ -303,10 +303,10 @@ Grain: data year x location x measure x value type (county; local only).
 
 | Column | Source | Original column | Rule |
 |---|---|---|---|
-| `fact_ext_arthritis_prevalence.data_year` | CDC PLACES county data, 2025 release | Year | one data year chosen per measure (R10) |
+| `fact_ext_arthritis_prevalence.data_year` | CDC PLACES county data, 2025 release | Year | latest data year for each location (the arthritis rows hold only 2023) |
 | `fact_ext_arthritis_prevalence.location_id` | CDC PLACES county data, 2025 release | LocationID | county FIPS code |
 | `fact_ext_arthritis_prevalence.measure_id` | CDC PLACES county data, 2025 release | MeasureId | ARTHRITIS only |
-| `fact_ext_arthritis_prevalence.value_type` | CDC PLACES county data, 2025 release | Data_Value_Type | one type chosen (crude or age-adjusted) |
+| `fact_ext_arthritis_prevalence.value_type` | CDC PLACES county data, 2025 release | Data_Value_Type | Age-adjusted prevalence only (approved at step 4c) |
 | `fact_ext_arthritis_prevalence.state_code` | CDC PLACES county data, 2025 release | StateAbbr | as is |
 | `fact_ext_arthritis_prevalence.county_name` | CDC PLACES county data, 2025 release | LocationName | as is |
 | `fact_ext_arthritis_prevalence.prevalence_pct` | CDC PLACES county data, 2025 release | Data_Value | percent of adults; blank becomes NULL |

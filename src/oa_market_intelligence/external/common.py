@@ -90,6 +90,7 @@ def finish_partition(
     rows_read: int,
     where: dict,
     started_at: str,
+    note: str | None = None,
 ) -> int:
     """Write one partition, log the run, and mark the file as loaded. A failure is logged and
     re-raised, and leaves the table as it was (the write is one transaction)."""
@@ -114,6 +115,7 @@ def finish_partition(
         rows_read=rows_read,
         rows_loaded=loaded,
         status="ok",
+        note=note,
         started_at=started_at,
     )
     with engine.begin() as conn:
