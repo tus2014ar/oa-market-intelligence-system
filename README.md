@@ -23,7 +23,7 @@ The project answers four business questions (Assignment 3, §2). Every method an
 | **Q3** | Does adoption vary by specialty; can segments be classified? | Strongly by specialty (eight clearly above or below the market share; stable across time; robust); a simple model estimates a segment's next-month share better than "same as last month", mostly for small segments | High for the pattern; modest for the estimator |
 | **Q4** | How often do predictions match; when should a review flag be raised? | The served classifier matches about 66%; flag at a rolling six-month match rate of 33% or below; a forecast-interval alarm has almost no false alarms but catches only large volatility jumps | Moderate, with stated blind spots |
 
-Plain-language write-ups for the brand manager: [`docs/stakeholder_summary_part1.md`](docs/stakeholder_summary_part1.md) (Q1 and Q3) and [`docs/stakeholder_summary_part2.md`](docs/stakeholder_summary_part2.md) (prediction and monitoring).
+Plain-language write-ups for the brand manager: [`docs/stakeholder_summary_part1.md`](docs/stakeholder_summary_part1.md) (Q1 and Q3) [`docs/stakeholder_summary_part2.md`](docs/stakeholder_summary_part2.md) (prediction and monitoring) and [`docs/stakeholder_summary_part3.md`](docs/stakeholder_summary_part3.md) (what the public data adds: whether independent sources agree, where Zilretta is under-used, what lines up with the 2022 turn).
 
 ## What this system does, and where each piece stands
 
@@ -79,7 +79,8 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 | [`docs/phase4_modeling_plan.md`](docs/phase4_modeling_plan.md) | The Phase 4 plan: methods, models, test protocol and pass/fail rules, fixed before the analyses ran |
 | [`docs/external_data_lineage.md`](docs/external_data_lineage.md) | Every column of the external-data database with its source file, original column and rule |
 | [`docs/external_data_protocol.md`](docs/external_data_protocol.md) | The protocol for the public datasets (CMS, CDC, SEC, FDA): code sets, specialty crosswalk, pass or fail rules, warehouse extension and disclosures, fixed before any analysis |
-| [`docs/stakeholder_summary_part1.md`](docs/stakeholder_summary_part1.md), [`part2`](docs/stakeholder_summary_part2.md) | Plain-language summaries for the brand manager |
+| [`docs/external_data_results.md`](docs/external_data_results.md) | Results of the public-data analyses (E1 to E4): each pre-registered rule, its verdict, the numbers, the limits |
+| [`docs/stakeholder_summary_part1.md`](docs/stakeholder_summary_part1.md), [`part2`](docs/stakeholder_summary_part2.md), [`part3`](docs/stakeholder_summary_part3.md) | Plain-language summaries for the brand manager |
 | [`docs/model_card_segment_share.md`](docs/model_card_segment_share.md) | Segment share model (served: logistic regression): data, results, robustness, limits |
 | [`docs/model_card_share_forecast.md`](docs/model_card_share_forecast.md) | Monthly share forecast (served: "same as last month"), intervals and the monitoring alarm |
 | [`docs/model_card_logistic_regression.md`](docs/model_card_logistic_regression.md) | Direction classifier: logistic regression, random forest and gradient boosting, overfitting and the power statement |
@@ -100,6 +101,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 | [`07_q3_specialty_adoption_and_robustness`](notebooks/07_q3_specialty_adoption_and_robustness.ipynb) | Q3: adjusted shares by specialty, stability, and the robustness re-runs |
 | [`08_segment_share_prediction`](notebooks/08_segment_share_prediction.ipynb) | Segment share prediction: label audit, baselines, models, judging |
 | [`09_forecast_monitoring_and_direction`](notebooks/09_forecast_monitoring_and_direction.ipynb) | Share forecast, Q4 monitoring, Q2 closure and the power statement |
+| [`10_external_raw_data_profile`](notebooks/10_external_raw_data_profile.ipynb), [`11_external_analysis_results`](notebooks/11_external_analysis_results.ipynb) | Public data: raw-file profile (structure only), then the pre-registered analyses E1 to E4. These two run only on the author's machine because the external database is local and git-ignored; their saved outputs are in the files |
 
 ## Status
 
@@ -116,7 +118,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 **What remains:**
 
 1. **Deployment** (needs the owner's accounts and secrets): an Anthropic API key with a spend limit, the Streamlit Community Cloud app, and a domain redirect ([`docs/deployment.md`](docs/deployment.md)). Integration (Step 14) is done: the publish step computes and stores the Phase 4 results, writes the backtest predictions to Gold, and the site and the Claude tools read them.
-2. **Extra data (in progress, DL-57 and DL-59):** the public CMS, CDC, SEC and FDA data is downloaded, profiled and loaded into a separate local database (27 tables, every load reconciled to the raw files), and the protocol with its pass or fail rules is fixed ([`docs/external_data_protocol.md`](docs/external_data_protocol.md)). Remaining: the events and company-revenue tables, then the analyses (a Medicare cross-check of the specialty findings, a state adoption table, and four tested hypotheses about the 2022 turn). The instructor may still provide IQVIA prescription-volume or regional data.
+2. **Extra data (done, DL-57, DL-59, DL-60):** the public CMS, CDC, SEC and FDA data is downloaded, profiled and loaded into a separate local database (27 tables, every load reconciled to the raw files), and the pre-registered analyses have been run ([`docs/external_data_results.md`](docs/external_data_results.md), notebook 11). Headlines: Medicare billing does **not** confirm the IQVIA specialty ranking; company net sales **rose** after 2022 while IQVIA Zilretta visits fell by about half, so the size of the IQVIA decline should not be quoted as a market fact until that gap is understood; a stable state ranking exists (Michigan, Arizona, Florida, Minnesota and Indiana have the most room); promotion fell before the turn but no lag links it to the share. Several tests are weakened or not clean and say so. The instructor may still provide IQVIA prescription-volume or regional data.
 
 Development is local-first: cloud infrastructure (the hosted website) is stood up when the owner is ready. See [`docs/PROPOSAL.md`](docs/PROPOSAL.md) §8 for the course roadmap.
 

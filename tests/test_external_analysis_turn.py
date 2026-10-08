@@ -321,3 +321,14 @@ def test_quarterly_sales_uses_quarter_rows_only_and_compares_with_the_year_befor
     assert list(out.index) == ["2020Q1", "2021Q1"]
     assert pd.isna(out.loc["2020Q1", "yoy_sales_change"])
     assert out.loc["2021Q1", "yoy_sales_change"] == pytest.approx(0.2)
+
+
+def test_h4_also_reports_how_many_single_months_have_all_three_categories_down():
+    names = ["branded_injectable_visits", "generic_corticosteroid_visits", "nsaid_otc_visits"]
+    frame = _visits(dict.fromkeys(names, 0.2))
+    out = h4_result(frame)
+    assert out["months_all_below"] == 5 and out["n_months"] == 5
+    # one weak month: the pooled reading still passes, the month-by-month reading does not
+    frame.loc[frame["month_id"] == 202407, "nsaid_otc_visits"] = 980.0
+    out = h4_result(frame)
+    assert out["verdict"] == "supported" and out["months_all_below"] == 4

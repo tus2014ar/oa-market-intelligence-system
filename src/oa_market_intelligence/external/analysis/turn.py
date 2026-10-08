@@ -197,7 +197,21 @@ def h4_result(visits: pd.DataFrame) -> dict:
     now, before = window(config.H4_YEAR), window(config.H4_BASE_YEAR)
     changes = {name: float(now[name].sum() / before[name].sum() - 1) for name in H4_CATEGORIES}
     met = all(_at_least(-config.H4_DROP, change) for change in changes.values())
-    return {"verdict": "supported" if met else "not_supported", "changes": changes}
+    # the protocol does not say whether the five months are pooled or taken one by one; the
+    # pooled reading gives the verdict, the month-by-month reading is reported next to it
+    paired = (
+        now.set_index(now["month_id"] % 100)[list(H4_CATEGORIES)]
+        / before.set_index(before["month_id"] % 100)[list(H4_CATEGORIES)]
+        - 1
+    )
+    monthly_met = paired.apply(lambda row: all(_at_least(-config.H4_DROP, v) for v in row), axis=1)
+    return {
+        "verdict": "supported" if met else "not_supported",
+        "changes": changes,
+        "monthly_changes": paired,
+        "months_all_below": int(monthly_met.sum()),
+        "n_months": int(len(paired)),
+    }
 
 
 # ---------------------------------------------------------------- E2b company sales
