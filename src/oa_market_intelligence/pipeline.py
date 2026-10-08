@@ -37,9 +37,20 @@ import time
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import Engine, create_engine
+from sqlalchemy import Engine, create_engine, text
 
 from oa_market_intelligence.availability import AVAILABILITY_CSV, refresh_source_availability
+from oa_market_intelligence.external.export import DEFAULT_SUBSET
+from oa_market_intelligence.ingestion.audit import (
+    build_ingest_audit,
+    refresh_bronze_ingest_files,
+)
+from oa_market_intelligence.ingestion.files import (
+    OA_PIVOT_FILE,
+    OA_REFERENCE_FILE,
+    RA_PIVOT_FILE,
+    RA_REFERENCE_FILE,
+)
 from oa_market_intelligence.ingestion.nmta_loader import parse_pivot_sheet
 from oa_market_intelligence.ingestion.openfda_client import earliest_approval_date
 from oa_market_intelligence.ingestion.place_of_service_loader import parse_place_of_service
@@ -48,6 +59,16 @@ from oa_market_intelligence.ingestion.validation import (
     validate_nmta_visits,
     validate_place_of_service,
     validate_reference_table,
+)
+from oa_market_intelligence.mart import MANIFEST_JSON, build_mart, load_manifest_rows
+from oa_market_intelligence.quality import (
+    BASELINE_JSON,
+    load_baseline,
+    raise_on_errors,
+    refresh_dq_report,
+    revision_check,
+    run_quality_checks,
+    summarise_quality,
 )
 from oa_market_intelligence.warehouse.build_gold import build_gold
 from oa_market_intelligence.warehouse.build_silver import FdaLookupFn, build_silver
@@ -60,10 +81,6 @@ DEFAULT_RAW_DIR = REPO_ROOT / "data" / "raw"
 DEFAULT_REFERENCE_DIR = REPO_ROOT / "data" / "reference"
 DEFAULT_DB_PATH = REPO_ROOT / "data" / "processed" / "warehouse.db"
 
-OA_PIVOT_FILE = "Team1_M15_19_OA.xlsx"
-RA_PIVOT_FILE = "Team1_M04_RA.xlsx"
-OA_REFERENCE_FILE = "Branded Generic - OA.xlsx"
-RA_REFERENCE_FILE = "Branded Generic - RA.xlsx"
 TAXONOMY_FILE = "product_taxonomy.csv"
 
 
@@ -121,12 +138,33 @@ def _make_engine(db_path: Path) -> Engine:
     return create_engine(f"sqlite:///{db_path.resolve().as_posix()}")
 
 
+def _monthly_gold(path: Path | None = None, *, engine: Engine | None = None) -> pd.DataFrame | None:
+    """The monthly Gold table of a database file (the previous published one) or of an engine;
+    None when there is no readable file."""
+    columns = "month_id, branded_injectable_visits, generic_corticosteroid_visits, nsaid_otc_visits"
+    own = None
+    try:
+        if engine is None:
+            if path is None or not Path(path).exists():
+                return None
+            own = engine = create_engine(f"sqlite:///{Path(path).resolve().as_posix()}")
+        with engine.connect() as conn:
+            return pd.read_sql(text(f"SELECT {columns} FROM gold_visit_share_monthly"), conn)
+    except Exception:  # noqa: BLE001 - an unreadable old file must not block a good rebuild
+        logger.warning("Could not read the previous database; skipping the restatement check.")
+        return None
+    finally:
+        if own is not None:
+            own.dispose()
+
+
 def run_pipeline(
     *,
     raw_dir: Path = DEFAULT_RAW_DIR,
     reference_dir: Path = DEFAULT_REFERENCE_DIR,
     db_path: Path = DEFAULT_DB_PATH,
     fetch_approval_date: FdaLookupFn = earliest_approval_date,
+    previous_db: Path | None = None,
 ) -> dict:
     """Runs the pipeline against `db_path`, always releasing the database file afterwards
     (on Windows an open handle would stop the publish step from moving it into place)."""
@@ -138,6 +176,7 @@ def run_pipeline(
             reference_dir=reference_dir,
             db_path=db_path,
             fetch_approval_date=fetch_approval_date,
+            previous_db=previous_db,
         )
     finally:
         engine.dispose()
@@ -150,6 +189,7 @@ def _run_pipeline(
     reference_dir: Path,
     db_path: Path,
     fetch_approval_date: FdaLookupFn,
+    previous_db: Path | None = None,
 ) -> dict:
     """Runs ingest -> validate -> Silver build -> Gold build against `db_path`,
     creating the schema first if it doesn't already exist (safe to call every run -
@@ -159,8 +199,14 @@ def _run_pipeline(
     start = time.monotonic()
 
     visits, place_of_service, reference = ingest(raw_dir)
+    audit_rows = build_ingest_audit(raw_dir, visits, place_of_service, reference)
     visits, place_of_service, reference = validate(visits, place_of_service, reference)
     taxonomy = pd.read_csv(reference_dir / TAXONOMY_FILE)
+
+    baseline_json = reference_dir / "iqvia_baseline.json"
+    baseline = load_baseline(baseline_json if baseline_json.exists() else BASELINE_JSON)
+    quality_report = run_quality_checks(visits, place_of_service, reference, baseline)
+    raise_on_errors(quality_report)  # a gap in the months or a missing disease area stops the run
 
     logger.info("Creating schema (if not already present) at %s...", db_path)
     create_schema(engine)
@@ -168,6 +214,7 @@ def _run_pipeline(
     refresh_source_availability(
         engine, availability_csv if availability_csv.exists() else AVAILABILITY_CSV
     )
+    refresh_bronze_ingest_files(engine, audit_rows)
 
     logger.info("Building Silver tables...")
     silver_summary = build_silver(
@@ -191,9 +238,28 @@ def _run_pipeline(
 
     logger.info("Building Gold tables...")
     gold_summary = build_gold(engine)
+    quality_report.append(revision_check(_monthly_gold(previous_db), _monthly_gold(engine=engine)))
+    refresh_dq_report(engine, quality_report)
+    mart_summary = build_mart(
+        engine, DEFAULT_SUBSET, load_manifest_rows(MANIFEST_JSON) if MANIFEST_JSON.exists() else []
+    )
+    quality = summarise_quality(quality_report)
+    if quality["n_warnings"]:
+        logger.warning("Data-quality warnings: %s", quality["warnings"])
 
     elapsed = time.monotonic() - start
-    summary = {"silver": silver_summary, "gold": gold_summary, "elapsed_seconds": elapsed}
+    ingest_files = [
+        {key: row[key] for key in ("file_name", "role", "sha256", "size_bytes", "rows_parsed")}
+        for row in audit_rows
+    ]
+    summary = {
+        "silver": silver_summary,
+        "gold": gold_summary,
+        "ingest_files": ingest_files,
+        "quality": quality,
+        "mart": mart_summary,
+        "elapsed_seconds": elapsed,
+    }
     logger.info("Pipeline run complete in %.1fs: %s", elapsed, summary)
     return summary
 

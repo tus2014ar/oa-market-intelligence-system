@@ -219,6 +219,78 @@ dim_source_availability = Table(
     CheckConstraint("release_month IS NULL OR release_month BETWEEN 1 AND 12", name="ck_dsa_month"),
 )
 
+# What was ingested from the raw IQVIA extracts in the latest run (ingestion/audit.py): one row per
+# parsed output of each raw file. The publish run log keeps the history.
+bronze_ingest_files = Table(
+    "bronze_ingest_files",
+    metadata,
+    Column("file_name", Text, nullable=False),
+    Column("role", Text, nullable=False),
+    Column("disease_area", Text, nullable=False),
+    Column("sha256", Text, nullable=False),
+    Column("size_bytes", Integer, nullable=False),
+    Column("rows_parsed", Integer, nullable=False),
+    Column("first_month", Integer),
+    Column("last_month", Integer),
+    Column("n_months", Integer),
+    Column("visits_sum", Integer, nullable=False),
+    Column("parser_checks", Text, nullable=False),
+    Column("ingested_at", Text, nullable=False),
+    PrimaryKeyConstraint("file_name", "role"),
+    CheckConstraint(
+        "role IN ('nmta_pivot','place_of_service','reference_table')", name="ck_bif_role"
+    ),
+    CheckConstraint("disease_area IN ('OA','RA')", name="ck_bif_disease_area"),
+    CheckConstraint("rows_parsed >= 0", name="ck_bif_rows"),
+)
+
+# The data-quality checks of the latest run (quality.py): errors stop the run, warnings are
+# recorded.
+dq_report = Table(
+    "dq_report",
+    metadata,
+    Column("check_id", Text, primary_key=True),
+    Column("severity", Text, nullable=False),
+    Column("status", Text, nullable=False),
+    Column("observed", Text),
+    Column("expected", Text),
+    Column("note", Text),
+    Column("checked_at", Text, nullable=False),
+    CheckConstraint("severity IN ('error','warning')", name="ck_dq_severity"),
+    CheckConstraint("status IN ('pass','fail','skipped')", name="ck_dq_status"),
+)
+
+# The ML-ready layer (mart.py): every usable outside series with the month it became known, and what
+# was known as of each IQVIA month. `specialty_group` is '' for a series with no specialty.
+mart_signal = Table(
+    "mart_signal",
+    metadata,
+    Column("signal_id", Text, nullable=False),
+    Column("source_id", Text, nullable=False),
+    Column("specialty_group", Text, nullable=False),
+    Column("grain", Text, nullable=False),
+    Column("period_start_month", Integer, nullable=False),
+    Column("period_end_month", Integer, nullable=False),
+    Column("value", Float, nullable=False),
+    Column("available_from_month", Integer, nullable=False),
+    PrimaryKeyConstraint("signal_id", "specialty_group", "period_end_month"),
+)
+
+mart_signal_asof = Table(
+    "mart_signal_asof",
+    metadata,
+    Column("month_id", Integer, nullable=False),
+    Column("as_of_month", Integer, nullable=False),
+    Column("signal_id", Text, nullable=False),
+    Column("specialty_group", Text, nullable=False),
+    Column("value", Float, nullable=False),
+    Column("period_end_month", Integer, nullable=False),
+    Column("available_from_month", Integer, nullable=False),
+    Column("age_months", Integer, nullable=False),
+    PrimaryKeyConstraint("month_id", "signal_id", "specialty_group"),
+    CheckConstraint("available_from_month <= as_of_month", name="ck_mart_asof_known"),
+)
+
 
 def create_schema(engine: Engine) -> None:
     """Create every Silver table that doesn't already exist. Never drops or alters one

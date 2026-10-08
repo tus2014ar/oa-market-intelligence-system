@@ -33,6 +33,10 @@ IQVIA_TABLES = {
     "gold_visit_share_monthly",
     "gold_segment_adoption",
     "dim_source_availability",
+    "bronze_ingest_files",
+    "dq_report",
+    "mart_signal",
+    "mart_signal_asof",
 }
 
 

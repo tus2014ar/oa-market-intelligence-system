@@ -61,3 +61,22 @@ def test_a_missing_or_empty_log_is_said_plainly(tmp_path):
     empty = tmp_path / "empty.jsonl"
     empty.write_text("\n", encoding="utf-8")
     assert summarise(empty) == "No run log was written."
+
+
+def test_the_input_extracts_are_listed_once_each_with_a_hash_prefix(tmp_path):
+    files = [
+        {
+            "file_name": "Team1_M15_19_OA.xlsx",
+            "role": "nmta_pivot",
+            "sha256": "abcdef0123456789" * 4,
+        },
+        {
+            "file_name": "Team1_M15_19_OA.xlsx",
+            "role": "place_of_service",
+            "sha256": "abcdef0123456789" * 4,
+        },
+        {"file_name": "Team1_M04_RA.xlsx", "role": "nmta_pivot", "sha256": "0123456789abcdef" * 4},
+    ]
+    text = summarise(_log(tmp_path, {"status": "ok", "n_months": 72, "ingest_files": files}))
+    assert text.count("Team1_M15_19_OA.xlsx") == 1
+    assert "abcdef012345" in text and "012345678" in text

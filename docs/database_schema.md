@@ -293,3 +293,70 @@ The six `gold_ext_*` tables are filled by `PYTHONPATH=src python -m oa_market_in
 The rule is applied by `oa_market_intelligence.availability.available_from_month(rule, period_end_month, record_date=None)`, which returns the first month (YYYYMM) a value could have been known, and `is_available(rule, period, as_of_month=...)`. Tests keep the documented claims true against the committed download manifest (for example, every Part B and Part D file name says release year = data year + 2) and check that every table a model could read is covered by a source row.
 
 **What it shows.** Medicare provider files are known about two years after the data year, Open Payments in June of the next year (and the files we hold include later corrections), the registry only from its September 2026 snapshot, and company filings and events on their own dates. For IQVIA, if the assumed lag of about 40 days holds (PROPOSAL 19.1), month *t* is known around the 10th of month *t*+2, so a forecast of month *t* made from data through *t*-1 is made after month *t* has ended. The evaluation is unchanged (it predicts month *t* from data through *t*-1); what changes is what "next month" means to a reader.
+
+## 9. IQVIA ingest audit (R5)
+
+`bronze_ingest_files` records what was ingested from the raw IQVIA extracts in the latest pipeline run: one row per parsed output of each raw file (six rows: the OA and RA pivot, the OA and RA place-of-service sheets, the OA and RA reference tables). It is replaced on every run; the history lives in the publish run log (`data/published/run_log.jsonl`), whose entries carry the same file hashes, so any published database can be traced to the exact extracts that produced it.
+
+| Column | Meaning |
+|---|---|
+| `file_name`, `role` (key) | The raw file and what was parsed from it: `nmta_pivot`, `place_of_service` or `reference_table`. A workbook appears under two roles. |
+| `disease_area` | OA or RA. |
+| `sha256`, `size_bytes` | The file's content hash and size. |
+| `rows_parsed`, `first_month`, `last_month`, `n_months` | Rows the parser produced and the month span (YYYYMM; blank for the reference tables, which have no months). |
+| `visits_sum` | The sum of `patient_visits` over the parsed rows. It is **not** a Grand Total: visits are distinct counts, so rows overlap (the pivot's Grand Total is reconciled by the parser itself). Useful for spotting a changed extract between runs. |
+| `parser_checks` | Which checks the parser had already passed before the row was recorded (Grand Total reconciliation, manufacturer subtotals, known place-of-service labels...). |
+| `ingested_at` | UTC time of the run. |
+
+The run log entry for a successful publish carries `ingest_files` (file, role, SHA-256, size, rows parsed), and the monthly job summary lists each extract with a hash prefix. Tests check the real run: six rows, hashes equal to the real files' hashes, row counts equal to `ingest`'s.
+
+## 10. Data-quality report (R3)
+
+`dq_report` holds the data-quality checks of the latest pipeline run (one row per check: `check_id`, `severity`, `status`, `observed`, `expected`, `note`, `checked_at`). The checks (`src/oa_market_intelligence/quality.py`) run after the per-row validation and before anything is built, and look at the extract as a whole:
+
+| Check | Severity | What it asks |
+|---|---|---|
+| `month_continuity` | **error** | Are the months consecutive from the first to the last, with none missing? |
+| `disease_areas_present` | **error** | Are OA and RA both in the visits and in the reference table? |
+| `new_specialties`, `new_products`, `new_age_bands`, `new_genders`, `new_place_of_service` | warning | Is every category already in the baseline? New ones are named. |
+| `visits_per_month_in_range`, `rows_per_month_in_range` | warning | Is each month's volume between 0.5 times the lowest and 1.5 times the highest month in the baseline, per disease area? |
+| `pos_months_match_visit_months` | warning | Do the place-of-service and visit extracts cover the same months? |
+| `history_restated` | warning | After the Gold build: did any month's branded, generic or NSAID visits move by more than 0.5% since the previous published database? New months are not a restatement. |
+
+**Policy.** An error stops the run before the database is built, so the last good published database stays live. A warning is recorded in the table, in the publish run log (`quality`: counts and the warning notes) and in the monthly job summary, and the run goes on. A check that cannot run (no baseline, no previous database) is `skipped`, never `pass`.
+
+**The baseline** `data/reference/iqvia_baseline.json` holds the categories and the monthly ranges of the extracts profiled so far (generated from the real extracts, 201908 to 202507: 50 specialties, 158 products, 10 age bands, 3 genders, 4 places of service). Regenerate it on purpose with `python -m oa_market_intelligence.quality --write-baseline`; a changed baseline is a visible diff in review. The tolerances (0.5, 1.5 and 0.5%) are in that file and are judgement calls, not tuned to results. Real run on the committed extracts: all 11 checks pass or are skipped.
+
+## 11. The ML-ready layer (R2)
+
+Two tables, built on every pipeline run from the committed public subset (`data/published/external_subset.db`, exported by `python -m oa_market_intelligence.external.export`) and the availability rules of R1 (`dim_source_availability`). A fresh clone needs neither the raw files nor the local external database.
+
+| Table | Grain | What it holds |
+|---|---|---|
+| `mart_signal` | series x specialty group x period | Every usable outside value with `period_start_month`, `period_end_month`, `value` and **`available_from_month`**, the first month it could have been known. `specialty_group` is empty for a series with no specialty. |
+| `mart_signal_asof` | IQVIA month x series x specialty group | For each IQVIA month *t*, the latest value of each series known as of the end of month *t*-1 (the rule the IQVIA features already follow), with `as_of_month`, the source period, when it became known and its age in months (negative when a value was known ahead of its period, such as a price schedule). A table constraint refuses a row known after its as-of month. |
+
+**Series (12):** ASP price (J3304 and J3301 limits per mg, and their ratio), Open Payments promotion (physicians paid, practitioners paid, total amount, records), company net sales (known on the filing date of the cited 10-Q or 10-K), events per month, and Medicare adoption by specialty group (adoption rate, visible providers, Zilretta providers).
+
+**A model reads `mart_signal_asof`, never `mart_signal`.** `mart.wide()` gives one row per month and one column per series (`signal` or `signal|specialty group`) for modelling. `leakage_violations` is the test: no row may have been known after its as-of month. The pipeline refuses a build that fails it, and the tests include a planted future value that must be caught.
+
+**Left out on purpose:** anything computed from IQVIA's own visits (the IQVIA share in the promotion table, IQVIA's adjusted share in the specialty table, the sales-versus-visits table), because it would put the target into the inputs; the pooled 2020 to 2024 Medicare rate, which needs 2024 data; state-level results, which have no key to join to IQVIA; and the NPI-level data.
+
+**What the real build shows (72 IQVIA months, 1,603 as-of rows, no violations):**
+
+| Series | Months with a value known | Average age of that value |
+|---|---|---|
+| ASP price | 72 of 72 | known a month ahead |
+| Company net sales | 72 of 72 | 3 months |
+| Events | 72 of 72 | 8.6 months |
+| Open Payments promotion | 61 of 72 | 11.4 months |
+| Medicare adoption by specialty | 31 of 72 | 28.9 months |
+
+So only price and company sales are fresh enough to be useful month by month; promotion and Medicare adoption would be heavily lagged features, absent for the first part of the series.
+
+## 12. Golden regression (R4)
+
+`tests/golden/warehouse_golden.json` holds, for each of 11 tables of the warehouse built from the real extracts (the dimensions, the two facts, the two Gold tables, `dim_source_availability` and the two mart tables), the row count, the sum of every numeric column and a content hash (SHA-256 of a canonical CSV: rows sorted, floats to 6 significant digits). `tests/test_golden.py` rebuilds the warehouse and compares: any difference names the table and what moved (rows, a column's sum, or "content differs"). Timestamped tables (`bronze_ingest_files`, `dq_report`) are not snapshotted, and the approval-date lookup is the fixed one (no network).
+
+An **intended** change is accepted on purpose: `PYTHONPATH=src python -m oa_market_intelligence.golden --update` rewrites the file and the diff is reviewed in the pull request, so a change to the data or the tables is never silent. Float noise below 1e-6 (relative) is not a change.
+

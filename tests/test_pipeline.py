@@ -8,6 +8,7 @@ database (every earlier test used `sqlite:///:memory:`), and the CLI argument
 parsing.
 """
 
+import hashlib
 from datetime import date
 
 import pytest
@@ -84,6 +85,29 @@ def test_run_pipeline_writes_a_real_sqlite_file_with_expected_tables(tmp_path, c
         product_count = conn.execute(text("SELECT COUNT(*) FROM dim_product")).scalar()
     assert branded_total == 135_119
     assert product_count == 160
+
+    # the ingest audit (R5): six rows, hashes equal to the real files', counts equal to ingest's
+    with engine.connect() as conn:
+        audit = conn.execute(
+            text("SELECT file_name, role, sha256, size_bytes, rows_parsed FROM bronze_ingest_files")
+        ).all()
+    assert len(audit) == 6
+    by_key = {(row[0], row[1]): row for row in audit}
+    for (name, _role), row in by_key.items():
+        real = DEFAULT_RAW_DIR / name
+        assert row[2] == hashlib.sha256(real.read_bytes()).hexdigest()
+        assert row[3] == real.stat().st_size
+    assert by_key[("Team1_M15_19_OA.xlsx", "nmta_pivot")][4] == 240_773
+    assert by_key[("Team1_M04_RA.xlsx", "nmta_pivot")][4] == 1_021
+    assert by_key[("Branded Generic - OA.xlsx", "reference_table")][4] == 834
+    assert summary["ingest_files"][0].keys() >= {"file_name", "role", "sha256", "rows_parsed"}
+
+    # the data-quality stage (R3): every check recorded, none failing on the real extracts
+    with engine.connect() as conn:
+        statuses = dict(conn.execute(text("SELECT check_id, status FROM dq_report")).all())
+    assert len(statuses) == 11 and "fail" not in statuses.values()
+    assert statuses["history_restated"] == "skipped"  # no previous database in this run
+    assert summary["quality"]["n_errors"] == 0 and summary["quality"]["n_warnings"] == 0
 
 
 def test_run_pipeline_is_safe_to_rerun_against_an_existing_db_file(tmp_path, cached_ingest):
