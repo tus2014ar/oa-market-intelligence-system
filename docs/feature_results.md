@@ -40,4 +40,4 @@ With the early-2024 dip months removed from scoring (the COVID months precede th
 - FA4 and FB1 were chosen after seeing the EDA; they are labelled not a clean test.
 - The combined-model test is conditional and does not exactly control the family-wise error rate (stated in the plan).
 - Task B robustness has two scenarios (main and dip removed); the COVID scenario is not applicable. This was an implementation choice and is stated here, not hidden.
-- The pass rule is a significance rule; the plan set no minimum effect size, so "passes" and "worth using" are different questions. The second is answered in the decision log entry, not here.
+- The pass rule is a significance rule; the plan set no minimum effect size, so "passes" and "worth using" are different questions. The second is answered in DL-72: serving stays unchanged. Notebook: [14](../notebooks/14_feature_families_test.ipynb).

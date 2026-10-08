@@ -106,6 +106,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 | [`09_forecast_monitoring_and_direction`](notebooks/09_forecast_monitoring_and_direction.ipynb) | Share forecast, Q4 monitoring, Q2 closure and the power statement |
 | [`10_external_raw_data_profile`](notebooks/10_external_raw_data_profile.ipynb), [`11_external_analysis_results`](notebooks/11_external_analysis_results.ipynb), [`12_gap_diagnosis`](notebooks/12_gap_diagnosis.ipynb) | Public data: raw-file profile (structure only), the pre-registered analyses E1 to E4, then the sales-versus-visits gap diagnosis.
 | [`13_eda_unified_data`](notebooks/13_eda_unified_data.ipynb) | Descriptive EDA of the unified data before feature engineering: the share series, seasonality and persistence, the segment panel, the outside series on their availability dates, and E6 (Zilretta against the hyaluronic injectables in Medicare). Runs from committed files only. | These two run only on the author's machine because the external database is local and git-ignored; their saved outputs are in the files |
+| [`14_feature_families_test`](notebooks/14_feature_families_test.ipynb) | The pre-registered test of seven candidate feature families (DL-71): the stored result read back, effect sizes and robustness runs. Two families pass by the rule at about 0.06% of log-loss, the outside data and the national forecast do not improve, and the serving models stay unchanged (DL-72). |
 
 ## Status
 
