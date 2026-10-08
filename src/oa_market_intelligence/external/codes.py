@@ -117,3 +117,38 @@ def classify_partd_drug(generic_name: str) -> str | None:
     if name in PARTD_ORAL_STEROID_GENERICS:
         return "oral_steroid"
     return None
+
+
+# Open Payments product names (profiling found many spellings per product). Ordered patterns, each
+# giving one canonical name; anything matching none of them (the generic "hyaluronic acid other"
+# bucket, an eye-surgery mix, Kenalog, which never appears) is not an approved product.
+OPENPAY_PRODUCT_PATTERNS: tuple[tuple[str, str], ...] = (
+    (r"zilretta", "Zilretta"),
+    (r"durolane", "Durolane"),
+    (r"euflexxa", "Euflexxa"),
+    (r"gelsyn", "Gelsyn-3"),
+    (r"genvisc", "GenVisc 850"),
+    (r"gel-?\s?one", "Gel-One"),
+    (r"hyalgan", "Hyalgan"),
+    (r"hymovis", "Hymovis"),
+    (r"monovisc", "Monovisc"),
+    (r"orthovisc", "Orthovisc"),
+    (r"supartz", "Supartz FX"),
+    (r"synvisc", "Synvisc"),
+    (r"triluron", "Triluron"),
+    (r"trivisc", "Trivisc"),
+    (r"visco-?3", "Visco-3"),
+)
+OPENPAY_APPROVED_PRODUCTS: tuple[str, ...] = tuple(name for _, name in OPENPAY_PRODUCT_PATTERNS)
+OPENPAY_WATCH_PATTERN = "|".join([p for p, _ in OPENPAY_PRODUCT_PATTERNS] + [r"hyaluron"])
+
+
+def normalise_openpay_product(raw: str) -> str | None:
+    """The canonical product for an Open Payments product name, or None if not an approved one."""
+    import re
+
+    name = raw.strip().lower()
+    for pattern, canonical in OPENPAY_PRODUCT_PATTERNS:
+        if re.search(pattern, name):
+            return canonical
+    return None

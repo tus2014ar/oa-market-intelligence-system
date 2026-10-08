@@ -220,7 +220,7 @@ Grain: quarter x billing code.
 | `fact_ext_asp_price.coinsurance_pct` | Part B payment limit (ASP) files (CMS) | Co-insurance Percentage | present only in 2023Q2 onward; otherwise NULL |
 | `fact_ext_asp_price.notes` | Part B payment limit (ASP) files (CMS) | Notes | as is |
 | `fact_ext_asp_price.source_file` | Download manifest | file | file name the row came from |
-| `fact_ext_asp_price.source_release` | Part B payment limit (ASP) files (CMS) | file name | the 'updated MMDDYY' date in the file name or its CSV member name, where present |
+| `fact_ext_asp_price.source_release` | Part B payment limit (ASP) files (CMS) | file name | the 'updated' date in the file name, where present |
 
 ## `fact_ext_openpay_month`
 
@@ -235,7 +235,7 @@ Grain: month x product x recipient type.
 | `fact_ext_openpay_month.n_distinct_recipients` | Open Payments general payments (CMS) | Covered_Recipient_NPI | distinct recipients with at least one payment in the month |
 | `fact_ext_openpay_month.total_amount_usd` | Open Payments general payments (CMS) | Total_Amount_of_Payment_USDollars | sum of dollars |
 | `fact_ext_openpay_month.n_payments_counted` | Open Payments general payments (CMS) | Number_of_Payments_Included_in_Total_Amount | sum; zero-count records are flagged |
-| `fact_ext_openpay_month.n_excluded_records` | Open Payments general payments (CMS) | Date_of_Payment, Program_Year | records dropped by rule R8 (date outside its program year, for example year 0002) |
+| `fact_ext_openpay_month.n_flagged_records` | Open Payments general payments (CMS) | Total_Amount_of_Payment_USDollars, Number_of_Payments_Included_in_Total_Amount | records kept but flagged: zero dollars or zero payments counted (R8). Records dated outside their program year (for example year 0002) are dropped and tallied in the run log |
 
 ## `fact_ext_openpay_nature`
 
@@ -304,7 +304,7 @@ Grain: data year x location x measure x value type (county; local only).
 | Column | Source | Original column | Rule |
 |---|---|---|---|
 | `fact_ext_arthritis_prevalence.data_year` | CDC PLACES county data, 2025 release | Year | latest data year for each location (the arthritis rows hold only 2023) |
-| `fact_ext_arthritis_prevalence.location_id` | CDC PLACES county data, 2025 release | LocationID | county FIPS code |
+| `fact_ext_arthritis_prevalence.location_id` | CDC PLACES county data, 2025 release | LocationID | county FIPS code; the national summary row (state US) is dropped |
 | `fact_ext_arthritis_prevalence.measure_id` | CDC PLACES county data, 2025 release | MeasureId | ARTHRITIS only |
 | `fact_ext_arthritis_prevalence.value_type` | CDC PLACES county data, 2025 release | Data_Value_Type | Age-adjusted prevalence only (approved at step 4c) |
 | `fact_ext_arthritis_prevalence.state_code` | CDC PLACES county data, 2025 release | StateAbbr | as is |
@@ -363,7 +363,7 @@ Grain: month (H1).
 | `gold_ext_promotion_monthly.n_practitioners_paid` | fact_ext_openpay_month | n_distinct_recipients | non-physician practitioners, sensitivity |
 | `gold_ext_promotion_monthly.total_amount_usd` | fact_ext_openpay_month | total_amount_usd | all recipient types |
 | `gold_ext_promotion_monthly.n_records` | fact_ext_openpay_month | n_records | all recipient types |
-| `gold_ext_promotion_monthly.n_excluded_records` | fact_ext_openpay_month | n_excluded_records | records dropped by R8 |
+| `gold_ext_promotion_monthly.n_flagged_records` | fact_ext_openpay_month | n_flagged_records | records kept but flagged by R8 |
 | `gold_ext_promotion_monthly.iqvia_share_pct` | IQVIA warehouse | gold_visit_share_monthly | monthly Zilretta share in percent |
 
 ## `gold_ext_price_quarterly`

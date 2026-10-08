@@ -419,6 +419,28 @@ def test_places_keeps_arthritis_age_adjusted_prevalence_and_the_latest_year_per_
     assert harris["ci_low_pct"] == pytest.approx(19.1) and harris["total_population"] == 4700000
 
 
+def test_the_national_summary_row_is_not_loaded_as_a_county():
+    rows = [
+        *PL_ROWS,
+        [
+            "2023",
+            "US",
+            "",
+            "Age-adjusted prevalence",
+            "21.9",
+            "21.0",
+            "22.8",
+            "330000000",
+            "59",
+            "ARTHRITIS",
+            "",
+        ],
+    ]
+    out = clean_places(pd.DataFrame(rows, columns=PL_COLUMNS))
+    assert "59" not in set(out["location_id"]) and "US" not in set(out["state_code"])
+    assert len(out) == 3
+
+
 def test_places_loads_from_its_file(tmp_path, engine):
     folder = tmp_path / "CDC PLACES"
     folder.mkdir()

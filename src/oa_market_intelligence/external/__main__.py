@@ -22,6 +22,7 @@ from oa_market_intelligence.external.loaders.asp import load_asp
 from oa_market_intelligence.external.loaders.geovar import load_geovar
 from oa_market_intelligence.external.loaders.nppes import load_nppes
 from oa_market_intelligence.external.loaders.nucc import load_nucc
+from oa_market_intelligence.external.loaders.openpay import load_openpay
 from oa_market_intelligence.external.loaders.partb_geo import load_partb_geo
 from oa_market_intelligence.external.loaders.partb_provider import load_partb_provider
 from oa_market_intelligence.external.loaders.partd_geo import load_partd_geo
@@ -43,6 +44,7 @@ SOURCES = (
     "places",
     "partb_provider",
     "nppes",
+    "openpay",
 )
 DESCRIPTIONS_CSV = REFERENCE_DIR / "external_profile" / "partb_geo_code_descriptions.csv"
 DEFAULT_WAREHOUSE = REFERENCE_DIR.parent / "published" / "warehouse.db"
@@ -55,6 +57,17 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--warehouse", type=Path, default=DEFAULT_WAREHOUSE)
     parser.add_argument("--only", nargs="*", choices=SOURCES, default=list(SOURCES))
     parser.add_argument("--verify", action="store_true", help="run the reconciliation checks")
+    parser.add_argument(
+        "--check-only",
+        action="store_true",
+        help="load nothing; run the reconciliation checks for every source",
+    )
+    parser.add_argument(
+        "--rebuild",
+        action="store_true",
+        help="delete the external database first (needed after a schema change; every table "
+        "is rebuilt from the raw files)",
+    )
     return parser.parse_args(argv)
 
 
@@ -68,8 +81,14 @@ def _product_names(warehouse: Path) -> list[str]:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
+    if args.check_only:
+        args.verify, loading = True, []
+    else:
+        loading = args.only
+    if args.rebuild and args.external_db.exists():
+        args.external_db.unlink()
     engine = open_external_engine(args.external_db)
-    if "reference" in args.only:
+    if "reference" in loading:
         counts = load_reference(
             engine,
             raw_root=args.raw,
@@ -86,15 +105,18 @@ def main(argv: list[str] | None = None) -> int:
         ("places", load_places),
         ("partb_provider", load_partb_provider),
         ("nppes", load_nppes),
+        ("openpay", load_openpay),
     ):
-        if name in args.only:
+        if name in loading:
             result = loader(engine, args.raw)
             total = sum(result.values()) if isinstance(result, dict) else result
             print(f"{name}: {total} rows loaded")
     failed = 0
     if args.verify:
         small = [s for s in args.only if s in ("partb_geo", "partd_geo", "asp", "geovar")]
-        provider = [s for s in args.only if s in ("nucc", "places", "partb_provider", "nppes")]
+        provider = [
+            s for s in args.only if s in ("nucc", "places", "partb_provider", "nppes", "openpay")
+        ]
         checks = (
             verify_reference(engine, args.raw)
             + verify_small_sources(engine, args.raw, small)

@@ -260,7 +260,7 @@ fact_ext_openpay_month = _table(
     Column("n_distinct_recipients", Integer, nullable=False),
     Column("total_amount_usd", Float, nullable=False),
     Column("n_payments_counted", Integer),
-    Column("n_excluded_records", Integer, nullable=False),
+    Column("n_flagged_records", Integer, nullable=False),
     CheckConstraint(_in("recipient_type", RECIPIENT_TYPES), name="ck_openpay_month_recipient"),
 )
 
@@ -378,7 +378,7 @@ gold_ext_promotion_monthly = _table(
     Column("n_practitioners_paid", Integer),
     Column("total_amount_usd", Float),
     Column("n_records", Integer),
-    Column("n_excluded_records", Integer),
+    Column("n_flagged_records", Integer),
     Column("iqvia_share_pct", Float),
 )
 
