@@ -327,3 +327,30 @@ The run log entry for a successful publish carries `ingest_files` (file, role, S
 
 **The baseline** `data/reference/iqvia_baseline.json` holds the categories and the monthly ranges of the extracts profiled so far (generated from the real extracts, 201908 to 202507: 50 specialties, 158 products, 10 age bands, 3 genders, 4 places of service). Regenerate it on purpose with `python -m oa_market_intelligence.quality --write-baseline`; a changed baseline is a visible diff in review. The tolerances (0.5, 1.5 and 0.5%) are in that file and are judgement calls, not tuned to results. Real run on the committed extracts: all 11 checks pass or are skipped.
 
+## 11. The ML-ready layer (R2)
+
+Two tables, built on every pipeline run from the committed public subset (`data/published/external_subset.db`, exported by `python -m oa_market_intelligence.external.export`) and the availability rules of R1 (`dim_source_availability`). A fresh clone needs neither the raw files nor the local external database.
+
+| Table | Grain | What it holds |
+|---|---|---|
+| `mart_signal` | series x specialty group x period | Every usable outside value with `period_start_month`, `period_end_month`, `value` and **`available_from_month`**, the first month it could have been known. `specialty_group` is empty for a series with no specialty. |
+| `mart_signal_asof` | IQVIA month x series x specialty group | For each IQVIA month *t*, the latest value of each series known as of the end of month *t*-1 (the rule the IQVIA features already follow), with `as_of_month`, the source period, when it became known and its age in months (negative when a value was known ahead of its period, such as a price schedule). A table constraint refuses a row known after its as-of month. |
+
+**Series (12):** ASP price (J3304 and J3301 limits per mg, and their ratio), Open Payments promotion (physicians paid, practitioners paid, total amount, records), company net sales (known on the filing date of the cited 10-Q or 10-K), events per month, and Medicare adoption by specialty group (adoption rate, visible providers, Zilretta providers).
+
+**A model reads `mart_signal_asof`, never `mart_signal`.** `mart.wide()` gives one row per month and one column per series (`signal` or `signal|specialty group`) for modelling. `leakage_violations` is the test: no row may have been known after its as-of month. The pipeline refuses a build that fails it, and the tests include a planted future value that must be caught.
+
+**Left out on purpose:** anything computed from IQVIA's own visits (the IQVIA share in the promotion table, IQVIA's adjusted share in the specialty table, the sales-versus-visits table), because it would put the target into the inputs; the pooled 2020 to 2024 Medicare rate, which needs 2024 data; state-level results, which have no key to join to IQVIA; and the NPI-level data.
+
+**What the real build shows (72 IQVIA months, 1,603 as-of rows, no violations):**
+
+| Series | Months with a value known | Average age of that value |
+|---|---|---|
+| ASP price | 72 of 72 | known a month ahead |
+| Company net sales | 72 of 72 | 3 months |
+| Events | 72 of 72 | 8.6 months |
+| Open Payments promotion | 61 of 72 | 11.4 months |
+| Medicare adoption by specialty | 31 of 72 | 28.9 months |
+
+So only price and company sales are fresh enough to be useful month by month; promotion and Medicare adoption would be heavily lagged features, absent for the first part of the series.
+

@@ -35,6 +35,8 @@ IQVIA_TABLES = {
     "dim_source_availability",
     "bronze_ingest_files",
     "dq_report",
+    "mart_signal",
+    "mart_signal_asof",
 }
 
 

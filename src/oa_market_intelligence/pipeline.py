@@ -40,6 +40,7 @@ import pandas as pd
 from sqlalchemy import Engine, create_engine, text
 
 from oa_market_intelligence.availability import AVAILABILITY_CSV, refresh_source_availability
+from oa_market_intelligence.external.export import DEFAULT_SUBSET
 from oa_market_intelligence.ingestion.audit import (
     build_ingest_audit,
     refresh_bronze_ingest_files,
@@ -59,6 +60,7 @@ from oa_market_intelligence.ingestion.validation import (
     validate_place_of_service,
     validate_reference_table,
 )
+from oa_market_intelligence.mart import MANIFEST_JSON, build_mart, load_manifest_rows
 from oa_market_intelligence.quality import (
     BASELINE_JSON,
     load_baseline,
@@ -238,6 +240,9 @@ def _run_pipeline(
     gold_summary = build_gold(engine)
     quality_report.append(revision_check(_monthly_gold(previous_db), _monthly_gold(engine=engine)))
     refresh_dq_report(engine, quality_report)
+    mart_summary = build_mart(
+        engine, DEFAULT_SUBSET, load_manifest_rows(MANIFEST_JSON) if MANIFEST_JSON.exists() else []
+    )
     quality = summarise_quality(quality_report)
     if quality["n_warnings"]:
         logger.warning("Data-quality warnings: %s", quality["warnings"])
@@ -252,6 +257,7 @@ def _run_pipeline(
         "gold": gold_summary,
         "ingest_files": ingest_files,
         "quality": quality,
+        "mart": mart_summary,
         "elapsed_seconds": elapsed,
     }
     logger.info("Pipeline run complete in %.1fs: %s", elapsed, summary)

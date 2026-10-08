@@ -260,6 +260,37 @@ dq_report = Table(
     CheckConstraint("status IN ('pass','fail','skipped')", name="ck_dq_status"),
 )
 
+# The ML-ready layer (mart.py): every usable outside series with the month it became known, and what
+# was known as of each IQVIA month. `specialty_group` is '' for a series with no specialty.
+mart_signal = Table(
+    "mart_signal",
+    metadata,
+    Column("signal_id", Text, nullable=False),
+    Column("source_id", Text, nullable=False),
+    Column("specialty_group", Text, nullable=False),
+    Column("grain", Text, nullable=False),
+    Column("period_start_month", Integer, nullable=False),
+    Column("period_end_month", Integer, nullable=False),
+    Column("value", Float, nullable=False),
+    Column("available_from_month", Integer, nullable=False),
+    PrimaryKeyConstraint("signal_id", "specialty_group", "period_end_month"),
+)
+
+mart_signal_asof = Table(
+    "mart_signal_asof",
+    metadata,
+    Column("month_id", Integer, nullable=False),
+    Column("as_of_month", Integer, nullable=False),
+    Column("signal_id", Text, nullable=False),
+    Column("specialty_group", Text, nullable=False),
+    Column("value", Float, nullable=False),
+    Column("period_end_month", Integer, nullable=False),
+    Column("available_from_month", Integer, nullable=False),
+    Column("age_months", Integer, nullable=False),
+    PrimaryKeyConstraint("month_id", "signal_id", "specialty_group"),
+    CheckConstraint("available_from_month <= as_of_month", name="ck_mart_asof_known"),
+)
+
 
 def create_schema(engine: Engine) -> None:
     """Create every Silver table that doesn't already exist. Never drops or alters one
