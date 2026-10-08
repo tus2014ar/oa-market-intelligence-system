@@ -1,0 +1,328 @@
+{
+ "task_a": {
+  "lower_percentile": 0.8333333333333334,
+  "scenarios": {
+   "main": {
+    "reference_log_loss": 0.11273716821914863,
+    "n_test_months": 46,
+    "n_rows": 8450,
+    "families": {
+     "FA1": {
+      "estimate": -2.2938458521248872e-06,
+      "low": -9.119664388089361e-06,
+      "high": 4.679191670162986e-06,
+      "share_positive": 0.232,
+      "n_valid": 2000,
+      "log_loss": 0.11273946206500075,
+      "months_better": 21,
+      "passes": false
+     },
+     "FA2": {
+      "estimate": 6.0895749067729765e-05,
+      "low": 1.0006855214621245e-05,
+      "high": 0.00011258607536219791,
+      "share_positive": 0.9985,
+      "n_valid": 2000,
+      "log_loss": 0.1126762724700809,
+      "months_better": 31,
+      "passes": true
+     },
+     "FA3": {
+      "estimate": 6.50005770790607e-05,
+      "low": 4.428001155572387e-05,
+      "high": 9.028897228625667e-05,
+      "share_positive": 1.0,
+      "n_valid": 2000,
+      "log_loss": 0.11267216764206957,
+      "months_better": 42,
+      "passes": true
+     },
+     "FA4": {
+      "estimate": 3.0139662006725687e-05,
+      "low": 1.1392006210806406e-05,
+      "high": 5.1152607298349596e-05,
+      "share_positive": 1.0,
+      "n_valid": 2000,
+      "log_loss": 0.1127070285571419,
+      "months_better": 33,
+      "passes": true
+     },
+     "FA5": {
+      "estimate": -2.293223069896322e-05,
+      "low": -0.00010461917307972846,
+      "high": 5.170696688747262e-05,
+      "share_positive": 0.2325,
+      "n_valid": 2000,
+      "log_loss": 0.11276010044984759,
+      "months_better": 21,
+      "passes": false
+     },
+     "FA6": {
+      "estimate": 4.799285827833399e-06,
+      "low": -3.648550152107963e-05,
+      "high": 3.783587605639578e-05,
+      "share_positive": 0.6335,
+      "n_valid": 2000,
+      "log_loss": 0.1127323689333208,
+      "months_better": 22,
+      "passes": false
+     }
+    }
+   },
+   "covid_removed": {
+    "reference_log_loss": 0.11085903085376668,
+    "n_test_months": 43,
+    "n_rows": 8104,
+    "families": {
+     "FA1": {
+      "estimate": -1.3489198517055434e-05,
+      "low": -2.496815957146505e-05,
+      "high": -3.7758400169679725e-06,
+      "share_positive": 0.0005,
+      "n_valid": 2000,
+      "log_loss": 0.11087252005228374,
+      "months_better": 16,
+      "passes": false
+     },
+     "FA2": {
+      "estimate": 5.771971777525364e-05,
+      "low": 6.024524226642696e-07,
+      "high": 0.00011234455754057632,
+      "share_positive": 0.9915,
+      "n_valid": 2000,
+      "log_loss": 0.11080131113599143,
+      "months_better": 25,
+      "passes": true
+     },
+     "FA3": {
+      "estimate": 7.26981034600005e-05,
+      "low": 4.817128972753002e-05,
+      "high": 0.00010080836902600297,
+      "share_positive": 1.0,
+      "n_valid": 2000,
+      "log_loss": 0.11078633275030668,
+      "months_better": 39,
+      "passes": true
+     },
+     "FA4": {
+      "estimate": 1.4362479715812615e-06,
+      "low": -1.0376468690550973e-05,
+      "high": 1.3900000776814054e-05,
+      "share_positive": 0.6305,
+      "n_valid": 2000,
+      "log_loss": 0.1108575946057951,
+      "months_better": 19,
+      "passes": false
+     },
+     "FA5": {
+      "estimate": -1.7068738543957185e-05,
+      "low": -7.588555692876128e-05,
+      "high": 3.640086913351953e-05,
+      "share_positive": 0.231,
+      "n_valid": 2000,
+      "log_loss": 0.11087609959231064,
+      "months_better": 18,
+      "passes": false
+     },
+     "FA6": {
+      "estimate": -2.5206540902600327e-06,
+      "low": -4.309985858986301e-05,
+      "high": 3.4675149174319296e-05,
+      "share_positive": 0.455,
+      "n_valid": 2000,
+      "log_loss": 0.11086155150785694,
+      "months_better": 16,
+      "passes": false
+     }
+    }
+   },
+   "dip_2024_removed": {
+    "reference_log_loss": 0.11439009797303246,
+    "n_test_months": 41,
+    "n_rows": 7879,
+    "families": {
+     "FA1": {
+      "estimate": -5.977058068235008e-06,
+      "low": -1.464599412562111e-05,
+      "high": 1.00728607899103e-06,
+      "share_positive": 0.029,
+      "n_valid": 2000,
+      "log_loss": 0.11439607503110069,
+      "months_better": 17,
+      "passes": false
+     },
+     "FA2": {
+      "estimate": 6.50683571114391e-05,
+      "low": 1.247394986059758e-05,
+      "high": 0.00011847559479880246,
+      "share_positive": 0.9995,
+      "n_valid": 2000,
+      "log_loss": 0.11432502961592102,
+      "months_better": 28,
+      "passes": true
+     },
+     "FA3": {
+      "estimate": 6.535524354032984e-05,
+      "low": 4.334706972037907e-05,
+      "high": 9.248928789352441e-05,
+      "share_positive": 1.0,
+      "n_valid": 2000,
+      "log_loss": 0.11432474272949213,
+      "months_better": 37,
+      "passes": true
+     },
+     "FA4": {
+      "estimate": 3.133465610266617e-05,
+      "low": 1.2937617148154705e-05,
+      "high": 5.3837046477226344e-05,
+      "share_positive": 1.0,
+      "n_valid": 2000,
+      "log_loss": 0.11435876331692979,
+      "months_better": 29,
+      "passes": true
+     },
+     "FA5": {
+      "estimate": -2.107142902972592e-05,
+      "low": -0.00010658098856003879,
+      "high": 6.033584101960468e-05,
+      "share_positive": 0.2885,
+      "n_valid": 2000,
+      "log_loss": 0.11441116940206218,
+      "months_better": 20,
+      "passes": false
+     },
+     "FA6": {
+      "estimate": 7.63936968128931e-07,
+      "low": -4.2238030476807883e-05,
+      "high": 3.827006820427496e-05,
+      "share_positive": 0.5435,
+      "n_valid": 2000,
+      "log_loss": 0.11438933403606433,
+      "months_better": 17,
+      "passes": false
+     }
+    }
+   }
+  },
+  "verdicts": {
+   "FA1": "no_pass",
+   "FA2": "robust",
+   "FA3": "robust",
+   "FA4": "fragile",
+   "FA5": "no_pass",
+   "FA6": "no_pass"
+  },
+  "combined": {
+   "families": [
+    "FA2",
+    "FA3"
+   ],
+   "best_single": "FA3",
+   "estimate": 2.6450553620327444e-05,
+   "low": -6.195048492365607e-06,
+   "high": 6.093098548410962e-05,
+   "share_positive": 0.9705,
+   "n_valid": 2000,
+   "adopted": false
+  }
+ },
+ "task_b": {
+  "lower_percentile": 2.5,
+  "scenarios": {
+   "main": {
+    "mae": {
+     "last_month": 0.12457391992591177,
+     "ridge": 0.14659877792340206,
+     "ridge+FB1": 0.15250269200105301,
+     "ridge+FA5": 0.1638621223478651
+    },
+    "n_test_months": 48,
+    "families": {
+     "FB1": {
+      "against_last_month": {
+       "estimate": -0.027928772075141245,
+       "low": -0.06603943447717403,
+       "high": 0.019707496838055543,
+       "share_positive": 0.1615
+      },
+      "against_plain_ridge": {
+       "estimate": -0.005903914077650951,
+       "low": -0.020422782762715735,
+       "high": 0.009141690807146613,
+       "share_positive": 0.228
+      },
+      "passes": false
+     },
+     "FA5": {
+      "against_last_month": {
+       "estimate": -0.03928820242195333,
+       "low": -0.08127474268943517,
+       "high": -0.0025562211855774757,
+       "share_positive": 0.0185
+      },
+      "against_plain_ridge": {
+       "estimate": -0.017263344424463034,
+       "low": -0.056521466248668654,
+       "high": 0.010793830980577035,
+       "share_positive": 0.089
+      },
+      "passes": false
+     }
+    }
+   },
+   "dip_2024_removed": {
+    "mae": {
+     "last_month": 0.12305442244093573,
+     "ridge": 0.14493431576352134,
+     "ridge+FB1": 0.1480851779164037,
+     "ridge+FA5": 0.14493260584939605
+    },
+    "n_test_months": 43,
+    "families": {
+     "FB1": {
+      "against_last_month": {
+       "estimate": -0.02503075547546796,
+       "low": -0.0637155501156701,
+       "high": 0.026135921276205582,
+       "share_positive": 0.208
+      },
+      "against_plain_ridge": {
+       "estimate": -0.00315086215288235,
+       "low": -0.018031852728433856,
+       "high": 0.012395354592315097,
+       "share_positive": 0.3595
+      },
+      "passes": false
+     },
+     "FA5": {
+      "against_last_month": {
+       "estimate": -0.021878183408460317,
+       "low": -0.04404022733438927,
+       "high": 0.005269268067156671,
+       "share_positive": 0.0695
+      },
+      "against_plain_ridge": {
+       "estimate": 1.709914125291867e-06,
+       "low": -0.0314459345694415,
+       "high": 0.02370214477743022,
+       "share_positive": 0.4125
+      },
+      "passes": false
+     }
+    }
+   }
+  },
+  "verdicts": {
+   "FB1": "no_pass",
+   "FA5": "no_pass"
+  },
+  "fallbacks": {
+   "last_month": 0,
+   "ridge": 0,
+   "ridge+FB1": 0,
+   "ridge+FA5": 0
+  }
+ },
+ "seed": 0,
+ "n_boot": 2000
+}

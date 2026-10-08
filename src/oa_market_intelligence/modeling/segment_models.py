@@ -48,7 +48,7 @@ def _logit(p, eps: float = 1e-3) -> np.ndarray:
     return np.log(p / (1 - p))
 
 
-def design_frame(df: pd.DataFrame) -> pd.DataFrame:
+def design_frame(df: pd.DataFrame, extra_columns: tuple[str, ...] = ()) -> pd.DataFrame:
     """Inputs for the logistic regression and the forest: the shares on the logit scale, with
     the history shares smoothed, plus the interaction that lets a model trust a large
     segment's last month more than a small one's."""
@@ -72,6 +72,8 @@ def design_frame(df: pd.DataFrame) -> pd.DataFrame:
         },
         index=df.index,
     )
+    for column in extra_columns:  # a candidate family's columns (feature plan), none by default
+        out[column] = df[column].to_numpy(float)
     out["specialty_grouped"] = df["specialty_grouped"].astype(str).to_numpy()
     return out
 
@@ -89,45 +91,49 @@ def expand_counts(X: pd.DataFrame, z, t) -> tuple[pd.DataFrame, np.ndarray, np.n
     return X2, y2, w2
 
 
-def _preprocessor(scale: bool) -> ColumnTransformer:
+def _preprocessor(scale: bool, extra_columns: tuple[str, ...] = ()) -> ColumnTransformer:
     numeric = [("impute", SimpleImputer(strategy="median"))]
     if scale:
         numeric.append(("scale", StandardScaler()))
     return ColumnTransformer(
         [
-            ("num", Pipeline(numeric), _NUMERIC),
+            ("num", Pipeline(numeric), [*_NUMERIC, *extra_columns]),
             ("cat", OneHotEncoder(handle_unknown="ignore"), ["specialty_grouped"]),
         ]
     )
 
 
-def _fitter_logistic(config: dict, overrides: dict) -> Callable:
+def _fitter_logistic(config: dict, overrides: dict, extra: tuple[str, ...] = ()) -> Callable:
     def fit(train: pd.DataFrame) -> Callable:
-        X2, y2, w2 = expand_counts(design_frame(train), successes(train), train["y_visits"])
+        X2, y2, w2 = expand_counts(
+            design_frame(train, extra), successes(train), train["y_visits"]
+        )
         model = Pipeline(
             [
-                ("prep", _preprocessor(scale=True)),
+                ("prep", _preprocessor(scale=True, extra_columns=extra)),
                 ("clf", LogisticRegression(max_iter=2000, **{**config, **overrides})),
             ]
         )
         model.fit(X2, y2, clf__sample_weight=w2)
         fit.model = model
-        return lambda test: model.predict_proba(design_frame(test))[:, 1]
+        return lambda test: model.predict_proba(design_frame(test, extra))[:, 1]
 
     return fit
 
 
-def _boosting_frame(df: pd.DataFrame, encoder: OrdinalEncoder) -> pd.DataFrame:
-    X = df[TASK_A_FEATURES].copy()
+def _boosting_frame(
+    df: pd.DataFrame, encoder: OrdinalEncoder, extra: tuple[str, ...] = ()
+) -> pd.DataFrame:
+    X = df[[*TASK_A_FEATURES, *extra]].copy()
     X["specialty_grouped"] = encoder.transform(df[["specialty_grouped"]].astype(str)).ravel()
     return X.astype(float)
 
 
-def _fitter_gbm(config: dict, overrides: dict) -> Callable:
+def _fitter_gbm(config: dict, overrides: dict, extra: tuple[str, ...] = ()) -> Callable:
     def fit(train: pd.DataFrame) -> Callable:
         encoder = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=np.nan)
         encoder.fit(train[["specialty_grouped"]].astype(str))
-        X = _boosting_frame(train, encoder)
+        X = _boosting_frame(train, encoder, extra)
         X2, y2, w2 = expand_counts(X, successes(train), train["y_visits"])
         settings = {"max_iter": 200, "random_state": SEED, "early_stopping": False,
                     "loss": "log_loss", **config, **overrides}
@@ -135,23 +141,23 @@ def _fitter_gbm(config: dict, overrides: dict) -> Callable:
             categorical_features=[X.columns.get_loc("specialty_grouped")], **settings
         )
         model.fit(X2, y2, sample_weight=w2)
-        return lambda test: model.predict_proba(_boosting_frame(test, encoder))[:, 1]
+        return lambda test: model.predict_proba(_boosting_frame(test, encoder, extra))[:, 1]
 
     return fit
 
 
-def _fitter_rf(config: dict, overrides: dict) -> Callable:
+def _fitter_rf(config: dict, overrides: dict, extra: tuple[str, ...] = ()) -> Callable:
     def fit(train: pd.DataFrame) -> Callable:
         weights = train["y_visits"].to_numpy(float)
         model = Pipeline(
             [
-                ("prep", _preprocessor(scale=False)),
+                ("prep", _preprocessor(scale=False, extra_columns=extra)),
                 ("clf", RandomForestRegressor(**{**RF_BASE, **config, **overrides})),
             ]
         )
-        model.fit(design_frame(train), train["y_share"].to_numpy(float),
+        model.fit(design_frame(train, extra), train["y_share"].to_numpy(float),
                   clf__sample_weight=weights / weights.mean())
-        return lambda test: np.clip(model.predict(design_frame(test)), 0.0, 1.0)
+        return lambda test: np.clip(model.predict(design_frame(test, extra)), 0.0, 1.0)
 
     return fit
 
@@ -159,15 +165,27 @@ def _fitter_rf(config: dict, overrides: dict) -> Callable:
 _BUILDERS = {"logistic": _fitter_logistic, "gbm": _fitter_gbm, "rf": _fitter_rf}
 
 
-def fitter_for(model: str, config: dict, *, overrides: dict | None = None) -> Callable:
+def fitter_for(
+    model: str,
+    config: dict,
+    *,
+    overrides: dict | None = None,
+    extra_columns: tuple[str, ...] = (),
+) -> Callable:
     """`fit(train)` returning a `predict(test)` for one model with one setting. Fitting once
     and predicting several times is what permutation importance needs."""
-    return _BUILDERS[model](config, overrides or {})
+    return _BUILDERS[model](config, overrides or {}, tuple(extra_columns))
 
 
-def fit_predict_for(model: str, config: dict, *, overrides: dict | None = None) -> Callable:
+def fit_predict_for(
+    model: str,
+    config: dict,
+    *,
+    overrides: dict | None = None,
+    extra_columns: tuple[str, ...] = (),
+) -> Callable:
     """`fit_predict(train, test)` for one model with one setting."""
-    fit = fitter_for(model, config, overrides=overrides)
+    fit = fitter_for(model, config, overrides=overrides, extra_columns=extra_columns)
     return lambda train, test: fit(train)(test)
 
 
@@ -207,10 +225,13 @@ class TunedPredictor:
         retune_every: int = 6,
         val_months: int = 12,
         overrides: dict | None = None,
+        extra_columns: tuple[str, ...] = (),
     ):
         self.configs = configs if configs is not None else MODEL_CONFIGS[model]
         self.factory = factory or (
-            lambda config: fit_predict_for(model, config, overrides=overrides)
+            lambda config: fit_predict_for(
+                model, config, overrides=overrides, extra_columns=extra_columns
+            )
         )
         self.retune_every = retune_every
         self.val_months = val_months
