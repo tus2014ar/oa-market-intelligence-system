@@ -32,6 +32,7 @@ IQVIA_TABLES = {
     "fact_place_of_service_visits",
     "gold_visit_share_monthly",
     "gold_segment_adoption",
+    "dim_source_availability",
 }
 
 
