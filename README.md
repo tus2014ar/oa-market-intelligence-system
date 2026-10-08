@@ -77,6 +77,7 @@ FDA approval dates come from the free public openFDA Drugs@FDA API. A snapshot o
 |---|---|
 | [`docs/phase4_results.md`](docs/phase4_results.md) | The four business questions, the answers, the evidence, what changed during the work, how to reproduce |
 | [`docs/phase4_modeling_plan.md`](docs/phase4_modeling_plan.md) | The Phase 4 plan: methods, models, test protocol and pass/fail rules, fixed before the analyses ran |
+| [`docs/external_data_protocol.md`](docs/external_data_protocol.md) | The protocol for the public datasets (CMS, CDC, SEC, FDA): code sets, specialty crosswalk, pass or fail rules, warehouse extension and disclosures, fixed before any analysis |
 | [`docs/stakeholder_summary_part1.md`](docs/stakeholder_summary_part1.md), [`part2`](docs/stakeholder_summary_part2.md) | Plain-language summaries for the brand manager |
 | [`docs/model_card_segment_share.md`](docs/model_card_segment_share.md) | Segment share model (served: logistic regression): data, results, robustness, limits |
 | [`docs/model_card_share_forecast.md`](docs/model_card_share_forecast.md) | Monthly share forecast (served: "same as last month"), intervals and the monitoring alarm |
