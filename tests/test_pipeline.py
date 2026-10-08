@@ -19,7 +19,6 @@ from oa_market_intelligence.pipeline import (
     DEFAULT_RAW_DIR,
     DEFAULT_REFERENCE_DIR,
     _parse_args,
-    ingest,
     run_pipeline,
     validate,
 )
@@ -43,11 +42,17 @@ def test_parse_args_overrides(tmp_path):
 
 
 @pytest.fixture(scope="module")
-def raw_extracts():
-    """ingest() re-parses the full OA pivot (the slow part of every real-data test in
-    this project) - shared once across the tests below that don't need their own
-    fresh run_pipeline() call."""
-    return ingest(DEFAULT_RAW_DIR)
+def raw_extracts(real_ingest):
+    """What ingest() returns for the real files. The slow OA pivot parse happens once per test
+    session (tests/conftest.py), by the real `ingest`."""
+    return real_ingest()
+
+
+@pytest.fixture
+def cached_ingest(monkeypatch, real_ingest):
+    """The run_pipeline tests below check the database and the re-run behaviour, not parsing (that
+    is test_ingest_returns_known_real_row_counts), so they reuse the session's parsed extracts."""
+    monkeypatch.setattr("oa_market_intelligence.pipeline.ingest", lambda raw_dir: real_ingest())
 
 
 def test_ingest_returns_known_real_row_counts(raw_extracts):
@@ -65,7 +70,7 @@ def test_validate_passes_real_extracts_through_unchanged(raw_extracts):
     assert len(v_reference) == len(reference)
 
 
-def test_run_pipeline_writes_a_real_sqlite_file_with_expected_tables(tmp_path):
+def test_run_pipeline_writes_a_real_sqlite_file_with_expected_tables(tmp_path, cached_ingest):
     db_path = tmp_path / "warehouse.db"
     summary = run_pipeline(db_path=db_path, fetch_approval_date=_fake_fda)
 
@@ -98,7 +103,7 @@ def test_run_pipeline_writes_a_real_sqlite_file_with_expected_tables(tmp_path):
     assert summary["ingest_files"][0].keys() >= {"file_name", "role", "sha256", "rows_parsed"}
 
 
-def test_run_pipeline_is_safe_to_rerun_against_an_existing_db_file(tmp_path):
+def test_run_pipeline_is_safe_to_rerun_against_an_existing_db_file(tmp_path, cached_ingest):
     db_path = tmp_path / "warehouse.db"
     run_pipeline(db_path=db_path, fetch_approval_date=_fake_fda)
     # create_schema is checkfirst, and every Silver/Gold write is upsert or full-
@@ -113,7 +118,7 @@ def test_run_pipeline_is_safe_to_rerun_against_an_existing_db_file(tmp_path):
     assert month_rows == 72  # not 144 - full-refresh-overwrite, not appended to
 
 
-def test_run_pipeline_creates_parent_directory_if_missing(tmp_path):
+def test_run_pipeline_creates_parent_directory_if_missing(tmp_path, cached_ingest):
     db_path = tmp_path / "nested" / "does" / "not" / "exist" / "warehouse.db"
     run_pipeline(db_path=db_path, fetch_approval_date=_fake_fda)
     assert db_path.exists()
