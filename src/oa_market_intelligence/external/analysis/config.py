@@ -45,3 +45,16 @@ H2_J3301_MG_PER_UNIT = 10  # J3301 is quoted per 10 mg, J3304 per 1 mg
 H4_MONTHS = (3, 7)  # March to July
 H4_YEAR, H4_BASE_YEAR = 2024, 2023
 E2B_QUARTERS = ("2020Q3", "2025Q2")
+
+# Gap diagnosis (protocol section 9): why do company sales and IQVIA visits diverge?
+GAP_BASE_YEAR, GAP_LAST_YEAR = 2021, 2024
+GAP_ALT_BASE_YEAR = 2022  # sensitivity: the IQVIA peak instead of the Medicare peak
+D1_WINDOW = 0.15  # IQVIA 65+ within 15 points of Medicare; under-65 at least 15 points lower
+D2_SHIFT = 0.10  # facility share of services up by 10 points
+D3_SALES, D3_MEDICARE = 0.25, 0.10  # sales per visit up 25%, a Medicare measure up 10%
+D4_TOP2 = 0.50  # the two biggest groups account for half of the fall
+# sensitivity grid, primary value in the middle
+D1_GRID = (0.10, 0.15, 0.20)
+D2_GRID = (0.05, 0.10, 0.15)
+D3_GRID = ((0.15, 0.05), (0.25, 0.10), (0.35, 0.15))
+D4_GRID = (0.40, 0.50, 0.60)
