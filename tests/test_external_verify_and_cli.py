@@ -69,10 +69,14 @@ def test_the_command_line_defaults_to_the_reference_source_and_the_local_paths()
     assert args.only == list(SOURCES) and args.verify is False
     assert args.raw == DEFAULT_RAW_ROOT and args.external_db.name == "external.db"
     assert parse_args(["--verify"]).verify is True
+    assert parse_args([]).rebuild is False and parse_args(["--rebuild"]).rebuild is True
 
 
-def test_the_command_line_loads_and_verifies_against_the_real_downloads_when_present(tmp_path):
+def test_the_command_line_loads_the_quick_sources_and_verifies_them_on_the_real_downloads(tmp_path):
     if not (DEFAULT_RAW_ROOT / "_download_manifest.jsonl").exists():
         pytest.skip("the raw downloads are not on this machine")
-    code = main(["--external-db", str(tmp_path / "external.db"), "--only", *SOURCES, "--verify"])
+    quick = [
+        s for s in SOURCES if s not in ("partb_provider", "nppes", "openpay")
+    ]  # the heavy three
+    code = main(["--external-db", str(tmp_path / "external.db"), "--only", *quick, "--verify"])
     assert code == 0

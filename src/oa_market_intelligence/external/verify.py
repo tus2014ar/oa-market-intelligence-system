@@ -350,7 +350,71 @@ def _check_nucc(engine: Engine, raw_root: Path) -> list[Check]:
     ]
 
 
+def _check_openpay(engine: Engine, raw_root: Path) -> list[Check]:
+    profile = _profile("openpayments")
+    reconcile = _profile("openpayments_reconciliation_2025")
+    with engine.connect() as conn:
+        runs = conn.execute(
+            text(
+                "SELECT data_year, note FROM external_load_runs "
+                "WHERE source = 'openpay' AND status = 'ok' ORDER BY run_id"
+            )
+        ).all()
+    latest = {year: json.loads(note) for year, note in runs}
+    read = {year: stats["rows_read"] for year, stats in latest.items()}
+    expected = {int(y): v["n_rows"] for y, v in profile.items()}
+    unmapped = {
+        " ".join(name.upper().split())  # the source has doubled spaces inside names
+        for stats in latest.values()
+        for name in stats["unmapped_names"]
+    }
+    month_sum = _scalar(
+        engine, "SELECT sum(n_records), sum(total_amount_usd) FROM fact_ext_openpay_month"
+    )
+    nature_sum = _scalar(
+        engine, "SELECT sum(n_records), sum(total_amount_usd) FROM fact_ext_openpay_nature"
+    )
+    outside = _count(
+        engine,
+        "SELECT count(*) FROM fact_ext_openpay_month "
+        "WHERE month_id < 201901 OR month_id > 202512 OR month_id % 100 NOT BETWEEN 1 AND 12",
+    )
+    years_with_zilretta = _count(
+        engine,
+        "SELECT count(DISTINCT month_id / 100) FROM fact_ext_openpay_month "
+        "WHERE product = 'Zilretta'",
+    )
+    return [
+        _compare("Open Payments rows read per year equal the profile", expected, read),
+        (
+            "2025 Zilretta records equal the independent count (3,275)",
+            latest.get(2025, {}).get("zilretta_records") == reconcile["zilretta_rows_seen"],
+            f"{latest.get(2025, {}).get('zilretta_records')} "
+            f"(profile {reconcile['zilretta_rows_seen']})",
+        ),
+        (
+            "the only hyaluronic name matching no approved product is the generic bucket",
+            unmapped <= {"BIOLOGICS CONSUMABLES HYALURONIC ACID OTHER"},
+            ", ".join(sorted(unmapped)) or "none",
+        ),
+        (
+            "month and nature tables agree on records and dollars",
+            month_sum is not None
+            and month_sum[0] == nature_sum[0]
+            and abs(month_sum[1] - nature_sum[1]) < 0.01,
+            f"{month_sum[0]} records, ${month_sum[1]:,.2f}" if month_sum else "empty",
+        ),
+        ("every month falls in 2019 to 2025", outside == 0, f"{outside} outside"),
+        (
+            "Zilretta has payment records in all 7 years",
+            years_with_zilretta == 7,
+            f"{years_with_zilretta} years",
+        ),
+    ]
+
+
 _PROVIDER_CHECKS = {
+    "openpay": _check_openpay,
     "nucc": _check_nucc,
     "places": _check_places,
     "partb_provider": _check_partb_provider,

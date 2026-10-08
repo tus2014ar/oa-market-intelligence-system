@@ -155,10 +155,19 @@ def replace_table(engine: Engine, table: str, frame: pd.DataFrame) -> int:
 def replace_partition(engine: Engine, table: str, frame: pd.DataFrame, where: dict) -> int:
     """Replace the rows of one partition (for example a year) in one transaction.
 
-    An empty `where` replaces the whole table."""
-    clause = " AND ".join(f"{column} = :{column}" for column in where)
+    A value in `where` is matched exactly, or as a range when it is a (low, high) pair. An empty
+    `where` replaces the whole table."""
+    clauses, params = [], {}
+    for column, value in where.items():
+        if isinstance(value, tuple):
+            clauses.append(f"{column} BETWEEN :{column}_lo AND :{column}_hi")
+            params[f"{column}_lo"], params[f"{column}_hi"] = value
+        else:
+            clauses.append(f"{column} = :{column}")
+            params[column] = value
+    sql = f"DELETE FROM {table}" + (" WHERE " + " AND ".join(clauses) if clauses else "")
     with engine.begin() as conn:
-        conn.execute(text(f"DELETE FROM {table}" + (f" WHERE {clause}" if where else "")), where)
+        conn.execute(text(sql), params)
         if len(frame):
             frame.to_sql(table, conn, if_exists="append", index=False)
     return len(frame)
