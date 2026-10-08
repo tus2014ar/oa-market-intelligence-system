@@ -220,7 +220,7 @@ Grain: quarter x billing code.
 | `fact_ext_asp_price.coinsurance_pct` | Part B payment limit (ASP) files (CMS) | Co-insurance Percentage | present only in 2023Q2 onward; otherwise NULL |
 | `fact_ext_asp_price.notes` | Part B payment limit (ASP) files (CMS) | Notes | as is |
 | `fact_ext_asp_price.source_file` | Download manifest | file | file name the row came from |
-| `fact_ext_asp_price.source_release` | Part B payment limit (ASP) files (CMS) | file name | the 'updated' date in the file name, where present |
+| `fact_ext_asp_price.source_release` | Part B payment limit (ASP) files (CMS) | file name | the 'updated MMDDYY' date in the file name or its CSV member name, where present |
 
 ## `fact_ext_openpay_month`
 
