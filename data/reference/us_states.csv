@@ -1,0 +1,62 @@
+state_code,state_name,state_fips,is_us_state_or_dc
+AL,Alabama,01,1
+AK,Alaska,02,1
+AZ,Arizona,04,1
+AR,Arkansas,05,1
+CA,California,06,1
+CO,Colorado,08,1
+CT,Connecticut,09,1
+DE,Delaware,10,1
+DC,District of Columbia,11,1
+FL,Florida,12,1
+GA,Georgia,13,1
+HI,Hawaii,15,1
+ID,Idaho,16,1
+IL,Illinois,17,1
+IN,Indiana,18,1
+IA,Iowa,19,1
+KS,Kansas,20,1
+KY,Kentucky,21,1
+LA,Louisiana,22,1
+ME,Maine,23,1
+MD,Maryland,24,1
+MA,Massachusetts,25,1
+MI,Michigan,26,1
+MN,Minnesota,27,1
+MS,Mississippi,28,1
+MO,Missouri,29,1
+MT,Montana,30,1
+NE,Nebraska,31,1
+NV,Nevada,32,1
+NH,New Hampshire,33,1
+NJ,New Jersey,34,1
+NM,New Mexico,35,1
+NY,New York,36,1
+NC,North Carolina,37,1
+ND,North Dakota,38,1
+OH,Ohio,39,1
+OK,Oklahoma,40,1
+OR,Oregon,41,1
+PA,Pennsylvania,42,1
+RI,Rhode Island,44,1
+SC,South Carolina,45,1
+SD,South Dakota,46,1
+TN,Tennessee,47,1
+TX,Texas,48,1
+UT,Utah,49,1
+VT,Vermont,50,1
+VA,Virginia,51,1
+WA,Washington,53,1
+WV,West Virginia,54,1
+WI,Wisconsin,55,1
+WY,Wyoming,56,1
+AS,American Samoa,60,0
+GU,Guam,66,0
+MP,Northern Mariana Islands,69,0
+PR,Puerto Rico,72,0
+VI,Virgin Islands,78,0
+AA,Armed Forces Central/South America,9A,0
+AE,Armed Forces Europe,9B,0
+AP,Armed Forces Pacific,9C,0
+XX,Unknown,9D,0
+ZZ,Foreign Country,9E,0

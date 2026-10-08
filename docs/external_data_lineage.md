@@ -45,9 +45,9 @@ Grain: one row per approved billing code.
 | `dim_hcpcs_code.code_group` | external/codes.py | CODE_GROUPS | A primary, B hyaluronic context, C procedures, D IV steroids |
 | `dim_hcpcs_code.drug_family` | external/codes.py | DRUG_FAMILY | drug family; methylprednisolone acetate is one family |
 | `dim_hcpcs_code.is_cpt` | external/codes.py | code format | 1 for the two CPT procedure codes (20610, 20611), else 0 |
-| `dim_hcpcs_code.short_description` | Part B by Geography and Service (CMS) | HCPCS_Desc | J-codes only; NULL for CPT codes (AMA copyright), enforced by a constraint |
-| `dim_hcpcs_code.first_year_seen` | Part B by Geography and Service (CMS) | year with a row for the code | earliest year in the loaded geography files |
-| `dim_hcpcs_code.last_year_seen` | Part B by Geography and Service (CMS) | year with a row for the code | latest year in the loaded geography files |
+| `dim_hcpcs_code.short_description` | Part B by Geography and Service (CMS) | HCPCS_Desc | latest wording from the committed profiling output of the Part B geography file; J-codes only, NULL for CPT codes (AMA copyright), enforced by a constraint |
+| `dim_hcpcs_code.first_year_seen` | Part B by Geography and Service (CMS) | year with a row for the code | earliest year with a row in the Part B geography profile (data/reference/external_profile) |
+| `dim_hcpcs_code.last_year_seen` | Part B by Geography and Service (CMS) | year with a row for the code | latest year with a row in the Part B geography profile |
 
 ## `dim_event`
 
