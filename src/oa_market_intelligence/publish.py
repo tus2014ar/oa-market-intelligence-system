@@ -119,14 +119,15 @@ def publish(
     published_dir = Path(published_dir)
     published_dir.mkdir(parents=True, exist_ok=True)
     published_db = published_dir / DB_NAME
-    record: dict = {"status": "failed", "started_at": _now(), "error": None,
-                    "precision": precision}
+    record: dict = {"status": "failed", "started_at": _now(), "error": None, "precision": precision}
 
     try:
         previous = _previous_coverage(published_db)
         with tempfile.TemporaryDirectory(dir=published_dir, prefix=".staging-") as staging:
             staged_db = Path(staging) / DB_NAME
-            run_pipeline_fn(raw_dir=raw_dir, reference_dir=reference_dir, db_path=staged_db)
+            summary = run_pipeline_fn(
+                raw_dir=raw_dir, reference_dir=reference_dir, db_path=staged_db
+            )
 
             staged = _coverage(staged_db)
             _check(staged, previous)
@@ -152,6 +153,11 @@ def publish(
             promoted=panel["decision"]["promoted"],
             results=sorted(results),
             monitoring_status=results["monitoring"]["status"],
+            # a product with no taxonomy entry is loaded as 'unclassified' and does not stop the
+            # run (PROPOSAL 18.10); recording it here makes the gap visible in the run log
+            unmapped_products=sorted(
+                (summary or {}).get("silver", {}).get("unmapped_products", [])
+            ),
         )
     except Exception as error:  # noqa: BLE001 - the last good database stays live
         logger.exception("Publish failed; the previously published database is unchanged.")
@@ -169,7 +175,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--reference-dir", type=Path, default=DEFAULT_REFERENCE_DIR)
     parser.add_argument("--published-dir", type=Path, default=DEFAULT_PUBLISHED_DIR)
     parser.add_argument(
-        "--precision", choices=("full", "fast"), default="full",
+        "--precision",
+        choices=("full", "fast"),
+        default="full",
         help="'full' uses the draws of the notebooks (about 40 minutes of model fitting); "
         "'fast' uses small ones for quick checks and is recorded in the stored results",
     )
