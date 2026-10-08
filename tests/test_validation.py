@@ -12,6 +12,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from live_service import skip_if_service_unavailable
 from oa_market_intelligence.ingestion.nmta_loader import parse_pivot_sheet
 from oa_market_intelligence.ingestion.openfda_client import build_approval_date_lookup
 from oa_market_intelligence.ingestion.place_of_service_loader import parse_place_of_service
@@ -82,7 +83,8 @@ def test_real_reference_tables_pass():
 
 
 def test_real_openfda_lookup_passes():
-    frame = build_approval_date_lookup(["ZILRETTA", "NOT-A-REAL-DRUG-XYZ"])
+    with skip_if_service_unavailable():
+        frame = build_approval_date_lookup(["ZILRETTA", "NOT-A-REAL-DRUG-XYZ"])
     by_product = validate_fda_lookup(frame).set_index("product")["fda_approval_date"]
     assert by_product["ZILRETTA"] == pd.Timestamp("2017-10-06")
     assert pd.isna(by_product["NOT-A-REAL-DRUG-XYZ"])
