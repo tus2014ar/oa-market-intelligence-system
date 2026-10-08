@@ -1,6 +1,6 @@
 """Command line for the external-data analyses.
 
-    PYTHONPATH=src python -m oa_market_intelligence.external.analysis --only 6a
+    PYTHONPATH=src python -m oa_market_intelligence.external.analysis --only 6a 6b
 
 Reads `data/processed/external.db` and the IQVIA warehouse (read only), writes the Gold analysis
 tables and one verdict row per rule, all under a run identifier.
@@ -14,11 +14,12 @@ from pathlib import Path
 from sqlalchemy import create_engine
 
 from oa_market_intelligence.external.analysis.run_6a import run_6a
+from oa_market_intelligence.external.analysis.run_6b import run_6b
 from oa_market_intelligence.external.analysis.store import latest_verdicts, new_run_id
 from oa_market_intelligence.external.common import DEFAULT_EXTERNAL_DB, REPO_ROOT
 
 DEFAULT_WAREHOUSE = REPO_ROOT / "data" / "published" / "warehouse.db"
-STEPS = ("6a",)
+STEPS = ("6a", "6b")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -36,6 +37,8 @@ def main(argv: list[str] | None = None) -> int:
     run_id = new_run_id()
     if "6a" in args.only:
         run_6a(external, iqvia, run_id)
+    if "6b" in args.only:
+        run_6b(external, run_id)
     print(f"run {run_id}")
     for row in latest_verdicts(external).itertuples():
         value = "" if row.value != row.value or row.value is None else f"{row.value:.4g}"
