@@ -71,3 +71,49 @@ NSAID_NAME_PATTERN = (
 ORAL_STEROID_NAME_PATTERN = (
     r"prednisone|prednisolone|methylprednisolone|dexamethasone|hydrocortisone"
 )
+
+
+# Part D drug lists (fixed in the protocol): single-ingredient oral NSAIDs and the four base oral
+# steroids, matched on the generic name. Combinations (any name containing "/"), patches, eye and
+# injectable forms and hydrocortisone are not on the lists.
+PARTD_NSAID_GENERICS = frozenset(
+    {
+        "celecoxib",
+        "diclofenac potassium",
+        "diclofenac sodium",
+        "diclofenac submicronized",
+        "diflunisal",
+        "etodolac",
+        "fenoprofen calcium",
+        "flurbiprofen",
+        "ibuprofen",
+        "indomethacin",
+        "indomethacin, submicronized",
+        "ketoprofen",
+        "ketorolac tromethamine",
+        "mefenamic acid",
+        "meloxicam",
+        "meloxicam, submicronized",
+        "nabumetone",
+        "naproxen",
+        "naproxen sodium",
+        "oxaprozin",
+        "piroxicam",
+        "salsalate",
+        "sulindac",
+        "tolmetin sodium",
+    }
+)
+PARTD_ORAL_STEROID_GENERICS = frozenset(
+    {"prednisone", "prednisolone", "methylprednisolone", "dexamethasone"}
+)
+
+
+def classify_partd_drug(generic_name: str) -> str | None:
+    """'nsaid', 'oral_steroid', or None when the generic name is not on the fixed lists."""
+    name = generic_name.strip().lower()
+    if name in PARTD_NSAID_GENERICS:
+        return "nsaid"
+    if name in PARTD_ORAL_STEROID_GENERICS:
+        return "oral_steroid"
+    return None

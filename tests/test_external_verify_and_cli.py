@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 from sqlalchemy import create_engine, text
 
-from oa_market_intelligence.external.__main__ import main, parse_args
+from oa_market_intelligence.external.__main__ import SOURCES, main, parse_args
 from oa_market_intelligence.external.common import DEFAULT_RAW_ROOT
 from oa_market_intelligence.external.loaders.reference import load_reference
 from oa_market_intelligence.external.profile import sha256_of
@@ -66,7 +66,7 @@ def test_a_missing_row_fails_its_check(loaded):
 
 def test_the_command_line_defaults_to_the_reference_source_and_the_local_paths():
     args = parse_args([])
-    assert args.only == ["reference"] and args.verify is False
+    assert args.only == list(SOURCES) and args.verify is False
     assert args.raw == DEFAULT_RAW_ROOT and args.external_db.name == "external.db"
     assert parse_args(["--verify"]).verify is True
 
@@ -74,5 +74,5 @@ def test_the_command_line_defaults_to_the_reference_source_and_the_local_paths()
 def test_the_command_line_loads_and_verifies_against_the_real_downloads_when_present(tmp_path):
     if not (DEFAULT_RAW_ROOT / "_download_manifest.jsonl").exists():
         pytest.skip("the raw downloads are not on this machine")
-    code = main(["--external-db", str(tmp_path / "external.db"), "--verify"])
+    code = main(["--external-db", str(tmp_path / "external.db"), "--only", *SOURCES, "--verify"])
     assert code == 0

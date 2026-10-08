@@ -124,7 +124,7 @@ R1 read everything as text and cast in Silver with explicit rules; R2 suppressed
 - Part B provider rows after filtering: 185,295 (2019), 156,538 (2020), 163,580 (2021), 164,243 (2022), 162,299 (2023), 164,940 (2024). J3304 rows 2019 to 2023: 912, 1,088, 1,294, 1,262, 1,181.
 - Open Payments 2025 rows mentioning Zilretta: 3,275.
 - 26 price quarters, Zilretta's code present in all.
-- 147 downloads plus the taxonomy file verified against the manifest.
+- Every manifest entry verified against its file on disk: 148 files downloaded by script plus 23 files the owner downloaded by hand, recorded afterwards with size and checksum (171 entries).
 
 ## 6. Build order and acceptance
 

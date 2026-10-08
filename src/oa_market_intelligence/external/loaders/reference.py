@@ -9,7 +9,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-from sqlalchemy import Engine
+from sqlalchemy import Engine, text
 
 from oa_market_intelligence.external.codes import (
     CODE_GROUPS,
@@ -153,6 +153,19 @@ def load_reference(
         "bridge_drug_family": drug_family_bridge(product_names),
         "bronze_external_files": catalogue_frame(read_manifest(raw_root)),
     }
+    # keep what earlier loads recorded about each file
+    with engine.connect() as conn:
+        previous = {
+            row[0]: (row[1], row[2])
+            for row in conn.execute(
+                text("SELECT relative_path, rows_loaded, loaded_at FROM bronze_external_files")
+            )
+        }
+    catalogue = frames["bronze_external_files"]
+    catalogue["rows_loaded"] = [
+        previous.get(p, (None, None))[0] for p in catalogue["relative_path"]
+    ]
+    catalogue["loaded_at"] = [previous.get(p, (None, None))[1] for p in catalogue["relative_path"]]
     counts = {table: replace_table(engine, table, frame) for table, frame in frames.items()}
     log_run(
         engine,
