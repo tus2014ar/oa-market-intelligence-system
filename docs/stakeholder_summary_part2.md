@@ -75,6 +75,7 @@ The real decline since 2022 runs at about 0.03 pp a month, so this alarm would n
 
 ## What would make it more useful
 
+- **Not more of the same inputs.** We tested seven extra feature families (a segment's activity history, its specialty's recent trend, a seasonal gap, price, company sales, event timing, Medicare adoption) under rules written before the run. Two lowered the segment error by about 0.06%, which is too small to matter, so nothing changed; none helped the overall share forecast ([`feature_results.md`](feature_results.md)).
 - **Extra inputs** that could explain moves history cannot: payer or formulary changes, geography, price, and prescription volume.
 - **A longer history,** so a modest effect becomes detectable.
 

@@ -56,6 +56,7 @@ Four pre-set rules (beats the best baseline, both share errors lower, High/Low b
 - **Bias in a falling market.** Predicted share averages 2.65% against 2.48% observed (about 7% high); every calibration group is predicted high. The test period is the decline, and a model trained on earlier, higher-share months lags it. Low-share specialties are over-predicted and Physical Medicine & Rehab (which rose) under-predicted: the model shrinks toward the average.
 - **Modest size.** Log-loss improves by 0.4%; "better, reliably, by a modest margin" is the honest wording. For segments with more than 300 visits the gain is negligible.
 - **The label barely changes,** so High or Low is only supporting evidence (persistence is right about 82% of the time on the rows used).
+- **Seven extra feature families were tested and none is used (DL-72).** Specialty momentum and activity history pass the pre-registered rule but lower log-loss by only about 0.06%; price, company sales and Medicare adoption do not help. The inputs above are unchanged ([`feature_results.md`](feature_results.md)).
 - **Short history, one drug.** 72 months; no payer, geography, price or prescription-volume inputs.
 - **The pre-set rules are small perturbations.** "Robust" means not driven by these three known data problems.
 - **The interval-label scheme failed its audit** (2,355 scored rows against a 3,000 gate), which is why the share, not the label, is the primary target (DL-48, DL-49).
