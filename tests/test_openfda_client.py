@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 
+from live_service import skip_if_service_unavailable
 from oa_market_intelligence.ingestion.openfda_client import (
     OpenFDAError,
     branded_products,
@@ -180,11 +181,13 @@ def test_branded_products_includes_a_product_tagged_branded_on_only_one_row():
 
 def test_zilretta_approval_date_matches_the_verified_ground_truth():
     """Cross-checks the openFDA finding already recorded in PROPOSAL.md §18.5."""
-    assert earliest_approval_date("ZILRETTA") == date(2017, 10, 6)
+    with skip_if_service_unavailable():
+        assert earliest_approval_date("ZILRETTA") == date(2017, 10, 6)
 
 
 def test_kenalog_has_a_real_multi_application_history():
     """Confirms the multi-application path (test above) against the live API, not just a
     captured fixture — same 1974-01-29 date found by direct inspection while building this
     client."""
-    assert earliest_approval_date("KENALOG") == date(1974, 1, 29)
+    with skip_if_service_unavailable():
+        assert earliest_approval_date("KENALOG") == date(1974, 1, 29)
