@@ -1,0 +1,799 @@
+{
+ "m1": {
+  "lower_percentile": 5.0,
+  "scenarios": {
+   "main": {
+    "estimate": 5.387196776678038e-05,
+    "low": 2.349700258396925e-05,
+    "high": 8.315592160808641e-05,
+    "share_positive": 0.9995,
+    "n_valid": 2000,
+    "n_test_months": 46,
+    "months_better": 28,
+    "bias_before": 0.06871170798865833,
+    "bias_after": 0.013567677507311249,
+    "bias_by_size": {
+     "<50": {
+      "before": -0.020486471609229007,
+      "after": -0.08474273320110914,
+      "n": 921
+     },
+     "50-100": {
+      "before": 0.035110748889096044,
+      "after": -0.024275292528129322,
+      "n": 1063
+     },
+     "100-300": {
+      "before": 0.027501951193794394,
+      "after": -0.02353963106106094,
+      "n": 1614
+     },
+     ">300": {
+      "before": 0.07472319072635125,
+      "after": 0.0193317300711231,
+      "n": 1924
+     }
+    },
+    "offsets": {
+     "202110": 0.0,
+     "202111": 0.0,
+     "202112": 0.0,
+     "202201": 0.03826502455589305,
+     "202202": 0.00986896259083559,
+     "202203": 0.010446109343287869,
+     "202204": 0.0005902860293279011,
+     "202205": -0.005658961774334622,
+     "202206": -0.018480758175362353,
+     "202207": -0.017394736921606892,
+     "202208": -0.025294557642677067,
+     "202209": -0.02948879856823829,
+     "202210": -0.036948268261279206,
+     "202211": -0.047343416975141266,
+     "202212": -0.05682588255941688,
+     "202301": -0.06578302698649756,
+     "202302": -0.07762520898792563,
+     "202303": -0.08100473873511777,
+     "202304": -0.07412146565051374,
+     "202305": -0.07335462391490775,
+     "202306": -0.061569662849167504,
+     "202307": -0.06267795630604506,
+     "202308": -0.06365967140364397,
+     "202309": -0.06993563462943005,
+     "202310": -0.06988144304542539,
+     "202311": -0.07118765621613309,
+     "202312": -0.06870016742451665,
+     "202401": -0.07709701645596696,
+     "202402": -0.06870762867452608,
+     "202403": -0.07619131436795605,
+     "202404": -0.08810424129731674,
+     "202405": -0.10187736287713255,
+     "202406": -0.12218731829883765,
+     "202407": -0.13298332129022417,
+     "202408": -0.1286136117080858,
+     "202409": -0.11952650392615694,
+     "202410": -0.11882916218412244,
+     "202411": -0.12075262555285275,
+     "202412": -0.12204629766026187,
+     "202501": -0.11559310924058443,
+     "202502": -0.11247213372275956,
+     "202503": -0.1012848896486256,
+     "202504": -0.10641776119581164,
+     "202505": -0.09422038685771153,
+     "202506": -0.08266856461497407,
+     "202507": -0.07613882940330344
+    },
+    "passes": true
+   },
+   "covid_removed": {
+    "estimate": 5.5548083825032735e-05,
+    "low": 2.4537619490304363e-05,
+    "high": 8.747968040145396e-05,
+    "share_positive": 0.9975,
+    "n_valid": 2000,
+    "n_test_months": 43,
+    "months_better": 26,
+    "bias_before": 0.07219333883677104,
+    "bias_after": 0.008063021874874732,
+    "bias_by_size": {
+     "<50": {
+      "before": -0.02860695844917338,
+      "after": -0.09424329624078132,
+      "n": 881
+     },
+     "50-100": {
+      "before": 0.027799815134219363,
+      "after": -0.03764857258072485,
+      "n": 991
+     },
+     "100-300": {
+      "before": 0.029095091166992715,
+      "after": -0.030834983565289797,
+      "n": 1487
+     },
+     ">300": {
+      "before": 0.07878145537018333,
+      "after": 0.014257706287566618,
+      "n": 1798
+     }
+    },
+    "offsets": {
+     "202201": 0.0,
+     "202202": 0.0,
+     "202203": 0.0,
+     "202204": -0.026466640193305458,
+     "202205": -0.027323289953482266,
+     "202206": -0.040798401270099344,
+     "202207": -0.03527562049518777,
+     "202208": -0.042092916522205516,
+     "202209": -0.04818234598822589,
+     "202210": -0.057650322843659375,
+     "202211": -0.06652698344466046,
+     "202212": -0.07098278066259951,
+     "202301": -0.06715732169236495,
+     "202302": -0.0794354762419489,
+     "202303": -0.08257833840301526,
+     "202304": -0.07531292718574732,
+     "202305": -0.07379970836439961,
+     "202306": -0.0619377549982697,
+     "202307": -0.06286878963068145,
+     "202308": -0.06528479217614915,
+     "202309": -0.07057442598909165,
+     "202310": -0.06924185884273774,
+     "202311": -0.06807083732088752,
+     "202312": -0.06364167715730279,
+     "202401": -0.07128586956906545,
+     "202402": -0.0629867695295575,
+     "202403": -0.06821366724397372,
+     "202404": -0.08242549587673649,
+     "202405": -0.09626923831603437,
+     "202406": -0.11686935803340953,
+     "202407": -0.1261393816937497,
+     "202408": -0.11993131775153745,
+     "202409": -0.10837462747280999,
+     "202410": -0.1075688065768688,
+     "202411": -0.10869565628643084,
+     "202412": -0.10890726349945548,
+     "202501": -0.10146149827391662,
+     "202502": -0.09798872272117384,
+     "202503": -0.0864665319027198,
+     "202504": -0.09081475842061024,
+     "202505": -0.08004454333419105,
+     "202506": -0.06795078566148884,
+     "202507": -0.06226452923514463
+    },
+    "passes": true
+   },
+   "dip_2024_removed": {
+    "estimate": 5.595927683374469e-05,
+    "low": 2.5935317930092516e-05,
+    "high": 8.773839348065055e-05,
+    "share_positive": 0.9985,
+    "n_valid": 2000,
+    "n_test_months": 41,
+    "months_better": 25,
+    "bias_before": 0.06949791523656224,
+    "bias_after": 0.01702846487794929,
+    "bias_by_size": {
+     "<50": {
+      "before": -0.022003747180750266,
+      "after": -0.08473327860998825,
+      "n": 804
+     },
+     "50-100": {
+      "before": 0.04664046329516336,
+      "after": -0.009193102825890365,
+      "n": 948
+     },
+     "100-300": {
+      "before": 0.029733179581248104,
+      "after": -0.01878245944205048,
+      "n": 1467
+     },
+     ">300": {
+      "before": 0.0750126535331932,
+      "after": 0.022293004750162826,
+      "n": 1732
+     }
+    },
+    "offsets": {
+     "202110": 0.0,
+     "202111": 0.0,
+     "202112": 0.0,
+     "202201": 0.03826502455589305,
+     "202202": 0.00986896259083559,
+     "202203": 0.010446109343287869,
+     "202204": 0.0005902860293279011,
+     "202205": -0.005658961774334622,
+     "202206": -0.018480758175362353,
+     "202207": -0.017394736921606892,
+     "202208": -0.025294557642677067,
+     "202209": -0.02948879856823829,
+     "202210": -0.036948268261279206,
+     "202211": -0.047343416975141266,
+     "202212": -0.05682588255941688,
+     "202301": -0.06578302698649756,
+     "202302": -0.07762520898792563,
+     "202303": -0.08100473873511777,
+     "202304": -0.07412146565051374,
+     "202305": -0.07335462391490775,
+     "202306": -0.061569662849167504,
+     "202307": -0.06267795630604506,
+     "202308": -0.06365967140364397,
+     "202309": -0.06993563462943005,
+     "202310": -0.06988144304542539,
+     "202311": -0.07118765621613309,
+     "202312": -0.06870016742451665,
+     "202401": -0.07709701645596696,
+     "202402": -0.06870762867452608,
+     "202408": -0.07619131436795605,
+     "202409": -0.08851468551142315,
+     "202410": -0.09891412705158993,
+     "202411": -0.12081868090259741,
+     "202412": -0.13123267650412132,
+     "202501": -0.12768770830479528,
+     "202502": -0.12775469297519712,
+     "202503": -0.12041597254291429,
+     "202504": -0.11997514310919326,
+     "202505": -0.12512407838306372,
+     "202506": -0.12196115432744595,
+     "202507": -0.11074145797072164
+    },
+    "passes": true
+   }
+  },
+  "verdict": "robust"
+ },
+ "m4": {
+  "task_b": {
+   "n_test_months": 48,
+   "served": {
+    "coverage90": 0.9583333333333334,
+    "width90": 0.6387868992042101
+   },
+   "aci": {
+    "coverage90": 0.9583333333333334,
+    "width90": 0.70119536756616,
+    "coverage_interval": [
+     0.9166666666666666,
+     1.0
+    ],
+    "width_interval": [
+     0.6277125730596066,
+     0.7559241154309234
+    ],
+    "final_alpha": 0.15400000000000008
+   },
+   "coverage_gate": {
+    "ok": true,
+    "low": 0.8133974596215562,
+    "high": 0.9866025403784439
+   },
+   "width_cut": -0.09769841623191922,
+   "passes": false
+  },
+  "task_a": {
+   "level": 0.9,
+   "n_scored_months": 43,
+   "overall": {
+    "coverage": 0.8917975567190227,
+    "interval": [
+     0.883410195380031,
+     0.899203728879394
+    ],
+    "n": 5157,
+    "mean_width": 0.039492531160099965
+   },
+   "buckets": {
+    "<50": {
+     "coverage": 0.9284903518728718,
+     "interval": [
+      0.9144144144144144,
+      0.9424165962582212
+     ],
+     "n": 881,
+     "mean_width": 0.06111370702876204
+    },
+    "50-100": {
+     "coverage": 0.9313824419778002,
+     "interval": [
+      0.9162462159434914,
+      0.9447880960288764
+     ],
+     "n": 991,
+     "mean_width": 0.05430833713633165
+    },
+    "100-300": {
+     "coverage": 0.9145931405514459,
+     "interval": [
+      0.9008511140175925,
+      0.9281125819677886
+     ],
+     "n": 1487,
+     "mean_width": 0.04108389375117252
+    },
+    ">300": {
+     "coverage": 0.8331479421579533,
+     "interval": [
+      0.8122890044735547,
+      0.8523842214689631
+     ],
+     "n": 1798,
+     "mean_width": 0.019416293209231345
+    }
+   },
+   "overall_ok": true,
+   "buckets_ok": false,
+   "passes": false
+  }
+ },
+ "m5": {
+  "cusum": {
+   "k": 0.5,
+   "h_grid": [
+    3,
+    4,
+    5,
+    6,
+    8
+   ],
+   "arl": {
+    "3": {
+     "arl": 52.7305,
+     "no_alarm_share": 0.0005
+    },
+    "4": {
+     "arl": 188.2645,
+     "no_alarm_share": 0.191
+    },
+    "5": {
+     "arl": 360.2715,
+     "no_alarm_share": 0.6235
+    },
+    "6": {
+     "arl": 439.296,
+     "no_alarm_share": 0.87
+    },
+    "8": {
+     "arl": 474.233,
+     "no_alarm_share": 0.984
+    }
+   },
+   "h": 3.0,
+   "detection": [
+    {
+     "drift_pp_per_month": 0.05,
+     "horizon_months": 12,
+     "detection_rate": 0.0,
+     "median_delay": null,
+     "n_starts": 37
+    },
+    {
+     "drift_pp_per_month": 0.05,
+     "horizon_months": 6,
+     "detection_rate": 0.0,
+     "median_delay": null,
+     "n_starts": 37
+    },
+    {
+     "drift_pp_per_month": 0.1,
+     "horizon_months": 12,
+     "detection_rate": 0.13513513513513514,
+     "median_delay": 9.0,
+     "n_starts": 37
+    },
+    {
+     "drift_pp_per_month": 0.1,
+     "horizon_months": 6,
+     "detection_rate": 0.0,
+     "median_delay": null,
+     "n_starts": 37
+    },
+    {
+     "drift_pp_per_month": 0.2,
+     "horizon_months": 12,
+     "detection_rate": 1.0,
+     "median_delay": 4.0,
+     "n_starts": 37
+    },
+    {
+     "drift_pp_per_month": 0.2,
+     "horizon_months": 6,
+     "detection_rate": 0.7297297297297297,
+     "median_delay": 4.0,
+     "n_starts": 37
+    },
+    {
+     "drift_pp_per_month": 0.3,
+     "horizon_months": 12,
+     "detection_rate": 1.0,
+     "median_delay": 2.0,
+     "n_starts": 37
+    },
+    {
+     "drift_pp_per_month": 0.3,
+     "horizon_months": 6,
+     "detection_rate": 0.972972972972973,
+     "median_delay": 2.0,
+     "n_starts": 37
+    }
+   ],
+   "real_alarms": [],
+   "detection_at_pass_point": 1.0,
+   "passes": true
+  },
+  "decision_metric": {
+   "k": 10,
+   "min_visits_last_month": 100,
+   "n_months": 46,
+   "model_overlap": 0.8391304347826086,
+   "baseline_overlap": 0.8391304347826084,
+   "difference": 4.827056628805028e-18,
+   "difference_interval": [
+    -0.017499999999999998,
+    0.0173913043478261
+   ]
+  }
+ },
+ "m6": {
+  "by_year": [
+   {
+    "year": 2019,
+    "months": 5,
+    "zilretta_visits": 7231.0,
+    "triamcinolone_ir_visits": 141558.0,
+    "other_injectable_corticosteroid_visits": 195569.0,
+    "injectable_steroid_visits": 344358.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.0998,
+    "zilretta_share_against_triamcinolone_ir_pct": 4.8599
+   },
+   {
+    "year": 2020,
+    "months": 12,
+    "zilretta_visits": 19773.0,
+    "triamcinolone_ir_visits": 305823.0,
+    "other_injectable_corticosteroid_visits": 406556.0,
+    "injectable_steroid_visits": 732152.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.7007,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.0729
+   },
+   {
+    "year": 2021,
+    "months": 12,
+    "zilretta_visits": 27592.0,
+    "triamcinolone_ir_visits": 399829.0,
+    "other_injectable_corticosteroid_visits": 469214.0,
+    "injectable_steroid_visits": 896635.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.0773,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.4555
+   },
+   {
+    "year": 2022,
+    "months": 12,
+    "zilretta_visits": 29449.0,
+    "triamcinolone_ir_visits": 529434.0,
+    "other_injectable_corticosteroid_visits": 401646.0,
+    "injectable_steroid_visits": 960529.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.0659,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.2693
+   },
+   {
+    "year": 2023,
+    "months": 12,
+    "zilretta_visits": 25478.0,
+    "triamcinolone_ir_visits": 506242.0,
+    "other_injectable_corticosteroid_visits": 377445.0,
+    "injectable_steroid_visits": 909165.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.8024,
+    "zilretta_share_against_triamcinolone_ir_pct": 4.7916
+   },
+   {
+    "year": 2024,
+    "months": 12,
+    "zilretta_visits": 16336.0,
+    "triamcinolone_ir_visits": 445618.0,
+    "other_injectable_corticosteroid_visits": 276502.0,
+    "injectable_steroid_visits": 738456.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.2122,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.5363
+   },
+   {
+    "year": 2025,
+    "months": 7,
+    "zilretta_visits": 9260.0,
+    "triamcinolone_ir_visits": 282126.0,
+    "other_injectable_corticosteroid_visits": 167335.0,
+    "injectable_steroid_visits": 458721.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.0187,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.1779
+   }
+  ],
+  "by_quarter": [
+   {
+    "quarter": "2019Q3",
+    "months": 2,
+    "zilretta_visits": 2669.0,
+    "triamcinolone_ir_visits": 58293.0,
+    "other_injectable_corticosteroid_visits": 79377.0,
+    "injectable_steroid_visits": 140339.0,
+    "zilretta_share_of_injectable_steroids_pct": 1.9018,
+    "zilretta_share_against_triamcinolone_ir_pct": 4.3781
+   },
+   {
+    "quarter": "2019Q4",
+    "months": 3,
+    "zilretta_visits": 4562.0,
+    "triamcinolone_ir_visits": 83265.0,
+    "other_injectable_corticosteroid_visits": 116192.0,
+    "injectable_steroid_visits": 204019.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.2361,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.1943
+   },
+   {
+    "quarter": "2020Q1",
+    "months": 3,
+    "zilretta_visits": 4327.0,
+    "triamcinolone_ir_visits": 75751.0,
+    "other_injectable_corticosteroid_visits": 105730.0,
+    "injectable_steroid_visits": 185808.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.3287,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.4035
+   },
+   {
+    "quarter": "2020Q2",
+    "months": 3,
+    "zilretta_visits": 4475.0,
+    "triamcinolone_ir_visits": 69406.0,
+    "other_injectable_corticosteroid_visits": 90625.0,
+    "injectable_steroid_visits": 164506.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.7203,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.057
+   },
+   {
+    "quarter": "2020Q3",
+    "months": 3,
+    "zilretta_visits": 5201.0,
+    "triamcinolone_ir_visits": 82178.0,
+    "other_injectable_corticosteroid_visits": 107459.0,
+    "injectable_steroid_visits": 194838.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.6694,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.9522
+   },
+   {
+    "quarter": "2020Q4",
+    "months": 3,
+    "zilretta_visits": 5770.0,
+    "triamcinolone_ir_visits": 78488.0,
+    "other_injectable_corticosteroid_visits": 102742.0,
+    "injectable_steroid_visits": 187000.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.0856,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.848
+   },
+   {
+    "quarter": "2021Q1",
+    "months": 3,
+    "zilretta_visits": 5541.0,
+    "triamcinolone_ir_visits": 81173.0,
+    "other_injectable_corticosteroid_visits": 104017.0,
+    "injectable_steroid_visits": 190731.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.9051,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.39
+   },
+   {
+    "quarter": "2021Q2",
+    "months": 3,
+    "zilretta_visits": 7118.0,
+    "triamcinolone_ir_visits": 107707.0,
+    "other_injectable_corticosteroid_visits": 132822.0,
+    "injectable_steroid_visits": 247647.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.8743,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.199
+   },
+   {
+    "quarter": "2021Q3",
+    "months": 3,
+    "zilretta_visits": 7250.0,
+    "triamcinolone_ir_visits": 102847.0,
+    "other_injectable_corticosteroid_visits": 123804.0,
+    "injectable_steroid_visits": 233901.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.0996,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.5851
+   },
+   {
+    "quarter": "2021Q4",
+    "months": 3,
+    "zilretta_visits": 7683.0,
+    "triamcinolone_ir_visits": 108102.0,
+    "other_injectable_corticosteroid_visits": 108571.0,
+    "injectable_steroid_visits": 224356.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.4245,
+    "zilretta_share_against_triamcinolone_ir_pct": 6.6356
+   },
+   {
+    "quarter": "2022Q1",
+    "months": 3,
+    "zilretta_visits": 7434.0,
+    "triamcinolone_ir_visits": 119953.0,
+    "other_injectable_corticosteroid_visits": 94739.0,
+    "injectable_steroid_visits": 222126.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.3467,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.8358
+   },
+   {
+    "quarter": "2022Q2",
+    "months": 3,
+    "zilretta_visits": 7850.0,
+    "triamcinolone_ir_visits": 143520.0,
+    "other_injectable_corticosteroid_visits": 108350.0,
+    "injectable_steroid_visits": 259720.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.0225,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.186
+   },
+   {
+    "quarter": "2022Q3",
+    "months": 3,
+    "zilretta_visits": 7288.0,
+    "triamcinolone_ir_visits": 138095.0,
+    "other_injectable_corticosteroid_visits": 102859.0,
+    "injectable_steroid_visits": 248242.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.9358,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.013
+   },
+   {
+    "quarter": "2022Q4",
+    "months": 3,
+    "zilretta_visits": 6877.0,
+    "triamcinolone_ir_visits": 127866.0,
+    "other_injectable_corticosteroid_visits": 95698.0,
+    "injectable_steroid_visits": 230441.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.9843,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.1038
+   },
+   {
+    "quarter": "2023Q1",
+    "months": 3,
+    "zilretta_visits": 6438.0,
+    "triamcinolone_ir_visits": 121540.0,
+    "other_injectable_corticosteroid_visits": 91020.0,
+    "injectable_steroid_visits": 218998.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.9398,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.0306
+   },
+   {
+    "quarter": "2023Q2",
+    "months": 3,
+    "zilretta_visits": 7476.0,
+    "triamcinolone_ir_visits": 136046.0,
+    "other_injectable_corticosteroid_visits": 100496.0,
+    "injectable_steroid_visits": 244018.0,
+    "zilretta_share_of_injectable_steroids_pct": 3.0637,
+    "zilretta_share_against_triamcinolone_ir_pct": 5.209
+   },
+   {
+    "quarter": "2023Q3",
+    "months": 3,
+    "zilretta_visits": 5951.0,
+    "triamcinolone_ir_visits": 127264.0,
+    "other_injectable_corticosteroid_visits": 94571.0,
+    "injectable_steroid_visits": 227786.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.6125,
+    "zilretta_share_against_triamcinolone_ir_pct": 4.4672
+   },
+   {
+    "quarter": "2023Q4",
+    "months": 3,
+    "zilretta_visits": 5613.0,
+    "triamcinolone_ir_visits": 121392.0,
+    "other_injectable_corticosteroid_visits": 91358.0,
+    "injectable_steroid_visits": 218363.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.5705,
+    "zilretta_share_against_triamcinolone_ir_pct": 4.4195
+   },
+   {
+    "quarter": "2024Q1",
+    "months": 3,
+    "zilretta_visits": 4673.0,
+    "triamcinolone_ir_visits": 106100.0,
+    "other_injectable_corticosteroid_visits": 76201.0,
+    "injectable_steroid_visits": 186974.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.4993,
+    "zilretta_share_against_triamcinolone_ir_pct": 4.2185
+   },
+   {
+    "quarter": "2024Q2",
+    "months": 3,
+    "zilretta_visits": 3749.0,
+    "triamcinolone_ir_visits": 108745.0,
+    "other_injectable_corticosteroid_visits": 66344.0,
+    "injectable_steroid_visits": 178838.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.0963,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.3326
+   },
+   {
+    "quarter": "2024Q3",
+    "months": 3,
+    "zilretta_visits": 4003.0,
+    "triamcinolone_ir_visits": 114521.0,
+    "other_injectable_corticosteroid_visits": 67533.0,
+    "injectable_steroid_visits": 186057.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.1515,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.3774
+   },
+   {
+    "quarter": "2024Q4",
+    "months": 3,
+    "zilretta_visits": 3911.0,
+    "triamcinolone_ir_visits": 116252.0,
+    "other_injectable_corticosteroid_visits": 66424.0,
+    "injectable_steroid_visits": 186587.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.0961,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.2547
+   },
+   {
+    "quarter": "2025Q1",
+    "months": 3,
+    "zilretta_visits": 3851.0,
+    "triamcinolone_ir_visits": 113320.0,
+    "other_injectable_corticosteroid_visits": 64935.0,
+    "injectable_steroid_visits": 182106.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.1147,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.2866
+   },
+   {
+    "quarter": "2025Q2",
+    "months": 3,
+    "zilretta_visits": 4022.0,
+    "triamcinolone_ir_visits": 128149.0,
+    "other_injectable_corticosteroid_visits": 76959.0,
+    "injectable_steroid_visits": 209130.0,
+    "zilretta_share_of_injectable_steroids_pct": 1.9232,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.043
+   },
+   {
+    "quarter": "2025Q3",
+    "months": 1,
+    "zilretta_visits": 1387.0,
+    "triamcinolone_ir_visits": 40657.0,
+    "other_injectable_corticosteroid_visits": 25441.0,
+    "injectable_steroid_visits": 67485.0,
+    "zilretta_share_of_injectable_steroids_pct": 2.0553,
+    "zilretta_share_against_triamcinolone_ir_pct": 3.2989
+   }
+  ],
+  "who_gained": {
+   "peak_year": 2022,
+   "latest_window": [
+    202408,
+    202507
+   ],
+   "groups": {
+    "zilretta": {
+     "visits_peak_year": 29449.0,
+     "visits_latest_12": 15906.0,
+     "share_peak_year_pct": 3.06591471990955,
+     "share_latest_12_pct": 2.058059373964889,
+     "visits_change_pct": -45.98797921830962
+    },
+    "triamcinolone_ir": {
+     "visits_peak_year": 529434.0,
+     "visits_latest_12": 477341.0,
+     "share_peak_year_pct": 55.119002133199515,
+     "share_latest_12_pct": 61.76261282709506,
+     "visits_change_pct": -9.839375635112212
+    },
+    "other_injectable_corticosteroid": {
+     "visits_peak_year": 401646.0,
+     "visits_latest_12": 279617.0,
+     "share_peak_year_pct": 41.815083146890935,
+     "share_latest_12_pct": 36.179327798940044,
+     "visits_change_pct": -30.38222713533808
+    }
+   },
+   "category_visits_peak_year": 960529.0,
+   "category_visits_latest_12": 772864.0,
+   "category_visits_change_pct": -19.537671428972992
+  },
+  "caveat": "Shares of product-visits inside IQVIA's panel; a patient visit can count under more than one product. The panel-coverage caveat of DL-62 applies: the size of the fall after 2022 is not confirmed by company sales."
+ },
+ "seed": 0,
+ "n_boot": 2000
+}
