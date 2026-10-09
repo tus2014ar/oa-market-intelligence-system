@@ -1,0 +1,161 @@
+product_name,manufacturer,treatment_category,group,rule
+A-HYDROCORT,PFIZER,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+A-METHAPRED,PFIZER,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+ACETAMINOPHEN,MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ACETAMINOPHEN CHILD,PADAGIS LLC,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ACTEMRA,"GENENTECH,INC.",not_applicable,other,not Zilretta and not in the corticosteroid category
+ADVIL,HALEON,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ALEVE,BAYER CONSUMER CAR,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ANACIN,PRESTIGE BRANDS,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ANJESO,BAUDAX BIO,opioid_other,other,not Zilretta and not in the corticosteroid category
+APAP X,MAGNO HUMPHRIES,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+APAP/CAF,PRIVATE LABEL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ARCALYST,KINIKSA PHARM,not_applicable,other,not Zilretta and not in the corticosteroid category
+ARISTOCORT,ASTELLAS PHARMA US,generic_corticosteroid,triamcinolone_ir,corticosteroid whose name is a triamcinolone product
+ARISTOSPAN,SANDOZ,generic_corticosteroid,triamcinolone_ir,corticosteroid whose name is a triamcinolone product
+ARZE-JECT-A,INTEGRTD PHARM SOL,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+ASA/APAP/CAF,PRIVATE LABEL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ASCRIPTIN,HALEON,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ASPIRIN,PRIVATE LABEL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ASPIRIN (OTC),MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ASPIRIN BUFFERED,PRIVATE LABEL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+BAYCADRON,WOCKHARDT AMERICA,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+BAYER ASP REGIMEN,BAYER CONSUMER CAR,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+BAYER ASPIRIN,BAYER CONSUMER CAR,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+BETA 1,"OAKLOCK, LLC",generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+BETALOAN SUIK,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+BETAMETH ACE/SOD PHOS,AMERICAN REGENT IN,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+BETAMETH DIP AUG,SUN PHARMACEUTICAL,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+BETAMETHASONE,No Manufacturer,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+BETAMETHASONE COMBO,US COMPOUNDING,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+BIOFREEZE W/ILEX,PERFORMANCE HEALTH,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+BUFFERIN,"GENOMMA LAB USA,IN",nsaid_otc,other,not Zilretta and not in the corticosteroid category
+BUPRENORPHINE HCL,ENDO USA INC.,opioid_other,other,not Zilretta and not in the corticosteroid category
+BUTORPHANOL TART,PFIZER,opioid_other,other,not Zilretta and not in the corticosteroid category
+CELESTONE,ORGANON,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+CELESTONE PHOS,MERCK & COMPANY,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+CHILDRENS MAPAP,MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+CLOBETASOL PROP,NORTHSTAR RX,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+CLONIDINE HCL,HIKMA PHARMACEUT,opioid_other,other,not Zilretta and not in the corticosteroid category
+CORTEF,PFIZER,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DARVOCET-N 100,XANODYNE PHARMA,opioid_other,other,not Zilretta and not in the corticosteroid category
+DARVOCET-N 50,XANODYNE PHARMA,opioid_other,other,not Zilretta and not in the corticosteroid category
+DARVON,XANODYNE PHARMA,opioid_other,other,not Zilretta and not in the corticosteroid category
+DARVON-N,XANODYNE PHARMA,opioid_other,other,not Zilretta and not in the corticosteroid category
+DECADRON,"PRAGMA PHARMA, LLC",generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DEMEROL,PFIZER,opioid_other,other,not Zilretta and not in the corticosteroid category
+DEPO-MEDROL,PFIZER,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DEX COMBO,US COMPOUNDING,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DEXAMETH S PH,VIATRIS,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DEXAMETHASONE,FRESENIUS KABI USA,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DEXAMETHASONE INTN,HIKMA PHARMACEUT,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DEXLIDO-M,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DICLOFENAC POT,ARCHIS PHARMA LLC,opioid_other,other,not Zilretta and not in the corticosteroid category
+DIFLUNISAL,AVET PHARMA,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+DILAUDID,RHODES PHARM,opioid_other,other,not Zilretta and not in the corticosteroid category
+DILAUDID SYRINGE,FRESENIUS KABI USA,opioid_other,other,not Zilretta and not in the corticosteroid category
+DOANS X-STR,DR REDDYS LAB,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+DOLOBID,INA PHARMACEUTICAL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+DOUBLEDEX,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+DURACLON,VIATRIS,opioid_other,other,not Zilretta and not in the corticosteroid category
+DURAMORPH PF,HIKMA PHARMACEUT,opioid_other,other,not Zilretta and not in the corticosteroid category
+DYLOJECT,No Manufacturer,opioid_other,other,not Zilretta and not in the corticosteroid category
+DYURAL-80,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+ECOTRIN,PRESTIGE BRANDS,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+EXCEDRIN ASP/FREE,HALEON,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+EXCEDRIN EX STR,HALEON,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+EXCEDRIN MIGRAINE,HALEON,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+EXCEDRIN TEN HDCHE,HALEON,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+FENOPROFEN CA,STERLING-KNIGHT,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+FENTANYL CIT,PFIZER,opioid_other,other,not Zilretta and not in the corticosteroid category
+FEVERALL JUNIOR,SUN PHARMACEUTICAL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+HALFPRIN,KRAMER LABS,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+HEXATRIONE,MEDEXUS INC,generic_corticosteroid,triamcinolone_ir,corticosteroid whose name is a triamcinolone product
+HYCD/APAP,XLCARE PHARMACEUT,opioid_other,other,not Zilretta and not in the corticosteroid category
+HYDROCORTISONE,VIATRIS,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+HYDROCORTISONE VAL,SUN PHARMACEUTICAL,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+HYDROCORTONE,No Manufacturer,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+HYDROMORPHONE HCL,HIKMA PHARMACEUT,opioid_other,other,not Zilretta and not in the corticosteroid category
+IBUPROFEN,PRIVATE LABEL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+IBUPROFEN (OTC),MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+IBUPROFEN (OTC) CHILD,PADAGIS LLC,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+IBUPROFEN (RX),AUROBINDO PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ILARIS,NOVARTIS RX,not_applicable,other,not Zilretta and not in the corticosteroid category
+INFLECTRA,No Manufacturer,not_applicable,other,not Zilretta and not in the corticosteroid category
+INFUMORPH,HIKMA PHARMACEUT,opioid_other,other,not Zilretta and not in the corticosteroid category
+KENALOG,BRISTOL-M SQ US PH,generic_corticosteroid,triamcinolone_ir,corticosteroid whose name is a triamcinolone product
+KETOROLAC TROMETH,PFIZER,opioid_other,other,not Zilretta and not in the corticosteroid category
+KEYTRUDA,MERCK & COMPANY,not_applicable,other,not Zilretta and not in the corticosteroid category
+KINERET,BIOVITRUM AB,not_applicable,other,not Zilretta and not in the corticosteroid category
+LIDOCAINE,PURETEK,opioid_other,other,not Zilretta and not in the corticosteroid category
+LIDOLOG,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+LOFENA,CARWIN ASSOCIATES,opioid_other,other,not Zilretta and not in the corticosteroid category
+M-PAP,"METHOD PHARMA, LLC",nsaid_otc,other,not Zilretta and not in the corticosteroid category
+MAPAP ARTHRITIS PAIN,MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+MARBETA-L,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+MEDROL,PFIZER,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+MEDROLOAN SUIK,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+MEPERIDINE HCL,HIKMA PHARMACEUT,opioid_other,other,not Zilretta and not in the corticosteroid category
+METHYLPRED ACE,TEVA PARENTERAL ME,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+METHYLPRED SOD SUC,FRESENIUS KABI USA,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+METHYLPREDNISOLONE,EPIC PHARMA,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+MLK PROCEDUR F2,MEDCHEM,unclassified,other,not Zilretta and not in the corticosteroid category
+MORPHINE SULF,PFIZER,opioid_other,other,not Zilretta and not in the corticosteroid category
+MORPHINE SULF C-JECT,PFIZER,opioid_other,other,not Zilretta and not in the corticosteroid category
+MOTRIN IB,KENVUE,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+MULTI-SPECIALTY,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+NALBUPHINE HCL,PFIZER,opioid_other,other,not Zilretta and not in the corticosteroid category
+NAPROXEN SOD,PRIVATE LABEL,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+NAPROXEN SOD (OTC),MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+NAPROXEN SOD (RX),DR REDDYS LAB,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+OFIRMEV,MALLINCKRODT,opioid_other,other,not Zilretta and not in the corticosteroid category
+OPDIVO,BRISTOL-M SQ US PH,not_applicable,other,not Zilretta and not in the corticosteroid category
+ORENCIA,BRISTOL-M SQ US PH,not_applicable,other,not Zilretta and not in the corticosteroid category
+OXYCODONE HCL,AUROBINDO PHARM,opioid_other,other,not Zilretta and not in the corticosteroid category
+OXYCODONE/APAP,MALLINCKRODT,opioid_other,other,not Zilretta and not in the corticosteroid category
+P-CARE K40,RX PHARMA PACK,opioid_other,other,not Zilretta and not in the corticosteroid category
+PAIN RELIEF,GERI-CARE PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+PAIN RELIEVER PLUS,MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+PHARBETOL,PHARBEST PHARMA,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+PHYS EZ USE JOINT,MEDCHEM,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+POD-CARE 100C,RX PHARMA PACK,opioid_other,other,not Zilretta and not in the corticosteroid category
+POD-CARE 100K,RX PHARMA PACK,opioid_other,other,not Zilretta and not in the corticosteroid category
+PREDNISOLONE,"AKORN, INC",generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+PREDNISOLONE S PH,PHARMACEUT ASSOC,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+PREDNISONE,HIKMA PHARMACEUT,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+PRIALT,TERSERA THERAPEUT,opioid_other,other,not Zilretta and not in the corticosteroid category
+PRO-C-DURE 5,"OAKLOCK, LLC",generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+PRO-C-DURE 6,"OAKLOCK, LLC",generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+Q-PAP,ENDO USA INC.,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+READYSHARP ANES+KETO,TERRAIN PHARMA,opioid_other,other,not Zilretta and not in the corticosteroid category
+READYSHARP BETAMET,TERRAIN PHARMA,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+READYSHARP DEXAMET,TERRAIN PHARMA,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+REMICADE,JANSSEN PHARM,not_applicable,other,not Zilretta and not in the corticosteroid category
+RENFLEXIS,ORGANON,not_applicable,other,not Zilretta and not in the corticosteroid category
+RITUXAN,"GENENTECH,INC.",not_applicable,other,not Zilretta and not in the corticosteroid category
+SALSALATE,WESTMINSTER PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+SAPHNELO,ASTRAZENECA,not_applicable,other,not Zilretta and not in the corticosteroid category
+SARAPIN,HIGH CHEM CO,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+SILAPAP,SILARX PHARM INC,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+SOLU-CORTEF,PFIZER,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+SOLU-MEDROL,PFIZER,generic_corticosteroid,other_injectable_corticosteroid,other product in the corticosteroid category
+ST. JOSEPH ASPIRIN,FOUNDATION CONS,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+STELARA,JANSSEN PHARM,not_applicable,other,not Zilretta and not in the corticosteroid category
+TAC-3,PARNELL PHARM,generic_corticosteroid,triamcinolone_ir,corticosteroid whose name is a triamcinolone product
+THERAPY BAYER ASP,BAYER CONSUMER CAR,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+TORADOL,ROCHE,opioid_other,other,not Zilretta and not in the corticosteroid category
+TRAMADOL HCL,AMNEAL PHARM,opioid_other,other,not Zilretta and not in the corticosteroid category
+TRAMADOL HCL ER,SUN PHARMACEUTICAL,opioid_other,other,not Zilretta and not in the corticosteroid category
+TRI-BUFFERED ASPIRIN,MAJOR PHARM,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+TRIAMCINOLONE ACTN,AMNEAL BIOSCIENCES,generic_corticosteroid,triamcinolone_ir,corticosteroid whose name is a triamcinolone product
+TRIAMCINOLONE DIAC,US COMPOUNDING,generic_corticosteroid,triamcinolone_ir,corticosteroid whose name is a triamcinolone product
+TRUXIMA,TEVA ONCOLOGY,not_applicable,other,not Zilretta and not in the corticosteroid category
+TYLENOL 8 HOUR,KENVUE,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+TYLENOL ARTHRITIS,KENVUE,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+TYLENOL EXTRA STRG,KENVUE,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+TYLENOL REGULAR,KENVUE,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+VAZALORE,PLX PHARMA,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+YERVOY,BRISTOL-M SQ US PH,not_applicable,other,not Zilretta and not in the corticosteroid category
+ZILRETTA,PACIRA PHARM,branded_injectable,zilretta,product name is Zilretta
+ZIPSOR,ASSERTIO THERAPEU,nsaid_otc,other,not Zilretta and not in the corticosteroid category
+ZORVOLEX,ZYLA LIFE SCIENCES,nsaid_otc,other,not Zilretta and not in the corticosteroid category
