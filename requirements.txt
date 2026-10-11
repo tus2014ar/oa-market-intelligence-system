@@ -2,6 +2,7 @@
 pandas
 numpy
 openpyxl
+pyarrow  # the parsed-extract cache used by the tests (tests/conftest.py)
 requests
 pandera
 sqlalchemy
