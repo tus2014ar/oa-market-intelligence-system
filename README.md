@@ -85,7 +85,25 @@ PYTHONPATH=src python -m pytest                            # the test suite (CI 
 
 The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this capstone. The Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A maintained product taxonomy (160 products: 145 OA + 15 RA) is in [`data/reference/`](data/reference/).
 
-FDA approval dates come from the free public openFDA Drugs@FDA API; a snapshot is committed so the work is reproducible without the internet. The public datasets (Medicare Part B and D, geographic variation, CDC, ASP price, SEC filings, OpenPayments) are restorable from the committed manifest ([`docs/external_data_refresh.md`](docs/external_data_refresh.md)); the full 134 MB database is local only.
+FDA approval dates come from the free public openFDA Drugs@FDA API; a snapshot is committed so the work is reproducible without the internet.
+
+### Public datasets added to the analysis
+
+171 public files (about 24 GB) were downloaded, profiled and loaded into a separate 27-table database (every load reconciled to the raw files; restorable from the committed manifest, see [`docs/external_data_refresh.md`](docs/external_data_refresh.md); the full 134 MB database is local only). Each dataset was added for a stated reason, in a protocol written before any analysis ran ([`docs/external_data_protocol.md`](docs/external_data_protocol.md)).
+
+| Dataset | Source | Rows loaded | What it added |
+|---|---|---|---|
+| Medicare Part B by provider and service | CMS | about 997K | The specialty ranking test against IQVIA (E1) and provider-level Zilretta adoption by year: 1.08% (2019), 1.78% (2021), 1.47% (2024) |
+| Medicare Part B and Part D by geography | CMS | 8.4K and 12.5K | State adoption and room to grow (stable state ranking, 0.92) and the Zilretta against hyaluronic-injectable comparison (E6) |
+| Medicare Geographic Variation, and Advantage variation | CMS | 1.8K | Original Medicare beneficiary denominators for the 65+ check in the gap diagnosis, and Medicare Advantage share as a state adjustment |
+| NPPES provider registry and NUCC taxonomy | CMS | about 32.5K counts | Provider counts by specialty and state (a snapshot denominator) and the specialty crosswalk |
+| ASP drug prices | CMS | 478 | The Zilretta to triamcinolone price ratio (+11.7%, not a clean test) |
+| Open Payments (promotion) | CMS | 1.9K by month, 2.8K by type | Promotion timing: the sharpest 6-month fall was -81%, before the turn |
+| Company filings | SEC | 45 | Quarterly net sales, which exposed the sales-versus-visits gap (E2b) |
+| Arthritis prevalence (PLACES) | CDC | 3.0K | State arthritis prevalence as context for room to grow |
+| Dated events (FDA, CMS and company documents) and openFDA approval dates | FDA, CMS, SEC | 14 events | The turn checks (end of pass-through status 31 Mar 2021, the Flexion acquisition 19 Nov 2021) and the FDA-event check on the competitive set |
+
+Two more files, Part D by provider and Medicaid drug utilisation, were downloaded and profiled but are not used in any rule or finding.
 
 ## Documentation
 
