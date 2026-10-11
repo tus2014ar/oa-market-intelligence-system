@@ -24,12 +24,35 @@ A newer, extended-release branded injectable (Zilretta) is trying to take visit 
 | **EDA** | The share series, seasonality and persistence, the sparse segment panel, the outside series on their availability dates, a specialty triangulation against Medicare, and a diagnosis of the sales-versus-visits gap | notebooks 11, 12, 13 |
 | **Safety nets** | A golden regression test of the warehouse, an atomic publish with a run log, restatement checks | `golden.py`, `publish.py` |
 
-### What the EDA found (descriptive; no model)
-- Zilretta's share rose until early 2022 and has fallen since in IQVIA's data.
-- Two data problems shaped the cleaning: a likely mis-coded `PEDIATRICS` prescriber, and a March to July 2024 volume dip across all three product classes.
-- Company net sales kept rising while IQVIA's Zilretta visits fell by about half; age mix, care setting and value per visit do not explain the gap, so the size of the IQVIA decline is not a market fact until IQVIA is asked about panel coverage (notebook 12).
-- Medicare billing does not confirm the IQVIA specialty ranking (notebook 11).
-- The segment panel is sparse (most segment-months are small), and most public series are too lagged or too coarse for monthly use (notebook 13).
+## Key findings and business impact
+
+Everything below is descriptive or from pre-registered tests on the public data (rules written before the analysis ran; none of it is causal). IQVIA covers 72 months (Aug 2019 to Jul 2025), 160 products, 50 specialties and 7.19M+ visits; Zilretta's share of the three-class visit total rose from about 2.0% (2019) to a peak near 3.4% (Dec 2021) and has fallen since.
+
+| # | Finding | Evidence (quantified) | Business impact |
+|---|---|---|---|
+| 1 | **Company sales kept rising while IQVIA's Zilretta visits fell** | Visits -14% (2023) and -36% (2024) against net sales +5% and +6%; net sales per IQVIA visit +94% from 2021 to 2024 | The size of the IQVIA decline must not be quoted as a market fact: a target or forecast built on it could be wrong by a large factor. Ask IQVIA whether panel coverage changed (2024 in particular) before using it |
+| 2 | **No tested explanation accounts for the gap** | Age and payer mix ruled out (IQVIA 65+ visits -34% against Medicare Zilretta patients -1.5%, a 32-point gap against 15 allowed); care setting ruled out (facility share 0.05% to 0.09%); value per visit +10% in Medicare, about a ninth of the +94% | Narrows the search: the remaining causes (panel coverage, company-side adjustments) are untested and need data we do not hold |
+| 3 | **The fall is concentrated** | Orthopedic surgery and physician assistants are 64% of the net fall of 11,256 visits | Where a field or marketing review should look first |
+| 4 | **The IQVIA specialty ranking is not confirmed by Medicare billing** | Rank correlation 0.35 (95% interval 0.18 to 0.44) against 0.6 required; 1 of the top 3 specialties shared | Which specialties look "best" depends on the population (Original Medicare against IQVIA's panel); use both views, do not rely on one |
+| 5 | **Medicare adoption rose then eased, like the visits** | Share of billing injectors using Zilretta 1.08% (2019), 1.78% (2021 peak), 1.47% (2024): about a sixth below peak | Independent, provider-level support that the turn is real in direction, though smaller than IQVIA's fall |
+| 6 | **A stable state list exists** | 2022 vs 2024 state rank correlation 0.92 (51 states); 0.97 without the Medicare Advantage effect; most room to grow in Michigan, Arizona, Florida, Minnesota and Indiana | A defensible shortlist for territory prioritisation |
+| 7 | **Promotion fell before the turn, but nothing links it month by month** | Sharpest 6-month fall in payments -81%, coinciding with the Flexion acquisition (19 Nov 2021); no lag from 0 to 6 months passes the correction (smallest p = 0.11) | Do not attribute the share decline to promotion; the timing is suggestive only |
+| 8 | **The turn is not the end of pass-through status** | The detected break (March 2022) is 11 months after the 31 Mar 2021 end of pass-through | Removes a tempting but unsupported explanation |
+| 9 | **A data-capture dip in Mar to Jul 2024** | Zilretta -47%, corticosteroids -25%, NSAID/OTC -16% over the five months; Zilretta fell about twice as much as the others | Flagged months in every later analysis; results are re-checked without them |
+| 10 | **Price relative to the comparator rose, but not cleanly** | Ratio +11.7%, driven by the comparator's limit falling 14% while Zilretta's fell 4% | Not evidence that Zilretta's price moved the share |
+| 11 | **Zilretta did not dip in 2020 when most hyaluronic injectables did** | Zilretta Medicare patients 36,500 (2019), 53,400 (2021), 47,200 (2024, 12% below peak); Durolane patients 19,700 to 57,100 (almost threefold) | The competitor set is not moving as one; Durolane is the one competitor that stands out |
+| 12 | **The data is thin where it matters for modelling** | 60% of segment-months have fewer than 20 visits and 65% have no Zilretta visit; month-to-month changes have lag-12 autocorrelation +0.27 and lag-1 -0.19; only price and company sales are known for all 72 months | Sets realistic expectations for feature engineering: small effects at best, and "same as last month" will be hard to beat |
+
+### Data-quality findings that shaped the cleaning
+- A likely mis-coded `PEDIATRICS` prescriber and miscoded oncology products in the RA extract (RA has about 1,250 visits over 6 years, too sparse to model).
+- The Mar to Jul 2024 volume dip across all three product classes (finding 9).
+- 11 dataset-level quality checks run before every build against a stored baseline; an error stops the run, and a failed run never replaces the last good database.
+
+### Engineering outcomes
+- A re-runnable pipeline from raw Excel to a validated warehouse in about 2.5 minutes; every extract is hashed (SHA-256) per run, and a golden regression test rebuilds the warehouse from the real extracts and compares it with committed values.
+- 171 public files (about 24 GB) from CMS, CDC, SEC and FDA were profiled and loaded into a 27-table database with 38 reconciliation checks passing, restorable from a committed manifest.
+- A recorded "when could this value have been known" rule for 14 sources, so later features cannot use information from the future.
+- About 590 automated tests, run in parallel in CI on every pull request.
 
 ## Architecture in one picture
 
