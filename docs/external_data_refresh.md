@@ -43,4 +43,4 @@ A new year or quarter is not a refresh. It changes numbers the protocol fixed in
 
 ## What is not automated
 
-The public data is not part of the monthly publish step, the GitHub workflow or the website. The monthly pipeline covers the IQVIA data only (see [`deployment.md`](deployment.md)). Copying the small public result tables into the published warehouse, and showing them on the site, is a later-phase step.
+The public data is not part of the monthly publish step, the GitHub workflow or the website. The monthly pipeline covers the IQVIA data only (see the monthly workflow in `.github/workflows/monthly_pipeline.yml`). Copying the small public result tables into the published warehouse, and showing them on the site, is a later-phase step.

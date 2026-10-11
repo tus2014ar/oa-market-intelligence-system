@@ -23,12 +23,10 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: |
-            requirements.txt
-            app/requirements.txt
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
-        run: pip install -r requirements.txt -r app/requirements.txt  # the site's own list, so its page tests run
+        run: pip install -r requirements.txt
 
       # The real Excel extracts take about a minute to parse and many tests need them. The parsed
       # result is kept between runs and is rebuilt whenever the raw files or the parser change.

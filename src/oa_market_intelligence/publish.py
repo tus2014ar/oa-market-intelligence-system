@@ -1,9 +1,8 @@
-"""Rebuild and publish the warehouse the website serves, without ever damaging the last good one.
+"""Rebuild and publish the warehouse, without ever damaging the last good one.
 
-One run: build the whole warehouse into a staging file, check it, run the model stage, store
-the model panel inside it, then swap it in with an atomic rename. Any failure leaves the
-published database exactly as it was. Every run, good or bad, appends a line to
-`run_log.jsonl`.
+One run: build the whole warehouse into a staging file, check it, then swap it in with an
+atomic rename. Any failure leaves the published database exactly as it was. Every run, good or
+bad, appends a line to `run_log.jsonl`.
 
     python -m oa_market_intelligence.publish
 """
@@ -20,18 +19,13 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
 from sqlalchemy import create_engine, text
 
-from oa_market_intelligence.modeling.monitoring import write_backtest_predictions
 from oa_market_intelligence.pipeline import (
     DEFAULT_RAW_DIR,
     DEFAULT_REFERENCE_DIR,
     run_pipeline,
 )
-from oa_market_intelligence.serving.model_panel import model_panel, store_panel
-from oa_market_intelligence.serving.results import compute_all, store_result
 
 logger = logging.getLogger(__name__)
 
@@ -86,40 +80,20 @@ def _check(staged: tuple[int, int | None], previous: tuple[int, int | None] | No
         )
 
 
-def _write_backtest(engine, direction: dict) -> None:
-    """Record the served direction classifier's backtest predictions in the Gold columns."""
-    served = direction["decision"]["serving"]
-    predictions = pd.DataFrame(direction["predictions"])
-    frame = pd.DataFrame(
-        {
-            "month_id": predictions["month_id"],
-            "predicted": predictions[served],
-            "actual": predictions["y_true"],
-            "probability": np.nan,  # the served classifier is a rule with no probability
-        }
-    )
-    write_backtest_predictions(engine, frame, f"backtest walk-forward: {served}")
-
-
 def publish(
     *,
     raw_dir: Path = DEFAULT_RAW_DIR,
     reference_dir: Path = DEFAULT_REFERENCE_DIR,
     published_dir: Path = DEFAULT_PUBLISHED_DIR,
     run_pipeline_fn: Callable[..., dict] = run_pipeline,
-    panel_fn: Callable[..., dict] = model_panel,
-    results_fn: Callable[..., dict] = compute_all,
-    precision: str = "full",
 ) -> dict:
     """Run the full rebuild. Returns the run record; never raises for a failed run.
 
-    After the tables are built and checked, the model panel and every Phase 4 result are
-    computed and stored in the staging file, and the backtest predictions are written to Gold.
-    Any failure in these stages fails the whole run and leaves the last good database live."""
+    A failure at any stage fails the whole run and leaves the last good database live."""
     published_dir = Path(published_dir)
     published_dir.mkdir(parents=True, exist_ok=True)
     published_db = published_dir / DB_NAME
-    record: dict = {"status": "failed", "started_at": _now(), "error": None, "precision": precision}
+    record: dict = {"status": "failed", "started_at": _now(), "error": None}
 
     try:
         previous = _previous_coverage(published_db)
@@ -135,27 +109,12 @@ def publish(
             staged = _coverage(staged_db)
             _check(staged, previous)
 
-            engine = create_engine(f"sqlite:///{staged_db.as_posix()}")
-            try:
-                panel = panel_fn(engine)
-                store_panel(engine, panel)
-                results = results_fn(engine, precision)
-                for key, payload in results.items():
-                    store_result(engine, key, payload, precision=precision)
-                _write_backtest(engine, results["direction"])
-            finally:
-                engine.dispose()
-
             os.replace(staged_db, published_db)  # atomic: readers see old or new, never half
 
         record.update(
             status="ok",
             n_months=staged[0],
             last_month_id=staged[1],
-            serving=panel["decision"]["serving"],
-            promoted=panel["decision"]["promoted"],
-            results=sorted(results),
-            monitoring_status=results["monitoring"]["status"],
             # a product with no taxonomy entry is loaded as 'unclassified' and does not stop the
             # run (PROPOSAL 18.10); recording it here makes the gap visible in the run log
             # the extracts behind this database: file, role, SHA-256, size, rows parsed
@@ -176,17 +135,10 @@ def publish(
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Rebuild and publish the website's warehouse.")
+    parser = argparse.ArgumentParser(description="Rebuild and publish the warehouse.")
     parser.add_argument("--raw-dir", type=Path, default=DEFAULT_RAW_DIR)
     parser.add_argument("--reference-dir", type=Path, default=DEFAULT_REFERENCE_DIR)
     parser.add_argument("--published-dir", type=Path, default=DEFAULT_PUBLISHED_DIR)
-    parser.add_argument(
-        "--precision",
-        choices=("full", "fast"),
-        default="full",
-        help="'full' uses the draws of the notebooks (about 40 minutes of model fitting); "
-        "'fast' uses small ones for quick checks and is recorded in the stored results",
-    )
     return parser.parse_args(argv)
 
 
@@ -197,7 +149,6 @@ def main(argv: list[str] | None = None) -> None:
         raw_dir=args.raw_dir,
         reference_dir=args.reference_dir,
         published_dir=args.published_dir,
-        precision=args.precision,
     )
     print(json.dumps(record, indent=2))
     sys.exit(0 if record["status"] == "ok" else 1)

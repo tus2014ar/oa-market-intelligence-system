@@ -10,49 +10,20 @@ then fed the validated frame into build_silver - so nothing had confirmed the ga
 column dtypes and row order survive that handoff. It does: no rows are rejected, and
 build_silver/build_gold behave identically on the validated frames as on the raw ones.
 
-Also collects the key real-data figures independently confirmed throughout Steps 2-8
-into one canonical regression check, so a future change to any loader or builder that
-silently shifts one of these numbers is caught here even if it doesn't touch the
-specific step's own test file.
+It also checks that the pipeline is idempotent on the real extracts.
 """
 
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import pytest
 from sqlalchemy import create_engine, text
 
-from oa_market_intelligence.features.monthly import (
-    compute_monthly_features,
-    load_monthly_gold,
-    model_ready_monthly,
-)
-from oa_market_intelligence.features.segment import (
-    compute_segment_features,
-    group_rare_specialties,
-    load_segment_gold,
-)
 from oa_market_intelligence.ingestion.validation import (
     validate_nmta_visits,
     validate_place_of_service,
     validate_reference_table,
 )
-from oa_market_intelligence.modeling.baselines import (
-    MajorityClassBaseline,
-    PersistenceBaseline,
-    SeasonalBaseline,
-    StratifiedRandomBaseline,
-)
-from oa_market_intelligence.modeling.evaluation import (
-    bootstrap_difference,
-    bootstrap_scores,
-    compare_models,
-    in_sample_scores,
-    score_table,
-    simulate_scores,
-)
-from oa_market_intelligence.modeling.models import make_logistic_regression
 from oa_market_intelligence.warehouse.build_gold import build_gold
 from oa_market_intelligence.warehouse.build_silver import build_silver
 from oa_market_intelligence.warehouse.schema import create_schema
@@ -186,118 +157,3 @@ def test_full_pipeline_is_idempotent_end_to_end(validated_extracts):
 
     assert product_ids_before == product_ids_after
     pd.testing.assert_frame_equal(gold_before, gold_after)
-
-
-def test_feature_matrices_on_real_data_match_the_verified_eda_figures(gold_from_validated_pipeline):
-    """The figures notebooks/02_eda_cleaned_data.ipynb §13 established, now produced by
-    the pipeline's own feature code instead of notebook cells: 59 model-ready months
-    (7 Up / 43 Flat / 9 Down) with 22 features once the all-zero `covid_shock` column is
-    dropped, and 8,563 modelling segments whose `specialty_prior_share` correlates 0.61
-    with the segment's actual share."""
-    engine = gold_from_validated_pipeline
-
-    monthly = compute_monthly_features(load_monthly_gold(engine))
-    assert len(monthly) == 72
-    ready = model_ready_monthly(monthly)
-    assert len(ready) == 59
-    assert not ready.isna().any().any()
-    assert ready["direction_label"].value_counts().to_dict() == {"Flat": 43, "Down": 9, "Up": 7}
-    assert len(ready.columns) - 1 == 22
-    assert "covid_shock" not in ready.columns
-
-    seg = load_segment_gold(engine)
-    features = compute_segment_features(seg)
-    assert len(features) == 8_563
-    assert group_rare_specialties(seg["specialty_name"]).nunique() == 29  # 28 common + RARE
-    corr = np.corrcoef(features["specialty_prior_share"], features["segment_visit_share"])[0, 1]
-    assert corr == pytest.approx(0.61, abs=0.005)
-
-
-def test_baselines_on_real_data_set_the_bar_a_model_must_clear(gold_from_validated_pipeline):
-    """The walk-forward baselines on the real 59 model-ready months (24-month minimum
-    window, so 35 test months: 25 Flat, 6 Down, 4 Up). Always-Flat reaches 71% accuracy
-    yet never catches a Down month; persistence catches 1 of 6 Down months, about the
-    6/35 base rate, i.e. no skill. These are the numbers any trained model must beat."""
-    engine = gold_from_validated_pipeline
-    ready = model_ready_monthly(compute_monthly_features(load_monthly_gold(engine)))
-    predictions = compare_models(
-        ready,
-        {"always-majority": MajorityClassBaseline, "persistence": PersistenceBaseline},
-        min_train=24,
-    )
-
-    assert len(predictions) == 35
-    assert predictions["y_true"].value_counts().to_dict() == {"Flat": 25, "Down": 6, "Up": 4}
-
-    scores = score_table(predictions)
-    assert scores.loc["always-majority", "accuracy"] == pytest.approx(25 / 35)
-    assert scores.loc["always-majority", "recall_down"] == 0.0
-    assert scores.loc["persistence", "accuracy"] == pytest.approx(22 / 35)
-    assert scores.loc["persistence", "recall_down"] == pytest.approx(1 / 6)
-    assert scores.loc["persistence", "recall_up"] == pytest.approx(1 / 4)
-
-
-def test_seasonal_baseline_chance_band_and_intervals_on_real_data(gold_from_validated_pipeline):
-    """On the same 35 test months: the seasonal rule is only marginally better than
-    persistence, both sit inside the band random guessing produces (so neither can be told
-    apart from luck), and the bootstrap intervals are wide. The interval and chance-band
-    checks use loose bounds, since random streams are not guaranteed identical across
-    NumPy versions."""
-    engine = gold_from_validated_pipeline
-    ready = model_ready_monthly(compute_monthly_features(load_monthly_gold(engine)))
-    predictions = compare_models(
-        ready,
-        {"persistence": PersistenceBaseline, "seasonal": SeasonalBaseline},
-        min_train=24,
-    )
-    scores = score_table(predictions)
-    assert scores.loc["seasonal", "accuracy"] == pytest.approx(23 / 35)
-    assert scores.loc["seasonal", "recall_down"] == pytest.approx(1 / 6)
-    assert scores.loc["seasonal", "precision_down"] == pytest.approx(1 / 3)
-
-    chance = simulate_scores(
-        ready, lambda seed: (lambda: StratifiedRandomBaseline(seed)), seeds=range(300), min_train=24
-    )
-    assert chance["balanced_accuracy"].mean() == pytest.approx(0.325, abs=0.03)
-    p95 = chance["balanced_accuracy"].quantile(0.95)
-    assert scores.loc["persistence", "balanced_accuracy"] < p95
-    assert scores.loc["seasonal", "balanced_accuracy"] < p95
-
-    interval = bootstrap_scores(
-        predictions["y_true"], predictions["persistence"], n_boot=500, seed=0
-    ).loc["balanced_accuracy"]
-    assert interval["lo"] < 0.32 and interval["hi"] > 0.5
-
-    difference = bootstrap_difference(
-        predictions["y_true"],
-        predictions["seasonal"],
-        predictions["persistence"],
-        metric="balanced_accuracy",
-        n_boot=500,
-        seed=0,
-    )
-    assert difference["lo"] < 0 < difference["hi"]  # no reliable difference between them
-
-
-def test_primary_logistic_regression_on_real_data_overfits_and_does_not_beat_chance(
-    gold_from_validated_pipeline,
-):
-    """Records the first trained model's result so a change to the data, features or model
-    that alters it is deliberate and visible: the pre-specified logistic regression scores
-    inside the range random guessing produces, and far better on its own training months
-    than on unseen ones. Bounds are loose because exact values can move slightly with the
-    scikit-learn version. If a later model genuinely beats chance, update this test."""
-    engine = gold_from_validated_pipeline
-    ready = model_ready_monthly(compute_monthly_features(load_monthly_gold(engine)))
-    predictions = compare_models(ready, {"logistic": make_logistic_regression}, min_train=24)
-    assert len(predictions) == 35
-
-    out_of_sample = score_table(predictions).loc["logistic"]
-    chance = simulate_scores(
-        ready, lambda seed: (lambda: StratifiedRandomBaseline(seed)), seeds=range(300), min_train=24
-    )
-    assert out_of_sample["balanced_accuracy"] < chance["balanced_accuracy"].quantile(0.95)
-
-    in_sample = in_sample_scores(ready, make_logistic_regression, min_train=24)
-    gap = in_sample["train_balanced_accuracy"].mean() - out_of_sample["balanced_accuracy"]
-    assert gap > 0.3

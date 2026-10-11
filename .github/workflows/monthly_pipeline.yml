@@ -1,12 +1,9 @@
-# Monthly publish: rebuilds the whole warehouse from the raw extracts, runs the model stage,
-# and publishes the result for the public site (app/streamlit_app.py).
+# Monthly publish: rebuilds the whole warehouse from the raw extracts and publishes it.
 #
 # Safety (src/oa_market_intelligence/publish.py): the build happens in a staging file and is
 # swapped in only if every stage and check passes. If anything fails the job turns red, no
-# commit is made, and the site keeps serving the last good database in data/published/.
-# On success the new database and run log are committed to main, which redeploys the site.
-# The publish step also computes and stores every Phase 4 result (findings, segment model,
-# forecast, direction panel, monitoring status) inside the database file, at full precision.
+# commit is made, and the last good database in data/published/ stays in place.
+# On success the new database and run log are committed to main.
 #
 # NMTA extracts arrive on a ~40-day lag after month end (PROPOSAL.md 19.1), so the 10th of
 # each month leaves a comfortable buffer, at 06:00 UTC (a quiet-hours choice, not
@@ -25,7 +22,7 @@ permissions:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 180  # the full publish includes the Phase 4 model fitting
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 

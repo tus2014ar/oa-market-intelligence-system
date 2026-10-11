@@ -4,6 +4,8 @@ Every significant decision on this project, why it was made, what was rejected, 
 
 **Status values:** **Decided** (in force), **Superseded**, **Proposed** (suggested, not yet approved), **Open** (a question waiting on a decision).
 
+**Scope note (11 Oct 2026).** This branch of the project is rolled back to the end of EDA. Entries that describe modelling, the website, feature engineering or the improvement round (DL-71 to DL-74, and the Phase 4 entries before DL-70) record work that now lives only in the git tag `archive/full-project-2026-10-11`; the decisions stay here as history. Feature engineering restarts from a new plan.
+
 ## Index
 
 | Part | Entries |
@@ -147,7 +149,7 @@ These follow from DL-26. Nothing here has been built or run. **Part G supersedes
 
 ## G. Final deliverable and plan (Oct 2026)
 
-What the course requires and the answers given on 6 Oct 2026. Plan: [`final_deliverable_plan.md`](final_deliverable_plan.md).
+What the course requires and the answers given on 6 Oct 2026. Plan: `final_deliverable_plan.md` (archived with the full build).
 
 **DL-28 · 6 Oct 2026 · The final deliverable is due at the end of October 2026.** Decided. About three and a half weeks. The plan is time-boxed, with a cut list (see the plan).
 
