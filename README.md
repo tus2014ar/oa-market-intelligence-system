@@ -12,6 +12,16 @@ Built as a capstone project for **DAAN 888 — Design and Implementation of Anal
 
 A newer, extended-release branded injectable (Zilretta) is trying to take visit share from decades-old generic corticosteroids and NSAIDs in a high-volume OA market (7.19M+ visits across 6 years in our extract). The system is built around a single stakeholder, an **OA/RA Injectable Brand Manager**, who needs an early signal on competitive share movement before it shows up in a standard quarterly business review.
 
+## The four stages at a glance
+
+**1. Data profiling.** Profiled the IQVIA NMTA extracts (nested pivot sheets; 72 months, 160 products, 50 specialties, 27 demographic groups, 7.19M+ visits) and 171 public CMS, CDC, SEC and FDA files (about 24 GB), and documented every raw field in a data dictionary ([`docs/data_dictionary.md`](docs/data_dictionary.md)). Profiling surfaced a likely mis-coded `PEDIATRICS` prescriber, miscoded oncology products in the RA extract, and a March to July 2024 volume dip across all three product classes.
+
+**2. Data cleaning and preprocessing.** A Pandera validation gate (schema, ranges, allowed values; no rows rejected on the real extracts), a 160-product taxonomy that maps every product to a treatment class, and 11 dataset-level quality checks against a stored baseline (an error stops the run; unmapped products are listed in the run log). The data problems above are documented and kept in the data, with nothing silently dropped; they are handled downstream by explicit sensitivity checks.
+
+**3. Data ingestion and warehouse modelling.** A re-runnable Bronze → Silver → Gold pipeline. The IQVIA warehouse is a **star schema** (4 dimensions: month, product, specialty, demographics; 2 fact tables; 149K+ fact rows; 2 Gold serving tables) with documented DDL ([`docs/database_schema.md`](docs/database_schema.md)) and Silver and Gold data dictionaries ([`docs/silver_gold_data_dictionary.md`](docs/silver_gold_data_dictionary.md)). The public data is a separate fact constellation (5 dimensions, 10 facts, column-level lineage in [`docs/external_data_lineage.md`](docs/external_data_lineage.md)) with 38 reconciliation checks passing. Every extract is SHA-256 audited, a golden regression test guards the warehouse, an as-of layer records when each outside value could have been known, and an atomic publish never replaces the last good database.
+
+**4. EDA and business findings.** Company net sales rose (+5% in 2023, +6% in 2024) while IQVIA Zilretta visits fell (-14%, -36%), so the size of the decline cannot be quoted as a market fact; orthopedic surgery and physician assistants are 64% of the net fall of 11,256 visits; Medicare billing does not confirm IQVIA's specialty ranking (rank correlation 0.35 against 0.6 needed); and a stable state ranking (0.92) puts Michigan, Arizona, Florida, Minnesota and Indiana first for room to grow. All twelve findings are in the table below.
+
 ## What is built
 
 | Stage | What exists | Where |
