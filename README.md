@@ -12,6 +12,16 @@ Built as a capstone project for **DAAN 888 — Design and Implementation of Anal
 
 A newer, extended-release branded injectable (Zilretta) is trying to take visit share from decades-old generic corticosteroids and NSAIDs in a high-volume OA market (7.19M+ visits across 6 years in our extract). The system is built around a single stakeholder, an **OA/RA Injectable Brand Manager**, who needs an early signal on competitive share movement before it shows up in a standard quarterly business review.
 
+## The four stages at a glance
+
+**1. Data profiling.** Profiled the IQVIA NMTA extracts (nested pivot sheets; 72 months, 160 products, 50 specialties, 27 demographic groups, 7.19M+ visits) and 171 public CMS, CDC, SEC and FDA files (about 24 GB), and documented every raw field in a data dictionary ([`docs/data_dictionary.md`](docs/data_dictionary.md)). Profiling surfaced a likely mis-coded `PEDIATRICS` prescriber, miscoded oncology products in the RA extract, and a March to July 2024 volume dip across all three product classes.
+
+**2. Data cleaning and preprocessing.** A Pandera validation gate (schema, ranges, allowed values; no rows rejected on the real extracts), a 160-product taxonomy that maps every product to a treatment class, and 11 dataset-level quality checks against a stored baseline (an error stops the run; unmapped products are listed in the run log). The data problems above are documented and kept in the data, with nothing silently dropped; they are handled downstream by explicit sensitivity checks.
+
+**3. Data ingestion and warehouse modelling.** A re-runnable Bronze → Silver → Gold pipeline. The IQVIA warehouse is a **star schema** (4 dimensions: month, product, specialty, demographics; 2 fact tables; 149K+ fact rows; 2 Gold serving tables) with documented DDL ([`docs/database_schema.md`](docs/database_schema.md)) and Silver and Gold data dictionaries ([`docs/silver_gold_data_dictionary.md`](docs/silver_gold_data_dictionary.md)). The public data is a separate fact constellation (5 dimensions, 10 facts, column-level lineage in [`docs/external_data_lineage.md`](docs/external_data_lineage.md)) with 38 reconciliation checks passing. Every extract is SHA-256 audited, a golden regression test guards the warehouse, an as-of layer records when each outside value could have been known, and an atomic publish never replaces the last good database.
+
+**4. EDA and business findings.** Company net sales rose (+5% in 2023, +6% in 2024) while IQVIA Zilretta visits fell (-14%, -36%), so the size of the decline cannot be quoted as a market fact; orthopedic surgery and physician assistants are 64% of the net fall of 11,256 visits; Medicare billing does not confirm IQVIA's specialty ranking (rank correlation 0.35 against 0.6 needed); and a stable state ranking (0.92) puts Michigan, Arizona, Florida, Minnesota and Indiana first for room to grow. All twelve findings are in the table below.
+
 ## What is built
 
 | Stage | What exists | Where |
@@ -24,12 +34,35 @@ A newer, extended-release branded injectable (Zilretta) is trying to take visit 
 | **EDA** | The share series, seasonality and persistence, the sparse segment panel, the outside series on their availability dates, a specialty triangulation against Medicare, and a diagnosis of the sales-versus-visits gap | notebooks 11, 12, 13 |
 | **Safety nets** | A golden regression test of the warehouse, an atomic publish with a run log, restatement checks | `golden.py`, `publish.py` |
 
-### What the EDA found (descriptive; no model)
-- Zilretta's share rose until early 2022 and has fallen since in IQVIA's data.
-- Two data problems shaped the cleaning: a likely mis-coded `PEDIATRICS` prescriber, and a March to July 2024 volume dip across all three product classes.
-- Company net sales kept rising while IQVIA's Zilretta visits fell by about half; age mix, care setting and value per visit do not explain the gap, so the size of the IQVIA decline is not a market fact until IQVIA is asked about panel coverage (notebook 12).
-- Medicare billing does not confirm the IQVIA specialty ranking (notebook 11).
-- The segment panel is sparse (most segment-months are small), and most public series are too lagged or too coarse for monthly use (notebook 13).
+## Key findings and business impact
+
+Everything below is descriptive or from pre-registered tests on the public data (rules written before the analysis ran; none of it is causal). IQVIA covers 72 months (Aug 2019 to Jul 2025), 160 products, 50 specialties and 7.19M+ visits; Zilretta's share of the three-class visit total rose from about 2.0% (2019) to a peak near 3.4% (Dec 2021) and has fallen since.
+
+| # | Finding | Evidence (quantified) | Business impact |
+|---|---|---|---|
+| 1 | **Company sales kept rising while IQVIA's Zilretta visits fell** | Visits -14% (2023) and -36% (2024) against net sales +5% and +6%; net sales per IQVIA visit +94% from 2021 to 2024 | The size of the IQVIA decline must not be quoted as a market fact: a target or forecast built on it could be wrong by a large factor. Ask IQVIA whether panel coverage changed (2024 in particular) before using it |
+| 2 | **No tested explanation accounts for the gap** | Age and payer mix ruled out (IQVIA 65+ visits -34% against Medicare Zilretta patients -1.5%, a 32-point gap against 15 allowed); care setting ruled out (facility share 0.05% to 0.09%); value per visit +10% in Medicare, about a ninth of the +94% | Narrows the search: the remaining causes (panel coverage, company-side adjustments) are untested and need data we do not hold |
+| 3 | **The fall is concentrated** | Orthopedic surgery and physician assistants are 64% of the net fall of 11,256 visits | Where a field or marketing review should look first |
+| 4 | **The IQVIA specialty ranking is not confirmed by Medicare billing** | Rank correlation 0.35 (95% interval 0.18 to 0.44) against 0.6 required; 1 of the top 3 specialties shared | Which specialties look "best" depends on the population (Original Medicare against IQVIA's panel); use both views, do not rely on one |
+| 5 | **Medicare adoption rose then eased, like the visits** | Share of billing injectors using Zilretta 1.08% (2019), 1.78% (2021 peak), 1.47% (2024): about a sixth below peak | Independent, provider-level support that the turn is real in direction, though smaller than IQVIA's fall |
+| 6 | **A stable state list exists** | 2022 vs 2024 state rank correlation 0.92 (51 states); 0.97 without the Medicare Advantage effect; most room to grow in Michigan, Arizona, Florida, Minnesota and Indiana | A defensible shortlist for territory prioritisation |
+| 7 | **Promotion fell before the turn, but nothing links it month by month** | Sharpest 6-month fall in payments -81%, coinciding with the Flexion acquisition (19 Nov 2021); no lag from 0 to 6 months passes the correction (smallest p = 0.11) | Do not attribute the share decline to promotion; the timing is suggestive only |
+| 8 | **The turn is not the end of pass-through status** | The detected break (March 2022) is 11 months after the 31 Mar 2021 end of pass-through | Removes a tempting but unsupported explanation |
+| 9 | **A data-capture dip in Mar to Jul 2024** | Zilretta -47%, corticosteroids -25%, NSAID/OTC -16% over the five months; Zilretta fell about twice as much as the others | Flagged months in every later analysis; results are re-checked without them |
+| 10 | **Price relative to the comparator rose, but not cleanly** | Ratio +11.7%, driven by the comparator's limit falling 14% while Zilretta's fell 4% | Not evidence that Zilretta's price moved the share |
+| 11 | **Zilretta did not dip in 2020 when most hyaluronic injectables did** | Zilretta Medicare patients 36,500 (2019), 53,400 (2021), 47,200 (2024, 12% below peak); Durolane patients 19,700 to 57,100 (almost threefold) | The competitor set is not moving as one; Durolane is the one competitor that stands out |
+| 12 | **The data is thin where it matters for modelling** | 60% of segment-months have fewer than 20 visits and 65% have no Zilretta visit; month-to-month changes have lag-12 autocorrelation +0.27 and lag-1 -0.19; only price and company sales are known for all 72 months | Sets realistic expectations for feature engineering: small effects at best, and "same as last month" will be hard to beat |
+
+### Data-quality findings that shaped the cleaning
+- A likely mis-coded `PEDIATRICS` prescriber and miscoded oncology products in the RA extract (RA has about 1,250 visits over 6 years, too sparse to model).
+- The Mar to Jul 2024 volume dip across all three product classes (finding 9).
+- 11 dataset-level quality checks run before every build against a stored baseline; an error stops the run, and a failed run never replaces the last good database.
+
+### Engineering outcomes
+- A re-runnable pipeline from raw Excel to a validated warehouse in about 2.5 minutes; every extract is hashed (SHA-256) per run, and a golden regression test rebuilds the warehouse from the real extracts and compares it with committed values.
+- 171 public files (about 24 GB) from CMS, CDC, SEC and FDA were profiled and loaded into a 27-table database with 38 reconciliation checks passing, restorable from a committed manifest.
+- A recorded "when could this value have been known" rule for 14 sources, so later features cannot use information from the future.
+- About 590 automated tests, run in parallel in CI on every pull request.
 
 ## Architecture in one picture
 
@@ -52,7 +85,25 @@ PYTHONPATH=src python -m pytest                            # the test suite (CI 
 
 The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this capstone. The Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A maintained product taxonomy (160 products: 145 OA + 15 RA) is in [`data/reference/`](data/reference/).
 
-FDA approval dates come from the free public openFDA Drugs@FDA API; a snapshot is committed so the work is reproducible without the internet. The public datasets (Medicare Part B and D, geographic variation, CDC, ASP price, SEC filings, OpenPayments) are restorable from the committed manifest ([`docs/external_data_refresh.md`](docs/external_data_refresh.md)); the full 134 MB database is local only.
+FDA approval dates come from the free public openFDA Drugs@FDA API; a snapshot is committed so the work is reproducible without the internet.
+
+### Public datasets added to the analysis
+
+171 public files (about 24 GB) were downloaded, profiled and loaded into a separate 27-table database (every load reconciled to the raw files; restorable from the committed manifest, see [`docs/external_data_refresh.md`](docs/external_data_refresh.md); the full 134 MB database is local only). Each dataset was added for a stated reason, in a protocol written before any analysis ran ([`docs/external_data_protocol.md`](docs/external_data_protocol.md)).
+
+| Dataset | Source | Rows loaded | What it added |
+|---|---|---|---|
+| Medicare Part B by provider and service | CMS | about 997K | The specialty ranking test against IQVIA (E1) and provider-level Zilretta adoption by year: 1.08% (2019), 1.78% (2021), 1.47% (2024) |
+| Medicare Part B and Part D by geography | CMS | 8.4K and 12.5K | State adoption and room to grow (stable state ranking, 0.92) and the Zilretta against hyaluronic-injectable comparison (E6) |
+| Medicare Geographic Variation, and Advantage variation | CMS | 1.8K | Original Medicare beneficiary denominators for the 65+ check in the gap diagnosis, and Medicare Advantage share as a state adjustment |
+| NPPES provider registry and NUCC taxonomy | CMS | about 32.5K counts | Provider counts by specialty and state (a snapshot denominator) and the specialty crosswalk |
+| ASP drug prices | CMS | 478 | The Zilretta to triamcinolone price ratio (+11.7%, not a clean test) |
+| Open Payments (promotion) | CMS | 1.9K by month, 2.8K by type | Promotion timing: the sharpest 6-month fall was -81%, before the turn |
+| Company filings | SEC | 45 | Quarterly net sales, which exposed the sales-versus-visits gap (E2b) |
+| Arthritis prevalence (PLACES) | CDC | 3.0K | State arthritis prevalence as context for room to grow |
+| Dated events (FDA, CMS and company documents) and openFDA approval dates | FDA, CMS, SEC | 14 events | The turn checks (end of pass-through status 31 Mar 2021, the Flexion acquisition 19 Nov 2021) and the FDA-event check on the competitive set |
+
+Two more files, Part D by provider and Medicaid drug utilisation, were downloaded and profiled but are not used in any rule or finding.
 
 ## Documentation
 
