@@ -2,7 +2,7 @@
 
 A monthly-refreshable analytics foundation that tracks Zilretta's visit share against generic corticosteroid injections and NSAIDs in Osteoarthritis (OA) and Rheumatoid Arthritis (RA), built on real IQVIA National Medical and Treatment Audit (NMTA) patient-visit data and a set of public datasets. Built around one stakeholder, an OA/RA Injectable Brand Manager.
 
-**Status:** data profiling, cleaning and preprocessing, ingestion, the data warehouse and exploratory data analysis (EDA) are complete and documented. **Next: feature engineering**, then modelling, then the deliverables. The earlier full build (features, models, website) is preserved in the git tag `archive/full-project-2026-10-11`.
+**Status:** data profiling, cleaning and preprocessing, ingestion, the data warehouse, exploratory data analysis (EDA) and **feature engineering** are complete and documented. **Next: modelling**, then the deliverables. The feature test found one input group that earns its place for segment share (specialty and market context, about 0.06% of log-loss) and none for the national share (DL-75, DL-76). The earlier full build (features, models, website) is preserved in the git tag `archive/full-project-2026-10-11`.
 
 Built as a capstone project for **DAAN 888 — Design and Implementation of Analytics System**, Penn State University, School of Graduate Professional Studies (Fall 2026).
 
@@ -116,6 +116,9 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/external_data_lineage.md`](docs/external_data_lineage.md) | Every column of the external-data database with its source file, original column and rule |
 | [`docs/external_data_refresh.md`](docs/external_data_refresh.md) | How to restore the raw public files, rebuild and verify the external database |
 | [`docs/external_data_results.md`](docs/external_data_results.md) | Results of the public-data analyses: each pre-registered rule, its verdict, the numbers, the limits |
+| [`docs/feature_engineering_plan.md`](docs/feature_engineering_plan.md) | The feature plan: targets, the base set and seven groups, the time rule, tests and the validation protocol, fixed before anything was built or run |
+| [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model input: definition, source and leakage rule |
+| [`docs/feature_results.md`](docs/feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
 
 **Notebooks** (executed end to end; each opens with the question, the answer in one line, and the method in plain words):
 
@@ -125,12 +128,13 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`10_external_raw_data_profile`](notebooks/10_external_raw_data_profile.ipynb) | Profile of the raw public files (structure only) |
 | [`11_external_analysis_results`](notebooks/11_external_analysis_results.ipynb), [`12_gap_diagnosis`](notebooks/12_gap_diagnosis.ipynb) | The pre-registered public-data analyses, then the sales-versus-visits gap diagnosis |
 | [`13_eda_unified_data`](notebooks/13_eda_unified_data.ipynb) | Descriptive EDA of the unified data before feature engineering. Runs from committed files only |
+| [`14_feature_groups_test`](notebooks/14_feature_groups_test.ipynb) | The pre-registered test of seven feature groups (DL-75): the stored result read back, effect sizes and the COVID and 2024-dip robustness runs. One group passes (about 0.06% of log-loss); the national forecast does not improve (DL-76). |
 
 Notebooks 10 to 12 need the local external database and run only on the author's machine; notebook 13 runs from committed files.
 
 ## Status
 
-**Phase 1 and 2 (data foundation, design and the pipeline code):** complete. **Profiling, cleaning, ingestion, warehouse and EDA:** complete, including the data layer (availability rules, ingest audit, quality stage, as-of mart, golden regression, public subset). **Next:** feature engineering, with a written plan and rules fixed before anything is built or run.
+**Phase 1 and 2 (data foundation, design and the pipeline code):** complete. **Profiling, cleaning, ingestion, warehouse and EDA:** complete, including the data layer (availability rules, ingest audit, quality stage, as-of mart, golden regression, public subset). **Feature engineering (DL-75, DL-76):** complete: a written plan with rules fixed first, seven groups built with leakage and as-of tests, one pre-registered run repeated for identical output. Result: specialty and market context improves segment share by about 0.06% of log-loss and is robust to COVID and the 2024 dip; competitor volumes, calendar, history, outside signals and flags add nothing in the main run, and no group improves the national forecast. **Next:** modelling, with a written plan first.
 
 The earlier full build (leak-safe features, evaluation harness, models, a Streamlit site with a Claude question box, and a feature and modelling improvement round, DL-71 to DL-74) is kept in the tag `archive/full-project-2026-10-11` and is not part of this branch of the project.
 
