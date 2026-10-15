@@ -17,7 +17,7 @@ Share = Zilretta visits divided by the visits of Zilretta, generic corticosteroi
 | Target | Grain | Rows | Test months |
 |---|---|---|---|
 | **T1** national share next month | one row per month | 72 | 48 |
-| **T2** segment share next month (specialty × age band × gender) | one row per segment-month | 21,636 | 46 |
+| **T2** segment share next month (specialty × age band × gender) | one row per scored segment-month | 21,636 in Gold; **8,450 scored** (a segment needs at least 20 category visits in the previous month, from the third month on: the harness's rule, unchanged) | 46 |
 
 ## 3. The forecast origin (the time rule)
 
@@ -28,8 +28,8 @@ Share = Zilretta visits divided by the visits of Zilretta, generic corticosteroi
 ## 4. The base set and the seven groups
 
 **Base set B0** (the reference every group is added to; deliberately small):
-- T2: the segment's last-month share, its 3-month mean share, log visits last month, the market share last month, the specialty's cumulative share to *t-1* and the month's sine and cosine.
-- T1: the national share's lags 1 to 3 and its 3-month mean.
+- **T2:** the Phase 4 reference's inputs, unchanged: the segment's last-month share, its 3-month mean share, last month's margin over the market, log visits last month, whether it was above the market last month, the segment's and the specialty's cumulative history shares (smoothed), the market share last month and its change, age band (ordinal), gender, the specialty (rare ones grouped) and the target month's sine and cosine.
+- **T1:** the national share's lags 1 to 3 and their mean, and the target month's sine and cosine.
 
 **Groups added one at a time to B0:**
 
@@ -37,7 +37,7 @@ Share = Zilretta visits divided by the visits of Zilretta, generic corticosteroi
 |---|---|---|---|
 | **G1 Recent history, extended** | share lags 2 and 3, 6-month mean and std, change over 1 and 3 months, log-visit change | T1, T2 | first months: zero-fill plus `*_missing` flag |
 | **G2 Calendar** | `is_dec`, `is_mar_apr`, `seasonal_gap` (the same calendar month's share in earlier years minus those years' mean) | T1, T2 | needs one prior year: zero-fill plus flag |
-| **G3 Segment history and pooling** | cumulative share to *t-1*, `shrunk_share` toward the specialty (k in {5, 20, 80} chosen inside the training window), months active, months since last Zilretta visit (cap 24), log cumulative Zilretta visits | T2 | first month has none: flag |
+| **G3 Segment history and pooling** | cumulative share to *t-1*, `shrunk_share` toward the specialty (k in {5, 20, 80} chosen inside the training window), months active, months since last Zilretta visit (cap 24), log cumulative Zilretta visits | T2 | first month has none: zero-fill plus `g3_missing` |
 | **G4 Market and specialty context, extended** | specialty share last month, its 3-month change | T2 | none |
 | **G5 Competitor volumes (new)** | triamcinolone IR's share of injectable-steroid visits last month, Zilretta-to-triamcinolone ratio, 3-month change in injectable-steroid visits | T1, T2 | none |
 | **G6 Outside signals (as-of)** | price ratio and its 4-quarter change, company net sales growth (with its reporting lag), months since the last event (cap 36), promotion in the last 6 months (from July 2020), Medicare adoption (annual, from January 2023) | T1, T2 | zero-fill plus `*_missing` flag |
@@ -87,3 +87,10 @@ Small effects at best. G1 and G3 have the most room (the panel can show a few pe
 - The EDA (notebook 13) was seen before this plan: the annual hint, the sparse segment panel and the availability of outside series motivated G2, G3 and G6, so those groups are EDA-informed and not a clean test.
 - The archived attempt was seen before this plan; the thresholds here are the same harness's, not tuned to its results.
 - Choices made at the planning stage: B0 is small on purpose so that groups can show a gain; T2 tests 7 groups and T1 tests 5, so their percentiles differ.
+
+## 11. Amendments made before any real run (14 Oct 2026)
+
+- The T2 row count is the harness's scored set (8,450 segment-months), not the 21,636 Gold rows; the minimum-history rule is the Phase 4 harness's and is unchanged.
+- B0 for T2 is the Phase 4 reference's full input list, written out above, rather than the short list first drafted; it is the model that serves, so it is the honest reference.
+- G3 gets a `g3_missing` indicator for the first month, where no prior exists.
+- The T-2 sensitivity leaves calendar and static columns (month sine and cosine, age, gender, December and March-April flags, the COVID and dip flags, the PEDIATRICS flag) as they are, because they are known for the target month whatever the publication lag.
