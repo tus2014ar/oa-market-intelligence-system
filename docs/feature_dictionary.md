@@ -1,6 +1,6 @@
 # Feature dictionary (DL-75)
 
-Every model input of the feature plan ([`feature_engineering_plan.md`](feature_engineering_plan.md)): its definition, its source and the rule that keeps it free of the future. Built by `features/groups.py` and `features/build.py`; written to the warehouse tables `feat_segment_month` (target T2) and `feat_monthly` (target T1). Checked by `tests/test_feature_groups.py`.
+Every model input of the feature plan ([`feature_engineering_plan.md`](feature_engineering_plan.md)): its definition, its source and the rule that keeps it free of the future. Built by `features/groups.py` and `features/build.py`; the warehouse tables `feat_segment_month` (target T2) and `feat_monthly` (target T1) hold the base set and the adopted group G4 only (DL-77); the other groups are built by `features/groups.py` and were tested (DL-76) but are not stored. Checked by `tests/test_feature_groups.py`.
 
 **Rules for every column.** For target month *t* it uses data through month *t-1* only (the main run); outside series come from the as-of table, so a value is used only once it was public. A column that can be missing is zero-filled and has a `*_missing` indicator (1 where it could not be computed), so no NaN is stored. The leakage test rewrites every IQVIA value from month *t* onward and requires month-*t* features not to move.
 

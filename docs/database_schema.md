@@ -360,3 +360,13 @@ So only price and company sales are fresh enough to be useful month by month; pr
 
 An **intended** change is accepted on purpose: `PYTHONPATH=src python -m oa_market_intelligence.golden --update` rewrites the file and the diff is reviewed in the pull request, so a change to the data or the tables is never silent. Float noise below 1e-6 (relative) is not a change.
 
+## 13. Feature tables (DL-77)
+
+Two tables are written into the warehouse by the publish step (`features/build.py`, `write_adopted_feature_tables`), after the build and its checks and before the atomic swap. They hold the base set B0 and the one group that passed the pre-registered test (G4, DL-76); the other groups are tested candidates documented in [`feature_results.md`](feature_results.md) and available in code, but not stored. They are rebuilt from the Gold tables on every run, so they are always consistent with the data, and a failure in this step keeps the last good database in place.
+
+| Table | Grain | Rows | Contents |
+|---|---|---|---|
+| `feat_segment_month` | one row per scored segment-month: a segment with at least 20 category visits in the previous month, from the third month on | 8,450 | keys (`month_id`, `specialty_name`, `age_band`, `gender`, `segment`), the base set B0, the G4 columns (`g4_logit_spec_share_lag1`, `g4_spec_change_3m`, `g4_missing`), the cumulative counts behind the history shares, and the targets (`y_share`, `y_visits`, `y_market`) |
+| `feat_monthly` | one row per month from the fourth | 69 | `share_lag1` to `share_lag3`, `share_roll3`, `month_sin`, `month_cos`, and the targets (`y_share`, `y_visits`) |
+
+Every feature for month *t* uses data through month *t-1* only (checked by a test that rewrites everything from month *t* onward). Definitions: [`feature_dictionary.md`](feature_dictionary.md).

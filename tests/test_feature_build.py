@@ -7,10 +7,12 @@ import pytest
 from sqlalchemy import create_engine
 
 from oa_market_intelligence.features.build import (
+    ADOPTED_GROUPS,
     MONTHLY_TABLE,
     SEGMENT_TABLE,
     build_feature_tables,
     monthly_base_columns,
+    write_adopted_feature_tables,
     write_feature_tables,
 )
 from oa_market_intelligence.features.candidate_families import KEYS
@@ -153,3 +155,53 @@ def test_the_tables_round_trip_through_a_sqlite_warehouse_and_the_build_is_deter
     assert len(segment) == len(first[0]) and len(monthly) == len(first[1])
     assert set(segment.columns) == set(first[0].columns)
     assert T2_GROUPS and T1_GROUPS
+
+
+def test_only_the_adopted_group_is_built_with_the_base_set_when_asked():
+    assert ADOPTED_GROUPS == ("G4",)
+    seg = _seg()
+    segment_table, monthly_table = build_feature_tables(seg, _monthly(seg), groups=ADOPTED_GROUPS)
+    assert set(GROUP_COLUMNS_T2["G4"]) <= set(segment_table.columns)
+    other = {c for g in T2_GROUPS if g != "G4" for c in GROUP_COLUMNS_T2[g]}
+    assert not other & set(segment_table.columns)
+    assert not {c for c in monthly_table.columns if c.startswith("g")}  # no T1 group adopted
+    assert {"share_lag1", "y_share"} <= set(monthly_table.columns)
+
+
+def test_the_adopted_tables_are_written_from_a_warehouse_without_outside_data():
+    seg = _seg()
+    monthly = _monthly(seg)
+    engine = create_engine("sqlite://")
+    specialties = pd.DataFrame({"specialty_id": [1, 2], "specialty_name": ["S1", "S2"]})
+    demographics = pd.DataFrame(
+        {
+            "demographic_id": [1, 2, 3, 4],
+            "age_band": ["40 TO 59", "40 TO 59", "65 TO 74", "65 TO 74"],
+            "gender": ["FEMALE", "MALE", "FEMALE", "MALE"],
+        }
+    )
+    merged = seg.merge(specialties.rename(columns={"specialty_name": "specialty_name"})).merge(
+        demographics, on=["age_band", "gender"]
+    )
+    gold = merged[
+        [
+            "month_id",
+            "specialty_id",
+            "demographic_id",
+            "branded_injectable_visits",
+            "total_category_visits",
+        ]
+    ].assign(
+        segment_visit_share=lambda f: f["branded_injectable_visits"] / f["total_category_visits"]
+    )
+    with engine.begin() as conn:
+        specialties.to_sql("dim_specialty", conn, index=False)
+        demographics.to_sql("dim_demographics", conn, index=False)
+        gold.to_sql("gold_segment_adoption", conn, index=False)
+        monthly.to_sql("gold_visit_share_monthly", conn, index=False)
+    counts = write_adopted_feature_tables(engine)
+    assert counts[SEGMENT_TABLE] > 0 and counts[MONTHLY_TABLE] > 0
+    with engine.connect() as conn:
+        stored = pd.read_sql(f"SELECT * FROM {SEGMENT_TABLE}", conn)
+    assert len(stored) == counts[SEGMENT_TABLE]
+    assert set(GROUP_COLUMNS_T2["G4"]) <= set(stored.columns)

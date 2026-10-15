@@ -33,6 +33,7 @@ def _publish(tmp_path, month_ids, **overrides):
         reference_dir=tmp_path / "ref",
         published_dir=tmp_path / "published",
         run_pipeline_fn=overrides.pop("run_pipeline_fn", _fake_pipeline(month_ids)),
+        features_fn=overrides.pop("features_fn", lambda engine: {}),
         **overrides,
     )
 
@@ -156,3 +157,30 @@ def test_the_extract_hashes_are_recorded_in_the_run_log(tmp_path):
     assert record["ingest_files"] == files
     assert _log(tmp_path)[-1]["ingest_files"] == files
     assert _publish(tmp_path / "again", MONTHS_2)["ingest_files"] == []  # no audit: empty list
+
+
+def test_the_feature_tables_are_built_in_the_staging_file_and_recorded_in_the_run_log(tmp_path):
+    def features(engine):
+        with engine.begin() as conn:
+            conn.execute(text("CREATE TABLE feat_monthly (month_id INTEGER)"))
+            conn.execute(text("INSERT INTO feat_monthly VALUES (201908), (201909)"))
+        return {"feat_monthly": 2}
+
+    record = _publish(tmp_path, MONTHS_2, features_fn=features)
+    assert record["status"] == "ok" and record["feature_tables"] == {"feat_monthly": 2}
+    engine = create_engine(f"sqlite:///{_db(tmp_path).as_posix()}")
+    with engine.connect() as conn:
+        assert conn.execute(text("SELECT COUNT(*) FROM feat_monthly")).scalar() == 2
+    assert _log(tmp_path)[-1]["feature_tables"] == {"feat_monthly": 2}
+
+
+def test_a_failing_feature_stage_keeps_the_last_good_database(tmp_path):
+    _publish(tmp_path, MONTHS_2)
+    before = _db(tmp_path).read_bytes()
+
+    def broken(engine):
+        raise RuntimeError("feature build failed")
+
+    record = _publish(tmp_path, MONTHS_3, features_fn=broken)
+    assert record["status"] == "failed" and "feature build failed" in record["error"]
+    assert _db(tmp_path).read_bytes() == before

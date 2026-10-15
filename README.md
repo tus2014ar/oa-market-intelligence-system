@@ -119,6 +119,7 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/feature_engineering_plan.md`](docs/feature_engineering_plan.md) | The feature plan: targets, the base set and seven groups, the time rule, tests and the validation protocol, fixed before anything was built or run |
 | [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model input: definition, source and leakage rule |
 | [`docs/feature_results.md`](docs/feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
+| [`docs/database_schema.md`](docs/database_schema.md) section 13 | The two feature tables the publish step writes into the warehouse (base set and G4) |
 
 **Notebooks** (executed end to end; each opens with the question, the answer in one line, and the method in plain words):
 
