@@ -21,6 +21,8 @@ from sqlalchemy import Engine, create_engine
 
 from oa_market_intelligence.features.candidate_families import KEYS
 from oa_market_intelligence.features.groups import (
+    T1_GROUPS,
+    T2_GROUPS,
     task_a_group_columns,
     task_b_group_columns,
 )
@@ -28,6 +30,8 @@ from oa_market_intelligence.features.segment_task import build_task_a_rows
 
 SEGMENT_TABLE = "feat_segment_month"
 MONTHLY_TABLE = "feat_monthly"
+# the groups adopted into the warehouse by DL-77: only G4 passed the pre-registered test (DL-76)
+ADOPTED_GROUPS = ("G4",)
 LABEL_COLUMNS = ["y_label", "y_raw_above"]  # the direction-style labels are out of scope
 
 
@@ -58,16 +62,25 @@ def build_feature_tables(
     monthly: pd.DataFrame,
     signals: pd.DataFrame | None = None,
     group_visits: pd.DataFrame | None = None,
+    groups: tuple[str, ...] | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """(feat_segment_month, feat_monthly) from the segment Gold table (`load_segment_gold`
-    output), the monthly Gold table, the long as-of signal table and the competitor group visits."""
+    output), the monthly Gold table, the long as-of signal table and the competitor group visits.
+    `groups` selects the groups to include (default: all that apply to each target); the base set
+    B0 is always included."""
     rows = build_task_a_rows(seg).drop(columns=LABEL_COLUMNS)
-    columns = task_a_group_columns(seg, signals, group_visits)
-    segment_table = rows.merge(columns, on=KEYS, how="left")
+    t2_groups = tuple(g for g in (groups or T2_GROUPS) if g in T2_GROUPS)
+    segment_table = rows
+    if t2_groups:
+        columns = task_a_group_columns(seg, signals, group_visits, t2_groups)
+        segment_table = rows.merge(columns, on=KEYS, how="left")
 
     base = monthly_base_columns(monthly)
-    groups = task_b_group_columns(monthly, signals, group_visits)
-    monthly_table = base.merge(groups, on="month_id", how="left")
+    t1_groups = tuple(g for g in (groups or T1_GROUPS) if g in T1_GROUPS)
+    monthly_table = base
+    if t1_groups:
+        national = task_b_group_columns(monthly, signals, group_visits, t1_groups)
+        monthly_table = base.merge(national, on="month_id", how="left")
     # the first months have no lags: they are kept with a stated rule, not dropped
     monthly_table = monthly_table.dropna(subset=["share_lag1", "share_lag2", "share_lag3"])
     return segment_table, monthly_table.reset_index(drop=True)
@@ -80,6 +93,20 @@ def write_feature_tables(
     with engine.begin() as conn:
         segment_table.to_sql(SEGMENT_TABLE, conn, if_exists="replace", index=False)
         monthly_table.to_sql(MONTHLY_TABLE, conn, if_exists="replace", index=False)
+
+
+def write_adopted_feature_tables(engine: Engine, groups: tuple[str, ...] = ADOPTED_GROUPS) -> dict:
+    """Build the feature tables from the Gold tables of a warehouse (the base set and the adopted
+    groups only, which need no outside data) and write them into it. Returns the row counts."""
+    from oa_market_intelligence.features.segment import load_segment_gold
+
+    with engine.connect() as conn:
+        monthly = pd.read_sql("SELECT * FROM gold_visit_share_monthly ORDER BY month_id", conn)
+    segment_table, monthly_table = build_feature_tables(
+        load_segment_gold(engine), monthly, groups=groups
+    )
+    write_feature_tables(engine, segment_table, monthly_table)
+    return {SEGMENT_TABLE: len(segment_table), MONTHLY_TABLE: len(monthly_table)}
 
 
 def main(argv: list[str] | None = None) -> int:
