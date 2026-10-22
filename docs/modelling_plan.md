@@ -87,3 +87,8 @@ A scheduled step after the monthly publish: refit the serving models on all data
 - With 72 months and overlapping origins, long-horizon conclusions are weaker; the number of test months is reported with every result.
 - The pass rule is a significance rule with no minimum effect size, so "promoted" is not "worth a change"; adoption into serving is a decision (DL-79).
 - The two demonstration cut-offs were fixed before any run and are not changed.
+
+## 13. Amendments made before any build (22 Oct 2026)
+
+- **Calendar columns follow the outcome month.** For horizons of 3 and 6 months a feature row of month *m* is paired with the outcome of month *m + h - 1*, so `month_sin` and `month_cos` are recomputed for the **outcome month** (which is known in advance), not taken from the row's own month. For h = 1 they are unchanged.
+- **Inputs used by the models, written out.** T2: B0 (the segment's last-month share, 3-month mean, margin over the market, whether it was above the market, log visits last month, the segment's and its specialty's cumulative history shares, the market share last month and its change, age band, gender, specialty with rare ones grouped, and the outcome month's sine and cosine) plus G4 (`g4_logit_spec_share_lag1`, `g4_spec_change_3m`, `g4_missing`). T1: the national share's lags 1 to 3, their mean and the outcome month's sine and cosine for the ridge; the ETS models use the share series itself. No other group is a model input, except in the labelled G5 hypothesis test.
