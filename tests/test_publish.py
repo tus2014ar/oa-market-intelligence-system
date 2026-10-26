@@ -34,6 +34,7 @@ def _publish(tmp_path, month_ids, **overrides):
         published_dir=tmp_path / "published",
         run_pipeline_fn=overrides.pop("run_pipeline_fn", _fake_pipeline(month_ids)),
         features_fn=overrides.pop("features_fn", lambda engine: {}),
+        model_tables_fn=overrides.pop("model_tables_fn", lambda engine: {}),
         **overrides,
     )
 
@@ -183,4 +184,31 @@ def test_a_failing_feature_stage_keeps_the_last_good_database(tmp_path):
 
     record = _publish(tmp_path, MONTHS_3, features_fn=broken)
     assert record["status"] == "failed" and "feature build failed" in record["error"]
+    assert _db(tmp_path).read_bytes() == before
+
+
+def test_the_model_tables_are_built_in_the_staging_file_and_recorded_in_the_run_log(tmp_path):
+    def model_tables(engine):
+        with engine.begin() as conn:
+            conn.execute(text("CREATE TABLE model_scores (task TEXT)"))
+            conn.execute(text("INSERT INTO model_scores VALUES ('T1'), ('T2'), ('T3')"))
+        return {"model_scores": 3}
+
+    record = _publish(tmp_path, MONTHS_2, model_tables_fn=model_tables)
+    assert record["status"] == "ok" and record["model_tables"] == {"model_scores": 3}
+    engine = create_engine(f"sqlite:///{_db(tmp_path).as_posix()}")
+    with engine.connect() as conn:
+        assert conn.execute(text("SELECT COUNT(*) FROM model_scores")).scalar() == 3
+    assert _log(tmp_path)[-1]["model_tables"] == {"model_scores": 3}
+
+
+def test_a_failing_model_table_stage_keeps_the_last_good_database(tmp_path):
+    _publish(tmp_path, MONTHS_2)
+    before = _db(tmp_path).read_bytes()
+
+    def broken(engine):
+        raise RuntimeError("model tables failed")
+
+    record = _publish(tmp_path, MONTHS_3, model_tables_fn=broken)
+    assert record["status"] == "failed" and "model tables failed" in record["error"]
     assert _db(tmp_path).read_bytes() == before

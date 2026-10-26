@@ -106,6 +106,15 @@ Data stopped at a cut-off and the serving models predicted the six following mon
 3. **The decline alert: handle with care.** The registered promotion is real under the rules but mostly reflects that unusually high months fall back. A reliable gain over a simple rule shows only at 1 month, and 1 month is the horizon a real user cannot act on, because the data arrive about 40 days late.
 4. **Null results are findings.** At national level and at 6 months nothing beats the baseline, which fits 72 months of data, one change in direction and no monthly drivers we can observe.
 
+## In the warehouse
+
+Every publish writes two tables from the stored results (`modeling/store.py`; nothing is refitted):
+
+- **`model_scores`** (222 rows): one row per task (T1, T2, T3), horizon, scenario and method. Columns: `kind` (baseline or model), `metric` (`mae_pp`, `log_loss`, `pr_auc`) and `higher_is_better`, `score`, `is_best_baseline`, `gain_over_best_baseline` with `gain_lower` and `gain_upper` (positive is better), `promoted`, `serving`, `n_test_months`, and where they apply `months_better`, `coverage_90`, `precision`, `recall`, `f1`, `n_alerts` and `bias_vs_actual`.
+- **`backtest_batch`** (174 rows): the batch demonstration. Columns: `level` (national or specialty), `cutoff_month_id`, `step`, `target_month_id`, `specialty_name`, `model`, `predicted_share`, `actual_share`, `lo90_share`, `hi90_share` (national only) and `visits` (specialty only). Shares are fractions.
+
+Model cards: [segment share](model_card_segment_share.md), [national share](model_card_national_share.md), [decline alert](model_card_decline_alert.md). Adoption into serving is recorded in DL-79.
+
 ## Disclosures and limits
 
 - The archived modelling results and the EDA were seen first, so this is a replication on the new feature set and horizons, not a blind test. G4 was chosen on the same test months.

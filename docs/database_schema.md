@@ -370,3 +370,15 @@ Two tables are written into the warehouse by the publish step (`features/build.p
 | `feat_monthly` | one row per month from the fourth | 69 | `share_lag1` to `share_lag3`, `share_roll3`, `month_sin`, `month_cos`, and the targets (`y_share`, `y_visits`) |
 
 Every feature for month *t* uses data through month *t-1* only (checked by a test that rewrites everything from month *t* onward). Definitions: [`feature_dictionary.md`](feature_dictionary.md).
+
+## 14. Model-result tables (DL-79)
+
+Two tables are written into the warehouse by the publish step (`modeling/store.py`, `write_model_tables`), after the feature tables and before the atomic swap. They are built from the stored results of the real modelling run (`data/reference/modelling_results.json`), so nothing is refitted at publish time, and a failure keeps the last good database in place.
+
+| Table | Grain | Rows | Contents |
+|---|---|---|---|
+| `model_scores` | one row per task (T1 national share, T2 segment share, T3 decline alert), horizon (1, 3, 6), scenario and method | 222 | `kind` (baseline or model), `metric` (`mae_pp`, `log_loss`, `pr_auc`), `higher_is_better`, `score`, `is_best_baseline`, `gain_over_best_baseline` with `gain_lower` and `gain_upper` (positive is better), `promoted`, `serving`, `n_test_months`, and where they apply `months_better`, `coverage_90`, `precision`, `recall`, `f1`, `n_alerts`, `bias_vs_actual` |
+| `backtest_batch` | one row per cut-off, step (1 to 6) and, for the specialty level, specialty | 174 | `level` (national or specialty), `cutoff_month_id`, `step`, `target_month_id`, `specialty_name`, `model`, `predicted_share`, `actual_share`, `lo90_share` and `hi90_share` (national only), `visits` (specialty only); shares are fractions |
+
+Results and reading: [`modelling_results.md`](modelling_results.md).
+
