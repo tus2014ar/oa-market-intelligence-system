@@ -1,0 +1,6113 @@
+{
+ "G5": {
+  "1": {
+   "estimate": -3.297350200005822e-05,
+   "high": -1.5477373969907079e-06,
+   "horizon": 1,
+   "log_loss_base": 0.11267216764206957,
+   "log_loss_with_g5": 0.11270514114406963,
+   "low": -6.675880662160779e-05,
+   "lower_percentile": 2.5,
+   "n_test_months": 46,
+   "n_valid": 2000,
+   "passes": false,
+   "share_positive": 0.021
+  },
+  "3": {
+   "estimate": 6.578596194600772e-06,
+   "high": 0.0001221300999244102,
+   "horizon": 3,
+   "log_loss_base": 0.1118667201189483,
+   "log_loss_with_g5": 0.1118601415227537,
+   "low": -0.00013326303097530197,
+   "lower_percentile": 2.5,
+   "n_test_months": 44,
+   "n_valid": 2000,
+   "passes": false,
+   "share_positive": 0.56
+  }
+ },
+ "T1": {
+  "1": {
+   "horizon": 1,
+   "scenarios": {
+    "dip_2024_removed": {
+     "best_baseline": "last_month",
+     "fallbacks": {
+      "ets_damped": 0,
+      "ets_seasonal": 0,
+      "last_month": 0,
+      "ridge": 0,
+      "same_month_last_year": 0
+     },
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "models": {
+      "ets_damped": {
+       "estimate": -0.03603857801694585,
+       "high": 0.009499544694554858,
+       "low": -0.07983434747473545,
+       "mae": 0.15909300045788158,
+       "promoted": false,
+       "share_positive": 0.0475
+      },
+      "ets_seasonal": {
+       "estimate": -0.034757401488353906,
+       "high": 0.01581874572012122,
+       "low": -0.06540670183094768,
+       "mae": 0.15781182392928964,
+       "promoted": false,
+       "share_positive": 0.072
+      },
+      "ridge": {
+       "estimate": -0.02187989332258561,
+       "high": 0.02013294664331418,
+       "low": -0.054458095533055285,
+       "mae": 0.14493431576352134,
+       "promoted": false,
+       "share_positive": 0.179
+      }
+     },
+     "n_test_months": 43,
+     "promoted": [],
+     "scenario": "dip_2024_removed",
+     "scores": {
+      "ets_damped": {
+       "cover80": 0.7674418604651163,
+       "cover90": 0.8837209302325582,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.15909300045788158,
+       "mase": 0.9753394994627282,
+       "rmse": 0.1931938862973104,
+       "score80": 0.6751878426008991,
+       "score90": 0.768059687226969,
+       "width80": 0.49096026615542226,
+       "width90": 0.6301406796156748
+      },
+      "ets_seasonal": {
+       "cover80": 0.6976744186046512,
+       "cover90": 0.813953488372093,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.15781182392928964,
+       "mase": 0.9680857160055069,
+       "rmse": 0.186854447710687,
+       "score80": 0.6717679868206514,
+       "score90": 0.7780528313764079,
+       "width80": 0.3809223180295523,
+       "width90": 0.4889085021962511
+      },
+      "last_month": {
+       "cover80": 0.8372093023255814,
+       "cover90": 0.9534883720930233,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.12305442244093573,
+       "mase": 0.7604151506097468,
+       "rmse": 0.15530241948541212,
+       "score80": 0.6078663544437383,
+       "score90": 0.7511381869485213,
+       "width80": 0.4689600896037599,
+       "width90": 0.641703082690296
+      },
+      "ridge": {
+       "cover80": 0.8604651162790697,
+       "cover90": 0.9534883720930233,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.14493431576352134,
+       "mase": 0.8912757749928034,
+       "rmse": 0.178313037615045,
+       "score80": 0.7274130198622932,
+       "score90": 0.9103853905548718,
+       "width80": 0.6362692102330165,
+       "width90": 0.9003511232901229
+      },
+      "same_month_last_year": {
+       "cover80": 0.7441860465116279,
+       "cover90": 0.7906976744186046,
+       "gate80": true,
+       "gate90": false,
+       "mae": 0.30822440212221647,
+       "mase": 1.9151011464661105,
+       "rmse": 0.3492070170878063,
+       "score80": 1.364626001030386,
+       "score90": 1.621377990952586,
+       "width80": 0.9101780286395904,
+       "width90": 1.1319405922725212
+      }
+     },
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    },
+    "main": {
+     "best_baseline": "last_month",
+     "fallbacks": {
+      "ets_damped": 0,
+      "ets_seasonal": 0,
+      "last_month": 0,
+      "ridge": 0,
+      "same_month_last_year": 0
+     },
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "models": {
+      "ets_damped": {
+       "estimate": -0.03377272983025978,
+       "high": 0.006680916589217879,
+       "low": -0.07597011691752396,
+       "mae": 0.15834664975617155,
+       "promoted": false,
+       "share_positive": 0.0455
+      },
+      "ets_seasonal": {
+       "estimate": -0.033346157043166486,
+       "high": 0.00972123596615236,
+       "low": -0.06279431069029198,
+       "mae": 0.15792007696907825,
+       "promoted": false,
+       "share_positive": 0.0465
+      },
+      "ridge": {
+       "estimate": -0.022024857997490294,
+       "high": 0.01742036077148385,
+       "low": -0.05160353035489697,
+       "mae": 0.14659877792340206,
+       "promoted": false,
+       "share_positive": 0.169
+      }
+     },
+     "n_test_months": 48,
+     "promoted": [],
+     "scenario": "main",
+     "scores": {
+      "ets_damped": {
+       "cover80": 0.75,
+       "cover90": 0.8958333333333334,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.15834664975617155,
+       "mase": 0.9754895409642934,
+       "rmse": 0.1928133421434252,
+       "score80": 0.6745414515649935,
+       "score90": 0.7546730677744572,
+       "width80": 0.4917237678689759,
+       "width90": 0.6311206234560062
+      },
+      "ets_seasonal": {
+       "cover80": 0.7083333333333334,
+       "cover90": 0.8125,
+       "gate80": true,
+       "gate90": false,
+       "mae": 0.15792007696907825,
+       "mase": 0.9740089075791879,
+       "rmse": 0.18854002991638388,
+       "score80": 0.684727977955197,
+       "score90": 0.8097050902296692,
+       "width80": 0.38304161828845973,
+       "width90": 0.4916285946304418
+      },
+      "last_month": {
+       "cover80": 0.8333333333333334,
+       "cover90": 0.9583333333333334,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.12457391992591177,
+       "mase": 0.7735928643110332,
+       "rmse": 0.15670428732552316,
+       "score80": 0.6105562744730907,
+       "score90": 0.7368225134355368,
+       "width80": 0.470263162231148,
+       "width90": 0.6387868992042101
+      },
+      "ridge": {
+       "cover80": 0.8333333333333334,
+       "cover90": 0.9583333333333334,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.14659877792340206,
+       "mase": 0.9062282568375534,
+       "rmse": 0.18252204969067526,
+       "score80": 0.7487733109128208,
+       "score90": 0.9077204375189756,
+       "width80": 0.6340417893596014,
+       "width90": 0.8987314064276383
+      },
+      "same_month_last_year": {
+       "cover80": 0.6875,
+       "cover90": 0.7291666666666666,
+       "gate80": true,
+       "gate90": false,
+       "mae": 0.3588184237700016,
+       "mase": 2.2462635642153423,
+       "rmse": 0.421985616889085,
+       "score80": 1.6630782846716243,
+       "score90": 2.0435207105451476,
+       "width80": 0.9305707255207819,
+       "width90": 1.1489056781779217
+      }
+     },
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    }
+   }
+  },
+  "3": {
+   "horizon": 3,
+   "scenarios": {
+    "dip_2024_removed": {
+     "best_baseline": "last_month",
+     "fallbacks": {
+      "ets_damped": 0,
+      "ets_seasonal": 0,
+      "last_month": 0,
+      "ridge": 0,
+      "same_month_last_year": 0
+     },
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "ets_damped": {
+       "estimate": -0.03232386421821176,
+       "high": 0.01705659302562598,
+       "low": -0.09286349609403456,
+       "mae": 0.20632282929771853,
+       "promoted": false,
+       "share_positive": 0.067
+      },
+      "ets_seasonal": {
+       "estimate": -0.05137585565316277,
+       "high": 0.0003370459354139493,
+       "low": -0.10159735895436735,
+       "mae": 0.22537482073266954,
+       "promoted": false,
+       "share_positive": 0.0085
+      },
+      "ridge": {
+       "estimate": -0.0823076743957806,
+       "high": 0.00050448890518022,
+       "low": -0.16711056867678803,
+       "mae": 0.25630663947528737,
+       "promoted": false,
+       "share_positive": 0.0095
+      }
+     },
+     "n_test_months": 41,
+     "promoted": [],
+     "scenario": "dip_2024_removed",
+     "scores": {
+      "ets_damped": {
+       "cover80": 0.6585365853658537,
+       "cover90": 0.7804878048780488,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.20632282929771853,
+       "mase": 1.2488201947287332,
+       "rmse": 0.2508995685160395,
+       "score80": 0.9863511361454171,
+       "score90": 1.1572270773655005,
+       "width80": 0.5720239043100792,
+       "width90": 0.734184732791098
+      },
+      "ets_seasonal": {
+       "cover80": 0.6341463414634146,
+       "cover90": 0.7804878048780488,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.22537482073266954,
+       "mase": 1.3750929599473498,
+       "rmse": 0.27165635605062977,
+       "score80": 1.0607027422697535,
+       "score90": 1.3733036002694674,
+       "width80": 0.5304058408817528,
+       "width90": 0.680768526672471
+      },
+      "last_month": {
+       "cover80": 0.8292682926829268,
+       "cover90": 0.9024390243902439,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.17399896507950677,
+       "mase": 1.058220716684965,
+       "rmse": 0.215515684645359,
+       "score80": 0.9288109772347962,
+       "score90": 1.110959718400628,
+       "width80": 0.6388596657588852,
+       "width90": 0.8474647542552566
+      },
+      "ridge": {
+       "cover80": 0.7804878048780488,
+       "cover90": 0.8780487804878049,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.25630663947528737,
+       "mase": 1.5734742470757996,
+       "rmse": 0.28793430652220026,
+       "score80": 1.097157555041888,
+       "score90": 1.3514339867770204,
+       "width80": 0.7753656770048796,
+       "width90": 1.0902178179946582
+      },
+      "same_month_last_year": {
+       "cover80": 0.7073170731707317,
+       "cover90": 0.7804878048780488,
+       "gate80": true,
+       "gate90": false,
+       "mae": 0.30212169726681143,
+       "mase": 1.8702582111113437,
+       "rmse": 0.3443405162134258,
+       "score80": 1.6442045341534732,
+       "score90": 2.086115394627101,
+       "width80": 0.9066043254566502,
+       "width90": 1.1316062563289202
+      }
+     },
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    },
+    "main": {
+     "best_baseline": "last_month",
+     "fallbacks": {
+      "ets_damped": 0,
+      "ets_seasonal": 0,
+      "last_month": 0,
+      "ridge": 0,
+      "same_month_last_year": 0
+     },
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "ets_damped": {
+       "estimate": -0.03284759986714608,
+       "high": 0.009384688697745513,
+       "low": -0.08934546515829364,
+       "mae": 0.2130294760707527,
+       "promoted": false,
+       "share_positive": 0.0455
+      },
+      "ets_seasonal": {
+       "estimate": -0.052139518888568354,
+       "high": -0.0037368715356289007,
+       "low": -0.09926080628989142,
+       "mae": 0.23232139509217498,
+       "promoted": false,
+       "share_positive": 0.0065
+      },
+      "ridge": {
+       "estimate": -0.09943911285627008,
+       "high": -0.014517174356655786,
+       "low": -0.18904357241812805,
+       "mae": 0.2796209890598767,
+       "promoted": false,
+       "share_positive": 0.0025
+      }
+     },
+     "n_test_months": 46,
+     "promoted": [],
+     "scenario": "main",
+     "scores": {
+      "ets_damped": {
+       "cover80": 0.6521739130434783,
+       "cover90": 0.7608695652173914,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.2130294760707527,
+       "mase": 1.3000501538274574,
+       "rmse": 0.25750250496454047,
+       "score80": 0.9925269589700835,
+       "score90": 1.1294537702176266,
+       "width80": 0.5796900090588755,
+       "width90": 0.7440240717140614
+      },
+      "ets_seasonal": {
+       "cover80": 0.6086956521739131,
+       "cover90": 0.7608695652173914,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.23232139509217498,
+       "mase": 1.4270012625543556,
+       "rmse": 0.2805719683055058,
+       "score80": 1.1056601713680825,
+       "score90": 1.4052374230556304,
+       "width80": 0.5359554133282864,
+       "width90": 0.687891325795136
+      },
+      "last_month": {
+       "cover80": 0.8043478260869565,
+       "cover90": 0.9130434782608695,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.18018187620360662,
+       "mase": 1.1045164553119906,
+       "rmse": 0.22456045583507547,
+       "score80": 0.9413465868733881,
+       "score90": 1.0863337931306705,
+       "width80": 0.6406877890267203,
+       "width90": 0.8514795859576221
+      },
+      "ridge": {
+       "cover80": 0.7391304347826086,
+       "cover90": 0.8260869565217391,
+       "gate80": true,
+       "gate90": true,
+       "mae": 0.2796209890598767,
+       "mase": 1.7298680063049512,
+       "rmse": 0.31602793757110537,
+       "score80": 1.1540587749283475,
+       "score90": 1.4207930155079245,
+       "width80": 0.7784265245787004,
+       "width90": 1.0684588948673668
+      },
+      "same_month_last_year": {
+       "cover80": 0.6304347826086957,
+       "cover90": 0.717391304347826,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.3555787964705226,
+       "mase": 2.2187591742849113,
+       "rmse": 0.42131205782100983,
+       "score80": 1.9783923422295528,
+       "score90": 2.610237551634195,
+       "width80": 0.9244890855953672,
+       "width90": 1.1392503913573366
+      }
+     },
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    }
+   }
+  },
+  "6": {
+   "horizon": 6,
+   "scenarios": {
+    "dip_2024_removed": {
+     "best_baseline": "last_month",
+     "fallbacks": {
+      "ets_damped": 0,
+      "ets_seasonal": 0,
+      "last_month": 0,
+      "ridge": 0,
+      "same_month_last_year": 0
+     },
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "ets_damped": {
+       "estimate": -0.02260260489846916,
+       "high": 0.03624610998561759,
+       "low": -0.09829118870319671,
+       "mae": 0.25102881212591155,
+       "promoted": false,
+       "share_positive": 0.1995
+      },
+      "ets_seasonal": {
+       "estimate": -0.038160348253078735,
+       "high": 0.008390000293918641,
+       "low": -0.08862266682265488,
+       "mae": 0.2665865554805211,
+       "promoted": false,
+       "share_positive": 0.0355
+      },
+      "ridge": {
+       "estimate": -0.1350670652345793,
+       "high": 0.06417959068452861,
+       "low": -0.3358626048687854,
+       "mae": 0.3634932724620217,
+       "promoted": false,
+       "share_positive": 0.0595
+      }
+     },
+     "n_test_months": 38,
+     "promoted": [],
+     "scenario": "dip_2024_removed",
+     "scores": {
+      "ets_damped": {
+       "cover80": 0.5526315789473685,
+       "cover90": 0.7105263157894737,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.25102881212591155,
+       "mase": 1.5153241129643784,
+       "rmse": 0.3007637559089218,
+       "score80": 1.2162331233089454,
+       "score90": 1.3662883569231852,
+       "width80": 0.6538354788284398,
+       "width90": 0.8391887518966039
+      },
+      "ets_seasonal": {
+       "cover80": 0.631578947368421,
+       "cover90": 0.7631578947368421,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.2665865554805211,
+       "mase": 1.6078728891437448,
+       "rmse": 0.3160885712626109,
+       "score80": 1.2585664558398555,
+       "score90": 1.5568887342439608,
+       "width80": 0.6822109355157662,
+       "width90": 0.8756082562719265
+      },
+      "last_month": {
+       "cover80": 0.6842105263157895,
+       "cover90": 0.7631578947368421,
+       "gate80": true,
+       "gate90": false,
+       "mae": 0.2284262072274424,
+       "mase": 1.3810456177103505,
+       "rmse": 0.28086150470761095,
+       "score80": 1.4939605598176278,
+       "score90": 1.597938720852929,
+       "width80": 0.8616981217150504,
+       "width90": 1.1099049331558661
+      },
+      "ridge": {
+       "cover80": 0.42105263157894735,
+       "cover90": 0.5263157894736842,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.3634932724620217,
+       "mase": 2.258189004562234,
+       "rmse": 0.41910465981739775,
+       "score80": 1.8366115757128305,
+       "score90": 2.7230535694824582,
+       "width80": 0.6838338165689278,
+       "width90": 0.8065872346027841
+      },
+      "same_month_last_year": {
+       "cover80": 0.631578947368421,
+       "cover90": 0.7631578947368421,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.30141123498537087,
+       "mase": 1.8444803168647363,
+       "rmse": 0.3465180998097515,
+       "score80": 1.9944699912159465,
+       "score90": 2.672205983781788,
+       "width80": 0.893781977745698,
+       "width90": 1.1163074036095892
+      }
+     },
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    },
+    "main": {
+     "best_baseline": "last_month",
+     "fallbacks": {
+      "ets_damped": 0,
+      "ets_seasonal": 0,
+      "last_month": 0,
+      "ridge": 0,
+      "same_month_last_year": 0
+     },
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "ets_damped": {
+       "estimate": -0.02368496042757942,
+       "high": 0.02610697944848017,
+       "low": -0.09264186173177735,
+       "mae": 0.26303806778718275,
+       "promoted": false,
+       "share_positive": 0.154
+      },
+      "ets_seasonal": {
+       "estimate": -0.03925493093422036,
+       "high": 0.011376525830116536,
+       "low": -0.09574753090733402,
+       "mae": 0.2786080382938237,
+       "promoted": false,
+       "share_positive": 0.0375
+      },
+      "ridge": {
+       "estimate": -0.16232856758327344,
+       "high": 0.022629466781457528,
+       "low": -0.34748766996180425,
+       "mae": 0.40168167494287677,
+       "promoted": false,
+       "share_positive": 0.0225
+      }
+     },
+     "n_test_months": 43,
+     "promoted": [],
+     "scenario": "main",
+     "scores": {
+      "ets_damped": {
+       "cover80": 0.5581395348837209,
+       "cover90": 0.7209302325581395,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.26303806778718275,
+       "mase": 1.5960047639790949,
+       "rmse": 0.3117466564256258,
+       "score80": 1.214610971446861,
+       "score90": 1.3323212427246198,
+       "width80": 0.6735663131852597,
+       "width90": 0.8645130036295433
+      },
+      "ets_seasonal": {
+       "cover80": 0.627906976744186,
+       "cover90": 0.7674418604651163,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.2786080382938237,
+       "mase": 1.6881225680077845,
+       "rmse": 0.3257458384661861,
+       "score80": 1.2604983066252125,
+       "score90": 1.5136861469442138,
+       "width80": 0.6957392096371489,
+       "width90": 0.8929716081285443
+      },
+      "last_month": {
+       "cover80": 0.6744186046511628,
+       "cover90": 0.7674418604651163,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.23935310735960333,
+       "mase": 1.454397818961831,
+       "rmse": 0.29285580166985015,
+       "score80": 1.4662980892190833,
+       "score90": 1.5703740676584401,
+       "width80": 0.8664523661848734,
+       "width90": 1.1114728218674004
+      },
+      "ridge": {
+       "cover80": 0.37209302325581395,
+       "cover90": 0.46511627906976744,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.40168167494287677,
+       "mase": 2.4960951080059517,
+       "rmse": 0.46119506152537276,
+       "score80": 2.0339353984110393,
+       "score90": 2.989513935563635,
+       "width80": 0.6935993626113323,
+       "width90": 0.8212183633561205
+      },
+      "same_month_last_year": {
+       "cover80": 0.5581395348837209,
+       "cover90": 0.6744186046511628,
+       "gate80": false,
+       "gate90": false,
+       "mae": 0.3586805111429968,
+       "mase": 2.2036978332803616,
+       "rmse": 0.42772065488605887,
+       "score80": 2.344998657999661,
+       "score90": 3.233410513949692,
+       "width80": 0.9132742995354802,
+       "width90": 1.1220107897496667
+      }
+     },
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    }
+   }
+  }
+ },
+ "T2": {
+  "1": {
+   "calibration": {
+    "gbm": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 985,
+       "ratio_minus_one": 0.04623501309208633
+      },
+      "200 to 999": {
+       "n_rows": 1459,
+       "ratio_minus_one": 0.041281743876476096
+      },
+      "50 to 199": {
+       "n_rows": 2157,
+       "ratio_minus_one": 0.028990281803034756
+      },
+      "under 50": {
+       "n_rows": 921,
+       "ratio_minus_one": -0.030071742336873042
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 420,
+       "ratio_minus_one": 0.1805680533185079
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 1,
+       "ratio_minus_one": null
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 468,
+       "ratio_minus_one": -0.005247100743857147
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": -0.12556493005410674
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 459,
+       "ratio_minus_one": 0.10704222690392773
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 548,
+       "ratio_minus_one": 0.06317372649927311
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": null
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 565,
+       "ratio_minus_one": 0.04092666171837123
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 544,
+       "ratio_minus_one": 0.07144113163647003
+      },
+      "OTHER": {
+       "n_rows": 81,
+       "ratio_minus_one": null
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 0.7271169370790236
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 431,
+       "ratio_minus_one": 0.07413179128276415
+      },
+      "PEDIATRICS": {
+       "n_rows": 9,
+       "ratio_minus_one": -0.6683194902739301
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 463,
+       "ratio_minus_one": -0.0783515091288618
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 552,
+       "ratio_minus_one": 0.04488035714094574
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 438,
+       "ratio_minus_one": 0.2698866886027411
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 480,
+       "ratio_minus_one": 0.0249459947406101
+      }
+     },
+     "ratio_minus_one": 0.043344953979638445,
+     "slope": 1.0579490225746386
+    },
+    "logistic": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 985,
+       "ratio_minus_one": 0.05660881169569598
+      },
+      "200 to 999": {
+       "n_rows": 1459,
+       "ratio_minus_one": 0.060430726470408036
+      },
+      "50 to 199": {
+       "n_rows": 2157,
+       "ratio_minus_one": 0.033013952840953875
+      },
+      "under 50": {
+       "n_rows": 921,
+       "ratio_minus_one": -0.04553490078588518
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 420,
+       "ratio_minus_one": 0.09585334987832517
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 1,
+       "ratio_minus_one": null
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 468,
+       "ratio_minus_one": 0.09892703961634064
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": 0.020816119089413387
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 459,
+       "ratio_minus_one": 0.17124004838087514
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 548,
+       "ratio_minus_one": 0.07457849994441523
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": null
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 565,
+       "ratio_minus_one": 0.046838217770568846
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 544,
+       "ratio_minus_one": 0.06459725159541252
+      },
+      "OTHER": {
+       "n_rows": 81,
+       "ratio_minus_one": null
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 0.627003540138771
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 431,
+       "ratio_minus_one": 0.0104245404883887
+      },
+      "PEDIATRICS": {
+       "n_rows": 9,
+       "ratio_minus_one": -0.11849728378082003
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 463,
+       "ratio_minus_one": -0.05093372709849775
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 552,
+       "ratio_minus_one": 0.06249708238111662
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 438,
+       "ratio_minus_one": 0.23026140679489648
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 480,
+       "ratio_minus_one": 0.06893846500643641
+      }
+     },
+     "ratio_minus_one": 0.054939061729910366,
+     "slope": 1.0861810949691013
+    },
+    "rf": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 985,
+       "ratio_minus_one": 0.04267266924650692
+      },
+      "200 to 999": {
+       "n_rows": 1459,
+       "ratio_minus_one": 0.026162115766076965
+      },
+      "50 to 199": {
+       "n_rows": 2157,
+       "ratio_minus_one": 0.03986445812353967
+      },
+      "under 50": {
+       "n_rows": 921,
+       "ratio_minus_one": 0.017703250289505146
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 420,
+       "ratio_minus_one": 0.2100327752245723
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 1,
+       "ratio_minus_one": null
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 468,
+       "ratio_minus_one": 0.0221434860880243
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": -0.0028830729076521067
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 459,
+       "ratio_minus_one": 0.07354492125500145
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 548,
+       "ratio_minus_one": 0.028006224934720603
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": null
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 565,
+       "ratio_minus_one": 0.040322132881920325
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 544,
+       "ratio_minus_one": 0.040470983271536864
+      },
+      "OTHER": {
+       "n_rows": 81,
+       "ratio_minus_one": null
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 1.4331445728613126
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 431,
+       "ratio_minus_one": 0.17263897524466598
+      },
+      "PEDIATRICS": {
+       "n_rows": 9,
+       "ratio_minus_one": -0.7188875418253017
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 463,
+       "ratio_minus_one": -0.08985320442847622
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 552,
+       "ratio_minus_one": 0.04799648272607171
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 438,
+       "ratio_minus_one": 0.4351010859714861
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 480,
+       "ratio_minus_one": 0.012329164443065421
+      }
+     },
+     "ratio_minus_one": 0.03874601232232333,
+     "slope": 1.069152137990396
+    }
+   },
+   "horizon": 1,
+   "n_paired_rows": 8450,
+   "scenarios": {
+    "covid_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.11317303511469055,
+      "market": 0.1156637647702867,
+      "segment_history": 0.11349001022389628,
+      "specialty_history": 0.11493594807690649
+     },
+     "best_baseline": "last_month",
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "models": {
+      "gbm": {
+       "estimate": 0.0005020202200544388,
+       "high": 0.00056163876793888,
+       "log_loss": 0.11267101489463612,
+       "low": 0.00044662422815904733,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0044358642458045515,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.000492264011262053,
+       "high": 0.0005460214133378488,
+       "log_loss": 0.1126807711034285,
+       "low": 0.00043412354550403676,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.004349658120975445,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.0004629064270859906,
+       "high": 0.0005198755857708903,
+       "log_loss": 0.11271012868760456,
+       "low": 0.0004075183562159445,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0040902537129703835,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "gbm is not clearly better than logistic"
+    },
+    "dip_2024_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.114808759358171,
+      "market": 0.11727717745194552,
+      "segment_history": 0.11507473082819389,
+      "specialty_history": 0.11651491997528715
+     },
+     "best_baseline": "last_month",
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "models": {
+      "gbm": {
+       "estimate": 0.00047766150195814594,
+       "high": 0.0005398136887865952,
+       "log_loss": 0.11433109785621286,
+       "low": 0.00041956007976417587,
+       "months_better": 41,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.004160497026781524,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.0004840166286788766,
+       "high": 0.0005452649003075752,
+       "log_loss": 0.11432474272949213,
+       "low": 0.0004266307042085769,
+       "months_better": 41,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.004215851049908841,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.00043842671015247026,
+       "high": 0.0004972099005968405,
+       "log_loss": 0.11437033264801853,
+       "low": 0.00038390854686357404,
+       "months_better": 41,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.003818756622782608,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 41,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "main": {
+     "baseline_log_loss": {
+      "last_month": 0.11317303511469055,
+      "market": 0.1156637647702867,
+      "segment_history": 0.11349001022389628,
+      "specialty_history": 0.11493594807690649
+     },
+     "best_baseline": "last_month",
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "models": {
+      "gbm": {
+       "estimate": 0.0004927297357453786,
+       "high": 0.0005505009154749366,
+       "log_loss": 0.11268030537894518,
+       "low": 0.0004351069845218441,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.004353773275109587,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.0005008674726209861,
+       "high": 0.0005583762765169633,
+       "log_loss": 0.11267216764206957,
+       "low": 0.0004419077726558298,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.004425678538296712,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.0004554579598846642,
+       "high": 0.0005127740517829076,
+       "log_loss": 0.11271757715480589,
+       "low": 0.00040111803981427997,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.004024438855272363,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "pediatrics_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.11313986889378137,
+      "market": 0.11557831631048618,
+      "segment_history": 0.11345698496108897,
+      "specialty_history": 0.11489542896563001
+     },
+     "best_baseline": "last_month",
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "models": {
+      "gbm": {
+       "estimate": 0.00050686590735885,
+       "high": 0.0005656746613719879,
+       "log_loss": 0.11263300298642252,
+       "low": 0.00044839519782970035,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.004479993766253245,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.0005010818236568793,
+       "high": 0.0005578893207475781,
+       "log_loss": 0.1126387870701245,
+       "low": 0.0004422527346221924,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0044288704641094094,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.0004705384794812667,
+       "high": 0.0005252965186716865,
+       "log_loss": 0.1126693304143001,
+       "low": 0.0004146113416049216,
+       "months_better": 46,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.00415890953456045,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "gbm is not clearly better than logistic"
+    }
+   }
+  },
+  "3": {
+   "calibration": {
+    "gbm": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 943,
+       "ratio_minus_one": 0.11288369237154172
+      },
+      "200 to 999": {
+       "n_rows": 1407,
+       "ratio_minus_one": 0.10675806745657868
+      },
+      "50 to 199": {
+       "n_rows": 2073,
+       "ratio_minus_one": 0.05124538471272899
+      },
+      "under 50": {
+       "n_rows": 867,
+       "ratio_minus_one": 0.02305198903028116
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 404,
+       "ratio_minus_one": 0.2606540623641216
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 448,
+       "ratio_minus_one": 0.048613309495112667
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": -0.2153807985949142
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 439,
+       "ratio_minus_one": 0.16264937825993586
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 524,
+       "ratio_minus_one": 0.13711905125692425
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": -0.2955458994200688
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 540,
+       "ratio_minus_one": 0.09468478905260236
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 520,
+       "ratio_minus_one": 0.14807189914655106
+      },
+      "OTHER": {
+       "n_rows": 80,
+       "ratio_minus_one": 3.7105673548895473
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 1.2264487288855075
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 415,
+       "ratio_minus_one": 0.05659923727121963
+      },
+      "PEDIATRICS": {
+       "n_rows": 6,
+       "ratio_minus_one": -0.8062104569243446
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 443,
+       "ratio_minus_one": -0.09063887932448211
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 528,
+       "ratio_minus_one": 0.12704275889227445
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 420,
+       "ratio_minus_one": 0.3443143064361578
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 460,
+       "ratio_minus_one": 0.0820647533977179
+      }
+     },
+     "ratio_minus_one": 0.10650455200732023,
+     "slope": 1.0683429974921095
+    },
+    "logistic": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 943,
+       "ratio_minus_one": 0.1109960366040108
+      },
+      "200 to 999": {
+       "n_rows": 1407,
+       "ratio_minus_one": 0.12447411863265834
+      },
+      "50 to 199": {
+       "n_rows": 2073,
+       "ratio_minus_one": 0.05271434611980674
+      },
+      "under 50": {
+       "n_rows": 867,
+       "ratio_minus_one": 0.03850798098967223
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 404,
+       "ratio_minus_one": 0.18548927443483776
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 448,
+       "ratio_minus_one": 0.1282827796229864
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": -0.041411092493240376
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 439,
+       "ratio_minus_one": 0.3989960667679424
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 524,
+       "ratio_minus_one": 0.1499104033307621
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": 0.02468362323646134
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 540,
+       "ratio_minus_one": 0.09570079744663862
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 520,
+       "ratio_minus_one": 0.149873756435698
+      },
+      "OTHER": {
+       "n_rows": 80,
+       "ratio_minus_one": 3.489703662615222
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 1.36725957246018
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 415,
+       "ratio_minus_one": 0.029136049920581275
+      },
+      "PEDIATRICS": {
+       "n_rows": 6,
+       "ratio_minus_one": -0.23008701249948205
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 443,
+       "ratio_minus_one": -0.0750883034673
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 528,
+       "ratio_minus_one": 0.11928675062492688
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 420,
+       "ratio_minus_one": 0.316447713928671
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 460,
+       "ratio_minus_one": 0.11827093725693483
+      }
+     },
+     "ratio_minus_one": 0.10917395769961336,
+     "slope": 1.0933689532900086
+    },
+    "rf": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 943,
+       "ratio_minus_one": 0.10951238610823855
+      },
+      "200 to 999": {
+       "n_rows": 1407,
+       "ratio_minus_one": 0.07420516565613
+      },
+      "50 to 199": {
+       "n_rows": 2073,
+       "ratio_minus_one": 0.05513027608576837
+      },
+      "under 50": {
+       "n_rows": 867,
+       "ratio_minus_one": 0.09495921202937474
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 404,
+       "ratio_minus_one": 0.30464378669019676
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 448,
+       "ratio_minus_one": 0.03301105477463251
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": -0.05477736767445862
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 439,
+       "ratio_minus_one": 0.15369300097897565
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 524,
+       "ratio_minus_one": 0.07757823606737824
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": -0.1976581266718036
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 540,
+       "ratio_minus_one": 0.10742658942060435
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 520,
+       "ratio_minus_one": 0.10679664901320618
+      },
+      "OTHER": {
+       "n_rows": 80,
+       "ratio_minus_one": 4.267855788203233
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 2.642427813879892
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 415,
+       "ratio_minus_one": 0.17846297454981674
+      },
+      "PEDIATRICS": {
+       "n_rows": 6,
+       "ratio_minus_one": -0.7496733803500102
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 443,
+       "ratio_minus_one": -0.10512817161269072
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 528,
+       "ratio_minus_one": 0.11481839326345633
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 420,
+       "ratio_minus_one": 0.5306578786194722
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 460,
+       "ratio_minus_one": 0.05335055398064115
+      }
+     },
+     "ratio_minus_one": 0.09796020718415721,
+     "slope": 1.104998140657788
+    }
+   },
+   "horizon": 3,
+   "n_paired_rows": 8218,
+   "scenarios": {
+    "covid_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.11209727396337016,
+      "market": 0.11464694524842285,
+      "segment_history": 0.11251659993990128,
+      "specialty_history": 0.11395714823507679
+     },
+     "best_baseline": "last_month",
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": 0.0003017174800054173,
+       "high": 0.00039430200483935875,
+       "log_loss": 0.11179555648336474,
+       "low": 0.00021066776371567384,
+       "months_better": 39,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0026915683971405857,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.000291092076608393,
+       "high": 0.0003983270472620392,
+       "log_loss": 0.11180618188676177,
+       "low": 0.00018051065531659224,
+       "months_better": 35,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.002596781048426857,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.0002701071527094756,
+       "high": 0.0003508746362266402,
+       "log_loss": 0.11182716681066068,
+       "low": 0.00018831515491728155,
+       "months_better": 40,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.002409578245388359,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "gbm is not clearly better than logistic"
+    },
+    "dip_2024_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.1137253332863695,
+      "market": 0.1162302952053721,
+      "segment_history": 0.11407835473208133,
+      "specialty_history": 0.11551352756881163
+     },
+     "best_baseline": "last_month",
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": 0.00019496593589286848,
+       "high": 0.000305972768216619,
+       "log_loss": 0.11353036735047663,
+       "low": 6.627211419039785e-05,
+       "months_better": 32,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.001714358008535606,
+       "share_positive": 0.9995
+      },
+      "logistic": {
+       "estimate": 0.00022283817402318773,
+       "high": 0.0003314377713568693,
+       "log_loss": 0.11350249511234631,
+       "low": 0.00010424333696636296,
+       "months_better": 27,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0019594418198983278,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.00019612073240873884,
+       "high": 0.00028364501240166255,
+       "log_loss": 0.11352921255396076,
+       "low": 0.00010683801538214899,
+       "months_better": 30,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0017245122677714308,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 39,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "main": {
+     "baseline_log_loss": {
+      "last_month": 0.11209727396337016,
+      "market": 0.11464694524842285,
+      "segment_history": 0.11251659993990128,
+      "specialty_history": 0.11395714823507679
+     },
+     "best_baseline": "last_month",
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": 0.00018271708982468826,
+       "high": 0.0002959954402939554,
+       "log_loss": 0.11191455687354547,
+       "low": 5.307181863477399e-05,
+       "months_better": 35,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0016299869155104916,
+       "share_positive": 0.998
+      },
+      "logistic": {
+       "estimate": 0.00023055384442186022,
+       "high": 0.0003490812721252631,
+       "log_loss": 0.1118667201189483,
+       "low": 0.00011302410917371589,
+       "months_better": 33,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0020567301618520887,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.00018990686331996076,
+       "high": 0.0002779461996974622,
+       "log_loss": 0.1119073671000502,
+       "low": 0.00010012040974940126,
+       "months_better": 36,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0016941256161324345,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "pediatrics_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.11206800294115735,
+      "market": 0.11456697653704977,
+      "segment_history": 0.11248744148891794,
+      "specialty_history": 0.11391904078195864
+     },
+     "best_baseline": "last_month",
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": 0.0002029503188847176,
+       "high": 0.0003121454684031901,
+       "log_loss": 0.11186505262227263,
+       "low": 7.029105191191342e-05,
+       "months_better": 36,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0018109568615341447,
+       "share_positive": 0.9995
+      },
+      "logistic": {
+       "estimate": 0.00023086277535637467,
+       "high": 0.00035006217424755583,
+       "log_loss": 0.11183714016580097,
+       "low": 0.00011349393971567522,
+       "months_better": 33,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.0020600239970153832,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.00020623813746352415,
+       "high": 0.0002933871805964092,
+       "log_loss": 0.11186176480369382,
+       "low": 0.00011578345896203468,
+       "months_better": 36,
+       "n_valid": 2000,
+       "promoted": true,
+       "relative_gain": 0.001840294571607669,
+       "share_positive": 1.0
+      }
+     },
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    }
+   }
+  },
+  "6": {
+   "calibration": {
+    "gbm": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 881,
+       "ratio_minus_one": 0.19612927735667185
+      },
+      "200 to 999": {
+       "n_rows": 1337,
+       "ratio_minus_one": 0.1796969647001634
+      },
+      "50 to 199": {
+       "n_rows": 1939,
+       "ratio_minus_one": 0.07921797943374198
+      },
+      "under 50": {
+       "n_rows": 794,
+       "ratio_minus_one": 0.0867283334798501
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 384,
+       "ratio_minus_one": 0.39215107190066867
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 416,
+       "ratio_minus_one": 0.01605545007448228
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": -0.05409885909105461
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 410,
+       "ratio_minus_one": 0.1334967560091198
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 488,
+       "ratio_minus_one": 0.25595302699256095
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": null
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 504,
+       "ratio_minus_one": 0.16068966584822775
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 485,
+       "ratio_minus_one": 0.25993273390236626
+      },
+      "OTHER": {
+       "n_rows": 77,
+       "ratio_minus_one": 4.139011349063723
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 1.0880091641570586
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 389,
+       "ratio_minus_one": 0.06218478905704039
+      },
+      "PEDIATRICS": {
+       "n_rows": 2,
+       "ratio_minus_one": -0.8670084591945793
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 413,
+       "ratio_minus_one": -0.1505656938726444
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 492,
+       "ratio_minus_one": 0.21897123948849306
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 398,
+       "ratio_minus_one": 0.3923097757844174
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 430,
+       "ratio_minus_one": 0.1746108885778237
+      }
+     },
+     "ratio_minus_one": 0.18373050084861076,
+     "slope": 1.0613840490621345
+    },
+    "logistic": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 881,
+       "ratio_minus_one": 0.1833804148826541
+      },
+      "200 to 999": {
+       "n_rows": 1337,
+       "ratio_minus_one": 0.20318255786677675
+      },
+      "50 to 199": {
+       "n_rows": 1939,
+       "ratio_minus_one": 0.1186458932022727
+      },
+      "under 50": {
+       "n_rows": 794,
+       "ratio_minus_one": 0.07035486774253208
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 384,
+       "ratio_minus_one": 0.23407964343646603
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 416,
+       "ratio_minus_one": 0.20483759848721084
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": 0.21272058330708288
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 410,
+       "ratio_minus_one": 0.6209174761090757
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 488,
+       "ratio_minus_one": 0.25854935744849383
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": null
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 504,
+       "ratio_minus_one": 0.15765031441175092
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 485,
+       "ratio_minus_one": 0.24458028791569264
+      },
+      "OTHER": {
+       "n_rows": 77,
+       "ratio_minus_one": 3.561040654523814
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 1.3293049612976593
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 389,
+       "ratio_minus_one": 0.029685016774036344
+      },
+      "PEDIATRICS": {
+       "n_rows": 2,
+       "ratio_minus_one": -0.3871710695111885
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 413,
+       "ratio_minus_one": -0.05897342530262262
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 492,
+       "ratio_minus_one": 0.19468740716230415
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 398,
+       "ratio_minus_one": 0.3464057943716523
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 430,
+       "ratio_minus_one": 0.23298632274672082
+      }
+     },
+     "ratio_minus_one": 0.18241198582804863,
+     "slope": 1.0859721033201133
+    },
+    "rf": {
+     "by_size": {
+      "1000 and over": {
+       "n_rows": 881,
+       "ratio_minus_one": 0.2003197239825698
+      },
+      "200 to 999": {
+       "n_rows": 1337,
+       "ratio_minus_one": 0.16004759718919614
+      },
+      "50 to 199": {
+       "n_rows": 1939,
+       "ratio_minus_one": 0.10420304253355805
+      },
+      "under 50": {
+       "n_rows": 794,
+       "ratio_minus_one": 0.18273420122842965
+      }
+     },
+     "by_specialty": {
+      "ANESTHESIOLOGY": {
+       "n_rows": 384,
+       "ratio_minus_one": 0.44174742808542145
+      },
+      "FAMILY PRACTICE": {
+       "n_rows": 416,
+       "ratio_minus_one": 0.10855218760793117
+      },
+      "GENERAL SURGERY": {
+       "n_rows": 37,
+       "ratio_minus_one": 0.09545611577945712
+      },
+      "INTERNAL MEDICINE": {
+       "n_rows": 410,
+       "ratio_minus_one": 0.025883656432497126
+      },
+      "NURSE PRACTITIONER": {
+       "n_rows": 488,
+       "ratio_minus_one": 0.1983098191678856
+      },
+      "ORTHO SURG OF SPINE": {
+       "n_rows": 8,
+       "ratio_minus_one": null
+      },
+      "ORTHOPEDIC SURGERY": {
+       "n_rows": 504,
+       "ratio_minus_one": 0.189840630245947
+      },
+      "OSTEOPATHIC MEDICINE": {
+       "n_rows": 485,
+       "ratio_minus_one": 0.20870604691979344
+      },
+      "OTHER": {
+       "n_rows": 77,
+       "ratio_minus_one": 5.708987083653476
+      },
+      "OTHER SURGERY": {
+       "n_rows": 18,
+       "ratio_minus_one": 2.5688776797410546
+      },
+      "PAIN MEDICINE": {
+       "n_rows": 389,
+       "ratio_minus_one": 0.2290886334074187
+      },
+      "PEDIATRICS": {
+       "n_rows": 2,
+       "ratio_minus_one": -0.8115589716650063
+      },
+      "PHYSICAL MEDICINE & REHAB": {
+       "n_rows": 413,
+       "ratio_minus_one": -0.15014315552166757
+      },
+      "PHYSICIAN ASSISTANT": {
+       "n_rows": 492,
+       "ratio_minus_one": 0.20828575475962796
+      },
+      "RHEUMATOLOGY": {
+       "n_rows": 398,
+       "ratio_minus_one": 0.646742174411765
+      },
+      "SPORTS MEDICINE": {
+       "n_rows": 430,
+       "ratio_minus_one": 0.17870680154833418
+      }
+     },
+     "ratio_minus_one": 0.18481611477193804,
+     "slope": 1.100423340766596
+    }
+   },
+   "horizon": 6,
+   "n_paired_rows": 7879,
+   "scenarios": {
+    "covid_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.10859176332509304,
+      "market": 0.11091219468172446,
+      "segment_history": 0.10892921450305854,
+      "specialty_history": 0.11037124012764181
+     },
+     "best_baseline": "last_month",
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": 6.795212081632529e-05,
+       "high": 0.00022644656124819827,
+       "log_loss": 0.10852381120427672,
+       "low": -0.0001119344483021055,
+       "months_better": 23,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.0006257575964845128,
+       "share_positive": 0.838
+      },
+      "logistic": {
+       "estimate": 0.0001455871102878925,
+       "high": 0.0002981494459169309,
+       "log_loss": 0.10844617621480515,
+       "low": -1.0355663672206054e-05,
+       "months_better": 25,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.0013406828089902716,
+       "share_positive": 0.988
+      },
+      "rf": {
+       "estimate": 5.2930451504201725e-05,
+       "high": 0.00019878309357041136,
+       "log_loss": 0.10853883287358884,
+       "low": -0.0001130410334538747,
+       "months_better": 22,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.00048742602462161806,
+       "share_positive": 0.811
+      }
+     },
+     "n_test_months": 38,
+     "promoted": [],
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    },
+    "dip_2024_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.1118454212474334,
+      "market": 0.11413701411888492,
+      "segment_history": 0.11208454551516589,
+      "specialty_history": 0.11349483975136941
+     },
+     "best_baseline": "last_month",
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": -6.3977211684496105e-06,
+       "high": 0.00022111829826937545,
+       "log_loss": 0.11185181896860184,
+       "low": -0.00025553447897242826,
+       "months_better": 22,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": -5.7201458022104093e-05,
+       "share_positive": 0.4905
+      },
+      "logistic": {
+       "estimate": 6.444084598053457e-05,
+       "high": 0.0002714908325412084,
+       "log_loss": 0.11178098040145286,
+       "low": -0.00012331555896885605,
+       "months_better": 19,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.0005761598933761747,
+       "share_positive": 0.771
+      },
+      "rf": {
+       "estimate": -2.165512826375615e-05,
+       "high": 0.00015545217407481754,
+       "log_loss": 0.11186707637569715,
+       "low": -0.00021539044583815452,
+       "months_better": 19,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": -0.00019361658280001416,
+       "share_positive": 0.406
+      }
+     },
+     "n_test_months": 36,
+     "promoted": [],
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    },
+    "main": {
+     "baseline_log_loss": {
+      "last_month": 0.11032838272321599,
+      "market": 0.11265900003376596,
+      "segment_history": 0.11062033841193508,
+      "specialty_history": 0.11203605689154365
+     },
+     "best_baseline": "last_month",
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": 3.4080371661596165e-05,
+       "high": 0.00021715047740817855,
+       "log_loss": 0.1102943023515544,
+       "low": -0.00014743679844935186,
+       "months_better": 24,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.0003088994039466216,
+       "share_positive": 0.685
+      },
+      "logistic": {
+       "estimate": 0.00012722770718223697,
+       "high": 0.00029307018539327927,
+       "log_loss": 0.11020115501603375,
+       "low": -3.94430007446629e-05,
+       "months_better": 25,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.0011531729555160507,
+       "share_positive": 0.966
+      },
+      "rf": {
+       "estimate": -1.1206735323593398e-05,
+       "high": 0.0001504578590030035,
+       "log_loss": 0.11033958945853958,
+       "low": -0.00018022550126638114,
+       "months_better": 23,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": -0.00010157617692727409,
+       "share_positive": 0.455
+      }
+     },
+     "n_test_months": 41,
+     "promoted": [],
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    },
+    "pediatrics_removed": {
+     "baseline_log_loss": {
+      "last_month": 0.1103168867209825,
+      "market": 0.11262218159120055,
+      "segment_history": 0.11060801449979897,
+      "specialty_history": 0.11201707471261188
+     },
+     "best_baseline": "last_month",
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "models": {
+      "gbm": {
+       "estimate": 4.779100696097882e-05,
+       "high": 0.00022970573081798365,
+       "log_loss": 0.11026909571402152,
+       "low": -0.0001351758423744399,
+       "months_better": 24,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.0004332156969028104,
+       "share_positive": 0.736
+      },
+      "logistic": {
+       "estimate": 0.00012884459603258736,
+       "high": 0.0002947012580652947,
+       "log_loss": 0.11018804212494991,
+       "low": -3.849282361640579e-05,
+       "months_better": 25,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": 0.0011679498929159035,
+       "share_positive": 0.967
+      },
+      "rf": {
+       "estimate": -6.467642301444254e-07,
+       "high": 0.00016172371543540445,
+       "log_loss": 0.11031753348521264,
+       "low": -0.00017552117954401173,
+       "months_better": 24,
+       "n_valid": 2000,
+       "promoted": false,
+       "relative_gain": -5.862785375554018e-06,
+       "share_positive": 0.5125
+      }
+     },
+     "n_test_months": 41,
+     "promoted": [],
+     "serving": "last_month",
+     "serving_is_baseline": true,
+     "serving_reason": "no promoted model"
+    }
+   }
+  }
+ },
+ "T3": {
+  "1": {
+   "horizon": 1,
+   "scenarios": {
+    "covid_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.2290292177191329,
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "methods": {
+      "always_alert": {
+       "f1": 0.3726993865030675,
+       "n_alerts": 3183,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.2290292177191329,
+       "precision": 0.2290292177191329,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5415676959619953,
+       "n_alerts": 955,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5477687712340211,
+       "precision": 0.4774869109947644,
+       "recall": 0.6255144032921811
+      },
+      "logistic": {
+       "f1": 0.5596608116293156,
+       "n_alerts": 922,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5657561806584049,
+       "precision": 0.5010845986984815,
+       "recall": 0.6337448559670782
+      },
+      "recent_drop": {
+       "f1": 0.3726993865030675,
+       "n_alerts": 3183,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.15197126091052654,
+       "precision": 0.2290292177191329,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5273390036452005,
+       "n_alerts": 917,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5206817669356971,
+       "precision": 0.4732824427480916,
+       "recall": 0.5953360768175583
+      },
+      "small_segment": {
+       "f1": 0.478240952817224,
+       "n_alerts": 1454,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.37939818782510887,
+       "precision": 0.35900962861072905,
+       "recall": 0.7160493827160493
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.16837058340891226,
+       "high": 0.20452231535455814,
+       "low": 0.13407191707377178,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.18635799283329607,
+       "high": 0.22726896266223243,
+       "low": 0.14954750687258125,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.14128357911058825,
+       "high": 0.18059950127002303,
+       "low": 0.10758376907242956,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 729,
+     "n_rows": 3183,
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "dip_2024_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.22618635261517145,
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "methods": {
+      "always_alert": {
+       "f1": 0.36892655367231636,
+       "n_alerts": 2887,
+       "n_positive": 653,
+       "n_rows": 2887,
+       "pr_auc": 0.22618635261517145,
+       "precision": 0.22618635261517145,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5233291298865069,
+       "n_alerts": 933,
+       "n_positive": 653,
+       "n_rows": 2887,
+       "pr_auc": 0.5334514196757759,
+       "precision": 0.44480171489817794,
+       "recall": 0.6355283307810107
+      },
+      "logistic": {
+       "f1": 0.5507246376811594,
+       "n_alerts": 865,
+       "n_positive": 653,
+       "n_rows": 2887,
+       "pr_auc": 0.5392263436710631,
+       "precision": 0.48323699421965316,
+       "recall": 0.6401225114854517
+      },
+      "recent_drop": {
+       "f1": 0.36892655367231636,
+       "n_alerts": 2887,
+       "n_positive": 653,
+       "n_rows": 2887,
+       "pr_auc": 0.1495147295163547,
+       "precision": 0.22618635261517145,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5193591455273698,
+       "n_alerts": 845,
+       "n_positive": 653,
+       "n_rows": 2887,
+       "pr_auc": 0.5065168020634421,
+       "precision": 0.4603550295857988,
+       "recall": 0.5957120980091883
+      },
+      "small_segment": {
+       "f1": 0.4748995983935743,
+       "n_alerts": 1339,
+       "n_positive": 653,
+       "n_rows": 2887,
+       "pr_auc": 0.37309766967100133,
+       "precision": 0.3532486930545183,
+       "recall": 0.7243491577335375
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.1603537500047746,
+       "high": 0.19775759232644813,
+       "low": 0.12324778943282472,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.16612867400006182,
+       "high": 0.20663591797856695,
+       "low": 0.12589161425521583,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.13341913239244074,
+       "high": 0.17472372414495405,
+       "low": 0.09691711661617448,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 653,
+     "n_rows": 2887,
+     "n_test_months": 41,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "fall_20": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.3103989946591266,
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "methods": {
+      "always_alert": {
+       "f1": 0.4737473028050827,
+       "n_alerts": 3183,
+       "n_positive": 988,
+       "n_rows": 3183,
+       "pr_auc": 0.3103989946591266,
+       "precision": 0.3103989946591266,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5762170790103751,
+       "n_alerts": 1518,
+       "n_positive": 988,
+       "n_rows": 3183,
+       "pr_auc": 0.5869284830612278,
+       "precision": 0.4756258234519104,
+       "recall": 0.7307692307692307
+      },
+      "logistic": {
+       "f1": 0.5781315458734814,
+       "n_alerts": 1399,
+       "n_positive": 988,
+       "n_rows": 3183,
+       "pr_auc": 0.6033495255329271,
+       "precision": 0.49320943531093636,
+       "recall": 0.6983805668016194
+      },
+      "recent_drop": {
+       "f1": 0.4737473028050827,
+       "n_alerts": 3183,
+       "n_positive": 988,
+       "n_rows": 3183,
+       "pr_auc": 0.20988337513426236,
+       "precision": 0.3103989946591266,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5519534497090607,
+       "n_alerts": 1418,
+       "n_positive": 988,
+       "n_rows": 3183,
+       "pr_auc": 0.5676423912185061,
+       "precision": 0.4682651622002821,
+       "recall": 0.6720647773279352
+      },
+      "small_segment": {
+       "f1": 0.5097511768661735,
+       "n_alerts": 1986,
+       "n_positive": 988,
+       "n_rows": 3183,
+       "pr_auc": 0.4250765386916837,
+       "precision": 0.3816717019133938,
+       "recall": 0.7672064777327935
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.1618519443695441,
+       "high": 0.19000971343443365,
+       "low": 0.13289035925541906,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.17827298684124337,
+       "high": 0.20732034289312914,
+       "low": 0.1495825199836254,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.1425658525268224,
+       "high": 0.17210805866995224,
+       "low": 0.1151681856104467,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 988,
+     "n_rows": 3183,
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "fall_50": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.12158341187558906,
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "methods": {
+      "always_alert": {
+       "f1": 0.21680672268907564,
+       "n_alerts": 3183,
+       "n_positive": 387,
+       "n_rows": 3183,
+       "pr_auc": 0.12158341187558906,
+       "precision": 0.12158341187558906,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.4830261881668283,
+       "n_alerts": 644,
+       "n_positive": 387,
+       "n_rows": 3183,
+       "pr_auc": 0.45696073987512814,
+       "precision": 0.38664596273291924,
+       "recall": 0.6434108527131783
+      },
+      "logistic": {
+       "f1": 0.492639842983317,
+       "n_alerts": 632,
+       "n_positive": 387,
+       "n_rows": 3183,
+       "pr_auc": 0.480031991247868,
+       "precision": 0.3971518987341772,
+       "recall": 0.648578811369509
+      },
+      "recent_drop": {
+       "f1": 0.21680672268907564,
+       "n_alerts": 3183,
+       "n_positive": 387,
+       "n_rows": 3183,
+       "pr_auc": 0.07780838888791164,
+       "precision": 0.12158341187558906,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.47291666666666665,
+       "n_alerts": 573,
+       "n_positive": 387,
+       "n_rows": 3183,
+       "pr_auc": 0.44611337786281463,
+       "precision": 0.3961605584642234,
+       "recall": 0.58656330749354
+      },
+      "small_segment": {
+       "f1": 0.36386138613861385,
+       "n_alerts": 1229,
+       "n_positive": 387,
+       "n_rows": 3183,
+       "pr_auc": 0.2696338948174134,
+       "precision": 0.23921887713588283,
+       "recall": 0.7596899224806202
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.18732684505771474,
+       "high": 0.2388319204824359,
+       "low": 0.13436671343831016,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.2103980964304546,
+       "high": 0.2629704934811328,
+       "low": 0.1613710639294598,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.17647948304540123,
+       "high": 0.22281954829100065,
+       "low": 0.13098670783491909,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 387,
+     "n_rows": 3183,
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "main": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.2290292177191329,
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "methods": {
+      "always_alert": {
+       "f1": 0.3726993865030675,
+       "n_alerts": 3183,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.2290292177191329,
+       "precision": 0.2290292177191329,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5322294500295683,
+       "n_alerts": 962,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5413172171259772,
+       "precision": 0.4677754677754678,
+       "recall": 0.6172839506172839
+      },
+      "logistic": {
+       "f1": 0.5568114217727543,
+       "n_alerts": 952,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5534520471012218,
+       "precision": 0.49159663865546216,
+       "recall": 0.6419753086419753
+      },
+      "recent_drop": {
+       "f1": 0.3726993865030675,
+       "n_alerts": 3183,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.15197126091052654,
+       "precision": 0.2290292177191329,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5316301703163017,
+       "n_alerts": 915,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5161412617730593,
+       "precision": 0.47759562841530057,
+       "recall": 0.5994513031550068
+      },
+      "small_segment": {
+       "f1": 0.478240952817224,
+       "n_alerts": 1454,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.37939818782510887,
+       "precision": 0.35900962861072905,
+       "recall": 0.7160493827160493
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.16191902930086838,
+       "high": 0.1974683593438009,
+       "low": 0.12891840140200583,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.1740538592761129,
+       "high": 0.21376448551753782,
+       "low": 0.13858483794712215,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.13674307394795043,
+       "high": 0.17490062211778984,
+       "low": 0.10383303641175295,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 729,
+     "n_rows": 3183,
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "pediatrics_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.2290292177191329,
+     "horizon": 1,
+     "lower_percentile": 1.6666666666666667,
+     "methods": {
+      "always_alert": {
+       "f1": 0.3726993865030675,
+       "n_alerts": 3183,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.2290292177191329,
+       "precision": 0.2290292177191329,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5322294500295683,
+       "n_alerts": 962,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5413172171259772,
+       "precision": 0.4677754677754678,
+       "recall": 0.6172839506172839
+      },
+      "logistic": {
+       "f1": 0.5568114217727543,
+       "n_alerts": 952,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5534520471012218,
+       "precision": 0.49159663865546216,
+       "recall": 0.6419753086419753
+      },
+      "recent_drop": {
+       "f1": 0.3726993865030675,
+       "n_alerts": 3183,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.15197126091052654,
+       "precision": 0.2290292177191329,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5316301703163017,
+       "n_alerts": 915,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.5161412617730593,
+       "precision": 0.47759562841530057,
+       "recall": 0.5994513031550068
+      },
+      "small_segment": {
+       "f1": 0.478240952817224,
+       "n_alerts": 1454,
+       "n_positive": 729,
+       "n_rows": 3183,
+       "pr_auc": 0.37939818782510887,
+       "precision": 0.35900962861072905,
+       "recall": 0.7160493827160493
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.16191902930086838,
+       "high": 0.1974683593438009,
+       "low": 0.12891840140200583,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.1740538592761129,
+       "high": 0.21376448551753782,
+       "low": 0.13858483794712215,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.13674307394795043,
+       "high": 0.17490062211778984,
+       "low": 0.10383303641175295,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 729,
+     "n_rows": 3183,
+     "n_test_months": 46,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    }
+   }
+  },
+  "3": {
+   "horizon": 3,
+   "scenarios": {
+    "covid_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.2396478643625693,
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.38663861125723303,
+       "n_alerts": 3067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.2396478643625693,
+       "precision": 0.2396478643625693,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5074478649453823,
+       "n_alerts": 1279,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.4569830478303354,
+       "precision": 0.3995308835027365,
+       "recall": 0.6952380952380952
+      },
+      "logistic": {
+       "f1": 0.5353645266594124,
+       "n_alerts": 1103,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.5116547792478099,
+       "precision": 0.4460562103354488,
+       "recall": 0.6693877551020408
+      },
+      "recent_drop": {
+       "f1": 0.38663861125723303,
+       "n_alerts": 3067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.16596511867527572,
+       "precision": 0.2396478643625693,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.49577744659711875,
+       "n_alerts": 1278,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.4555946737082678,
+       "precision": 0.3904538341158059,
+       "recall": 0.6789115646258503
+      },
+      "small_segment": {
+       "f1": 0.4705361098803722,
+       "n_alerts": 1522,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.3658832383534554,
+       "precision": 0.34888304862023656,
+       "recall": 0.7224489795918367
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.09109980947688001,
+       "high": 0.13378263666509224,
+       "low": 0.04856916221112799,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.1457715408943545,
+       "high": 0.1850833375437998,
+       "low": 0.10602473515303937,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.08971143535481241,
+       "high": 0.1296630858162871,
+       "low": 0.049070984588934524,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 735,
+     "n_rows": 3067,
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "dip_2024_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.22975929978118162,
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.3736654804270463,
+       "n_alerts": 2742,
+       "n_positive": 630,
+       "n_rows": 2742,
+       "pr_auc": 0.22975929978118162,
+       "precision": 0.22975929978118162,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5075528700906344,
+       "n_alerts": 1025,
+       "n_positive": 630,
+       "n_rows": 2742,
+       "pr_auc": 0.4508774645150041,
+       "precision": 0.4097560975609756,
+       "recall": 0.6666666666666666
+      },
+      "logistic": {
+       "f1": 0.5315068493150685,
+       "n_alerts": 830,
+       "n_positive": 630,
+       "n_rows": 2742,
+       "pr_auc": 0.5131698927143448,
+       "precision": 0.4674698795180723,
+       "recall": 0.6158730158730159
+      },
+      "recent_drop": {
+       "f1": 0.3736654804270463,
+       "n_alerts": 2742,
+       "n_positive": 630,
+       "n_rows": 2742,
+       "pr_auc": 0.15537494251107228,
+       "precision": 0.22975929978118162,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5039274924471299,
+       "n_alerts": 1025,
+       "n_positive": 630,
+       "n_rows": 2742,
+       "pr_auc": 0.44628355999378383,
+       "precision": 0.4068292682926829,
+       "recall": 0.6619047619047619
+      },
+      "small_segment": {
+       "f1": 0.46735751295336786,
+       "n_alerts": 1300,
+       "n_positive": 630,
+       "n_rows": 2742,
+       "pr_auc": 0.36912525451250033,
+       "precision": 0.34692307692307695,
+       "recall": 0.7158730158730159
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.08175221000250377,
+       "high": 0.12520770262910833,
+       "low": 0.041282182205665326,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.14404463820184443,
+       "high": 0.18463664433235852,
+       "low": 0.10652197624091396,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.0771583054812835,
+       "high": 0.11922056554991436,
+       "low": 0.03361766086822282,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 630,
+     "n_rows": 2742,
+     "n_test_months": 39,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "fall_20": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.32931203130094555,
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.49546234976698555,
+       "n_alerts": 3067,
+       "n_positive": 1010,
+       "n_rows": 3067,
+       "pr_auc": 0.32931203130094555,
+       "precision": 0.32931203130094555,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5488029465930019,
+       "n_alerts": 1705,
+       "n_positive": 1010,
+       "n_rows": 3067,
+       "pr_auc": 0.5180581302390846,
+       "precision": 0.436950146627566,
+       "recall": 0.7376237623762376
+      },
+      "logistic": {
+       "f1": 0.5824220332118266,
+       "n_alerts": 1459,
+       "n_positive": 1010,
+       "n_rows": 3067,
+       "pr_auc": 0.5724681283189004,
+       "precision": 0.49280328992460587,
+       "recall": 0.7118811881188118
+      },
+      "recent_drop": {
+       "f1": 0.49546234976698555,
+       "n_alerts": 3067,
+       "n_positive": 1010,
+       "n_rows": 3067,
+       "pr_auc": 0.23244670751121,
+       "precision": 0.32931203130094555,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5354032563422946,
+       "n_alerts": 1631,
+       "n_positive": 1010,
+       "n_rows": 3067,
+       "pr_auc": 0.5184841303428922,
+       "precision": 0.4334763948497854,
+       "recall": 0.7
+      },
+      "small_segment": {
+       "f1": 0.517020559487698,
+       "n_alerts": 1957,
+       "n_positive": 1010,
+       "n_rows": 3067,
+       "pr_auc": 0.41438378651461616,
+       "precision": 0.39192641798671435,
+       "recall": 0.7594059405940594
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.10367434372446849,
+       "high": 0.14300246457239882,
+       "low": 0.061953222534546416,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.1580843418042842,
+       "high": 0.19019605855359875,
+       "low": 0.12327580345130382,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.10410034382827604,
+       "high": 0.1367303263699733,
+       "low": 0.0680290294465323,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 1010,
+     "n_rows": 3067,
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "fall_50": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.12781219432670363,
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.22665510263081814,
+       "n_alerts": 3067,
+       "n_positive": 392,
+       "n_rows": 3067,
+       "pr_auc": 0.12781219432670363,
+       "precision": 0.12781219432670363,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.4562334217506631,
+       "n_alerts": 739,
+       "n_positive": 392,
+       "n_rows": 3067,
+       "pr_auc": 0.3848772421319801,
+       "precision": 0.3491204330175913,
+       "recall": 0.6581632653061225
+      },
+      "logistic": {
+       "f1": 0.4601412714429869,
+       "n_alerts": 599,
+       "n_positive": 392,
+       "n_rows": 3067,
+       "pr_auc": 0.42358883540571796,
+       "precision": 0.3806343906510851,
+       "recall": 0.5816326530612245
+      },
+      "recent_drop": {
+       "f1": 0.22665510263081814,
+       "n_alerts": 3067,
+       "n_positive": 392,
+       "n_rows": 3067,
+       "pr_auc": 0.09004862477599351,
+       "precision": 0.12781219432670363,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.4215500945179584,
+       "n_alerts": 666,
+       "n_positive": 392,
+       "n_rows": 3067,
+       "pr_auc": 0.38288906473581963,
+       "precision": 0.33483483483483484,
+       "recall": 0.5688775510204082
+      },
+      "small_segment": {
+       "f1": 0.3574750830564784,
+       "n_alerts": 1113,
+       "n_positive": 392,
+       "n_rows": 3067,
+       "pr_auc": 0.2591092165323888,
+       "precision": 0.2416891284815813,
+       "recall": 0.6862244897959183
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.12576802559959133,
+       "high": 0.1781473731816862,
+       "low": 0.07619574439710666,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.16447961887332918,
+       "high": 0.2192691727155708,
+       "low": 0.11116321446503866,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.12377984820343085,
+       "high": 0.1794267818029504,
+       "low": 0.0694333020952612,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 392,
+     "n_rows": 3067,
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "main": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.2396478643625693,
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.38663861125723303,
+       "n_alerts": 3067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.2396478643625693,
+       "precision": 0.2396478643625693,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5072164948453608,
+       "n_alerts": 1205,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.4585562324029211,
+       "precision": 0.408298755186722,
+       "recall": 0.6693877551020408
+      },
+      "logistic": {
+       "f1": 0.5338512763596004,
+       "n_alerts": 1067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.5125534669800632,
+       "precision": 0.450796626054358,
+       "recall": 0.654421768707483
+      },
+      "recent_drop": {
+       "f1": 0.38663861125723303,
+       "n_alerts": 3067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.16596511867527572,
+       "precision": 0.2396478643625693,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.4981607987388334,
+       "n_alerts": 1168,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.45775595558180393,
+       "precision": 0.4058219178082192,
+       "recall": 0.6448979591836734
+      },
+      "small_segment": {
+       "f1": 0.4705361098803722,
+       "n_alerts": 1522,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.3658832383534554,
+       "precision": 0.34888304862023656,
+       "recall": 0.7224489795918367
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.09267299404946572,
+       "high": 0.1329014584033396,
+       "low": 0.052943383970961856,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.14667022862660783,
+       "high": 0.1853460866862319,
+       "low": 0.11036629963591252,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.09187271722834855,
+       "high": 0.13090264096691284,
+       "low": 0.05075307457643979,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 735,
+     "n_rows": 3067,
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "pediatrics_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.2396478643625693,
+     "horizon": 3,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.38663861125723303,
+       "n_alerts": 3067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.2396478643625693,
+       "precision": 0.2396478643625693,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5072164948453608,
+       "n_alerts": 1205,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.4585562324029211,
+       "precision": 0.408298755186722,
+       "recall": 0.6693877551020408
+      },
+      "logistic": {
+       "f1": 0.5338512763596004,
+       "n_alerts": 1067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.5125534669800632,
+       "precision": 0.450796626054358,
+       "recall": 0.654421768707483
+      },
+      "recent_drop": {
+       "f1": 0.38663861125723303,
+       "n_alerts": 3067,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.16596511867527572,
+       "precision": 0.2396478643625693,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.4981607987388334,
+       "n_alerts": 1168,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.45775595558180393,
+       "precision": 0.4058219178082192,
+       "recall": 0.6448979591836734
+      },
+      "small_segment": {
+       "f1": 0.4705361098803722,
+       "n_alerts": 1522,
+       "n_positive": 735,
+       "n_rows": 3067,
+       "pr_auc": 0.3658832383534554,
+       "precision": 0.34888304862023656,
+       "recall": 0.7224489795918367
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.09267299404946572,
+       "high": 0.1329014584033396,
+       "low": 0.052943383970961856,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.14667022862660783,
+       "high": 0.1853460866862319,
+       "low": 0.11036629963591252,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.09187271722834855,
+       "high": 0.13090264096691284,
+       "low": 0.05075307457643979,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 735,
+     "n_rows": 3067,
+     "n_test_months": 44,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    }
+   }
+  },
+  "6": {
+   "horizon": 6,
+   "scenarios": {
+    "covid_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.2907588279489106,
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.45052386495925495,
+       "n_alerts": 2662,
+       "n_positive": 774,
+       "n_rows": 2662,
+       "pr_auc": 0.2907588279489106,
+       "precision": 0.2907588279489106,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5170263788968825,
+       "n_alerts": 1311,
+       "n_positive": 774,
+       "n_rows": 2662,
+       "pr_auc": 0.4862485297476806,
+       "precision": 0.4111365369946606,
+       "recall": 0.6963824289405685
+      },
+      "logistic": {
+       "f1": 0.5108135942327497,
+       "n_alerts": 1168,
+       "n_positive": 774,
+       "n_rows": 2662,
+       "pr_auc": 0.5161418036028433,
+       "precision": 0.4246575342465753,
+       "recall": 0.6408268733850129
+      },
+      "recent_drop": {
+       "f1": 0.45052386495925495,
+       "n_alerts": 2662,
+       "n_positive": 774,
+       "n_rows": 2662,
+       "pr_auc": 0.21276918044213536,
+       "precision": 0.2907588279489106,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.4782178217821782,
+       "n_alerts": 1246,
+       "n_positive": 774,
+       "n_rows": 2662,
+       "pr_auc": 0.48620448302967734,
+       "precision": 0.38764044943820225,
+       "recall": 0.624031007751938
+      },
+      "small_segment": {
+       "f1": 0.4979218620116376,
+       "n_alerts": 1632,
+       "n_positive": 774,
+       "n_rows": 2662,
+       "pr_auc": 0.4016363358848569,
+       "precision": 0.36703431372549017,
+       "recall": 0.7739018087855297
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.0846121938628237,
+       "high": 0.1207868591130703,
+       "low": 0.04940276653363068,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.11450546771798642,
+       "high": 0.14930533105169774,
+       "low": 0.08408647630265699,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.08456814714482042,
+       "high": 0.1221993305655931,
+       "low": 0.04817082340227788,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 774,
+     "n_rows": 2662,
+     "n_test_months": 38,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "dip_2024_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.26669300671671275,
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.42108546475358705,
+       "n_alerts": 2531,
+       "n_positive": 675,
+       "n_rows": 2531,
+       "pr_auc": 0.26669300671671275,
+       "precision": 0.26669300671671275,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5126694166175604,
+       "n_alerts": 1022,
+       "n_positive": 675,
+       "n_rows": 2531,
+       "pr_auc": 0.4649997308811049,
+       "precision": 0.42563600782778865,
+       "recall": 0.6444444444444445
+      },
+      "logistic": {
+       "f1": 0.5223499361430396,
+       "n_alerts": 891,
+       "n_positive": 675,
+       "n_rows": 2531,
+       "pr_auc": 0.49917843541290935,
+       "precision": 0.4590347923681257,
+       "recall": 0.605925925925926
+      },
+      "recent_drop": {
+       "f1": 0.42108546475358705,
+       "n_alerts": 2531,
+       "n_positive": 675,
+       "n_rows": 2531,
+       "pr_auc": 0.1889257332744204,
+       "precision": 0.26669300671671275,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5058365758754864,
+       "n_alerts": 1124,
+       "n_positive": 675,
+       "n_rows": 2531,
+       "pr_auc": 0.4747424831656811,
+       "precision": 0.40480427046263345,
+       "recall": 0.674074074074074
+      },
+      "small_segment": {
+       "f1": 0.478584729981378,
+       "n_alerts": 1473,
+       "n_positive": 675,
+       "n_rows": 2531,
+       "pr_auc": 0.38754909756411127,
+       "precision": 0.34894772572980315,
+       "recall": 0.7614814814814815
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.07745063331699364,
+       "high": 0.11765039405188359,
+       "low": 0.04359858855158014,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.11162933784879808,
+       "high": 0.15266711356328624,
+       "low": 0.07618610104876256,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.0871933856015698,
+       "high": 0.12701286719256835,
+       "low": 0.049542232318272185,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 675,
+     "n_rows": 2531,
+     "n_test_months": 36,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "fall_20": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.3729692360871068,
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.5433031218529708,
+       "n_alerts": 2893,
+       "n_positive": 1079,
+       "n_rows": 2893,
+       "pr_auc": 0.3729692360871068,
+       "precision": 0.3729692360871068,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.5553319919517102,
+       "n_alerts": 1406,
+       "n_positive": 1079,
+       "n_rows": 2893,
+       "pr_auc": 0.5292160622732476,
+       "precision": 0.4907539118065434,
+       "recall": 0.6394810009267841
+      },
+      "logistic": {
+       "f1": 0.5578336557059961,
+       "n_alerts": 1506,
+       "n_positive": 1079,
+       "n_rows": 2893,
+       "pr_auc": 0.5614133338293044,
+       "precision": 0.47875166002656044,
+       "recall": 0.6682113067655236
+      },
+      "recent_drop": {
+       "f1": 0.5433031218529708,
+       "n_alerts": 2893,
+       "n_positive": 1079,
+       "n_rows": 2893,
+       "pr_auc": 0.2717939361378851,
+       "precision": 0.3729692360871068,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.5439093484419264,
+       "n_alerts": 1745,
+       "n_positive": 1079,
+       "n_rows": 2893,
+       "pr_auc": 0.5243294203285749,
+       "precision": 0.44011461318051576,
+       "recall": 0.7117701575532901
+      },
+      "small_segment": {
+       "f1": 0.5345155161494617,
+       "n_alerts": 2079,
+       "n_positive": 1079,
+       "n_rows": 2893,
+       "pr_auc": 0.448731884791149,
+       "precision": 0.40596440596440597,
+       "recall": 0.7822057460611678
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.08048417748209857,
+       "high": 0.11587585765434598,
+       "low": 0.045174531141925614,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.11268144903815536,
+       "high": 0.14667460065056578,
+       "low": 0.08486810305288028,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.07559753553742588,
+       "high": 0.1058367604395603,
+       "low": 0.04477000061965098,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 1079,
+     "n_rows": 2893,
+     "n_test_months": 41,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "fall_50": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.15347390252333218,
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.2661072819898112,
+       "n_alerts": 2893,
+       "n_positive": 444,
+       "n_rows": 2893,
+       "pr_auc": 0.15347390252333218,
+       "precision": 0.15347390252333218,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.46672582076308783,
+       "n_alerts": 683,
+       "n_positive": 444,
+       "n_rows": 2893,
+       "pr_auc": 0.42592043007762925,
+       "precision": 0.3850658857979502,
+       "recall": 0.5923423423423423
+      },
+      "logistic": {
+       "f1": 0.4782608695652174,
+       "n_alerts": 614,
+       "n_positive": 444,
+       "n_rows": 2893,
+       "pr_auc": 0.4306454459419683,
+       "precision": 0.41205211726384366,
+       "recall": 0.5698198198198198
+      },
+      "recent_drop": {
+       "f1": 0.2661072819898112,
+       "n_alerts": 2893,
+       "n_positive": 444,
+       "n_rows": 2893,
+       "pr_auc": 0.11283103765252472,
+       "precision": 0.15347390252333218,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.4321959755030621,
+       "n_alerts": 699,
+       "n_positive": 444,
+       "n_rows": 2893,
+       "pr_auc": 0.4190705892766476,
+       "precision": 0.35336194563662376,
+       "recall": 0.5563063063063063
+      },
+      "small_segment": {
+       "f1": 0.3856677524429967,
+       "n_alerts": 1091,
+       "n_positive": 444,
+       "n_rows": 2893,
+       "pr_auc": 0.29681010194226826,
+       "precision": 0.27131072410632445,
+       "recall": 0.6666666666666666
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.129110328135361,
+       "high": 0.17998634192180962,
+       "low": 0.07590076492633685,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.13383534399970004,
+       "high": 0.18245032113731094,
+       "low": 0.08813290055923326,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.12226048733437933,
+       "high": 0.17072102080343307,
+       "low": 0.06840131961215641,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 444,
+     "n_rows": 2893,
+     "n_test_months": 41,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "main": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.28482544071897686,
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.44336830777508746,
+       "n_alerts": 2893,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.28482544071897686,
+       "precision": 0.28482544071897686,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.4995260663507109,
+       "n_alerts": 1286,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.4746869209128997,
+       "precision": 0.4097978227060653,
+       "recall": 0.6395631067961165
+      },
+      "logistic": {
+       "f1": 0.5053037608486017,
+       "n_alerts": 1250,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.5100348014144401,
+       "precision": 0.4192,
+       "recall": 0.6359223300970874
+      },
+      "recent_drop": {
+       "f1": 0.44336830777508746,
+       "n_alerts": 2893,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.206754421242281,
+       "precision": 0.28482544071897686,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.4835164835164835,
+       "n_alerts": 1360,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.4809375213647525,
+       "precision": 0.38823529411764707,
+       "recall": 0.6407766990291263
+      },
+      "small_segment": {
+       "f1": 0.4968798751950078,
+       "n_alerts": 1740,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.39719334448278965,
+       "precision": 0.3660919540229885,
+       "recall": 0.7730582524271845
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.07749357643011007,
+       "high": 0.11257003976410665,
+       "low": 0.04652939929200232,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.11284145693165049,
+       "high": 0.14928599567984116,
+       "low": 0.08354921042006534,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.08374417688196284,
+       "high": 0.1188106907298255,
+       "low": 0.04941691669386409,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 824,
+     "n_rows": 2893,
+     "n_test_months": 41,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    },
+    "pediatrics_removed": {
+     "best_baseline": "small_segment",
+     "decline_share": 0.28482544071897686,
+     "horizon": 6,
+     "lower_percentile": 0.8333333333333334,
+     "methods": {
+      "always_alert": {
+       "f1": 0.44336830777508746,
+       "n_alerts": 2893,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.28482544071897686,
+       "precision": 0.28482544071897686,
+       "recall": 1.0
+      },
+      "gbm": {
+       "f1": 0.4995260663507109,
+       "n_alerts": 1286,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.4746869209128997,
+       "precision": 0.4097978227060653,
+       "recall": 0.6395631067961165
+      },
+      "logistic": {
+       "f1": 0.5053037608486017,
+       "n_alerts": 1250,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.5100348014144401,
+       "precision": 0.4192,
+       "recall": 0.6359223300970874
+      },
+      "recent_drop": {
+       "f1": 0.44336830777508746,
+       "n_alerts": 2893,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.206754421242281,
+       "precision": 0.28482544071897686,
+       "recall": 1.0
+      },
+      "rf": {
+       "f1": 0.4835164835164835,
+       "n_alerts": 1360,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.4809375213647525,
+       "precision": 0.38823529411764707,
+       "recall": 0.6407766990291263
+      },
+      "small_segment": {
+       "f1": 0.4968798751950078,
+       "n_alerts": 1740,
+       "n_positive": 824,
+       "n_rows": 2893,
+       "pr_auc": 0.39719334448278965,
+       "precision": 0.3660919540229885,
+       "recall": 0.7730582524271845
+      }
+     },
+     "models": {
+      "gbm": {
+       "estimate": 0.07749357643011007,
+       "high": 0.11257003976410665,
+       "low": 0.04652939929200232,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "logistic": {
+       "estimate": 0.11284145693165049,
+       "high": 0.14928599567984116,
+       "low": 0.08354921042006534,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      },
+      "rf": {
+       "estimate": 0.08374417688196284,
+       "high": 0.1188106907298255,
+       "low": 0.04941691669386409,
+       "n_valid": 2000,
+       "promoted": true,
+       "share_positive": 1.0
+      }
+     },
+     "n_positive": 824,
+     "n_rows": 2893,
+     "n_test_months": 41,
+     "promoted": [
+      "logistic",
+      "gbm",
+      "rf"
+     ],
+     "serving": "logistic",
+     "serving_is_baseline": false,
+     "serving_reason": "best score"
+    }
+   }
+  }
+ },
+ "counts": {
+  "1": {
+   "paired_rows": 8450,
+   "t2_test_months": 46,
+   "t3_decline_share": 0.2259304207119741,
+   "t3_declines": 1117,
+   "t3_scored_rows": 4944,
+   "t3_test_declines": 729,
+   "t3_test_months": 46,
+   "t3_test_rows": 3183
+  },
+  "3": {
+   "paired_rows": 8218,
+   "t2_test_months": 44,
+   "t3_decline_share": 0.22535211267605634,
+   "t3_declines": 1088,
+   "t3_scored_rows": 4828,
+   "t3_test_declines": 735,
+   "t3_test_months": 44,
+   "t3_test_rows": 3067
+  },
+  "6": {
+   "paired_rows": 7879,
+   "t2_test_months": 41,
+   "t3_decline_share": 0.24409110442629997,
+   "t3_declines": 1136,
+   "t3_scored_rows": 4654,
+   "t3_test_declines": 824,
+   "t3_test_months": 41,
+   "t3_test_rows": 2893
+  }
+ },
+ "demonstration": {
+  "national": [
+   {
+    "actual": 2.424865990905165,
+    "cutoff": 202212,
+    "hi90": 3.1781047447590676,
+    "lo90": 2.605824615223741,
+    "model": "last_month",
+    "month_id": 202301,
+    "point": 2.905064817989055,
+    "step": 1
+   },
+   {
+    "actual": 2.6629834254143647,
+    "cutoff": 202212,
+    "hi90": 3.2466243076461327,
+    "lo90": 2.568424796550253,
+    "model": "last_month",
+    "month_id": 202302,
+    "point": 2.905064817989055,
+    "step": 2
+   },
+   {
+    "actual": 2.98546865315305,
+    "cutoff": 202212,
+    "hi90": 3.3680103490077618,
+    "lo90": 2.5472938432507375,
+    "model": "last_month",
+    "month_id": 202303,
+    "point": 2.905064817989055,
+    "step": 3
+   },
+   {
+    "actual": 2.820858759020188,
+    "cutoff": 202212,
+    "hi90": 3.510326414358587,
+    "lo90": 2.456717608750551,
+    "model": "last_month",
+    "month_id": 202304,
+    "point": 2.905064817989055,
+    "step": 4
+   },
+   {
+    "actual": 2.8905128539736396,
+    "cutoff": 202212,
+    "hi90": 3.5408756328606947,
+    "lo90": 2.434749574898105,
+    "model": "last_month",
+    "month_id": 202305,
+    "point": 2.905064817989055,
+    "step": 5
+   },
+   {
+    "actual": 2.83763243774867,
+    "cutoff": 202212,
+    "hi90": 3.602129504399163,
+    "lo90": 2.4979296253964742,
+    "model": "last_month",
+    "month_id": 202306,
+    "point": 2.905064817989055,
+    "step": 6
+   },
+   {
+    "actual": 2.2801430986358455,
+    "cutoff": 202312,
+    "hi90": 2.6605698911025617,
+    "lo90": 2.0234715479286165,
+    "model": "last_month",
+    "month_id": 202401,
+    "point": 2.3679417122040074,
+    "step": 1
+   },
+   {
+    "actual": 2.257071015161209,
+    "cutoff": 202312,
+    "hi90": 2.7512682942622835,
+    "lo90": 1.9852463049117401,
+    "model": "last_month",
+    "month_id": 202402,
+    "point": 2.3679417122040074,
+    "step": 2
+   },
+   {
+    "actual": 2.3383700767896953,
+    "cutoff": 202312,
+    "hi90": 2.7974170332660626,
+    "lo90": 1.906491343737129,
+    "model": "last_month",
+    "month_id": 202403,
+    "point": 2.3679417122040074,
+    "step": 3
+   },
+   {
+    "actual": 2.0237805619754288,
+    "cutoff": 202312,
+    "hi90": 2.922748672175855,
+    "lo90": 1.861814709922121,
+    "model": "last_month",
+    "month_id": 202404,
+    "point": 2.3679417122040074,
+    "step": 4
+   },
+   {
+    "actual": 1.8597570076718708,
+    "cutoff": 202312,
+    "hi90": 2.916399757082941,
+    "lo90": 1.812395892042187,
+    "model": "last_month",
+    "month_id": 202405,
+    "point": 2.3679417122040074,
+    "step": 5
+   },
+   {
+    "actual": 1.9029372128139765,
+    "cutoff": 202312,
+    "hi90": 3.007299535509418,
+    "lo90": 1.8687955633682876,
+    "model": "last_month",
+    "month_id": 202406,
+    "point": 2.3679417122040074,
+    "step": 6
+   }
+  ],
+  "segment": [
+   {
+    "actual_share": 0.02321981424148607,
+    "actual_visits": 15.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.03227868664822028,
+    "predicted_visits": 20.8520315747503,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 1,
+    "visits": 646.0
+   },
+   {
+    "actual_share": 0.0038077106139933364,
+    "actual_visits": 8.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.005517428943680537,
+    "predicted_visits": 11.592118210672808,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 1,
+    "visits": 2101.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.002056422709530457,
+    "predicted_visits": 0.0760876402526269,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 1,
+    "visits": 37.0
+   },
+   {
+    "actual_share": 0.010180995475113122,
+    "actual_visits": 9.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.008796320090869888,
+    "predicted_visits": 7.775946960328981,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 1,
+    "visits": 884.0
+   },
+   {
+    "actual_share": 0.0322213181448332,
+    "actual_visits": 198.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.04289642936124814,
+    "predicted_visits": 263.59855842486985,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 1,
+    "visits": 6145.0
+   },
+   {
+    "actual_share": 0.0214914923531606,
+    "actual_visits": 749.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.02530055647691956,
+    "predicted_visits": 881.7496937771236,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 1,
+    "visits": 34851.0
+   },
+   {
+    "actual_share": 0.029520865533230294,
+    "actual_visits": 191.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.038380397227813556,
+    "predicted_visits": 248.32117006395373,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 1,
+    "visits": 6470.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.0018303201001633944,
+    "predicted_visits": 0.04758832260424825,
+    "specialty_name": "OTHER",
+    "step": 1,
+    "visits": 26.0
+   },
+   {
+    "actual_share": 0.08333333333333333,
+    "actual_visits": 1.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.00524096543920186,
+    "predicted_visits": 0.06289158527042232,
+    "specialty_name": "OTHER SURGERY",
+    "step": 1,
+    "visits": 12.0
+   },
+   {
+    "actual_share": 0.025925925925925925,
+    "actual_visits": 14.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.016794013627566863,
+    "predicted_visits": 9.068767358886106,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 1,
+    "visits": 540.0
+   },
+   {
+    "actual_share": 0.05366161616161616,
+    "actual_visits": 85.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.06565487306792862,
+    "predicted_visits": 103.99731893959894,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 1,
+    "visits": 1584.0
+   },
+   {
+    "actual_share": 0.024373828181337435,
+    "actual_visits": 507.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.03292528638985915,
+    "predicted_visits": 684.8788821954602,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 1,
+    "visits": 20801.0
+   },
+   {
+    "actual_share": 0.012747875354107648,
+    "actual_visits": 18.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.015702892788239973,
+    "predicted_visits": 22.17248461699484,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 1,
+    "visits": 1412.0
+   },
+   {
+    "actual_share": 0.04322282836760386,
+    "actual_visits": 103.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202301,
+    "predicted_share": 0.052720014396761654,
+    "predicted_visits": 125.63179430748302,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 1,
+    "visits": 2383.0
+   },
+   {
+    "actual_share": 0.02857142857142857,
+    "actual_visits": 20.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.031011353000904275,
+    "predicted_visits": 21.707947100632992,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 2,
+    "visits": 700.0
+   },
+   {
+    "actual_share": 0.004335260115606936,
+    "actual_visits": 9.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.006216882017639136,
+    "predicted_visits": 12.906247068618846,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 2,
+    "visits": 2076.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.0018842947893023434,
+    "predicted_visits": 0.0697189072041867,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 2,
+    "visits": 37.0
+   },
+   {
+    "actual_share": 0.0125,
+    "actual_visits": 10.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.009135277486761845,
+    "predicted_visits": 7.308221989409476,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 2,
+    "visits": 800.0
+   },
+   {
+    "actual_share": 0.035409252669039146,
+    "actual_visits": 199.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.04260988458691269,
+    "predicted_visits": 239.46755137844934,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 2,
+    "visits": 5620.0
+   },
+   {
+    "actual_share": 0.02219362129583124,
+    "actual_visits": 707.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.024987869978960298,
+    "predicted_visits": 796.0135860497593,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 2,
+    "visits": 31856.0
+   },
+   {
+    "actual_share": 0.03125,
+    "actual_visits": 181.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.03731054412976137,
+    "predicted_visits": 216.10267159957783,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 2,
+    "visits": 5792.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.0017775204121252659,
+    "predicted_visits": 0.05688065318800851,
+    "specialty_name": "OTHER",
+    "step": 2,
+    "visits": 32.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.004982302733567786,
+    "predicted_visits": 0.04982302733567785,
+    "specialty_name": "OTHER SURGERY",
+    "step": 2,
+    "visits": 10.0
+   },
+   {
+    "actual_share": 0.022727272727272728,
+    "actual_visits": 13.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.016120482347519043,
+    "predicted_visits": 9.220915902780893,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 2,
+    "visits": 572.0
+   },
+   {
+    "actual_share": 0.07606420097697139,
+    "actual_visits": 109.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.06574869729771747,
+    "predicted_visits": 94.21788322762914,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 2,
+    "visits": 1433.0
+   },
+   {
+    "actual_share": 0.027028405324085878,
+    "actual_visits": 530.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.03236515048723982,
+    "predicted_visits": 634.6482359042856,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 2,
+    "visits": 19609.0
+   },
+   {
+    "actual_share": 0.019157088122605363,
+    "actual_visits": 25.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.015765814367985163,
+    "predicted_visits": 20.574387750220637,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 2,
+    "visits": 1305.0
+   },
+   {
+    "actual_share": 0.06324972737186478,
+    "actual_visits": 116.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202302,
+    "predicted_share": 0.051355200200355354,
+    "predicted_visits": 94.18543716745172,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 2,
+    "visits": 1834.0
+   },
+   {
+    "actual_share": 0.015189873417721518,
+    "actual_visits": 12.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.02995797097215499,
+    "predicted_visits": 23.66679706800244,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 3,
+    "visits": 790.0
+   },
+   {
+    "actual_share": 0.003965107057890563,
+    "actual_visits": 10.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.005732778219136886,
+    "predicted_visits": 14.458066668663227,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 3,
+    "visits": 2522.0
+   },
+   {
+    "actual_share": 0.018518518518518517,
+    "actual_visits": 1.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.002292636200630858,
+    "predicted_visits": 0.12380235483406633,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 3,
+    "visits": 54.0
+   },
+   {
+    "actual_share": 0.0028790786948176585,
+    "actual_visits": 3.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.008848615215368017,
+    "predicted_visits": 9.220257054413475,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 3,
+    "visits": 1042.0
+   },
+   {
+    "actual_share": 0.03498293515358362,
+    "actual_visits": 246.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.04272566380132014,
+    "predicted_visits": 300.4468678508832,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 3,
+    "visits": 7032.0
+   },
+   {
+    "actual_share": 0.02924991986323325,
+    "actual_visits": 1095.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.024730601175641964,
+    "predicted_visits": 925.8147856113326,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 3,
+    "visits": 37436.0
+   },
+   {
+    "actual_share": 0.03356465089930605,
+    "actual_visits": 237.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.03806176360519486,
+    "predicted_visits": 268.7541128162809,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 3,
+    "visits": 7061.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.0021025158393608518,
+    "predicted_visits": 0.0651779910201864,
+    "specialty_name": "OTHER",
+    "step": 3,
+    "visits": 31.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.00539742001480911,
+    "predicted_visits": 0.1133458203109913,
+    "specialty_name": "OTHER SURGERY",
+    "step": 3,
+    "visits": 21.0
+   },
+   {
+    "actual_share": 0.02773497688751926,
+    "actual_visits": 18.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.01581784581387725,
+    "predicted_visits": 10.265781933206336,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 3,
+    "visits": 649.0
+   },
+   {
+    "actual_share": 0.07364787111622555,
+    "actual_visits": 128.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.06419800097719607,
+    "predicted_visits": 111.57612569836677,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 3,
+    "visits": 1738.0
+   },
+   {
+    "actual_share": 0.028986109955917824,
+    "actual_visits": 697.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.032007385216266324,
+    "predicted_visits": 769.64958491034,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 3,
+    "visits": 24046.0
+   },
+   {
+    "actual_share": 0.013478818998716302,
+    "actual_visits": 21.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.014889694208501371,
+    "predicted_visits": 23.198143576845137,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 3,
+    "visits": 1558.0
+   },
+   {
+    "actual_share": 0.05213483146067416,
+    "actual_visits": 116.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202303,
+    "predicted_share": 0.051239959635989867,
+    "predicted_visits": 114.00891019007746,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 3,
+    "visits": 2225.0
+   },
+   {
+    "actual_share": 0.019005847953216373,
+    "actual_visits": 13.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.030124848006976897,
+    "predicted_visits": 20.6053960367722,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 4,
+    "visits": 684.0
+   },
+   {
+    "actual_share": 0.0021213406873143827,
+    "actual_visits": 5.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.00595824649851808,
+    "predicted_visits": 14.043586997007113,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 4,
+    "visits": 2357.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.0025654396636796526,
+    "predicted_visits": 0.10774846587454541,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 4,
+    "visits": 42.0
+   },
+   {
+    "actual_share": 0.011111111111111112,
+    "actual_visits": 10.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.008932288422582379,
+    "predicted_visits": 8.03905958032414,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 4,
+    "visits": 900.0
+   },
+   {
+    "actual_share": 0.029078665442301806,
+    "actual_visits": 190.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.042572923713071406,
+    "predicted_visits": 278.17148354120854,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 4,
+    "visits": 6534.0
+   },
+   {
+    "actual_share": 0.02833604150631432,
+    "actual_visits": 994.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.02463721098457841,
+    "predicted_visits": 864.2487241280261,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 4,
+    "visits": 35079.0
+   },
+   {
+    "actual_share": 0.030020220874163946,
+    "actual_visits": 193.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.037660311288699545,
+    "predicted_visits": 242.11814127504937,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 4,
+    "visits": 6429.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.002318078741579087,
+    "predicted_visits": 0.053315811056319,
+    "specialty_name": "OTHER",
+    "step": 4,
+    "visits": 23.0
+   },
+   {
+    "actual_share": 0.045454545454545456,
+    "actual_visits": 1.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.006498785513397845,
+    "predicted_visits": 0.1429732812947526,
+    "specialty_name": "OTHER SURGERY",
+    "step": 4,
+    "visits": 22.0
+   },
+   {
+    "actual_share": 0.019784172661870502,
+    "actual_visits": 11.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.016346345745469622,
+    "predicted_visits": 9.08856823448111,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 4,
+    "visits": 556.0
+   },
+   {
+    "actual_share": 0.06988249845392702,
+    "actual_visits": 113.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.06424796057044106,
+    "predicted_visits": 103.88895224240319,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 4,
+    "visits": 1617.0
+   },
+   {
+    "actual_share": 0.027832912306026705,
+    "actual_visits": 617.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.031789720692125344,
+    "predicted_visits": 704.7145283030346,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 4,
+    "visits": 22168.0
+   },
+   {
+    "actual_share": 0.013462976813762155,
+    "actual_visits": 18.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.015205528101023392,
+    "predicted_visits": 20.329791071068275,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 4,
+    "visits": 1337.0
+   },
+   {
+    "actual_share": 0.049247606019151846,
+    "actual_visits": 108.0,
+    "cutoff": 202212,
+    "model": "logistic",
+    "month_id": 202304,
+    "predicted_share": 0.050924124486336105,
+    "predicted_visits": 111.67660499853508,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 4,
+    "visits": 2193.0
+   },
+   {
+    "actual_share": 0.025839793281653745,
+    "actual_visits": 20.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.03592489378464921,
+    "predicted_visits": 27.80586778931849,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 5,
+    "visits": 774.0
+   },
+   {
+    "actual_share": 0.0057409400789379264,
+    "actual_visits": 16.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.0053696740686974935,
+    "predicted_visits": 14.965281629459914,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 5,
+    "visits": 2787.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.023809523809523808,
+    "predicted_visits": 1.6428571428571428,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 5,
+    "visits": 69.0
+   },
+   {
+    "actual_share": 0.007590132827324478,
+    "actual_visits": 8.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.01416715279600096,
+    "predicted_visits": 14.932179046985013,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 5,
+    "visits": 1054.0
+   },
+   {
+    "actual_share": 0.02421098140942499,
+    "actual_visits": 168.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.03946759011298979,
+    "predicted_visits": 273.8656077940361,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 5,
+    "visits": 6939.0
+   },
+   {
+    "actual_share": 0.029778681895051593,
+    "actual_visits": 1215.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.02425940127680775,
+    "predicted_visits": 989.807831495033,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 5,
+    "visits": 40801.0
+   },
+   {
+    "actual_share": 0.042508801669057246,
+    "actual_visits": 326.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.03928700424189325,
+    "predicted_visits": 301.2920355310793,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 5,
+    "visits": 7669.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.014705882352941175,
+    "predicted_visits": 0.5441176470588235,
+    "specialty_name": "OTHER",
+    "step": 5,
+    "visits": 37.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.017857142857142856,
+    "predicted_visits": 0.23214285714285712,
+    "specialty_name": "OTHER SURGERY",
+    "step": 5,
+    "visits": 13.0
+   },
+   {
+    "actual_share": 0.02912621359223301,
+    "actual_visits": 18.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.02115459067487499,
+    "predicted_visits": 13.073537037072743,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 5,
+    "visits": 618.0
+   },
+   {
+    "actual_share": 0.07114399544678429,
+    "actual_visits": 125.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.07068905617862388,
+    "predicted_visits": 124.20067170584215,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 5,
+    "visits": 1757.0
+   },
+   {
+    "actual_share": 0.02427401946808944,
+    "actual_visits": 596.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.03414665675239941,
+    "predicted_visits": 838.4028632416628,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 5,
+    "visits": 24553.0
+   },
+   {
+    "actual_share": 0.013981358189081226,
+    "actual_visits": 21.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.013934403569864137,
+    "predicted_visits": 20.929474161935932,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 5,
+    "visits": 1502.0
+   },
+   {
+    "actual_share": 0.05546288573811509,
+    "actual_visits": 133.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202305,
+    "predicted_share": 0.047627337078138834,
+    "predicted_visits": 114.21035431337693,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 5,
+    "visits": 2398.0
+   },
+   {
+    "actual_share": 0.03234152652005175,
+    "actual_visits": 25.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.03605244656285492,
+    "predicted_visits": 27.868541193086852,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 6,
+    "visits": 773.0
+   },
+   {
+    "actual_share": 0.005509641873278237,
+    "actual_visits": 14.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.005473796303373846,
+    "predicted_visits": 13.908916406872944,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 6,
+    "visits": 2541.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.023809523809523808,
+    "predicted_visits": 1.2857142857142856,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 6,
+    "visits": 54.0
+   },
+   {
+    "actual_share": 0.006979062811565304,
+    "actual_visits": 7.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.01297059234650345,
+    "predicted_visits": 13.00950412354296,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 6,
+    "visits": 1003.0
+   },
+   {
+    "actual_share": 0.022775800711743774,
+    "actual_visits": 160.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.03955454197573289,
+    "predicted_visits": 277.87065737952355,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 6,
+    "visits": 7025.0
+   },
+   {
+    "actual_share": 0.03034287187419438,
+    "actual_visits": 1177.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.024132137829774553,
+    "predicted_visits": 936.0856264169549,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 6,
+    "visits": 38790.0
+   },
+   {
+    "actual_share": 0.035986159169550176,
+    "actual_visits": 260.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.03978071924974948,
+    "predicted_visits": 287.41569657943995,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 6,
+    "visits": 7225.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.014705882352941176,
+    "predicted_visits": 0.4852941176470588,
+    "specialty_name": "OTHER",
+    "step": 6,
+    "visits": 33.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.017857142857142856,
+    "predicted_visits": 0.1607142857142857,
+    "specialty_name": "OTHER SURGERY",
+    "step": 6,
+    "visits": 9.0
+   },
+   {
+    "actual_share": 0.024469820554649267,
+    "actual_visits": 15.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.02193916777458858,
+    "predicted_visits": 13.4487098458228,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 6,
+    "visits": 613.0
+   },
+   {
+    "actual_share": 0.05895691609977324,
+    "actual_visits": 104.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.06956277371967791,
+    "predicted_visits": 122.70873284151183,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 6,
+    "visits": 1764.0
+   },
+   {
+    "actual_share": 0.024798338790831403,
+    "actual_visits": 621.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.03421631567700586,
+    "predicted_visits": 856.8449771835807,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 6,
+    "visits": 25042.0
+   },
+   {
+    "actual_share": 0.01178101178101178,
+    "actual_visits": 17.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.013573526147802955,
+    "predicted_visits": 19.586598231279662,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 6,
+    "visits": 1443.0
+   },
+   {
+    "actual_share": 0.054277029960920535,
+    "actual_visits": 125.0,
+    "cutoff": 202212,
+    "model": "last_month",
+    "month_id": 202306,
+    "predicted_share": 0.04706396727088056,
+    "predicted_visits": 108.38831662483793,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 6,
+    "visits": 2303.0
+   },
+   {
+    "actual_share": 0.013223140495867768,
+    "actual_visits": 8.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.023148272467367337,
+    "predicted_visits": 14.004704842757238,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 1,
+    "visits": 605.0
+   },
+   {
+    "actual_share": 0.007197696737044146,
+    "actual_visits": 15.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.007146611087540041,
+    "predicted_visits": 14.893537506433445,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 1,
+    "visits": 2084.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.002357813438031194,
+    "predicted_visits": 0.06837658970290462,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 1,
+    "visits": 29.0
+   },
+   {
+    "actual_share": 0.0011467889908256881,
+    "actual_visits": 1.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.0031832221515919056,
+    "predicted_visits": 2.7757697161881416,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 1,
+    "visits": 872.0
+   },
+   {
+    "actual_share": 0.022361219702892884,
+    "actual_visits": 143.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.027030455204622085,
+    "predicted_visits": 172.85976103355824,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 1,
+    "visits": 6395.0
+   },
+   {
+    "actual_share": 0.020856099160136126,
+    "actual_visits": 668.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.023854705591673117,
+    "predicted_visits": 764.0423653956983,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 1,
+    "visits": 32029.0
+   },
+   {
+    "actual_share": 0.026583407671721678,
+    "actual_visits": 149.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.02670748323152299,
+    "predicted_visits": 149.69544351268635,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 1,
+    "visits": 5605.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.0017239197855775396,
+    "predicted_visits": 0.032754475925973255,
+    "specialty_name": "OTHER",
+    "step": 1,
+    "visits": 19.0
+   },
+   {
+    "actual_share": 0.027375201288244767,
+    "actual_visits": 17.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.019137478952749375,
+    "predicted_visits": 11.884374429657361,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 1,
+    "visits": 621.0
+   },
+   {
+    "actual_share": 0.06894243641231593,
+    "actual_visits": 103.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.07438132068534548,
+    "predicted_visits": 111.12569310390614,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 1,
+    "visits": 1494.0
+   },
+   {
+    "actual_share": 0.022925425979198936,
+    "actual_visits": 518.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.026554571090540484,
+    "predicted_visits": 600.0005337907622,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 1,
+    "visits": 22595.0
+   },
+   {
+    "actual_share": 0.015151515151515152,
+    "actual_visits": 17.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.012773400759606613,
+    "predicted_visits": 14.33175565227862,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 1,
+    "visits": 1122.0
+   },
+   {
+    "actual_share": 0.04354354354354354,
+    "actual_visits": 87.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202401,
+    "predicted_share": 0.04994864162947433,
+    "predicted_visits": 99.7973859756897,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 1,
+    "visits": 1998.0
+   },
+   {
+    "actual_share": 0.026859504132231406,
+    "actual_visits": 13.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.024261268181082294,
+    "predicted_visits": 11.74245379964383,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 2,
+    "visits": 484.0
+   },
+   {
+    "actual_share": 0.008226221079691516,
+    "actual_visits": 16.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.00784520266513663,
+    "predicted_visits": 15.258919183690745,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 2,
+    "visits": 1945.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.002539708873468408,
+    "predicted_visits": 0.06095301296324179,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 2,
+    "visits": 24.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.0035416522554740544,
+    "predicted_visits": 2.6456142348391185,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 2,
+    "visits": 747.0
+   },
+   {
+    "actual_share": 0.024273504273504273,
+    "actual_visits": 142.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.028333168395109277,
+    "predicted_visits": 165.74903511138928,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 2,
+    "visits": 5850.0
+   },
+   {
+    "actual_share": 0.02068126520681265,
+    "actual_visits": 561.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.024770593192651926,
+    "predicted_visits": 671.9271109438762,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 2,
+    "visits": 27126.0
+   },
+   {
+    "actual_share": 0.023950910530482976,
+    "actual_visits": 121.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.027885304857488313,
+    "predicted_visits": 140.87656014003096,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 2,
+    "visits": 5052.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.0019208692698737062,
+    "predicted_visits": 0.03457564685772671,
+    "specialty_name": "OTHER",
+    "step": 2,
+    "visits": 18.0
+   },
+   {
+    "actual_share": 0.006263048016701462,
+    "actual_visits": 3.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.019455352044384432,
+    "predicted_visits": 9.319113629260142,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 2,
+    "visits": 479.0
+   },
+   {
+    "actual_share": 0.059314954051796154,
+    "actual_visits": 71.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.07667939206575843,
+    "predicted_visits": 91.78523230271283,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 2,
+    "visits": 1197.0
+   },
+   {
+    "actual_share": 0.023154362416107382,
+    "actual_visits": 483.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.027707734979385397,
+    "predicted_visits": 577.9833516699794,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 2,
+    "visits": 20860.0
+   },
+   {
+    "actual_share": 0.013270142180094787,
+    "actual_visits": 14.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.013377213178338001,
+    "predicted_visits": 14.112959903146592,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 2,
+    "visits": 1055.0
+   },
+   {
+    "actual_share": 0.04586063132817153,
+    "actual_visits": 77.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202402,
+    "predicted_share": 0.050765344151964924,
+    "predicted_visits": 85.2350128311491,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 2,
+    "visits": 1679.0
+   },
+   {
+    "actual_share": 0.016548463356973995,
+    "actual_visits": 7.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.023443850483509603,
+    "predicted_visits": 9.916748754524562,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 3,
+    "visits": 423.0
+   },
+   {
+    "actual_share": 0.0069407367859049655,
+    "actual_visits": 13.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.008329247974579686,
+    "predicted_visits": 15.600681456387752,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 3,
+    "visits": 1873.0
+   },
+   {
+    "actual_share": 0.1,
+    "actual_visits": 1.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.0031696900066706763,
+    "predicted_visits": 0.031696900066706765,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 3,
+    "visits": 10.0
+   },
+   {
+    "actual_share": 0.003134796238244514,
+    "actual_visits": 2.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.003982127839183137,
+    "predicted_visits": 2.5405975613988416,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 3,
+    "visits": 638.0
+   },
+   {
+    "actual_share": 0.022515101592531575,
+    "actual_visits": 123.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.02902278633961324,
+    "predicted_visits": 158.55148177330713,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 3,
+    "visits": 5463.0
+   },
+   {
+    "actual_share": 0.02266908910727558,
+    "actual_visits": 549.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.025712787373998253,
+    "predicted_visits": 622.7122846234897,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 3,
+    "visits": 24218.0
+   },
+   {
+    "actual_share": 0.021042563366810138,
+    "actual_visits": 88.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.029286035504970064,
+    "predicted_visits": 122.4742004817848,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 3,
+    "visits": 4182.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.0025410934481366236,
+    "predicted_visits": 0.07877389689223534,
+    "specialty_name": "OTHER",
+    "step": 3,
+    "visits": 31.0
+   },
+   {
+    "actual_share": 0.028368794326241134,
+    "actual_visits": 12.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.02040553823137914,
+    "predicted_visits": 8.631542671873376,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 3,
+    "visits": 423.0
+   },
+   {
+    "actual_share": 0.08630952380952381,
+    "actual_visits": 87.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.08313262467815379,
+    "predicted_visits": 83.79768567557902,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 3,
+    "visits": 1008.0
+   },
+   {
+    "actual_share": 0.023651259854691607,
+    "actual_visits": 459.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.028366346479378232,
+    "predicted_visits": 550.5056861252933,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 3,
+    "visits": 19407.0
+   },
+   {
+    "actual_share": 0.009557945041816009,
+    "actual_visits": 8.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.014414075376152548,
+    "predicted_visits": 12.064581089839683,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 3,
+    "visits": 837.0
+   },
+   {
+    "actual_share": 0.04201101928374656,
+    "actual_visits": 61.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202403,
+    "predicted_share": 0.053610877860729135,
+    "predicted_visits": 77.8429946537787,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 3,
+    "visits": 1452.0
+   },
+   {
+    "actual_share": 0.010126582278481013,
+    "actual_visits": 4.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.02400047369383502,
+    "predicted_visits": 9.480187109064833,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 4,
+    "visits": 395.0
+   },
+   {
+    "actual_share": 0.001948368241597662,
+    "actual_visits": 4.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.008558524477035548,
+    "predicted_visits": 17.57065075135398,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 4,
+    "visits": 2053.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.0033985833784261005,
+    "predicted_visits": 0.07816741770380031,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 4,
+    "visits": 23.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.004316641172997894,
+    "predicted_visits": 2.805816762448631,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 4,
+    "visits": 650.0
+   },
+   {
+    "actual_share": 0.016297262059973925,
+    "actual_visits": 100.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.030259639171098446,
+    "predicted_visits": 185.67314595386006,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 4,
+    "visits": 6136.0
+   },
+   {
+    "actual_share": 0.019298379700397432,
+    "actual_visits": 505.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.02631647028551995,
+    "predicted_visits": 688.649394431486,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 4,
+    "visits": 26168.0
+   },
+   {
+    "actual_share": 0.019477644975652943,
+    "actual_visits": 88.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.030075549711934955,
+    "predicted_visits": 135.88133359852213,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 4,
+    "visits": 4518.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.0026784093874128363,
+    "predicted_visits": 0.050889778360843886,
+    "specialty_name": "OTHER",
+    "step": 4,
+    "visits": 19.0
+   },
+   {
+    "actual_share": 0.019559902200488997,
+    "actual_visits": 8.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.0213559744699084,
+    "predicted_visits": 8.734593558192536,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 4,
+    "visits": 409.0
+   },
+   {
+    "actual_share": 0.08593091828138164,
+    "actual_visits": 102.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.08665470838324087,
+    "predicted_visits": 102.8591388509069,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 4,
+    "visits": 1187.0
+   },
+   {
+    "actual_share": 0.021593587930221595,
+    "actual_visits": 458.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.029253677376077095,
+    "predicted_visits": 620.4704971465952,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 4,
+    "visits": 21210.0
+   },
+   {
+    "actual_share": 0.005988023952095809,
+    "actual_visits": 5.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.014215986618679614,
+    "predicted_visits": 11.870348826597478,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 4,
+    "visits": 835.0
+   },
+   {
+    "actual_share": 0.03350515463917526,
+    "actual_visits": 52.0,
+    "cutoff": 202312,
+    "model": "logistic",
+    "month_id": 202404,
+    "predicted_share": 0.05383143405005454,
+    "predicted_visits": 83.54638564568465,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 4,
+    "visits": 1552.0
+   },
+   {
+    "actual_share": 0.02288329519450801,
+    "actual_visits": 10.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.03011720237751802,
+    "predicted_visits": 13.161217438975374,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 5,
+    "visits": 437.0
+   },
+   {
+    "actual_share": 0.0019120458891013384,
+    "actual_visits": 4.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.008646359638928913,
+    "predicted_visits": 18.088184364639286,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 5,
+    "visits": 2092.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.013513513513513514,
+    "predicted_visits": 0.17567567567567569,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 5,
+    "visits": 13.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.007102034707608596,
+    "predicted_visits": 4.460077796378198,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 5,
+    "visits": 628.0
+   },
+   {
+    "actual_share": 0.018028079132099552,
+    "actual_visits": 113.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.02365750796169161,
+    "predicted_visits": 148.285259903883,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 5,
+    "visits": 6268.0
+   },
+   {
+    "actual_share": 0.01615771163509857,
+    "actual_visits": 418.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.023132216534635198,
+    "predicted_visits": 598.4304417510126,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 5,
+    "visits": 25870.0
+   },
+   {
+    "actual_share": 0.023351932217400288,
+    "actual_visits": 113.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.0231985703823576,
+    "predicted_visits": 112.25788208022841,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 5,
+    "visits": 4839.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.016666666666666666,
+    "predicted_visits": 0.16666666666666666,
+    "specialty_name": "OTHER",
+    "step": 5,
+    "visits": 10.0
+   },
+   {
+    "actual_share": 0.005012531328320802,
+    "actual_visits": 2.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.02788689657446594,
+    "predicted_visits": 11.12687173321191,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 5,
+    "visits": 399.0
+   },
+   {
+    "actual_share": 0.0835707502374169,
+    "actual_visits": 88.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.07150376103972607,
+    "predicted_visits": 75.29346037483155,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 5,
+    "visits": 1053.0
+   },
+   {
+    "actual_share": 0.01927624827093838,
+    "actual_visits": 432.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.02664168759473198,
+    "predicted_visits": 597.0668606855384,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 5,
+    "visits": 22411.0
+   },
+   {
+    "actual_share": 0.0125,
+    "actual_visits": 10.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.015866390917344896,
+    "predicted_visits": 12.693112733875918,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 5,
+    "visits": 800.0
+   },
+   {
+    "actual_share": 0.03125,
+    "actual_visits": 48.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202405,
+    "predicted_share": 0.04489511346968497,
+    "predicted_visits": 68.95889428943612,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 5,
+    "visits": 1536.0
+   },
+   {
+    "actual_share": 0.016901408450704224,
+    "actual_visits": 6.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.031874814063381295,
+    "predicted_visits": 11.31555899250036,
+    "specialty_name": "ANESTHESIOLOGY",
+    "step": 6,
+    "visits": 355.0
+   },
+   {
+    "actual_share": 0.0035026269702276708,
+    "actual_visits": 6.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.00847681888234422,
+    "predicted_visits": 14.520790745455649,
+    "specialty_name": "FAMILY PRACTICE",
+    "step": 6,
+    "visits": 1713.0
+   },
+   {
+    "actual_share": 0.047619047619047616,
+    "actual_visits": 1.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.013513513513513513,
+    "predicted_visits": 0.28378378378378377,
+    "specialty_name": "GENERAL SURGERY",
+    "step": 6,
+    "visits": 21.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.007453060253055994,
+    "predicted_visits": 4.61344429664166,
+    "specialty_name": "INTERNAL MEDICINE",
+    "step": 6,
+    "visits": 619.0
+   },
+   {
+    "actual_share": 0.018362793890509696,
+    "actual_visits": 107.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.02342928077356325,
+    "predicted_visits": 136.52241906755305,
+    "specialty_name": "NURSE PRACTITIONER",
+    "step": 6,
+    "visits": 5827.0
+   },
+   {
+    "actual_share": 0.017085298992732374,
+    "actual_visits": 402.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.023046708258673245,
+    "predicted_visits": 542.2659986183228,
+    "specialty_name": "ORTHOPEDIC SURGERY",
+    "step": 6,
+    "visits": 23529.0
+   },
+   {
+    "actual_share": 0.017653890824622532,
+    "actual_visits": 76.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.02306634542895689,
+    "predicted_visits": 99.3006170716594,
+    "specialty_name": "OSTEOPATHIC MEDICINE",
+    "step": 6,
+    "visits": 4305.0
+   },
+   {
+    "actual_share": 0.0,
+    "actual_visits": 0.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.016666666666666666,
+    "predicted_visits": 0.16666666666666666,
+    "specialty_name": "OTHER",
+    "step": 6,
+    "visits": 10.0
+   },
+   {
+    "actual_share": 0.0316622691292876,
+    "actual_visits": 12.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.02890167935259471,
+    "predicted_visits": 10.953736474633395,
+    "specialty_name": "PAIN MEDICINE",
+    "step": 6,
+    "visits": 379.0
+   },
+   {
+    "actual_share": 0.09314775160599571,
+    "actual_visits": 87.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.07018254537876607,
+    "predicted_visits": 65.5504973837675,
+    "specialty_name": "PHYSICAL MEDICINE & REHAB",
+    "step": 6,
+    "visits": 934.0
+   },
+   {
+    "actual_share": 0.019564081865235766,
+    "actual_visits": 412.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.02670782289148149,
+    "predicted_visits": 562.4400422717086,
+    "specialty_name": "PHYSICIAN ASSISTANT",
+    "step": 6,
+    "visits": 21059.0
+   },
+   {
+    "actual_share": 0.012311901504787962,
+    "actual_visits": 9.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.01534456128864331,
+    "predicted_visits": 11.21687430199826,
+    "specialty_name": "RHEUMATOLOGY",
+    "step": 6,
+    "visits": 731.0
+   },
+   {
+    "actual_share": 0.03355704697986577,
+    "actual_visits": 50.0,
+    "cutoff": 202312,
+    "model": "last_month",
+    "month_id": 202406,
+    "predicted_share": 0.04344686020881634,
+    "predicted_visits": 64.73582171113635,
+    "specialty_name": "SPORTS MEDICINE",
+    "step": 6,
+    "visits": 1490.0
+   }
+  ],
+  "serving_t1": {
+   "1": "last_month",
+   "3": "last_month",
+   "6": "last_month"
+  },
+  "serving_t2": {
+   "1": "logistic",
+   "3": "logistic",
+   "6": "last_month"
+  }
+ },
+ "meta": {
+  "g4_columns": [
+   "g4_logit_spec_share_lag1",
+   "g4_spec_change_3m",
+   "g4_missing"
+  ],
+  "horizons": [
+   1,
+   3,
+   6
+  ],
+  "n_boot": 2000,
+  "plan": "docs/modelling_plan.md (DL-78)",
+  "seed": 0
+ }
+}
