@@ -1,8 +1,8 @@
 """Rebuild and publish the warehouse, without ever damaging the last good one.
 
-One run: build the whole warehouse into a staging file, check it, add the feature tables,
-then swap it in with an atomic rename. Any failure leaves the published database exactly as it
-was. Every run, good or bad, appends a line to `run_log.jsonl`.
+One run: build the whole warehouse into a staging file, check it, add the feature tables
+and the model-result tables, then swap it in with an atomic rename. Any failure leaves the
+published database exactly as it was. Every run, good or bad, appends a line to `run_log.jsonl`.
 
     python -m oa_market_intelligence.publish
 """
@@ -22,6 +22,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, text
 
 from oa_market_intelligence.features.build import write_adopted_feature_tables
+from oa_market_intelligence.modeling.store import write_model_tables
 from oa_market_intelligence.pipeline import (
     DEFAULT_RAW_DIR,
     DEFAULT_REFERENCE_DIR,
@@ -88,6 +89,7 @@ def publish(
     published_dir: Path = DEFAULT_PUBLISHED_DIR,
     run_pipeline_fn: Callable[..., dict] = run_pipeline,
     features_fn: Callable[..., dict] = write_adopted_feature_tables,
+    model_tables_fn: Callable[..., dict] = write_model_tables,
 ) -> dict:
     """Run the full rebuild. Returns the run record; never raises for a failed run.
 
@@ -114,6 +116,7 @@ def publish(
             engine = create_engine(f"sqlite:///{staged_db.as_posix()}")
             try:
                 feature_rows = features_fn(engine) or {}
+                model_rows = model_tables_fn(engine) or {}
             finally:
                 engine.dispose()
 
@@ -123,6 +126,7 @@ def publish(
             status="ok",
             n_months=staged[0],
             feature_tables=feature_rows,
+            model_tables=model_rows,
             last_month_id=staged[1],
             # a product with no taxonomy entry is loaded as 'unclassified' and does not stop the
             # run (PROPOSAL 18.10); recording it here makes the gap visible in the run log

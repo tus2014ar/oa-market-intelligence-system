@@ -1,0 +1,41 @@
+{
+ "horizons": {
+  "1": {
+   "decline_share": 0.2290292177191329,
+   "gain_over_flipped": 0.04896996610639848,
+   "horizon": 1,
+   "lower_at_2_5": 0.01624765628701431,
+   "lower_at_registered_percentile": 0.012554838577279981,
+   "pr_auc_flipped_recent_drop": 0.5044820809948233,
+   "pr_auc_logistic": 0.5534520471012218,
+   "pr_auc_registered_recent_drop": 0.15197126091052654,
+   "registered_percentile": 1.6666666666666667,
+   "share_positive": 0.9975
+  },
+  "3": {
+   "decline_share": 0.2396478643625693,
+   "gain_over_flipped": 0.018899449666597734,
+   "horizon": 3,
+   "lower_at_2_5": -0.0060749691654535115,
+   "lower_at_registered_percentile": -0.012990964441965054,
+   "pr_auc_flipped_recent_drop": 0.4936540173134655,
+   "pr_auc_logistic": 0.5125534669800632,
+   "pr_auc_registered_recent_drop": 0.16596511867527572,
+   "registered_percentile": 0.8333333333333334,
+   "share_positive": 0.9265
+  },
+  "6": {
+   "decline_share": 0.28482544071897686,
+   "gain_over_flipped": 0.0037981865804923576,
+   "horizon": 6,
+   "lower_at_2_5": -0.025100714834510783,
+   "lower_at_registered_percentile": -0.030121101161832173,
+   "pr_auc_flipped_recent_drop": 0.5062366148339478,
+   "pr_auc_logistic": 0.5100348014144401,
+   "pr_auc_registered_recent_drop": 0.206754421242281,
+   "registered_percentile": 0.8333333333333334,
+   "share_positive": 0.6155
+  }
+ },
+ "note": "post hoc, added after the results were seen; outside the plan's rules"
+}
