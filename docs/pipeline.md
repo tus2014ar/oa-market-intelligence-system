@@ -1,6 +1,6 @@
 # The orchestrated pipeline (DL-81)
 
-One command runs every stage in order and records each one:
+One command runs every stage in order and records each one (the monthly routine and what to do when a stage fails are in [`runbook.md`](runbook.md)):
 
 ```bash
 oa-publish                          # the default: check the committed public-data subset
@@ -19,13 +19,14 @@ oa-publish --public-data full       # local only: reload and re-export the publi
 | 4 | `feature_tables` | writes `feat_segment_month` and `feat_monthly` | the run stops |
 | 5 | `model_tables` | writes `model_scores` and `backtest_batch` from the stored results | the run stops |
 | 6 | `scoring` | the monthly scoring job: the adopted models (`data/reference/serving_models.json`, DL-79) are refitted on all the data and the next 1, 3 and 6 months are written to `pred_batch`; the map is checked against the stored `model_scores` first | the run stops |
-| 7 | `swap` | replaces the published database with an atomic rename | the old database stays |
+| 7 | `monitoring` | data freshness (is the latest month more than 100 days old?) and forecast drift (the previous run's predictions against the months that have arrived since, against the tested bias and error); reported, never stops the run | reports `status: error` and continues |
+| 8 | `swap` | replaces the published database with an atomic rename | the old database stays |
 
-Everything from stage 2 on is built in a staging file; the published `data/published/warehouse.db` is replaced only by stage 7. A failure in any stage leaves it exactly as it was and removes the staging area.
+Everything from stage 2 on is built in a staging file; the published `data/published/warehouse.db` is replaced only by stage 8. A failure in any stage leaves it exactly as it was and removes the staging area.
 
 ## The run record
 
-Each run appends one line to `data/published/run_log.jsonl`, with a `stages` list in the order they ran: `stage`, `status` (`ok`, `failed` or `skipped`), `seconds` and a `detail` (or the `error`). A failed run's line ends at the stage that failed, so the log says where it stopped; the job summary in GitHub Actions shows the same table and names the failed stage. The record also keeps the row counts of the feature, model-result and scoring tables, the public-data summary, the SHA-256 of every input extract and the data-quality result.
+Each run appends one line to `data/published/run_log.jsonl`, with a `stages` list in the order they ran: `stage`, `status` (`ok`, `failed` or `skipped`), `seconds` and a `detail` (or the `error`). A failed run's line ends at the stage that failed, so the log says where it stopped; the job summary in GitHub Actions shows the same table and names the failed stage. The record also keeps the row counts of the feature, model-result and scoring tables, the public-data summary, the SHA-256 of every input extract, the data-quality result, the `monitoring` report and the `versions` of the run: `data` (a short hash of the extracts' SHA-256), `code` (the git commit) and `environment` (a hash of `requirements.txt`). Every row of `pred_batch` carries the data version and its own model version.
 
 ## The public-data modes
 
@@ -43,9 +44,9 @@ What stops a change, or a monthly run, from putting something wrong in the repos
 | Gate | Where | What it checks |
 |---|---|---|
 | Lint and the fast tests | CI job `lint-and-test` (`pytest -m "not e2e"`) | `ruff`, the unit tests, the golden regression of the warehouse, the stored-results reproduction (`test_modelling_reproduction.py`) and the published-warehouse consistency (`test_published_warehouse.py`) |
-| End to end | CI job `end-to-end` (`pytest -m e2e`, `test_end_to_end.py`) | the real extracts through all seven stages of `oa-publish`, twice: every stage ok and in order, the Gold tables equal the golden snapshot, every downstream table present, the predictions agree with the data, and both runs give exactly the same content in every table |
+| End to end | CI job `end-to-end` (`pytest -m e2e`, `test_end_to_end.py`) | the real extracts through all eight stages of `oa-publish`, twice: every stage ok and in order, the Gold tables equal the golden snapshot, every downstream table present, the predictions agree with the data, and both runs give exactly the same content in every table |
 | Container | CI job `docker-build` | the image builds and its commands run |
-| Published database | the monthly workflow, after `oa-publish` and before the commit (`test_published_warehouse.py`) | every expected table is present and not empty, the last logged run passed every stage, the result tables equal the stored results, the predictions are for the month after the last month of data and follow the adoption map |
+| Published database | the monthly workflow, after `oa-publish` and before the commit (`test_published_warehouse.py`) | every expected table is present and not empty, the last logged run passed every stage, the result tables equal the stored results, the predictions are for the month after the last month of data, carry the run's data version and follow the adoption map |
 
 `test_modelling_reproduction.py` is how the two-hour modelling run stays honest without being repeated: it recomputes the counts and every baseline score from the committed warehouse (pure arithmetic, equal to the stored value to the last digit) and two trained national models (loose tolerance), and names the table or score that moved if a change to the harness, the features or the data altered a stored number. The full run (`oa-model --run`) is repeated on demand.
 

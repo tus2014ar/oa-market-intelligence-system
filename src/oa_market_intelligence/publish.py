@@ -8,7 +8,9 @@ One run, in this order, each stage recorded in the run log with its status and d
 3. `coverage_check`: the staged database must not have fewer months than the published one
 4. `feature_tables`, `model_tables`, `scoring`: add the feature tables, the model-result tables and
    the monthly predictions (`pred_batch`, from the adopted models) to the staged database
-5. `swap`: replace the published database with an atomic rename
+5. `monitoring`: data freshness and drift of the previous run's predictions (reported, never stops
+   the run)
+6. `swap`: replace the published database with an atomic rename
 
 Any failure stops the run and leaves the published database exactly as it was. Every run, good or
 bad, appends a line to `run_log.jsonl`; a failed run's line names the stage that failed.
@@ -34,12 +36,14 @@ from sqlalchemy import create_engine, text
 from oa_market_intelligence.features.build import write_adopted_feature_tables
 from oa_market_intelligence.modeling.scoring import write_predictions
 from oa_market_intelligence.modeling.store import write_model_tables
+from oa_market_intelligence.monitoring import run_monitoring
 from oa_market_intelligence.pipeline import (
     DEFAULT_RAW_DIR,
     DEFAULT_REFERENCE_DIR,
     run_pipeline,
 )
 from oa_market_intelligence.public_data import rebuild_full, verify_committed
+from oa_market_intelligence.versions import run_versions
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +127,7 @@ def publish(
     features_fn: Callable[..., dict] = write_adopted_feature_tables,
     model_tables_fn: Callable[..., dict] = write_model_tables,
     scoring_fn: Callable[..., dict] | None = write_predictions,
+    monitoring_fn: Callable[..., dict] | None = run_monitoring,
 ) -> dict:
     """Run the full rebuild. Returns the run record; never raises for a failed run.
 
@@ -166,6 +171,14 @@ def publish(
                     _skipped(stages, "scoring")
                 else:
                     scoring_rows = _stage(stages, "scoring", lambda: scoring_fn(engine) or {})
+                if monitoring_fn is None:
+                    monitoring_rows = {}
+                    _skipped(stages, "monitoring")
+                else:
+                    previous_db = published_db if published_db.exists() else None
+                    monitoring_rows = _stage(
+                        stages, "monitoring", lambda: monitoring_fn(engine, previous_db) or {}
+                    )
             finally:
                 engine.dispose()
 
@@ -178,6 +191,8 @@ def publish(
             feature_tables=feature_rows,
             model_tables=model_rows,
             scoring=scoring_rows,
+            monitoring=monitoring_rows,
+            versions=run_versions((summary or {}).get("ingest_files", [])),
             public_data=public_rows,
             last_month_id=coverage["last_month_id"],
             # a product with no taxonomy entry is loaded as 'unclassified' and does not stop the

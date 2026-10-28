@@ -1,7 +1,7 @@
 """The end-to-end gate (DL-83): the real raw extracts through every stage of the publish run to the
 published database, twice.
 
-One `publish` run on the real data (the session's parsed extracts, no network) must pass all seven
+One `publish` run on the real data (the session's parsed extracts, no network) must pass all eight
 stages, leave a database whose Gold tables equal the committed golden snapshot, contain every table
 the downstream layers read (feature tables, model results, predictions), and make predictions that
 agree with the data. A second run into another folder must give exactly the same content in every
@@ -24,7 +24,7 @@ pytestmark = pytest.mark.e2e
 
 STAGES = [
     "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables", "scoring",
-    "swap",
+    "monitoring", "swap",
 ]
 DOWNSTREAM = ("feat_segment_month", "feat_monthly", "model_scores", "backtest_batch", "pred_batch")
 
@@ -61,6 +61,11 @@ def test_every_stage_passes_in_order_and_the_run_is_logged(runs):
     first = runs[0][1]
     assert first["public_data"]["tables"] == 23 and first["public_data"]["manifest_files"] == 171
     assert first["feature_tables"]["feat_segment_month"] > 8000
+    assert first["monitoring"]["freshness"]["last_month_id"] == 202507
+    assert first["monitoring"]["drift"]["status"] == "no_previous_run"  # a fresh folder
+    assert first["monitoring"]["status"] in ("ok", "attention")
+    assert first["versions"]["data"] != "unknown" and len(first["versions"]["environment"]) == 12
+    assert first["versions"]["data"] == runs[1][1]["versions"]["data"]  # same extracts
     scoring = first["scoring"]
     assert scoring["pred_batch"] == scoring["national"] + scoring["segment"]
 

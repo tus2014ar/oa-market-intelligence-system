@@ -26,7 +26,21 @@ def summarise(log_path: Path | str = DEFAULT_LOG) -> str:
         out.append(f"Error: `{run['error']}`")
     if run.get("status") == "ok":
         out.append(f"Months: {run.get('n_months')}, latest month: {run.get('last_month_id')}")
-        out.append(f"Monitoring: {run.get('monitoring_status')}; serving: {run.get('serving')}")
+        monitoring = run.get("monitoring") or {}
+        if monitoring:
+            fresh, drift = monitoring.get("freshness") or {}, monitoring.get("drift") or {}
+            out.append(
+                f"Monitoring: {monitoring.get('status')}; data freshness: {fresh.get('status')} "
+                f"(latest month is {fresh.get('age_days')} days old, "
+                f"limit {fresh.get('max_age_days')}); "
+                f"forecast drift: {drift.get('status')}"
+            )
+        versions = run.get("versions") or {}
+        if versions:
+            out.append(
+                f"Versions: data `{versions.get('data')}`, code `{versions.get('code')}`, "
+                f"environment `{versions.get('environment')}`"
+            )
     stages = run.get("stages") or []
     if stages:
         table = ["| Stage | Status | Seconds |", "|---|---|---|"]

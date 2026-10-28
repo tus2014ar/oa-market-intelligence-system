@@ -37,6 +37,7 @@ def _publish(tmp_path, month_ids, **overrides):
         features_fn=overrides.pop("features_fn", lambda engine: {}),
         model_tables_fn=overrides.pop("model_tables_fn", lambda engine: {}),
         scoring_fn=overrides.pop("scoring_fn", None),
+        monitoring_fn=overrides.pop("monitoring_fn", None),
         **overrides,
     )
 
@@ -224,15 +225,23 @@ def test_the_stages_run_in_order_and_are_recorded_in_the_run_log(tmp_path):
     def scoring(engine):
         return {"pred_batch": 4}
 
-    record = _publish(tmp_path, MONTHS_2, scoring_fn=scoring, public_data_fn=lambda: {"mode": "x"})
+    def monitoring(engine, previous_db):
+        return {"status": "ok", "had_previous": previous_db is not None}
+
+    record = _publish(
+        tmp_path, MONTHS_2, scoring_fn=scoring, monitoring_fn=monitoring,
+        public_data_fn=lambda: {"mode": "x"},
+    )
     assert record["status"] == "ok"
     assert _stage_names(record) == [
         "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables",
-        "scoring", "swap",
+        "scoring", "monitoring", "swap",
     ]
     assert all(stage["status"] == "ok" for stage in record["stages"])
     assert all(stage["seconds"] >= 0 for stage in record["stages"])
     assert record["public_data"] == {"mode": "x"} and record["scoring"] == {"pred_batch": 4}
+    assert record["monitoring"] == {"status": "ok", "had_previous": False}  # the first run
+    assert set(record["versions"]) == {"data", "code", "environment"}
     assert _log(tmp_path)[-1]["stages"] == record["stages"]
 
 
@@ -255,6 +264,7 @@ def _boom(*_args, **_kwargs):
         ("feature_tables", {"features_fn": _boom}),
         ("model_tables", {"model_tables_fn": _boom}),
         ("scoring", {"scoring_fn": _boom}),
+        ("monitoring", {"monitoring_fn": _boom}),
     ],
 )
 def test_a_failure_in_any_stage_names_it_and_keeps_the_last_good_database(
@@ -287,3 +297,23 @@ def test_a_failed_public_data_check_stops_before_the_warehouse_is_built(tmp_path
     assert record["status"] == "failed" and not built
     assert _stage_names(record) == ["public_data"]
     assert not _db(tmp_path).exists()
+
+
+def test_the_monitoring_stage_sees_the_previously_published_database(tmp_path):
+    seen = []
+
+    def monitoring(engine, previous_db):
+        seen.append(previous_db)
+        return {"status": "ok"}
+
+    _publish(tmp_path, MONTHS_2, monitoring_fn=monitoring)
+    _publish(tmp_path, MONTHS_3, monitoring_fn=monitoring)
+    assert seen[0] is None  # nothing was published before the first run
+    assert seen[1] == tmp_path / "published" / "warehouse.db"  # the old one, not yet swapped out
+
+
+def test_a_missing_monitoring_function_is_recorded_as_skipped(tmp_path):
+    record = _publish(tmp_path, MONTHS_2)
+    monitoring = next(s for s in record["stages"] if s["stage"] == "monitoring")
+    assert monitoring["status"] == "skipped" and record["monitoring"] == {}
+

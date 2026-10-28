@@ -22,7 +22,7 @@ from oa_market_intelligence.modeling.store import (
 LOG = DEFAULT_DB.parent / "run_log.jsonl"
 STAGES = [
     "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables", "scoring",
-    "swap",
+    "monitoring", "swap",
 ]
 EXPECTED = set(TABLES) | {
     "feat_segment_month", "feat_monthly", "model_scores", "backtest_batch", "pred_batch",
@@ -74,6 +74,8 @@ def test_the_predictions_are_for_the_month_after_the_last_month_of_data(con):
     assert (pred["target_month_id"] > last).all()
     run = json.loads([line for line in LOG.read_text("utf-8").splitlines() if line.strip()][-1])
     assert run["scoring"]["pred_batch"] == len(pred)  # the log and the table agree
+    assert set(pred["data_version"]) == {run["versions"]["data"]} != {"unknown"}  # traceable
+    assert set(run["monitoring"]) >= {"status", "freshness", "drift"}
 
 
 def test_the_predictions_follow_the_adoption_map(con):
