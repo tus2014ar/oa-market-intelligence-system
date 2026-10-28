@@ -43,6 +43,11 @@ jobs:
       - name: Rebuild and publish
         run: oa-publish --public-data committed
 
+      # A published database that is incomplete, or whose results and predictions disagree with
+      # each other, is never committed.
+      - name: Check the published database
+        run: pytest tests/test_published_warehouse.py -q
+
       - name: Commit the published database
         run: |
           git config user.name "github-actions[bot]"
