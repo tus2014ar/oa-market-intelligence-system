@@ -1,6 +1,6 @@
 # Model card: national share (T1, "same as last month")
 
-**Status: the baseline serves at 1, 3 and 6 months ahead. No trained model beat it.** The national Zilretta visit share is best forecast by its last value. Decisions: [`decision_log.md`](decision_log.md) DL-76 to DL-79. Plan: [`modelling_plan.md`](modelling_plan.md). Results: [`modelling_results.md`](modelling_results.md), notebook 15, `data/reference/modelling_results.json`, warehouse tables `model_scores` and `backtest_batch`.
+**Status: the baseline serves at 1, 3 and 6 months ahead. No trained model beat it.** The national Zilretta visit share is best forecast by its last value. Adopted in DL-79 (28 Oct 2026): the baseline serves at all three horizons. Decisions: [`decision_log.md`](decision_log.md) DL-76 to DL-79. Plan: [`modelling_plan.md`](modelling_plan.md). Results: [`modelling_results.md`](modelling_results.md), notebook 15, `data/reference/modelling_results.json`, warehouse tables `model_scores` and `backtest_batch`.
 
 ## Model
 

@@ -1,6 +1,6 @@
 # Model card: segment share (T2, logistic regression)
 
-**Status: serves at 1 and 3 months ahead under the registered rule; the baseline serves at 6 months. A small gain that runs too high; not a forecast of the overall level.** It estimates a segment's Zilretta share better than "last month's share", by about 0.44% of log-loss at 1 month and 0.21% at 3 months. Decisions: [`decision_log.md`](decision_log.md) DL-76 to DL-79. Plan: [`modelling_plan.md`](modelling_plan.md). Results: [`modelling_results.md`](modelling_results.md), notebook 15, `data/reference/modelling_results.json`, warehouse tables `model_scores` and `backtest_batch`.
+**Status: serves at 1 and 3 months ahead under the registered rule; the baseline serves at 6 months. A small gain that runs too high; not a forecast of the overall level.** It estimates a segment's Zilretta share better than "last month's share", by about 0.44% of log-loss at 1 month and 0.21% at 3 months. Adopted in DL-79 (28 Oct 2026): the logistic regression at 1 and 3 months with its bias stated beside every forecast, the baseline at 6 months. Decisions: [`decision_log.md`](decision_log.md) DL-76 to DL-79. Plan: [`modelling_plan.md`](modelling_plan.md). Results: [`modelling_results.md`](modelling_results.md), notebook 15, `data/reference/modelling_results.json`, warehouse tables `model_scores` and `backtest_batch`.
 
 ## Model
 

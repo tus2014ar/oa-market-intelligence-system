@@ -380,5 +380,5 @@ Two tables are written into the warehouse by the publish step (`modeling/store.p
 | `model_scores` | one row per task (T1 national share, T2 segment share, T3 decline alert), horizon (1, 3, 6), scenario and method | 222 | `kind` (baseline or model), `metric` (`mae_pp`, `log_loss`, `pr_auc`), `higher_is_better`, `score`, `is_best_baseline`, `gain_over_best_baseline` with `gain_lower` and `gain_upper` (positive is better), `promoted`, `serving`, `n_test_months`, and where they apply `months_better`, `coverage_90`, `precision`, `recall`, `f1`, `n_alerts`, `bias_vs_actual` |
 | `backtest_batch` | one row per cut-off, step (1 to 6) and, for the specialty level, specialty | 174 | `level` (national or specialty), `cutoff_month_id`, `step`, `target_month_id`, `specialty_name`, `model`, `predicted_share`, `actual_share`, `lo90_share` and `hi90_share` (national only), `visits` (specialty only); shares are fractions |
 
-Results and reading: [`modelling_results.md`](modelling_results.md).
+Results and reading: [`modelling_results.md`](modelling_results.md). `model_scores.serving` is the choice of the registered rule; what is adopted into serving (for T3 the 1-month alert only) is recorded in DL-79.
 

@@ -113,7 +113,7 @@ Every publish writes two tables from the stored results (`modeling/store.py`; no
 - **`model_scores`** (222 rows): one row per task (T1, T2, T3), horizon, scenario and method. Columns: `kind` (baseline or model), `metric` (`mae_pp`, `log_loss`, `pr_auc`) and `higher_is_better`, `score`, `is_best_baseline`, `gain_over_best_baseline` with `gain_lower` and `gain_upper` (positive is better), `promoted`, `serving`, `n_test_months`, and where they apply `months_better`, `coverage_90`, `precision`, `recall`, `f1`, `n_alerts` and `bias_vs_actual`.
 - **`backtest_batch`** (174 rows): the batch demonstration. Columns: `level` (national or specialty), `cutoff_month_id`, `step`, `target_month_id`, `specialty_name`, `model`, `predicted_share`, `actual_share`, `lo90_share`, `hi90_share` (national only) and `visits` (specialty only). Shares are fractions.
 
-Model cards: [segment share](model_card_segment_share.md), [national share](model_card_national_share.md), [decline alert](model_card_decline_alert.md). Adoption into serving is recorded in DL-79.
+Model cards: [segment share](model_card_segment_share.md), [national share](model_card_national_share.md), [decline alert](model_card_decline_alert.md). Adoption into serving is recorded in DL-79 (decided 28 Oct 2026): the national baseline at all horizons; the segment logistic regression at 1 and 3 months and the baseline at 6; the decline alert as a 1-month flag only. The `serving` column is the registered rule's choice, so for T3 it is wider than the adoption.
 
 ## Disclosures and limits
 

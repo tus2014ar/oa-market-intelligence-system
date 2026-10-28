@@ -63,4 +63,4 @@ The ordering of methods is the same without the COVID months, without the 2024 d
 
 ## Maintenance
 
-To be refit each month in the production phase together with the segment forecast (not yet built). Under the post-hoc reading only the 1-month alert would be kept; that adoption choice is recorded in DL-79.
+To be refit each month in the production phase together with the segment forecast (not yet built). Adopted in DL-79 (28 Oct 2026): the 1-month alert only, as a supporting flag; the 3 and 6 month alerts are not adopted.
