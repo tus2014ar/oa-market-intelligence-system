@@ -52,6 +52,7 @@ A newer, extended-release branded injectable (Zilretta) is trying to take visit 
 | **Modelling** | A horizon harness with leakage guards, three tasks at 1, 3 and 6 months (national share, segment share, decline alert), a pre-registered run repeated for identical output, a post-hoc check, three model cards and two result tables in the warehouse | `modeling/`, notebook 15, DL-78, DL-79 |
 | **Monthly scoring** | The adopted models refitted on all the data in the publish run, writing the next 1, 3 and 6 months to `pred_batch` with the known bias; checked against the stored results and reproducing the stored batch demonstration exactly | `modeling/scoring.py`, `serving_models.json`, DL-82 |
 | **Production hardening** | A pinned environment and Docker image, one orchestrated eight-stage run with a per-stage record, an end-to-end test and CI gates, monitoring of data freshness and forecast drift, recorded versions, and a runbook | `publish.py`, `monitoring.py`, `versions.py`, `Dockerfile`, DL-80 to DL-84 |
+| **Website (not deployed)** | A Streamlit site over the published warehouse: what to use and not to trust, the market trend, segments, forecasts with their bias and range, the model scoreboard and caveats, data status and the 17 findings; a tested `serving/` package and a CI job for the page | `app/`, `serving/`, `docs/site.md`, DL-85 |
 | **Safety nets** | A golden regression test of the warehouse, a staged publish (public-data check, warehouse, feature and model tables, atomic swap) with a per-stage run log, restatement checks | `golden.py`, `publish.py`, `public_data.py` |
 
 ## Key findings and business impact
@@ -160,6 +161,7 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/feature_results.md`](docs/feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
 | [`docs/database_schema.md`](docs/database_schema.md) sections 13 and 14 | The two feature tables and the two model-result tables the publish step writes into the warehouse |
 | [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its eight stages (including the monthly scoring job and monitoring), the public-data modes, the run record with versions, the monthly schedule and the CI gates |
+| [`docs/site.md`](docs/site.md) | The website: its seven tabs, where each number comes from, how to run it locally and how it is tested (not deployed) |
 | [`docs/runbook.md`](docs/runbook.md) | The monthly run: what a normal month looks like, what to do when each stage fails, going back to the last good database, forecast drift and tracing a number to its data and code |
 | [`docs/environment.md`](docs/environment.md) | The supported Python, the pinned packages, installing the project and the Docker image, and the environment behind the stored modelling results |
 | [`docs/modelling_plan.md`](docs/modelling_plan.md) | The modelling plan: three tasks, horizons, baselines and models, the evaluation and promotion rules, the leakage timeline and tests, fixed before any model ran (with the T3 amendment and the implementation choices) |

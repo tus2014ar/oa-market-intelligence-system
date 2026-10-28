@@ -91,6 +91,31 @@ jobs:
           OA_TEST_CACHE_DIR: .test_cache
         run: pytest -m e2e --durations=10
 
+  # The website (docs/site.md): the page is run headlessly with Streamlit's test runner on the
+  # committed warehouse and checked for errors, tabs, headline numbers and caveats.
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            app/requirements.txt
+
+      - name: Install dependencies, the site's packages and the project
+        run: |
+          pip install -r requirements.txt
+          pip install -r app/requirements.txt
+          pip install --no-deps -e .
+
+      - name: Site tests
+        run: pytest tests/test_serving_views.py tests/test_serving_data.py tests/test_site_app.py -q
+
   # Builds the project image (no push) and runs it, so a broken Dockerfile or pin file fails here.
   docker-build:
     runs-on: ubuntu-latest
