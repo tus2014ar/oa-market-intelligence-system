@@ -2,7 +2,7 @@
 
 A monthly-refreshable analytics foundation that tracks Zilretta's visit share against generic corticosteroid injections and NSAIDs in Osteoarthritis (OA) and Rheumatoid Arthritis (RA), built on real IQVIA National Medical and Treatment Audit (NMTA) patient-visit data and a set of public datasets. Built around one stakeholder, an OA/RA Injectable Brand Manager.
 
-**Status:** data profiling, cleaning and preprocessing, ingestion, the data warehouse, exploratory data analysis (EDA) and **feature engineering** are complete and documented. **Next: modelling**, then the deliverables. The feature test found one input group that earns its place for segment share (specialty and market context, about 0.06% of log-loss) and none for the national share (DL-75, DL-76). The earlier full build (features, models, website) is preserved in the git tag `archive/full-project-2026-10-11`.
+**Status:** data profiling, cleaning, ingestion, the data warehouse, exploratory data analysis (EDA), feature engineering and **modelling** are complete and documented. **Next:** the final phase, production hardening and then the serving layer. The headline: price, sales and promotion do not predict monthly share; the national share is best forecast by last month's value; a logistic regression gives a small, optimistic gain for segment share at 1 and 3 months; and the decline alert is mostly regression to the mean (DL-76, DL-79). Nothing is deployed.
 
 Built as a capstone project for **DAAN 888 — Design and Implementation of Analytics System**, Penn State University, School of Graduate Professional Studies (Fall 2026).
 
@@ -11,6 +11,15 @@ Built as a capstone project for **DAAN 888 — Design and Implementation of Anal
 ## The problem
 
 A newer, extended-release branded injectable (Zilretta) is trying to take visit share from decades-old generic corticosteroids and NSAIDs in a high-volume OA market (7.19M+ visits across 6 years in our extract). The system is built around a single stakeholder, an **OA/RA Injectable Brand Manager**, who needs an early signal on competitive share movement before it shows up in a standard quarterly business review.
+
+## Business impact at a glance
+
+- **Do not quote the IQVIA decline as a market fact.** Company net sales rose (+5% in 2023, +6% in 2024) while IQVIA Zilretta visits fell (-14%, -36%), and no tested explanation closes the gap, so a target built on the visit decline could be wrong by a large factor until IQVIA confirms panel coverage.
+- **Look at orthopedic surgery and physician assistants first.** They are 64% of the net fall of 11,256 visits; Michigan, Arizona, Florida, Minnesota and Indiana come first for room to grow, on a state ranking that is stable (0.92).
+- **Plan the national number on last month's value.** Three trained models were tested at 1, 3 and 6 months and none beat "same as last month" (error 0.125, 0.180, 0.239 points); price, company sales, promotion and competitor volumes add nothing to monthly share.
+- **Use the segment forecast as a small, optimistic improvement.** A logistic regression beats the baseline by about 0.4% of log-loss at 1 month and 0.2% at 3 months and not at 6, but runs 5% to 18% too high, so the bias is stated beside every forecast.
+- **Treat the decline alert as a 1-month flag, not a prediction.** About half of its alerts are not real declines, and most of its apparent skill is a spiked month falling back, which a post-hoc check added after the results exposed and the project reports in full.
+- **The results can be trusted for what they are.** Rules were written before any model ran, leakage tests must catch a deliberately leaky case, a full run is repeated for identical output, and null results are reported as findings.
 
 ## The six stages at a glance
 
@@ -42,7 +51,7 @@ A newer, extended-release branded injectable (Zilretta) is trying to take visit 
 
 ## Key findings and business impact
 
-Everything below is descriptive or from pre-registered tests on the public data (rules written before the analysis ran; none of it is causal). IQVIA covers 72 months (Aug 2019 to Jul 2025), 160 products, 50 specialties and 7.19M+ visits; Zilretta's share of the three-class visit total rose from about 2.0% (2019) to a peak near 3.4% (Dec 2021) and has fallen since.
+Everything below is descriptive or from pre-registered tests (rules written before the analysis or the models ran; none of it is causal). IQVIA covers 72 months (Aug 2019 to Jul 2025), 160 products, 50 specialties and 7.19M+ visits; Zilretta's share of the three-class visit total rose from about 2.0% (2019) to a peak near 3.4% (Dec 2021) and has fallen since.
 
 | # | Finding | Evidence (quantified) | Business impact |
 |---|---|---|---|
@@ -58,6 +67,10 @@ Everything below is descriptive or from pre-registered tests on the public data 
 | 10 | **Price relative to the comparator rose, but not cleanly** | Ratio +11.7%, driven by the comparator's limit falling 14% while Zilretta's fell 4% | Not evidence that Zilretta's price moved the share |
 | 11 | **Zilretta did not dip in 2020 when most hyaluronic injectables did** | Zilretta Medicare patients 36,500 (2019), 53,400 (2021), 47,200 (2024, 12% below peak); Durolane patients 19,700 to 57,100 (almost threefold) | The competitor set is not moving as one; Durolane is the one competitor that stands out |
 | 12 | **The data is thin where it matters for modelling** | 60% of segment-months have fewer than 20 visits and 65% have no Zilretta visit; month-to-month changes have lag-12 autocorrelation +0.27 and lag-1 -0.19; only price and company sales are known for all 72 months | Sets realistic expectations for feature engineering: small effects at best, and "same as last month" will be hard to beat |
+| 13 | **Only one input group improves the segment forecast, and none improves the national one** | Of 7 groups tested, specialty and market context gains +0.06% of log-loss (better in 42 of 46 months, robust to COVID and the 2024 dip); no group beats "same as last month" nationally | Price, company sales and promotion do not predict monthly share, so they should not drive a monthly forecast |
+| 14 | **The national share is best forecast by last month's value** | Ridge and two ETS models at 1, 3 and 6 months: none beats it (error 0.125, 0.180, 0.239 points); the trained models' 90% ranges cover as little as 47% of months | Plan on the last value with its range; a model would add cost and no accuracy |
+| 15 | **Segment forecasts gain a little at 1 and 3 months and run too high** | Logistic regression +0.44% of log-loss (better in 46 of 46 months) and +0.21% (33 of 44), none at 6 months; forecasts +5.5%, +10.9%, +18.2% above actual | A ranking aid and an optimistic estimate: quote the bias beside it and do not plan six months ahead on it |
+| 16 | **The decline alert is mostly regression to the mean** | PR-AUC 0.55 against 0.23 no-skill under the registered baselines, but 0.50 once a baseline with a reversed sign is corrected (post hoc); a reliable gain only at 1 month (+0.049); precision 0.45 to 0.49 | Use it only as a 1-month supporting flag; never act on an alert alone |
 
 ### Data-quality findings that shaped the cleaning
 - A likely mis-coded `PEDIATRICS` prescriber and miscoded oncology products in the RA extract (RA has about 1,250 visits over 6 years, too sparse to model).
@@ -68,7 +81,9 @@ Everything below is descriptive or from pre-registered tests on the public data 
 - A re-runnable pipeline from raw Excel to a validated warehouse in about 2.5 minutes; every extract is hashed (SHA-256) per run, and a golden regression test rebuilds the warehouse from the real extracts and compares it with committed values.
 - 171 public files (about 24 GB) from CMS, CDC, SEC and FDA were profiled and loaded into a 27-table database with 38 reconciliation checks passing, restorable from a committed manifest.
 - A recorded "when could this value have been known" rule for 14 sources, so later features cannot use information from the future.
-- About 590 automated tests, run in parallel in CI on every pull request.
+- About 830 automated tests, run in parallel in CI on every pull request.
+- Modelling that cannot see the future: a horizon harness that raises if a training row's outcome is after the forecast date, model-level "rewrite the future" tests with a deliberately leaky case that must be caught, and a full run of every model repeated once for byte-identical output.
+- Model results stored in the warehouse (`model_scores`, `backtest_batch`) by every publish, a model card for each model that serves, and the adoption of models into serving recorded as a decision (DL-79).
 
 ## Architecture in one picture
 
@@ -85,6 +100,8 @@ The pipeline writes `data/processed/warehouse.db` (git-ignored). The publish ste
 PYTHONPATH=src python -m oa_market_intelligence.pipeline   # build the warehouse (about 2.5 minutes)
 PYTHONPATH=src python -m oa_market_intelligence.publish    # build, check and publish it atomically
 PYTHONPATH=src python -m pytest                            # the test suite (CI runs it in parallel)
+PYTHONPATH=src python -m oa_market_intelligence.modeling.run_modelling --counts-only   # what the modelling run will score (fits nothing)
+PYTHONPATH=src python -m oa_market_intelligence.modeling.run_modelling --run --n-jobs 6   # the full modelling run (about two hours)
 ```
 
 ## Data
