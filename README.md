@@ -96,6 +96,15 @@ Everything below is descriptive or from pre-registered tests (rules written befo
 
 The pipeline writes `data/processed/warehouse.db` (git-ignored). The publish step builds `data/published/warehouse.db` (committed) in a staging file, checks it, and swaps it in atomically, so a failed run never damages the last good database.
 
+Set up (Python 3.12 is the tested baseline; the packages are pinned, see [`docs/environment.md`](docs/environment.md)):
+
+```bash
+pip install -r requirements.txt && pip install --no-deps -e .   # then oa-pipeline, oa-publish, oa-model are on the path
+docker build -t oa-market-intelligence .                          # the same environment as a container
+```
+
+Run:
+
 ```bash
 PYTHONPATH=src python -m oa_market_intelligence.pipeline   # build the warehouse (about 2.5 minutes)
 PYTHONPATH=src python -m oa_market_intelligence.publish    # build, check and publish it atomically
@@ -143,6 +152,7 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model input: definition, source and leakage rule |
 | [`docs/feature_results.md`](docs/feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
 | [`docs/database_schema.md`](docs/database_schema.md) sections 13 and 14 | The two feature tables and the two model-result tables the publish step writes into the warehouse |
+| [`docs/environment.md`](docs/environment.md) | The supported Python, the pinned packages, installing the project and the Docker image, and the environment behind the stored modelling results |
 | [`docs/modelling_plan.md`](docs/modelling_plan.md) | The modelling plan: three tasks, horizons, baselines and models, the evaluation and promotion rules, the leakage timeline and tests, fixed before any model ran (with the T3 amendment and the implementation choices) |
 | [`docs/modelling_results.md`](docs/modelling_results.md) | Results of the modelling run, including the post-hoc check of the decline alert and the limits |
 | [`docs/model_card_segment_share.md`](docs/model_card_segment_share.md), [`model_card_national_share.md`](docs/model_card_national_share.md), [`model_card_decline_alert.md`](docs/model_card_decline_alert.md) | One card for each model that serves: use, inputs, evaluation, calibration, limits |
