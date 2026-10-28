@@ -53,10 +53,43 @@ jobs:
       # Tests run in parallel, one worker per core. The slow real-data parse is done once per run and
       # shared through a file (tests/conftest.py). --durations lists the slowest tests so a slow
       # one is visible in the log.
+      # The end-to-end tests run in their own job (below), in parallel with these.
       - name: Test (pytest)
         env:
           OA_TEST_CACHE_DIR: .test_cache
-        run: pytest -n auto --durations=15
+        run: pytest -n auto -m "not e2e" --durations=15
+
+  # The gate for the whole chain: the real extracts through all seven stages of the publish run
+  # to the published database, twice. The golden snapshot, the downstream tables, the predictions
+  # and the repeatability of every table are checked (tests/test_end_to_end.py).
+  end-to-end:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies and the project
+        run: |
+          pip install -r requirements.txt
+          pip install --no-deps -e .
+
+      - name: Cache the parsed real extracts
+        uses: actions/cache@v4
+        with:
+          path: .test_cache
+          key: real-ingest-${{ hashFiles('data/raw/*.xlsx', 'src/oa_market_intelligence/ingestion/*.py', 'src/oa_market_intelligence/pipeline.py') }}
+
+      - name: End-to-end (pytest -m e2e)
+        env:
+          OA_TEST_CACHE_DIR: .test_cache
+        run: pytest -m e2e --durations=10
 
   # Builds the project image (no push) and runs it, so a broken Dockerfile or pin file fails here.
   docker-build:

@@ -35,3 +35,17 @@ Each run appends one line to `data/published/run_log.jsonl`, with a `stages` lis
 ## Scheduling
 
 `.github/workflows/monthly_pipeline.yml` runs `oa-publish --public-data committed` on the 10th of each month (and on demand), commits the published database and run log, and writes the run's stage table to the job summary.
+
+## The gates (DL-83)
+
+What stops a change, or a monthly run, from putting something wrong in the repository:
+
+| Gate | Where | What it checks |
+|---|---|---|
+| Lint and the fast tests | CI job `lint-and-test` (`pytest -m "not e2e"`) | `ruff`, the unit tests, the golden regression of the warehouse, the stored-results reproduction (`test_modelling_reproduction.py`) and the published-warehouse consistency (`test_published_warehouse.py`) |
+| End to end | CI job `end-to-end` (`pytest -m e2e`, `test_end_to_end.py`) | the real extracts through all seven stages of `oa-publish`, twice: every stage ok and in order, the Gold tables equal the golden snapshot, every downstream table present, the predictions agree with the data, and both runs give exactly the same content in every table |
+| Container | CI job `docker-build` | the image builds and its commands run |
+| Published database | the monthly workflow, after `oa-publish` and before the commit (`test_published_warehouse.py`) | every expected table is present and not empty, the last logged run passed every stage, the result tables equal the stored results, the predictions are for the month after the last month of data and follow the adoption map |
+
+`test_modelling_reproduction.py` is how the two-hour modelling run stays honest without being repeated: it recomputes the counts and every baseline score from the committed warehouse (pure arithmetic, equal to the stored value to the last digit) and two trained national models (loose tolerance), and names the table or score that moved if a change to the harness, the features or the data altered a stored number. The full run (`oa-model --run`) is repeated on demand.
+
