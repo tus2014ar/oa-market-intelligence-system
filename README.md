@@ -84,6 +84,7 @@ Everything below is descriptive or from pre-registered tests (rules written befo
 - A recorded "when could this value have been known" rule for 14 sources, so later features cannot use information from the future.
 - About 880 automated tests, run in parallel in CI on every pull request, plus an end-to-end job that runs the real extracts through every stage of the publish run twice and requires identical content, and a check of the published database before the monthly workflow commits it.
 - Modelling that cannot see the future: a horizon harness that raises if a training row's outcome is after the forecast date, model-level "rewrite the future" tests with a deliberately leaky case that must be caught, and a full run of every model repeated once for byte-identical output.
+- Monitoring in every publish run: data freshness and the drift of earlier forecasts against what happened, and a recorded version of the data, code and environment (every prediction row carries its data version), with a runbook for the monthly run.
 - Model results stored in the warehouse (`model_scores`, `backtest_batch`) by every publish, a model card for each model that serves, and the adoption of models into serving recorded as a decision (DL-79).
 
 ## Architecture in one picture
@@ -153,7 +154,8 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model input: definition, source and leakage rule |
 | [`docs/feature_results.md`](docs/feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
 | [`docs/database_schema.md`](docs/database_schema.md) sections 13 and 14 | The two feature tables and the two model-result tables the publish step writes into the warehouse |
-| [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its seven stages (including the monthly scoring job), the public-data modes, the run record, the monthly schedule and the CI gates |
+| [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its eight stages (including the monthly scoring job and monitoring), the public-data modes, the run record with versions, the monthly schedule and the CI gates |
+| [`docs/runbook.md`](docs/runbook.md) | The monthly run: what a normal month looks like, what to do when each stage fails, going back to the last good database, forecast drift and tracing a number to its data and code |
 | [`docs/environment.md`](docs/environment.md) | The supported Python, the pinned packages, installing the project and the Docker image, and the environment behind the stored modelling results |
 | [`docs/modelling_plan.md`](docs/modelling_plan.md) | The modelling plan: three tasks, horizons, baselines and models, the evaluation and promotion rules, the leakage timeline and tests, fixed before any model ran (with the T3 amendment and the implementation choices) |
 | [`docs/modelling_results.md`](docs/modelling_results.md) | Results of the modelling run, including the post-hoc check of the decline alert and the limits |

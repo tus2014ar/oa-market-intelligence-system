@@ -59,7 +59,7 @@ jobs:
           OA_TEST_CACHE_DIR: .test_cache
         run: pytest -n auto -m "not e2e" --durations=15
 
-  # The gate for the whole chain: the real extracts through all seven stages of the publish run
+  # The gate for the whole chain: the real extracts through all eight stages of the publish run
   # to the published database, twice. The golden snapshot, the downstream tables, the predictions
   # and the repeatability of every table are checked (tests/test_end_to_end.py).
   end-to-end:

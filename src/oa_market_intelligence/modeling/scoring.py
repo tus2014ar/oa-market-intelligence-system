@@ -50,6 +50,7 @@ from oa_market_intelligence.modeling.segment_baselines import BASELINES
 from oa_market_intelligence.modeling.segment_models import TunedPredictor
 from oa_market_intelligence.modeling.t1_horizon import check_series, make_forecasters
 from oa_market_intelligence.modeling.t2_horizon import T2_MODELS
+from oa_market_intelligence.versions import data_version
 
 SERVING_JSON = Path(__file__).resolve().parents[3] / "data" / "reference" / "serving_models.json"
 PRED_TABLE = "pred_batch"
@@ -58,7 +59,7 @@ NATIONAL_MODELS = tuple(make_forecasters())
 PRED_COLUMNS = [
     "run_month_id", "target_month_id", "horizon", "level", "specialty_name", "age_band", "gender",
     "model", "model_version", "point_share", "lo80_share", "hi80_share", "lo90_share",
-    "hi90_share", "origin_visits", "alert_score", "alert_flag", "known_bias",
+    "hi90_share", "origin_visits", "alert_score", "alert_flag", "known_bias", "data_version",
 ]
 
 
@@ -298,6 +299,7 @@ def write_predictions(engine: Engine, serving_path: Path | str = SERVING_JSON) -
         monthly = pd.read_sql("SELECT * FROM gold_visit_share_monthly ORDER BY month_id", conn)
         scores = pd.read_sql("SELECT * FROM model_scores", conn)
     predictions = score_batch(load_segment_gold(engine), monthly, serving, scores=scores)
+    predictions["data_version"] = data_version(engine)
     with engine.begin() as conn:
         predictions.to_sql(PRED_TABLE, conn, if_exists="replace", index=False)
     return {
@@ -306,6 +308,13 @@ def write_predictions(engine: Engine, serving_path: Path | str = SERVING_JSON) -
         "segment": int((predictions["level"] == "segment").sum()),
         "alert_flags": int(predictions["alert_flag"].fillna(0).sum()),
         "run_month_id": int(predictions["run_month_id"].iloc[0]),
+        "data_version": str(predictions["data_version"].iloc[0]),
+        "model_versions": {
+            f"{level}:{horizon}:{model}": version
+            for level, horizon, model, version in predictions[
+                ["level", "horizon", "model", "model_version"]
+            ].drop_duplicates().itertuples(index=False)
+        },
     }
 
 

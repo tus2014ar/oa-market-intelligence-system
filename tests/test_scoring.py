@@ -240,9 +240,11 @@ def test_write_predictions_replaces_the_table_and_checks_the_map(tmp_path, data,
         ("T2", 1, "main", "logistic", 1, 0.055), ("T2", 3, "main", "logistic", 1, 0.109),
         ("T2", 6, "main", "last_month", 1, None), ("T3", 1, "main", "logistic", 1, None),
     ])
+    files = pd.DataFrame([{"file_name": "x.xlsx", "sha256": "1" * 64}])
     with engine.begin() as conn:
         monthly.to_sql("gold_visit_share_monthly", conn, index=False)
         scores.to_sql("model_scores", conn, index=False)
+        files.to_sql("bronze_ingest_files", conn, index=False)
     monkeypatch.setattr("oa_market_intelligence.features.segment.load_segment_gold", lambda e: seg)
     serving_json = tmp_path / "serving.json"
     import json
@@ -253,6 +255,11 @@ def test_write_predictions_replaces_the_table_and_checks_the_map(tmp_path, data,
     assert first["pred_batch"] == first["national"] + first["segment"]
     table = pd.read_sql("SELECT * FROM pred_batch", engine)
     assert list(table.columns) == PRED_COLUMNS and len(table) == first["pred_batch"]
+    from oa_market_intelligence.versions import data_version_from_files
+
+    expected = data_version_from_files(files.to_dict("records"))
+    assert set(table["data_version"]) == {expected} == {first["data_version"]}
+    assert len(first["model_versions"]) >= 4  # national, segment and the alert, by horizon
     # a map that disagrees with the stored scores stops the stage
     serving_json.write_text(json.dumps({**SERVING, "segment": {"3": "gbm"}}))
     with pytest.raises(ServingMapError):

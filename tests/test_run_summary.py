@@ -93,3 +93,19 @@ def test_the_stages_are_tabulated_and_a_failed_one_is_named(tmp_path):
     ok = summarise(_log(tmp_path, {"status": "ok", "stages": [stages[0]]}))
     assert "Failed stage" not in ok
 
+
+def test_monitoring_and_versions_are_summarised(tmp_path):
+    run = {
+        "status": "ok", "n_months": 72, "last_month_id": 202507,
+        "monitoring": {
+            "status": "attention",
+            "freshness": {"status": "stale", "age_days": 450, "max_age_days": 100},
+            "drift": {"status": "nothing_to_compare"},
+        },
+        "versions": {"data": "abc123", "code": "d4f5802", "environment": "9f8e7d"},
+    }
+    text = summarise(_log(tmp_path, run))
+    assert "Monitoring: attention; data freshness: stale (latest month is 450 days old" in text
+    assert "forecast drift: nothing_to_compare" in text
+    assert "Versions: data `abc123`, code `d4f5802`, environment `9f8e7d`" in text
+
