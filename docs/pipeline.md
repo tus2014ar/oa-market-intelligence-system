@@ -18,7 +18,7 @@ oa-publish --public-data full       # local only: reload and re-export the publi
 | 3 | `coverage_check` | the staged database must not have fewer months than the published one | the run stops |
 | 4 | `feature_tables` | writes `feat_segment_month` and `feat_monthly` | the run stops |
 | 5 | `model_tables` | writes `model_scores` and `backtest_batch` from the stored results | the run stops |
-| 6 | `scoring` | the monthly predictions (`pred_batch`); skipped until the scoring job exists | the run stops |
+| 6 | `scoring` | the monthly scoring job: the adopted models (`data/reference/serving_models.json`, DL-79) are refitted on all the data and the next 1, 3 and 6 months are written to `pred_batch`; the map is checked against the stored `model_scores` first | the run stops |
 | 7 | `swap` | replaces the published database with an atomic rename | the old database stays |
 
 Everything from stage 2 on is built in a staging file; the published `data/published/warehouse.db` is replaced only by stage 7. A failure in any stage leaves it exactly as it was and removes the staging area.

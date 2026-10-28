@@ -7,7 +7,7 @@ One run, in this order, each stage recorded in the run log with its status and d
 2. `warehouse`: build the whole warehouse into a staging file from the raw IQVIA extracts
 3. `coverage_check`: the staged database must not have fewer months than the published one
 4. `feature_tables`, `model_tables`, `scoring`: add the feature tables, the model-result tables and
-   (when a scoring function is given) the monthly predictions to the staged database
+   the monthly predictions (`pred_batch`, from the adopted models) to the staged database
 5. `swap`: replace the published database with an atomic rename
 
 Any failure stops the run and leaves the published database exactly as it was. Every run, good or
@@ -32,6 +32,7 @@ from pathlib import Path
 from sqlalchemy import create_engine, text
 
 from oa_market_intelligence.features.build import write_adopted_feature_tables
+from oa_market_intelligence.modeling.scoring import write_predictions
 from oa_market_intelligence.modeling.store import write_model_tables
 from oa_market_intelligence.pipeline import (
     DEFAULT_RAW_DIR,
@@ -121,7 +122,7 @@ def publish(
     public_data_fn: Callable[..., dict] = verify_committed,
     features_fn: Callable[..., dict] = write_adopted_feature_tables,
     model_tables_fn: Callable[..., dict] = write_model_tables,
-    scoring_fn: Callable[..., dict] | None = None,
+    scoring_fn: Callable[..., dict] | None = write_predictions,
 ) -> dict:
     """Run the full rebuild. Returns the run record; never raises for a failed run.
 

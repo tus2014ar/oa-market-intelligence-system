@@ -382,3 +382,13 @@ Two tables are written into the warehouse by the publish step (`modeling/store.p
 
 Results and reading: [`modelling_results.md`](modelling_results.md). `model_scores.serving` is the choice of the registered rule; what is adopted into serving (for T3 the 1-month alert only) is recorded in DL-79.
 
+## 15. Monthly predictions (DL-82)
+
+`pred_batch` is written by the `scoring` stage of the publish run (`modeling/scoring.py`), from the models adopted in DL-79 (`data/reference/serving_models.json`): the national baseline at 1, 3 and 6 months, the segment logistic regression at 1 and 3 months and the baseline at 6, and the decline alert at 1 month. The origin (`run_month_id`) is the last month of data, so the targets are the next 1, 3 and 6 months. It is replaced on every run.
+
+| Table | Grain | Rows | Contents |
+|---|---|---|---|
+| `pred_batch` | one row per level (national or segment), horizon and, for segments, specialty x age band x gender | 342 | `run_month_id`, `target_month_id`, `horizon`, `level`, `specialty_name`, `age_band`, `gender` (segment rows), `model`, `model_version` (a short fingerprint of the model, horizon, origin and training data), `point_share` (a fraction), `lo80_share`, `hi80_share`, `lo90_share`, `hi90_share` (national rows), `origin_visits` (segment rows: category visits at the origin), `alert_score` and `alert_flag` (1-month segment rows with a positive share and at least 100 visits), `known_bias` (the forecast's recorded bias, from `model_scores`; empty for a baseline) |
+
+Show `known_bias` beside every segment forecast: the segment forecasts ran 5.5% (1 month) and 10.9% (3 months) too high in testing. The alert is a supporting flag, not a prediction of loss (about half its alerts were not real declines). The job reproduces the stored batch demonstration (`backtest_batch`) at the December 2022 cut-off exactly (tested).
+

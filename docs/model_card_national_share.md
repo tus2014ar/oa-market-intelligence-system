@@ -55,4 +55,4 @@ The ranges are close to honest at 1 and 3 months and too narrow at 6 months. The
 
 ## Maintenance
 
-Recomputed each month from the published series; no fitting is involved. Refit-based alternatives would only replace it if one beat it under the same rule.
+Recomputed each month from the published series by the scoring stage of the publish run (DL-82), which writes the 1, 3 and 6 month forecasts and their ranges to `pred_batch`; no fitting is involved. Refit-based alternatives would only replace it if one beat it under the same rule.
