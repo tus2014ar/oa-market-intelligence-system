@@ -36,6 +36,7 @@ def _publish(tmp_path, month_ids, **overrides):
         public_data_fn=overrides.pop("public_data_fn", lambda: {}),
         features_fn=overrides.pop("features_fn", lambda engine: {}),
         model_tables_fn=overrides.pop("model_tables_fn", lambda engine: {}),
+        scoring_fn=overrides.pop("scoring_fn", None),
         **overrides,
     )
 

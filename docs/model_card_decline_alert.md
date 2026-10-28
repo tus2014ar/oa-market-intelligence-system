@@ -63,4 +63,4 @@ The ordering of methods is the same without the COVID months, without the 2024 d
 
 ## Maintenance
 
-To be refit each month in the production phase together with the segment forecast (not yet built). Adopted in DL-79 (28 Oct 2026): the 1-month alert only, as a supporting flag; the 3 and 6 month alerts are not adopted.
+Refit each month by the scoring stage of the publish run together with the segment forecast (`modeling/scoring.py`, DL-82); only the 1-month flag is written to `pred_batch`. Adopted in DL-79 (28 Oct 2026): the 1-month alert only, as a supporting flag; the 3 and 6 month alerts are not adopted.

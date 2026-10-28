@@ -1,0 +1,17 @@
+{
+ "alert": {
+  "1": "logistic"
+ },
+ "decided_on": "2026-10-28",
+ "decision": "DL-79",
+ "national": {
+  "1": "last_month",
+  "3": "last_month",
+  "6": "last_month"
+ },
+ "segment": {
+  "1": "logistic",
+  "3": "logistic",
+  "6": "last_month"
+ }
+}

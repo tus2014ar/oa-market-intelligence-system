@@ -56,7 +56,7 @@ Two cut-offs fixed now: **Dec 2022** (predict Jan to Jun 2023, a calmer period) 
 
 ## 8. The monthly batch scoring job (design only, built in the production phase)
 
-A scheduled step after the monthly publish: refit the serving models on all data, score the next 1, 3 and 6 months for the national series and every scored segment, and write a table `pred_batch` into the warehouse with the run month, target month, horizon, level (national or segment) and keys, model version, point forecast and, for the national level, the 80% and 90% range. A failure keeps the last good table. No code for this job is written in the modelling stage.
+A scheduled step after the monthly publish: refit the serving models on all data, score the next 1, 3 and 6 months for the national series and every scored segment, and write a table `pred_batch` into the warehouse with the run month, target month, horizon, level (national or segment) and keys, model version, point forecast and, for the national level, the 80% and 90% range. A failure keeps the last good table. No code for this job is written in the modelling stage. (It was built afterwards, in hardening step 3: `modeling/scoring.py`, DL-82; it refits only the adopted models of DL-79 and the full promotion test stays on demand.)
 
 ## 9. Leakage and testing (written before any real run)
 

@@ -64,4 +64,4 @@ By size at 1 month the bias is about +6% for segments with 200 or more visits an
 
 ## Maintenance
 
-To be refit and re-tuned each month in the production phase (the monthly batch scoring job, designed in section 8 of the plan and not yet built). The serving rule decides each time whether a trained model or the baseline serves.
+Refit and re-tuned each month by the scoring stage of the publish run (`modeling/scoring.py`, DL-82), which writes the next 1, 3 and 6 months to `pred_batch` with the known bias beside each forecast. The adopted model for each horizon is fixed in `data/reference/serving_models.json` (DL-79) and checked against the stored results; the full promotion test is run on demand.
