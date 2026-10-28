@@ -25,8 +25,19 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
+      # requirements.txt is fully pinned, so every run installs the same packages.
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Install the project (editable; its dependencies come from requirements.txt)
+        run: pip install --no-deps -e .
+
+      - name: Command smoke test
+        run: |
+          oa-pipeline --help
+          oa-publish --help
+          oa-model --help
+          oa-external --help
 
       # The real Excel extracts take about a minute to parse and many tests need them. The parsed
       # result is kept between runs and is rebuilt whenever the raw files or the parser change.
@@ -46,3 +57,18 @@ jobs:
         env:
           OA_TEST_CACHE_DIR: .test_cache
         run: pytest -n auto --durations=15
+
+  # Builds the project image (no push) and runs it, so a broken Dockerfile or pin file fails here.
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t oa-market-intelligence .
+
+      - name: Smoke test the image
+        run: |
+          docker run --rm oa-market-intelligence oa-publish --help
+          docker run --rm oa-market-intelligence oa-model --help
+          docker run --rm oa-market-intelligence python -c "import oa_market_intelligence, pandas; print(pandas.__version__)"

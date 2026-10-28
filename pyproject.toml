@@ -1,3 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oa-market-intelligence-system"
+version = "0.1.0"
+description = "OA and RA market intelligence: Zilretta visit share from IQVIA NMTA data, a warehouse, features, models and results"
+readme = "README.md"
+requires-python = ">=3.12"
+# The tested, fully pinned set is requirements.txt (CI and the Docker image install it); these are
+# the direct runtime dependencies with the lower bounds the code relies on.
+dependencies = [
+    "pandas>=3.0",
+    "numpy>=2.0",
+    "openpyxl",
+    "pyarrow",
+    "requests",
+    "pandera",
+    "sqlalchemy>=2.0",
+    "scipy",
+    "scikit-learn>=1.5",
+    "statsmodels>=0.14",
+    "joblib",
+]
+
+[project.optional-dependencies]
+notebooks = ["matplotlib", "seaborn", "jupyter", "ipykernel", "nbformat", "nbconvert"]
+dev = ["ruff", "pytest", "pytest-xdist", "filelock"]
+
+[project.scripts]
+oa-pipeline = "oa_market_intelligence.pipeline:main"
+oa-publish = "oa_market_intelligence.publish:main"
+oa-model = "oa_market_intelligence.modeling.run_modelling:main"
+oa-external = "oa_market_intelligence.external.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]

@@ -1,0 +1,25 @@
+# Core (populated incrementally as each roadmap stage is actually built — see docs/PROPOSAL.md §11)
+pandas
+numpy
+openpyxl
+pyarrow  # the parsed-extract cache used by the tests (tests/conftest.py)
+requests
+pandera
+sqlalchemy
+
+# EDA / notebooks
+matplotlib
+seaborn
+jupyter
+ipykernel
+nbformat
+nbconvert
+scipy
+scikit-learn
+statsmodels
+
+# Dev / CI
+ruff
+pytest
+pytest-xdist
+filelock
