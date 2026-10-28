@@ -34,10 +34,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Install the project (editable; its dependencies come from requirements.txt)
+        run: pip install --no-deps -e .
+
+      # One entry point runs every stage in order (public data check, warehouse, feature tables,
+      # model-result tables, swap); the committed public-data subset is checked, not rebuilt,
+      # because the 24 GB of raw public files exist only on the author's machine.
       - name: Rebuild and publish
-        env:
-          PYTHONPATH: src
-        run: python -m oa_market_intelligence.publish
+        run: oa-publish --public-data committed
 
       - name: Commit the published database
         run: |

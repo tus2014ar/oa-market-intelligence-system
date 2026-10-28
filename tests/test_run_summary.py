@@ -80,3 +80,16 @@ def test_the_input_extracts_are_listed_once_each_with_a_hash_prefix(tmp_path):
     text = summarise(_log(tmp_path, {"status": "ok", "n_months": 72, "ingest_files": files}))
     assert text.count("Team1_M15_19_OA.xlsx") == 1
     assert "abcdef012345" in text and "012345678" in text
+
+
+def test_the_stages_are_tabulated_and_a_failed_one_is_named(tmp_path):
+    stages = [
+        {"stage": "public_data", "status": "ok", "seconds": 0.5, "detail": None},
+        {"stage": "warehouse", "status": "failed", "seconds": 3.0, "error": "boom"},
+    ]
+    text = summarise(_log(tmp_path, {"status": "failed", "error": "boom", "stages": stages}))
+    assert "| public_data | ok | 0.5 |" in text and "| warehouse | failed | 3.0 |" in text
+    assert "Failed stage:** `warehouse`" in text and "last good database is unchanged" in text
+    ok = summarise(_log(tmp_path, {"status": "ok", "stages": [stages[0]]}))
+    assert "Failed stage" not in ok
+

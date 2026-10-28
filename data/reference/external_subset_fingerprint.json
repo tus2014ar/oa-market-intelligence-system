@@ -1,0 +1,96 @@
+{
+ "tables": {
+  "bridge_drug_family": {
+   "rows": 13,
+   "sha256": "13ffaa267d00172aba56affe3bc84b0f3cb3a9ee3fc68894757e047696a4b089"
+  },
+  "bridge_specialty_crosswalk": {
+   "rows": 13,
+   "sha256": "64f3f638b5931a2602227f8324c5ed021a62a125162a133f46ea9039389cc24d"
+  },
+  "bridge_taxonomy_specialty": {
+   "rows": 883,
+   "sha256": "44169fd33b5173d851d3d2a90dc7ec3b132bdb7447223a2d8c329641fc938286"
+  },
+  "bronze_external_files": {
+   "rows": 171,
+   "sha256": "51e3973d55cca9e8e569b029b0cb9eb2175214064dda97831adc23467e52c015"
+  },
+  "dim_event": {
+   "rows": 14,
+   "sha256": "5adfe7e01322e1e581872baea62e33d27b9a9d9cf1d5f4a79dca8590a9947eb9"
+  },
+  "dim_hcpcs_code": {
+   "rows": 27,
+   "sha256": "ecc497f0b2a9b78740b885ef36400388da345e3c39c6b79c4acb6be747135fb7"
+  },
+  "dim_quarter": {
+   "rows": 32,
+   "sha256": "98968b005d23734ca1db65b91bd2fe3fbceb7c56c06c2a39f8d04b60683a1eec"
+  },
+  "dim_state": {
+   "rows": 61,
+   "sha256": "313ffb2bff8d4e8cf49b2d97a1dcd947eb36e4798cdf3d65cc678bfd9cb08f9c"
+  },
+  "dim_year": {
+   "rows": 13,
+   "sha256": "94aaebdebad406760045aad591aaac7b03f08aca3235bab44451a83cba5d2d2e"
+  },
+  "fact_ext_asp_price": {
+   "rows": 478,
+   "sha256": "212b429031a99fcd91394bc15e525691b837651605d3f51bb4026a748d9ed995"
+  },
+  "fact_ext_company_revenue": {
+   "rows": 45,
+   "sha256": "1c8ef68b0708e8ae57e24593ab7eafa4ad324b6a4610f7d8ea8e58228bfbfb30"
+  },
+  "fact_ext_geo_variation": {
+   "rows": 1782,
+   "sha256": "1efbd109c72d29e80de747e8393a5715bfd5ff4f7e18d522531e27e75a73f433"
+  },
+  "fact_ext_openpay_month": {
+   "rows": 1933,
+   "sha256": "fe7c0ce72d7b3cd203fc899bc1e41892880b1e24f6c8299f9516ead3b82aae7c"
+  },
+  "fact_ext_openpay_nature": {
+   "rows": 2781,
+   "sha256": "5d65f7cb07709bfcf93db8f8f682dc2f37e14b3b2c5376e8c84c33a530290fbf"
+  },
+  "fact_ext_partb_geo": {
+   "rows": 8401,
+   "sha256": "8d6070619f28844a7d5d33583e3ebaa95c9242e398c2429ee9b47597ddacb923"
+  },
+  "fact_ext_partd_geo": {
+   "rows": 12487,
+   "sha256": "d301df17eedcf0f65d9108d424cdc7766a8a6db6707703cd85e4b1da26e079e6"
+  },
+  "fact_ext_provider_counts": {
+   "rows": 32527,
+   "sha256": "782ac18d7383d1cc3073937729a5b3d965354ac4b87cb9130e5b68eb0de11a80"
+  },
+  "gold_ext_company_vs_visits": {
+   "rows": 20,
+   "sha256": "915b6463bed762a859ba662b3ff4deb276942ec54339500d59335741c2ef4eb0"
+  },
+  "gold_ext_price_quarterly": {
+   "rows": 26,
+   "sha256": "b35ceb203466ddfb922c70b3841445f26731b4905c3b78151d740db5e6a03e76"
+  },
+  "gold_ext_promotion_monthly": {
+   "rows": 84,
+   "sha256": "1573224fb82f22835752c600e9fd6adbbdcfd8f7bdf4842b54567864be211eb6"
+  },
+  "gold_ext_specialty_triangulation": {
+   "rows": 66,
+   "sha256": "f87f2e0d2591f7a3d9d1f3866af1618d5801ed68785890c0b640c0672aa2e88f"
+  },
+  "gold_ext_state_adoption": {
+   "rows": 306,
+   "sha256": "e58fbb986128bca6a4edcda5817a671b7b60122adb65ead08c10785724b12ab7"
+  },
+  "gold_ext_verdicts": {
+   "rows": 176,
+   "sha256": "ae13a5cfa1691a4d515b908d235c65b26d84128fa49adebfb24f1292f1df6c4e"
+  }
+ }
+}
