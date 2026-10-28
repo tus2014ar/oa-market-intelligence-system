@@ -27,6 +27,14 @@ def summarise(log_path: Path | str = DEFAULT_LOG) -> str:
     if run.get("status") == "ok":
         out.append(f"Months: {run.get('n_months')}, latest month: {run.get('last_month_id')}")
         out.append(f"Monitoring: {run.get('monitoring_status')}; serving: {run.get('serving')}")
+    stages = run.get("stages") or []
+    if stages:
+        table = ["| Stage | Status | Seconds |", "|---|---|---|"]
+        table += [f"| {s['stage']} | {s['status']} | {s['seconds']} |" for s in stages]
+        out.append("\n".join(table))
+        failed = [s["stage"] for s in stages if s["status"] == "failed"]
+        if failed:
+            out.append(f"**Failed stage:** `{failed[0]}`; the last good database is unchanged.")
     files = {}
     for item in run.get("ingest_files") or []:
         files.setdefault(item["file_name"], item["sha256"])

@@ -47,7 +47,7 @@ A newer, extended-release branded injectable (Zilretta) is trying to take visit 
 | **EDA** | The share series, seasonality and persistence, the sparse segment panel, the outside series on their availability dates, a specialty triangulation against Medicare, and a diagnosis of the sales-versus-visits gap | notebooks 11, 12, 13 |
 | **Feature engineering** | Seven candidate groups with leakage and as-of tests, a feature dictionary, a pre-registered test (one group passes at about 0.06%; none helps the national forecast) and two feature tables in the warehouse | `features/`, notebook 14, DL-75 to DL-77 |
 | **Modelling** | A horizon harness with leakage guards, three tasks at 1, 3 and 6 months (national share, segment share, decline alert), a pre-registered run repeated for identical output, a post-hoc check, three model cards and two result tables in the warehouse | `modeling/`, notebook 15, DL-78, DL-79 |
-| **Safety nets** | A golden regression test of the warehouse, an atomic publish with a run log, restatement checks | `golden.py`, `publish.py` |
+| **Safety nets** | A golden regression test of the warehouse, a staged publish (public-data check, warehouse, feature and model tables, atomic swap) with a per-stage run log, restatement checks | `golden.py`, `publish.py`, `public_data.py` |
 
 ## Key findings and business impact
 
@@ -152,6 +152,7 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model input: definition, source and leakage rule |
 | [`docs/feature_results.md`](docs/feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
 | [`docs/database_schema.md`](docs/database_schema.md) sections 13 and 14 | The two feature tables and the two model-result tables the publish step writes into the warehouse |
+| [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its seven stages, the public-data modes, the run record and the monthly schedule |
 | [`docs/environment.md`](docs/environment.md) | The supported Python, the pinned packages, installing the project and the Docker image, and the environment behind the stored modelling results |
 | [`docs/modelling_plan.md`](docs/modelling_plan.md) | The modelling plan: three tasks, horizons, baselines and models, the evaluation and promotion rules, the leakage timeline and tests, fixed before any model ran (with the T3 amendment and the implementation choices) |
 | [`docs/modelling_results.md`](docs/modelling_results.md) | Results of the modelling run, including the post-hoc check of the decline alert and the limits |

@@ -1,10 +1,19 @@
 """Rebuild and publish the warehouse, without ever damaging the last good one.
 
-One run: build the whole warehouse into a staging file, check it, add the feature tables
-and the model-result tables, then swap it in with an atomic rename. Any failure leaves the
-published database exactly as it was. Every run, good or bad, appends a line to `run_log.jsonl`.
+One run, in this order, each stage recorded in the run log with its status and duration:
 
-    python -m oa_market_intelligence.publish
+1. `public_data`: check the committed public-data subset (or, with `--public-data full`, reload and
+   re-export it from the raw files, locally only)
+2. `warehouse`: build the whole warehouse into a staging file from the raw IQVIA extracts
+3. `coverage_check`: the staged database must not have fewer months than the published one
+4. `feature_tables`, `model_tables`, `scoring`: add the feature tables, the model-result tables and
+   (when a scoring function is given) the monthly predictions to the staged database
+5. `swap`: replace the published database with an atomic rename
+
+Any failure stops the run and leaves the published database exactly as it was. Every run, good or
+bad, appends a line to `run_log.jsonl`; a failed run's line names the stage that failed.
+
+    python -m oa_market_intelligence.publish [--public-data committed|full]
 """
 
 from __future__ import annotations
@@ -15,6 +24,7 @@ import logging
 import os
 import sys
 import tempfile
+import time
 from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,6 +38,7 @@ from oa_market_intelligence.pipeline import (
     DEFAULT_REFERENCE_DIR,
     run_pipeline,
 )
+from oa_market_intelligence.public_data import rebuild_full, verify_committed
 
 logger = logging.getLogger(__name__)
 
@@ -82,52 +93,92 @@ def _check(staged: tuple[int, int | None], previous: tuple[int, int | None] | No
         )
 
 
+def _stage(stages: list[dict], name: str, fn: Callable[[], object], *, keep_detail: bool = True):
+    """Run one stage and record it. A failure is recorded and re-raised, so the run stops."""
+    started = time.monotonic()
+    try:
+        result = fn()
+    except Exception as error:
+        stages.append({"stage": name, "status": "failed",
+                       "seconds": round(time.monotonic() - started, 2),
+                       "error": f"{type(error).__name__}: {error}"})
+        raise
+    stages.append({"stage": name, "status": "ok", "seconds": round(time.monotonic() - started, 2),
+                   "detail": result if keep_detail and isinstance(result, dict) else None})
+    return result
+
+
+def _skipped(stages: list[dict], name: str) -> None:
+    stages.append({"stage": name, "status": "skipped", "seconds": 0.0, "detail": None})
+
+
 def publish(
     *,
     raw_dir: Path = DEFAULT_RAW_DIR,
     reference_dir: Path = DEFAULT_REFERENCE_DIR,
     published_dir: Path = DEFAULT_PUBLISHED_DIR,
     run_pipeline_fn: Callable[..., dict] = run_pipeline,
+    public_data_fn: Callable[..., dict] = verify_committed,
     features_fn: Callable[..., dict] = write_adopted_feature_tables,
     model_tables_fn: Callable[..., dict] = write_model_tables,
+    scoring_fn: Callable[..., dict] | None = None,
 ) -> dict:
     """Run the full rebuild. Returns the run record; never raises for a failed run.
 
-    A failure at any stage fails the whole run and leaves the last good database live."""
+    A failure at any stage fails the whole run and leaves the last good database live. The record
+    has a `stages` list (name, status, seconds, detail or error) in the order they ran."""
     published_dir = Path(published_dir)
     published_dir.mkdir(parents=True, exist_ok=True)
     published_db = published_dir / DB_NAME
-    record: dict = {"status": "failed", "started_at": _now(), "error": None}
+    stages: list[dict] = []
+    record: dict = {"status": "failed", "started_at": _now(), "error": None, "stages": stages}
 
     try:
         previous = _previous_coverage(published_db)
+        public_rows = _stage(stages, "public_data", public_data_fn)
         with tempfile.TemporaryDirectory(dir=published_dir, prefix=".staging-") as staging:
             staged_db = Path(staging) / DB_NAME
-            summary = run_pipeline_fn(
-                raw_dir=raw_dir,
-                reference_dir=reference_dir,
-                db_path=staged_db,
-                previous_db=published_db if published_db.exists() else None,
+            summary = _stage(
+                stages, "warehouse",
+                lambda: run_pipeline_fn(
+                    raw_dir=raw_dir,
+                    reference_dir=reference_dir,
+                    db_path=staged_db,
+                    previous_db=published_db if published_db.exists() else None,
+                ),
+                keep_detail=False,
             )
 
-            staged = _coverage(staged_db)
-            _check(staged, previous)
+            def check_coverage() -> dict:
+                found = _coverage(staged_db)
+                _check(found, previous)
+                return {"n_months": found[0], "last_month_id": found[1]}
+
+            coverage = _stage(stages, "coverage_check", check_coverage)
 
             engine = create_engine(f"sqlite:///{staged_db.as_posix()}")
             try:
-                feature_rows = features_fn(engine) or {}
-                model_rows = model_tables_fn(engine) or {}
+                feature_rows = _stage(stages, "feature_tables", lambda: features_fn(engine) or {})
+                model_rows = _stage(stages, "model_tables", lambda: model_tables_fn(engine) or {})
+                if scoring_fn is None:
+                    scoring_rows = {}
+                    _skipped(stages, "scoring")
+                else:
+                    scoring_rows = _stage(stages, "scoring", lambda: scoring_fn(engine) or {})
             finally:
                 engine.dispose()
 
-            os.replace(staged_db, published_db)  # atomic: readers see old or new, never half
+            _stage(stages, "swap", lambda: os.replace(staged_db, published_db))  # atomic: readers
+            # see the old or the new database, never half
 
         record.update(
             status="ok",
-            n_months=staged[0],
+            n_months=coverage["n_months"],
             feature_tables=feature_rows,
             model_tables=model_rows,
-            last_month_id=staged[1],
+            scoring=scoring_rows,
+            public_data=public_rows,
+            last_month_id=coverage["last_month_id"],
             # a product with no taxonomy entry is loaded as 'unclassified' and does not stop the
             # run (PROPOSAL 18.10); recording it here makes the gap visible in the run log
             # the extracts behind this database: file, role, SHA-256, size, rows parsed
@@ -152,6 +203,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--raw-dir", type=Path, default=DEFAULT_RAW_DIR)
     parser.add_argument("--reference-dir", type=Path, default=DEFAULT_REFERENCE_DIR)
     parser.add_argument("--published-dir", type=Path, default=DEFAULT_PUBLISHED_DIR)
+    parser.add_argument(
+        "--public-data", choices=("committed", "full"), default="committed",
+        help="committed: check the committed public-data subset (default; CI, containers); "
+        "full: reload and re-export it from the raw public files (local only)",
+    )
     return parser.parse_args(argv)
 
 
@@ -162,6 +218,7 @@ def main(argv: list[str] | None = None) -> None:
         raw_dir=args.raw_dir,
         reference_dir=args.reference_dir,
         published_dir=args.published_dir,
+        public_data_fn=rebuild_full if args.public_data == "full" else verify_committed,
     )
     print(json.dumps(record, indent=2))
     sys.exit(0 if record["status"] == "ok" else 1)

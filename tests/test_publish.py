@@ -33,6 +33,7 @@ def _publish(tmp_path, month_ids, **overrides):
         reference_dir=tmp_path / "ref",
         published_dir=tmp_path / "published",
         run_pipeline_fn=overrides.pop("run_pipeline_fn", _fake_pipeline(month_ids)),
+        public_data_fn=overrides.pop("public_data_fn", lambda: {}),
         features_fn=overrides.pop("features_fn", lambda engine: {}),
         model_tables_fn=overrides.pop("model_tables_fn", lambda engine: {}),
         **overrides,
@@ -212,3 +213,76 @@ def test_a_failing_model_table_stage_keeps_the_last_good_database(tmp_path):
     record = _publish(tmp_path, MONTHS_3, model_tables_fn=broken)
     assert record["status"] == "failed" and "model tables failed" in record["error"]
     assert _db(tmp_path).read_bytes() == before
+
+
+def _stage_names(record):
+    return [stage["stage"] for stage in record["stages"]]
+
+
+def test_the_stages_run_in_order_and_are_recorded_in_the_run_log(tmp_path):
+    def scoring(engine):
+        return {"pred_batch": 4}
+
+    record = _publish(tmp_path, MONTHS_2, scoring_fn=scoring, public_data_fn=lambda: {"mode": "x"})
+    assert record["status"] == "ok"
+    assert _stage_names(record) == [
+        "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables",
+        "scoring", "swap",
+    ]
+    assert all(stage["status"] == "ok" for stage in record["stages"])
+    assert all(stage["seconds"] >= 0 for stage in record["stages"])
+    assert record["public_data"] == {"mode": "x"} and record["scoring"] == {"pred_batch": 4}
+    assert _log(tmp_path)[-1]["stages"] == record["stages"]
+
+
+def test_a_missing_scoring_function_is_recorded_as_skipped(tmp_path):
+    record = _publish(tmp_path, MONTHS_2)
+    scoring = next(s for s in record["stages"] if s["stage"] == "scoring")
+    assert scoring["status"] == "skipped"
+    assert record["scoring"] == {}
+
+
+def _boom(*_args, **_kwargs):
+    raise RuntimeError("stage broke")
+
+
+@pytest.mark.parametrize(
+    "stage,overrides",
+    [
+        ("public_data", {"public_data_fn": _boom}),
+        ("warehouse", {"run_pipeline_fn": _boom}),
+        ("feature_tables", {"features_fn": _boom}),
+        ("model_tables", {"model_tables_fn": _boom}),
+        ("scoring", {"scoring_fn": _boom}),
+    ],
+)
+def test_a_failure_in_any_stage_names_it_and_keeps_the_last_good_database(
+    tmp_path, stage, overrides
+):
+    _publish(tmp_path, MONTHS_2)
+    before = _db(tmp_path).read_bytes()
+    record = _publish(tmp_path, MONTHS_3, **overrides)
+    assert record["status"] == "failed" and "stage broke" in record["error"]
+    failed = [s for s in record["stages"] if s["status"] == "failed"]
+    assert [s["stage"] for s in failed] == [stage]
+    assert "stage broke" in failed[0]["error"]
+    assert "swap" not in _stage_names(record)  # nothing after the failure ran
+    assert _db(tmp_path).read_bytes() == before
+    assert _log(tmp_path)[-1]["stages"] == record["stages"]
+    assert not list((tmp_path / "published").glob(".staging-*"))  # the staging area is cleaned up
+
+
+def test_a_failed_public_data_check_stops_before_the_warehouse_is_built(tmp_path):
+    built = []
+
+    def pipeline(**kwargs):
+        built.append(1)
+        return _fake_pipeline(MONTHS_2)(**kwargs)
+
+    def bad_subset():
+        raise RuntimeError("the public-data subset does not match its record")
+
+    record = _publish(tmp_path, MONTHS_2, public_data_fn=bad_subset, run_pipeline_fn=pipeline)
+    assert record["status"] == "failed" and not built
+    assert _stage_names(record) == ["public_data"]
+    assert not _db(tmp_path).exists()
