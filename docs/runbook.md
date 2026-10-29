@@ -28,6 +28,9 @@ After fixing the cause, start the workflow again (Actions, Monthly Pipeline, Run
 ## Going back to the last good database
 Every publish is a commit. `git revert <commit>` of the "Publish warehouse" commit restores the previous `data/published/warehouse.db` and `run_log.jsonl`.
 
+## The knowledge graph
+After a new extract and a successful `oa-publish`, run `oa-graph` and commit `data/reference/knowledge_graph.json`; `tests/test_knowledge_graph.py` fails until you do (it compares the file with a fresh build).
+
 ## Forecast drift
 It is reported, not acted on automatically. Look at the `drift` block of the run record: which horizon, the realised bias or error and the tested one. If a bias has moved by more than the tolerance for a few months, re-run the modelling test (`oa-model --run`, about two hours, `--n-jobs 6`), read the results, and decide as in DL-79 whether the adopted models still stand. Changing which model serves means editing `data/reference/serving_models.json`, and the file is only accepted if the stored results support it.
 
