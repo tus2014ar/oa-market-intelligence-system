@@ -1,10 +1,11 @@
 """Tests for the on-request charts (src/.../serving/charts.py): each chart has the data it should,
 a tooltip on its marks, and fades small groups; `build` refuses a name it does not know."""
 
-import altair as alt
 import pytest
 
-from oa_market_intelligence.serving import charts, data, qa_tools
+alt = pytest.importorskip("altair")  # a site package: the CI job `site` installs it
+
+from oa_market_intelligence.serving import charts, data, qa_tools  # noqa: E402
 
 pytestmark = pytest.mark.skipif(not data.DB_PATH.exists(), reason="no published warehouse")
 
