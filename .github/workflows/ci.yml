@@ -114,7 +114,7 @@ jobs:
           pip install --no-deps -e .
 
       - name: Site tests
-        run: pytest tests/test_serving_views.py tests/test_serving_data.py tests/test_site_app.py -q
+        run: pytest tests/test_serving_views.py tests/test_serving_data.py tests/test_serving_charts.py tests/test_site_app.py -q
 
   # Builds the project image (no push) and runs it, so a broken Dockerfile or pin file fails here.
   docker-build:

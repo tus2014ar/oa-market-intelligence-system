@@ -49,4 +49,5 @@ Every edge carries an `evidence` field naming its source, and the file lists tho
 When a new extract arrives and `oa-publish` has run, run `oa-graph` and commit the result; the test fails until you do, with that instruction in its message.
 
 ## Where it is used
-This page and the file only. Claude's graph tools (`get_entity`, `get_neighbors`, `get_competitors`, `get_events`) and the interactive Market map on the site follow in the next two changes.
+- **Claude's question box** (DL-88): four tools, `get_entity`, `get_neighbors`, `get_competitors` and `get_events`, read the graph; a fifth, `show_chart`, can draw "where Zilretta's visits come from" from its weights. Every answer that uses the graph lists its evidence files as a source. See [site.md](site.md).
+- **The interactive Market map** on the site follows in the next change.

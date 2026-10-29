@@ -34,6 +34,7 @@ oa-publish = "oa_market_intelligence.publish:main"
 oa-model = "oa_market_intelligence.modeling.run_modelling:main"
 oa-external = "oa_market_intelligence.external.__main__:main"
 oa-graph = "oa_market_intelligence.knowledge_graph:main"
+oa-ask-check = "oa_market_intelligence.serving.qa_check:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
