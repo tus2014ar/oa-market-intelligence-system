@@ -5,3 +5,4 @@ pandas>=3.0
 numpy>=2.0
 sqlalchemy>=2.0
 anthropic>=1.11
+pyvis>=0.3.2

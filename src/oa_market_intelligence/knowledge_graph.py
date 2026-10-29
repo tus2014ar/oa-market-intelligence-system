@@ -81,6 +81,13 @@ GROUP_LABELS = {
     "other": "Other products (NSAIDs, opioids, other)",
 }
 COMPARED_GROUPS = ("triamcinolone_ir", "other_injectable_corticosteroid")
+# IQVIA writes this where a product has no manufacturer; it is in the graph as the source gives
+# it, but it is not a company, so lists and maps of manufacturers leave it out
+PLACEHOLDER_MANUFACTURERS = ("no manufacturer",)
+
+
+def is_placeholder_manufacturer(label: str) -> bool:
+    return str(label).strip().lower() in PLACEHOLDER_MANUFACTURERS
 
 
 def node_id(kind: str, key: str) -> str:

@@ -554,6 +554,8 @@ def _group_summary(graph: kg.Graph, group: dict, total: int) -> dict:
     for product in products:
         for edge in graph.neighbors(product["id"], "made_by", "out"):
             name = edge["other"]["label"]
+            if kg.is_placeholder_manufacturer(name):
+                continue
             makers[name] = makers.get(name, 0) + 1
     visits = _group_visits(graph, group)
     top_makers = sorted(makers.items(), key=lambda kv: (-kv[1], kv[0]))[:8]
@@ -583,7 +585,8 @@ def _competitors(snap: Snapshot, arguments: dict) -> dict:
         "own_group": own["label"],
         "groups": [_group_summary(graph, g, total) for g in chosen],
         "evidence": ["competitor_groups.csv", "dim_product", "fact_product_visits"],
-        "note": GRAPH_NOTE,
+        "note": GRAPH_NOTE
+        + " IQVIA's 'No Manufacturer' placeholder is left out of the manufacturer lists.",
     }
     if not compared:
         out["note"] += " Only Zilretta's group is compared with other groups in the project."

@@ -40,6 +40,7 @@ def test_the_page_runs_without_an_error_and_has_every_tab(app):
         "Model results",
         "Data status",
         "Findings",
+        "Market map",
         "Ask Claude",
     ]
 
@@ -68,6 +69,51 @@ def test_the_findings_tab_lists_all_seventeen(app):
 
 def test_no_secret_or_sql_input_exists_on_the_page(app):
     assert not app.text_input and not app.text_area  # no free-text box in this phase
+
+
+# ------------------------------------------------------------------ the market map
+
+
+def _map(monkeypatch):
+    for name in ("ANTHROPIC_API_KEY", "ACCESS_CODE", "DAILY_TOKEN_BUDGET"):
+        monkeypatch.delenv(name, raising=False)
+    return AppTest.from_file(APP, default_timeout=90).run()
+
+
+def test_the_market_map_tab_opens_on_zilretta_with_its_facts_and_the_event_table(monkeypatch):
+    at = _map(monkeypatch)
+    assert not at.exception
+    choice = next(s for s in at.selectbox if s.label == "Look closer at one thing in this map")
+    assert choice.value == "product:ZILRETTA"
+    page = " ".join(m.value for m in at.markdown) + " ".join(c.value for c in at.caption)
+    assert "Competitor groups are the project's own grouping" in page
+    assert "Events are context only" in page
+    assert any(s.value == "ZILRETTA" for s in at.subheader)
+    assert any("Showing 10 of 10 connections" in c.value for c in at.caption)
+    tables = [d.value for d in at.dataframe]
+    assert any(len(frame) == 14 and "verified" in frame.columns for frame in tables)
+
+
+def test_the_view_can_be_switched_and_every_view_runs(monkeypatch):
+    at = _map(monkeypatch)
+    view = next(r for r in at.radio if r.label == "What to show")
+    assert view.options[0].startswith("Zilretta and the groups")
+    for key in ("who_uses_it", "events", "competitive_set"):
+        view.set_value(key).run()
+        assert not at.exception
+    view.set_value("events").run()
+    slider = next(s for s in at.slider if s.label.startswith("How many manufacturers"))
+    assert slider.proto.disabled  # the events view has nothing to count
+    detail = next(s for s in at.selectbox if s.label == "Look closer at one thing in this map")
+    assert len(detail.options) == 18 and detail.value == "product:ZILRETTA"  # 14 events + 4 others
+
+
+def test_looking_closer_at_another_thing_shows_its_own_connections(monkeypatch):
+    at = _map(monkeypatch)
+    choice = next(s for s in at.selectbox if s.label == "Look closer at one thing in this map")
+    choice.set_value("group:zilretta").run()
+    assert any(s.value == "Zilretta" for s in at.subheader)
+    assert any("connections. Sources:" in c.value for c in at.caption)
 
 
 # ------------------------------------------------------------------ the question box

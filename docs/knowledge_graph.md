@@ -41,7 +41,7 @@ Every edge carries an `evidence` field naming its source, and the file lists tho
 - **`compared_with` is the project's frozen grouping**, written before any group-level number was looked at (DL-73). It is a documented choice, not a statement about the market.
 - **Visits are product-visits** inside IQVIA's panel: a patient visit can count under more than one product, so a group's visits are not a count of patients. The panel-coverage caveat applies.
 - **Disease area is the extract's area**, not the label indication.
-- Products with no manufacturer in `dim_product` have no `made_by` edge; none is invented.
+- Products with no manufacturer in `dim_product` have no `made_by` edge; none is invented. Where IQVIA wrote the placeholder "No Manufacturer" (4 products) the graph keeps it as the source gives it, but the Market map and Claude's competitor view leave it out of manufacturer lists because it is not a company.
 
 ## Keeping it right
 `tests/test_knowledge_graph.py` builds small graphs by hand (every rule, every failure) and then checks the committed file against the committed warehouse and reference files: it equals a fresh build byte for byte, every edge has known ends and a named source, no node is unconnected, there are 160 products each with one class, area and group, the visit weights add up to the warehouse total and each group's shares add to one, and Zilretta's maker, approval date and visits equal the warehouse. The build is deterministic.
@@ -50,4 +50,4 @@ When a new extract arrives and `oa-publish` has run, run `oa-graph` and commit t
 
 ## Where it is used
 - **Claude's question box** (DL-88): four tools, `get_entity`, `get_neighbors`, `get_competitors` and `get_events`, read the graph; a fifth, `show_chart`, can draw "where Zilretta's visits come from" from its weights. Every answer that uses the graph lists its evidence files as a source. See [site.md](site.md).
-- **The interactive Market map** on the site follows in the next change.
+- **The Market map tab** (DL-89): three views of the graph drawn with `pyvis`, a closer look at any point with its sources, and the events against the share. See [site.md](site.md).

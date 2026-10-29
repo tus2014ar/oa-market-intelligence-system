@@ -179,3 +179,82 @@ def build(chart: str, params: dict, snap: Snapshot) -> alt.Chart:
     if chart == "specialty_mix":
         return specialty_mix_chart(snap.graph, int(params.get("top", 10)))
     raise ValueError(f"unknown chart {chart!r}")
+
+
+def events_chart(monthly: pd.DataFrame, graph) -> alt.Chart:
+    """The share line with the events that fall inside the data drawn against it.
+
+    Events are context, never causes: the chart draws a thin rule at each event's date (a shaded
+    band for an event with an end date, dashed and grey when the event is not verified) and says
+    nothing about what any of them did to the share. Events before the data begins are left out
+    here and stay in the event table.
+    """
+    from oa_market_intelligence.serving.market_map import event_table
+
+    line_frame = views.trend_frame(monthly)
+    first, last = line_frame["month"].min(), line_frame["month"].max()
+    table = event_table(graph).assign(
+        start=lambda f: pd.to_datetime(f["date"]),
+        stop=lambda f: pd.to_datetime(f["until"].replace("", pd.NA).fillna(f["date"])),
+    )
+    inside = table[(table["stop"] >= first) & (table["start"] <= last)].copy()
+    inside["x"] = inside["start"].clip(lower=first)
+    inside["x2"] = inside["stop"].clip(upper=last)
+    inside["kind"] = inside["verified"].map({"yes": "Verified event", "no": "Not verified"})
+    inside["short"] = inside["event"].str.slice(0, 90)
+    low = float(line_frame["share_pct"].min())
+    inside["y"] = low - 0.08
+    line = (
+        alt.Chart(line_frame, title="Share of visits, with the events that fall inside the data")
+        .mark_line(color=PRIMARY, strokeWidth=2)
+        .encode(
+            x=alt.X("month:T", title=None),
+            y=alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False)),
+        )
+    )
+    bands = (
+        alt.Chart(inside[inside["x"] < inside["x2"]])
+        .mark_rect(color=PROJECTED, opacity=0.12)
+        .encode(x="x:T", x2="x2:T")
+    )
+    rules = (
+        alt.Chart(inside)
+        .mark_rule(strokeWidth=1.5)
+        .encode(
+            x="x:T",
+            color=alt.Color(
+                "kind:N",
+                scale=alt.Scale(
+                    domain=["Verified event", "Not verified"], range=["#6250d6", "#9a9a94"]
+                ),
+                legend=alt.Legend(title=None, orient="bottom"),
+            ),
+            strokeDash=alt.StrokeDash(
+                "kind:N",
+                scale=alt.Scale(domain=["Verified event", "Not verified"], range=[[1, 0], [4, 3]]),
+                legend=None,
+            ),
+        )
+    )
+    marks = (
+        alt.Chart(inside)
+        .mark_point(filled=True, size=70, shape="diamond")
+        .encode(
+            x="x:T",
+            y="y:Q",
+            color=alt.Color(
+                "kind:N",
+                scale=alt.Scale(
+                    domain=["Verified event", "Not verified"], range=["#6250d6", "#9a9a94"]
+                ),
+                legend=None,
+            ),
+            tooltip=[
+                alt.Tooltip("date:N", title="Date"),
+                alt.Tooltip("short:N", title="Event"),
+                alt.Tooltip("type:N", title="Type"),
+                alt.Tooltip("verified:N", title="Verified"),
+            ],
+        )
+    )
+    return _style((bands + line + rules + marks).properties(height=HEIGHT))
