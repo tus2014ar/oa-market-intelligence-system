@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import sys
+import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,7 +20,7 @@ import altair as alt  # noqa: E402
 import pandas as pd  # noqa: E402
 import streamlit as st  # noqa: E402
 
-from oa_market_intelligence.serving import data, views  # noqa: E402
+from oa_market_intelligence.serving import data, guard, qa, qa_tools, views  # noqa: E402
 
 DB = Path(os.environ.get("OA_DB_PATH", data.DB_PATH))
 RUN_LOG = Path(os.environ.get("OA_RUN_LOG", data.RUN_LOG))
@@ -50,6 +51,102 @@ D = load(str(DB), str(RUN_LOG))
 ADOPTION, POSTHOC, FINDINGS = data.serving_map(), data.posthoc(), data.findings()
 STATUS = views.status_block(D["run"])
 HEAD = views.headline(D["monthly"], D["pred"])
+SNAPSHOT = qa_tools.Snapshot(
+    monthly=D["monthly"],
+    pred=D["pred"],
+    scores=D["scores"],
+    by_specialty=D["by_specialty"],
+    by_age=D["by_age"],
+    by_gender=D["by_gender"],
+    run=D["run"],
+    adoption=ADOPTION,
+    posthoc=POSTHOC,
+    findings=FINDINGS,
+)
+EXAMPLE_QUESTIONS = [
+    "How has Zilretta's share changed since its peak?",
+    "Which specialties have the highest share?",
+    "What is the forecast for the next three months, and how far can I trust it?",
+    "Which segments does the decline alert flag, and how reliable is it?",
+]
+
+
+def _secret(name: str, default: str | None = None) -> str | None:
+    """A secret from the host's secrets store or the environment; never from the repository."""
+    try:
+        return st.secrets[name]
+    except Exception:  # noqa: BLE001 - no secrets file locally is normal
+        return os.environ.get(name, default)
+
+
+@st.cache_resource
+def get_limits() -> dict:
+    """Shared by all visitors, so one person cannot spend the whole day's budget."""
+    return {
+        "per_visitor": guard.RateLimiter(max_per_window=8, window_seconds=3600),
+        "site": guard.RateLimiter(max_per_window=200, window_seconds=3600),
+        "tokens": guard.TokenBudget(daily_tokens=int(_secret("DAILY_TOKEN_BUDGET", "300000"))),
+    }
+
+
+def ask_box() -> None:
+    """The question box. It works only where an API key is configured, and then behind an
+    optional access code, a per-visitor limit and a daily token budget."""
+    api_key = _secret("ANTHROPIC_API_KEY")
+    if not api_key:
+        st.info("The question box is not switched on for this copy of the site (no API key).")
+        return
+    gate = guard.AccessGate(_secret("ACCESS_CODE"))
+    if "visitor" not in st.session_state:
+        st.session_state["visitor"] = uuid.uuid4().hex
+    if not gate.allows(None):
+        attempt = st.text_input("Access code", type="password")
+        if not gate.allows(attempt):
+            st.caption("Enter the access code to use the question box.")
+            return
+
+    st.caption(
+        "Claude answers from read-only summaries of the tables on this site. It cannot see "
+        "patient-level rows or run its own queries, and it can be wrong: check the numbers "
+        "against the tabs."
+    )
+    for example in EXAMPLE_QUESTIONS:
+        if st.button(example, key=example):
+            st.session_state["question"] = example
+    question = st.text_area("Your question", key="question", max_chars=500)
+    if not st.button("Ask", type="primary"):
+        return
+
+    try:
+        question = guard.validate_question(question)
+    except ValueError as error:
+        st.warning(str(error))
+        return
+    limits = get_limits()
+    if not limits["tokens"].has_room():
+        st.warning("The question box has reached its daily limit. Please try again tomorrow.")
+        return
+    if not (limits["per_visitor"].allow(st.session_state["visitor"]) and limits["site"].allow("x")):
+        st.warning("Too many questions in the last hour. Please try again later.")
+        return
+
+    import anthropic  # imported here so the rest of the site works without it
+
+    client = anthropic.Anthropic(api_key=api_key)
+    with st.spinner("Asking Claude..."):
+        result = qa.ask(
+            question,
+            client=client,
+            snapshot=SNAPSHOT,
+            model=_secret("CLAUDE_MODEL", qa.DEFAULT_MODEL),
+        )
+    limits["tokens"].charge(result["input_tokens"] + result["output_tokens"])
+    (st.write if result["ok"] else st.warning)(result["answer"])
+    if result["tool_calls"]:
+        with st.expander("Data the answer used"):
+            for name, arguments in result["tool_calls"]:
+                st.code(f"{name}({arguments})")
+
 
 st.title("OA and RA Market Intelligence")
 st.caption(
@@ -68,6 +165,7 @@ tabs = st.tabs(
         "Model results",
         "Data status",
         "Findings",
+        "Ask Claude",
     ]
 )
 
@@ -384,3 +482,11 @@ with tabs[6]:
             st.write(f"**Evidence:** {row['evidence']}")
             st.write(f"**Business impact:** {row['impact']}")
             st.caption(row["source"])
+
+# ------------------------------------------------------------------ ask claude
+with tabs[7]:
+    st.write(
+        "Ask a question about the market trend, the segments, the forecasts or how the models "
+        "scored. The answer comes from the same tables as the other tabs."
+    )
+    ask_box()
