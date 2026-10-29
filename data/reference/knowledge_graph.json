@@ -1,0 +1,7289 @@
+{
+ "built_from": {
+  "last_month_id": 202507,
+  "months": 72
+ },
+ "sources": {
+  "dim_product": "Warehouse table dim_product (the IQVIA product list with the project's taxonomy)",
+  "competitor_groups.csv": "data/reference/competitor_groups.csv: the product groups frozen before any group-level number was looked at (a documented choice, not a market fact)",
+  "fact_product_visits": "Warehouse table fact_product_visits: patient visits by month, product, specialty and demographic group, summed over all months",
+  "events.csv": "data/reference/events.csv: the verified event timeline, each with its source",
+  "event_links.csv": "data/reference/event_links.csv: which entity an event's own text names",
+  "openfda_competitive_set_approvals": "data/reference/openfda_competitive_set_approvals_2026-10-07.csv: earliest original FDA approval per product"
+ },
+ "node_types": [
+  "product",
+  "manufacturer",
+  "drug_class",
+  "group",
+  "specialty",
+  "disease_area",
+  "event",
+  "market"
+ ],
+ "relations": [
+  "made_by",
+  "in_class",
+  "in_disease_area",
+  "in_group",
+  "compared_with",
+  "prescribed_by",
+  "involves",
+  "occurred_in"
+ ],
+ "nodes": [
+  {
+   "id": "product:A-HYDROCORT",
+   "type": "product",
+   "label": "A-HYDROCORT",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "1978-03-28"
+  },
+  {
+   "id": "product:A-METHAPRED",
+   "type": "product",
+   "label": "A-METHAPRED",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "1978-03-28"
+  },
+  {
+   "id": "product:ACETAMINOPHEN",
+   "type": "product",
+   "label": "ACETAMINOPHEN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ACETAMINOPHEN CHILD",
+   "type": "product",
+   "label": "ACETAMINOPHEN CHILD",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ACTEMRA",
+   "type": "product",
+   "label": "ACTEMRA",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:ADVIL",
+   "type": "product",
+   "label": "ADVIL",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ALEVE",
+   "type": "product",
+   "label": "ALEVE",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ANACIN",
+   "type": "product",
+   "label": "ANACIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ANJESO",
+   "type": "product",
+   "label": "ANJESO",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "2020-02-20"
+  },
+  {
+   "id": "product:APAP X",
+   "type": "product",
+   "label": "APAP X",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:APAP/CAF",
+   "type": "product",
+   "label": "APAP/CAF",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ARCALYST",
+   "type": "product",
+   "label": "ARCALYST",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:ARISTOCORT",
+   "type": "product",
+   "label": "ARISTOCORT",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1957-12-03"
+  },
+  {
+   "id": "product:ARISTOSPAN",
+   "type": "product",
+   "label": "ARISTOSPAN",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1969-07-29"
+  },
+  {
+   "id": "product:ARZE-JECT-A",
+   "type": "product",
+   "label": "ARZE-JECT-A",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:ASA/APAP/CAF",
+   "type": "product",
+   "label": "ASA/APAP/CAF",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ASCRIPTIN",
+   "type": "product",
+   "label": "ASCRIPTIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ASPIRIN",
+   "type": "product",
+   "label": "ASPIRIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ASPIRIN (OTC)",
+   "type": "product",
+   "label": "ASPIRIN (OTC)",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:ASPIRIN BUFFERED",
+   "type": "product",
+   "label": "ASPIRIN BUFFERED",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:BAYCADRON",
+   "type": "product",
+   "label": "BAYCADRON",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:BAYER ASP REGIMEN",
+   "type": "product",
+   "label": "BAYER ASP REGIMEN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:BAYER ASPIRIN",
+   "type": "product",
+   "label": "BAYER ASPIRIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:BETA 1",
+   "type": "product",
+   "label": "BETA 1",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:BETALOAN SUIK",
+   "type": "product",
+   "label": "BETALOAN SUIK",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:BETAMETH ACE/SOD PHOS",
+   "type": "product",
+   "label": "BETAMETH ACE/SOD PHOS",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:BETAMETH DIP AUG",
+   "type": "product",
+   "label": "BETAMETH DIP AUG",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:BETAMETHASONE",
+   "type": "product",
+   "label": "BETAMETHASONE",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:BETAMETHASONE COMBO",
+   "type": "product",
+   "label": "BETAMETHASONE COMBO",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:BIOFREEZE W/ILEX",
+   "type": "product",
+   "label": "BIOFREEZE W/ILEX",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:BUFFERIN",
+   "type": "product",
+   "label": "BUFFERIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:BUPRENORPHINE HCL",
+   "type": "product",
+   "label": "BUPRENORPHINE HCL",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:BUTORPHANOL TART",
+   "type": "product",
+   "label": "BUTORPHANOL TART",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:CELESTONE",
+   "type": "product",
+   "label": "CELESTONE",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1961-04-17"
+  },
+  {
+   "id": "product:CELESTONE PHOS",
+   "type": "product",
+   "label": "CELESTONE PHOS",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:CHILDRENS MAPAP",
+   "type": "product",
+   "label": "CHILDRENS MAPAP",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:CLOBETASOL PROP",
+   "type": "product",
+   "label": "CLOBETASOL PROP",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:CLONIDINE HCL",
+   "type": "product",
+   "label": "CLONIDINE HCL",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:CORTEF",
+   "type": "product",
+   "label": "CORTEF",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1952-12-15"
+  },
+  {
+   "id": "product:DARVOCET-N 100",
+   "type": "product",
+   "label": "DARVOCET-N 100",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1972-12-19"
+  },
+  {
+   "id": "product:DARVOCET-N 50",
+   "type": "product",
+   "label": "DARVOCET-N 50",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1972-12-19"
+  },
+  {
+   "id": "product:DARVON",
+   "type": "product",
+   "label": "DARVON",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1957-08-16"
+  },
+  {
+   "id": "product:DARVON-N",
+   "type": "product",
+   "label": "DARVON-N",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1971-09-09"
+  },
+  {
+   "id": "product:DECADRON",
+   "type": "product",
+   "label": "DECADRON",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1958-10-30"
+  },
+  {
+   "id": "product:DEMEROL",
+   "type": "product",
+   "label": "DEMEROL",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1942-11-10"
+  },
+  {
+   "id": "product:DEPO-MEDROL",
+   "type": "product",
+   "label": "DEPO-MEDROL",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1959-05-27"
+  },
+  {
+   "id": "product:DEX COMBO",
+   "type": "product",
+   "label": "DEX COMBO",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:DEXAMETH S PH",
+   "type": "product",
+   "label": "DEXAMETH S PH",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:DEXAMETHASONE",
+   "type": "product",
+   "label": "DEXAMETHASONE",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1973-05-03"
+  },
+  {
+   "id": "product:DEXAMETHASONE INTN",
+   "type": "product",
+   "label": "DEXAMETHASONE INTN",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:DEXLIDO-M",
+   "type": "product",
+   "label": "DEXLIDO-M",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:DICLOFENAC POT",
+   "type": "product",
+   "label": "DICLOFENAC POT",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:DIFLUNISAL",
+   "type": "product",
+   "label": "DIFLUNISAL",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:DILAUDID",
+   "type": "product",
+   "label": "DILAUDID",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1984-01-11"
+  },
+  {
+   "id": "product:DILAUDID SYRINGE",
+   "type": "product",
+   "label": "DILAUDID SYRINGE",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:DOANS X-STR",
+   "type": "product",
+   "label": "DOANS X-STR",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:DOLOBID",
+   "type": "product",
+   "label": "DOLOBID",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "1982-04-19"
+  },
+  {
+   "id": "product:DOUBLEDEX",
+   "type": "product",
+   "label": "DOUBLEDEX",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:DURACLON",
+   "type": "product",
+   "label": "DURACLON",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "1996-10-02"
+  },
+  {
+   "id": "product:DURAMORPH PF",
+   "type": "product",
+   "label": "DURAMORPH PF",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "1984-09-18"
+  },
+  {
+   "id": "product:DYLOJECT",
+   "type": "product",
+   "label": "DYLOJECT",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "2014-12-23"
+  },
+  {
+   "id": "product:DYURAL-80",
+   "type": "product",
+   "label": "DYURAL-80",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:ECOTRIN",
+   "type": "product",
+   "label": "ECOTRIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:EXCEDRIN ASP/FREE",
+   "type": "product",
+   "label": "EXCEDRIN ASP/FREE",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:EXCEDRIN EX STR",
+   "type": "product",
+   "label": "EXCEDRIN EX STR",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:EXCEDRIN MIGRAINE",
+   "type": "product",
+   "label": "EXCEDRIN MIGRAINE",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:EXCEDRIN TEN HDCHE",
+   "type": "product",
+   "label": "EXCEDRIN TEN HDCHE",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:FENOPROFEN CA",
+   "type": "product",
+   "label": "FENOPROFEN CA",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:FENTANYL CIT",
+   "type": "product",
+   "label": "FENTANYL CIT",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:FEVERALL JUNIOR",
+   "type": "product",
+   "label": "FEVERALL JUNIOR",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:HALFPRIN",
+   "type": "product",
+   "label": "HALFPRIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:HEXATRIONE",
+   "type": "product",
+   "label": "HEXATRIONE",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:HYCD/APAP",
+   "type": "product",
+   "label": "HYCD/APAP",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:HYDROCORTISONE",
+   "type": "product",
+   "label": "HYDROCORTISONE",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:HYDROCORTISONE VAL",
+   "type": "product",
+   "label": "HYDROCORTISONE VAL",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:HYDROCORTONE",
+   "type": "product",
+   "label": "HYDROCORTONE",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1951-12-21"
+  },
+  {
+   "id": "product:HYDROMORPHONE HCL",
+   "type": "product",
+   "label": "HYDROMORPHONE HCL",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:IBUPROFEN",
+   "type": "product",
+   "label": "IBUPROFEN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:IBUPROFEN (OTC)",
+   "type": "product",
+   "label": "IBUPROFEN (OTC)",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:IBUPROFEN (OTC) CHILD",
+   "type": "product",
+   "label": "IBUPROFEN (OTC) CHILD",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:IBUPROFEN (RX)",
+   "type": "product",
+   "label": "IBUPROFEN (RX)",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:ILARIS",
+   "type": "product",
+   "label": "ILARIS",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:INFLECTRA",
+   "type": "product",
+   "label": "INFLECTRA",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:INFUMORPH",
+   "type": "product",
+   "label": "INFUMORPH",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "1984-09-18"
+  },
+  {
+   "id": "product:KENALOG",
+   "type": "product",
+   "label": "KENALOG",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "1974-01-29"
+  },
+  {
+   "id": "product:KETOROLAC TROMETH",
+   "type": "product",
+   "label": "KETOROLAC TROMETH",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:KEYTRUDA",
+   "type": "product",
+   "label": "KEYTRUDA",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:KINERET",
+   "type": "product",
+   "label": "KINERET",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:LIDOCAINE",
+   "type": "product",
+   "label": "LIDOCAINE",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:LIDOLOG",
+   "type": "product",
+   "label": "LIDOLOG",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:LOFENA",
+   "type": "product",
+   "label": "LOFENA",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:M-PAP",
+   "type": "product",
+   "label": "M-PAP",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:MAPAP ARTHRITIS PAIN",
+   "type": "product",
+   "label": "MAPAP ARTHRITIS PAIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:MARBETA-L",
+   "type": "product",
+   "label": "MARBETA-L",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:MEDROL",
+   "type": "product",
+   "label": "MEDROL",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1957-10-24"
+  },
+  {
+   "id": "product:MEDROLOAN SUIK",
+   "type": "product",
+   "label": "MEDROLOAN SUIK",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:MEPERIDINE HCL",
+   "type": "product",
+   "label": "MEPERIDINE HCL",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:METHYLPRED ACE",
+   "type": "product",
+   "label": "METHYLPRED ACE",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:METHYLPRED SOD SUC",
+   "type": "product",
+   "label": "METHYLPRED SOD SUC",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:METHYLPREDNISOLONE",
+   "type": "product",
+   "label": "METHYLPREDNISOLONE",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:MLK PROCEDUR F2",
+   "type": "product",
+   "label": "MLK PROCEDUR F2",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:MORPHINE SULF",
+   "type": "product",
+   "label": "MORPHINE SULF",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:MORPHINE SULF C-JECT",
+   "type": "product",
+   "label": "MORPHINE SULF C-JECT",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:MOTRIN IB",
+   "type": "product",
+   "label": "MOTRIN IB",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:MULTI-SPECIALTY",
+   "type": "product",
+   "label": "MULTI-SPECIALTY",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:NALBUPHINE HCL",
+   "type": "product",
+   "label": "NALBUPHINE HCL",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:NAPROXEN SOD",
+   "type": "product",
+   "label": "NAPROXEN SOD",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:NAPROXEN SOD (OTC)",
+   "type": "product",
+   "label": "NAPROXEN SOD (OTC)",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:NAPROXEN SOD (RX)",
+   "type": "product",
+   "label": "NAPROXEN SOD (RX)",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:OFIRMEV",
+   "type": "product",
+   "label": "OFIRMEV",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "2010-11-02"
+  },
+  {
+   "id": "product:OPDIVO",
+   "type": "product",
+   "label": "OPDIVO",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:ORENCIA",
+   "type": "product",
+   "label": "ORENCIA",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:OXYCODONE HCL",
+   "type": "product",
+   "label": "OXYCODONE HCL",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:OXYCODONE/APAP",
+   "type": "product",
+   "label": "OXYCODONE/APAP",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:P-CARE K40",
+   "type": "product",
+   "label": "P-CARE K40",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:PAIN RELIEF",
+   "type": "product",
+   "label": "PAIN RELIEF",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:PAIN RELIEVER PLUS",
+   "type": "product",
+   "label": "PAIN RELIEVER PLUS",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:PHARBETOL",
+   "type": "product",
+   "label": "PHARBETOL",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:PHYS EZ USE JOINT",
+   "type": "product",
+   "label": "PHYS EZ USE JOINT",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:POD-CARE 100C",
+   "type": "product",
+   "label": "POD-CARE 100C",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:POD-CARE 100K",
+   "type": "product",
+   "label": "POD-CARE 100K",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:PREDNISOLONE",
+   "type": "product",
+   "label": "PREDNISOLONE",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:PREDNISOLONE S PH",
+   "type": "product",
+   "label": "PREDNISOLONE S PH",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:PREDNISONE",
+   "type": "product",
+   "label": "PREDNISONE",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1971-12-23"
+  },
+  {
+   "id": "product:PRIALT",
+   "type": "product",
+   "label": "PRIALT",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "2004-12-28"
+  },
+  {
+   "id": "product:PRO-C-DURE 5",
+   "type": "product",
+   "label": "PRO-C-DURE 5",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:PRO-C-DURE 6",
+   "type": "product",
+   "label": "PRO-C-DURE 6",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:Q-PAP",
+   "type": "product",
+   "label": "Q-PAP",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:READYSHARP ANES+KETO",
+   "type": "product",
+   "label": "READYSHARP ANES+KETO",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:READYSHARP BETAMET",
+   "type": "product",
+   "label": "READYSHARP BETAMET",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:READYSHARP DEXAMET",
+   "type": "product",
+   "label": "READYSHARP DEXAMET",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:REMICADE",
+   "type": "product",
+   "label": "REMICADE",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:RENFLEXIS",
+   "type": "product",
+   "label": "RENFLEXIS",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:RITUXAN",
+   "type": "product",
+   "label": "RITUXAN",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:SALSALATE",
+   "type": "product",
+   "label": "SALSALATE",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:SAPHNELO",
+   "type": "product",
+   "label": "SAPHNELO",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:SARAPIN",
+   "type": "product",
+   "label": "SARAPIN",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:SILAPAP",
+   "type": "product",
+   "label": "SILAPAP",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:SOLU-CORTEF",
+   "type": "product",
+   "label": "SOLU-CORTEF",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1955-04-27"
+  },
+  {
+   "id": "product:SOLU-MEDROL",
+   "type": "product",
+   "label": "SOLU-MEDROL",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1959-05-18"
+  },
+  {
+   "id": "product:ST. JOSEPH ASPIRIN",
+   "type": "product",
+   "label": "ST. JOSEPH ASPIRIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:STELARA",
+   "type": "product",
+   "label": "STELARA",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:TAC-3",
+   "type": "product",
+   "label": "TAC-3",
+   "brand_generic_tag": "BRANDED GENERIC"
+  },
+  {
+   "id": "product:THERAPY BAYER ASP",
+   "type": "product",
+   "label": "THERAPY BAYER ASP",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:TORADOL",
+   "type": "product",
+   "label": "TORADOL",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "1989-11-30"
+  },
+  {
+   "id": "product:TRAMADOL HCL",
+   "type": "product",
+   "label": "TRAMADOL HCL",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:TRAMADOL HCL ER",
+   "type": "product",
+   "label": "TRAMADOL HCL ER",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:TRI-BUFFERED ASPIRIN",
+   "type": "product",
+   "label": "TRI-BUFFERED ASPIRIN",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:TRIAMCINOLONE ACTN",
+   "type": "product",
+   "label": "TRIAMCINOLONE ACTN",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:TRIAMCINOLONE DIAC",
+   "type": "product",
+   "label": "TRIAMCINOLONE DIAC",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:TRUXIMA",
+   "type": "product",
+   "label": "TRUXIMA",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:TYLENOL 8 HOUR",
+   "type": "product",
+   "label": "TYLENOL 8 HOUR",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:TYLENOL ARTHRITIS",
+   "type": "product",
+   "label": "TYLENOL ARTHRITIS",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:TYLENOL EXTRA STRG",
+   "type": "product",
+   "label": "TYLENOL EXTRA STRG",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:TYLENOL REGULAR",
+   "type": "product",
+   "label": "TYLENOL REGULAR",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:VAZALORE",
+   "type": "product",
+   "label": "VAZALORE",
+   "brand_generic_tag": "OTHER"
+  },
+  {
+   "id": "product:YERVOY",
+   "type": "product",
+   "label": "YERVOY",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:ZILRETTA",
+   "type": "product",
+   "label": "ZILRETTA",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "2017-10-06"
+  },
+  {
+   "id": "product:ZIPSOR",
+   "type": "product",
+   "label": "ZIPSOR",
+   "brand_generic_tag": "BRANDED GENERIC",
+   "first_fda_approval": "2009-06-16"
+  },
+  {
+   "id": "product:ZORVOLEX",
+   "type": "product",
+   "label": "ZORVOLEX",
+   "brand_generic_tag": "BRAND",
+   "first_fda_approval": "2013-10-18"
+  },
+  {
+   "id": "manufacturer:AKORN, INC",
+   "type": "manufacturer",
+   "label": "AKORN, INC"
+  },
+  {
+   "id": "manufacturer:AMERICAN REGENT IN",
+   "type": "manufacturer",
+   "label": "AMERICAN REGENT IN"
+  },
+  {
+   "id": "manufacturer:AMNEAL BIOSCIENCES",
+   "type": "manufacturer",
+   "label": "AMNEAL BIOSCIENCES"
+  },
+  {
+   "id": "manufacturer:AMNEAL PHARM",
+   "type": "manufacturer",
+   "label": "AMNEAL PHARM"
+  },
+  {
+   "id": "manufacturer:ARCHIS PHARMA LLC",
+   "type": "manufacturer",
+   "label": "ARCHIS PHARMA LLC"
+  },
+  {
+   "id": "manufacturer:ASSERTIO THERAPEU",
+   "type": "manufacturer",
+   "label": "ASSERTIO THERAPEU"
+  },
+  {
+   "id": "manufacturer:ASTELLAS PHARMA US",
+   "type": "manufacturer",
+   "label": "ASTELLAS PHARMA US"
+  },
+  {
+   "id": "manufacturer:ASTRAZENECA",
+   "type": "manufacturer",
+   "label": "ASTRAZENECA"
+  },
+  {
+   "id": "manufacturer:AUROBINDO PHARM",
+   "type": "manufacturer",
+   "label": "AUROBINDO PHARM"
+  },
+  {
+   "id": "manufacturer:AVET PHARMA",
+   "type": "manufacturer",
+   "label": "AVET PHARMA"
+  },
+  {
+   "id": "manufacturer:BAUDAX BIO",
+   "type": "manufacturer",
+   "label": "BAUDAX BIO"
+  },
+  {
+   "id": "manufacturer:BAYER CONSUMER CAR",
+   "type": "manufacturer",
+   "label": "BAYER CONSUMER CAR"
+  },
+  {
+   "id": "manufacturer:BIOVITRUM AB",
+   "type": "manufacturer",
+   "label": "BIOVITRUM AB"
+  },
+  {
+   "id": "manufacturer:BRISTOL-M SQ US PH",
+   "type": "manufacturer",
+   "label": "BRISTOL-M SQ US PH"
+  },
+  {
+   "id": "manufacturer:CARWIN ASSOCIATES",
+   "type": "manufacturer",
+   "label": "CARWIN ASSOCIATES"
+  },
+  {
+   "id": "manufacturer:DR REDDYS LAB",
+   "type": "manufacturer",
+   "label": "DR REDDYS LAB"
+  },
+  {
+   "id": "manufacturer:ENDO USA INC.",
+   "type": "manufacturer",
+   "label": "ENDO USA INC."
+  },
+  {
+   "id": "manufacturer:EPIC PHARMA",
+   "type": "manufacturer",
+   "label": "EPIC PHARMA"
+  },
+  {
+   "id": "manufacturer:FOUNDATION CONS",
+   "type": "manufacturer",
+   "label": "FOUNDATION CONS"
+  },
+  {
+   "id": "manufacturer:FRESENIUS KABI USA",
+   "type": "manufacturer",
+   "label": "FRESENIUS KABI USA"
+  },
+  {
+   "id": "manufacturer:GENENTECH,INC.",
+   "type": "manufacturer",
+   "label": "GENENTECH,INC."
+  },
+  {
+   "id": "manufacturer:GENOMMA LAB USA,IN",
+   "type": "manufacturer",
+   "label": "GENOMMA LAB USA,IN"
+  },
+  {
+   "id": "manufacturer:GERI-CARE PHARM",
+   "type": "manufacturer",
+   "label": "GERI-CARE PHARM"
+  },
+  {
+   "id": "manufacturer:HALEON",
+   "type": "manufacturer",
+   "label": "HALEON"
+  },
+  {
+   "id": "manufacturer:HIGH CHEM CO",
+   "type": "manufacturer",
+   "label": "HIGH CHEM CO"
+  },
+  {
+   "id": "manufacturer:HIKMA PHARMACEUT",
+   "type": "manufacturer",
+   "label": "HIKMA PHARMACEUT"
+  },
+  {
+   "id": "manufacturer:INA PHARMACEUTICAL",
+   "type": "manufacturer",
+   "label": "INA PHARMACEUTICAL"
+  },
+  {
+   "id": "manufacturer:INTEGRTD PHARM SOL",
+   "type": "manufacturer",
+   "label": "INTEGRTD PHARM SOL"
+  },
+  {
+   "id": "manufacturer:JANSSEN PHARM",
+   "type": "manufacturer",
+   "label": "JANSSEN PHARM"
+  },
+  {
+   "id": "manufacturer:KENVUE",
+   "type": "manufacturer",
+   "label": "KENVUE"
+  },
+  {
+   "id": "manufacturer:KINIKSA PHARM",
+   "type": "manufacturer",
+   "label": "KINIKSA PHARM"
+  },
+  {
+   "id": "manufacturer:KRAMER LABS",
+   "type": "manufacturer",
+   "label": "KRAMER LABS"
+  },
+  {
+   "id": "manufacturer:MAGNO HUMPHRIES",
+   "type": "manufacturer",
+   "label": "MAGNO HUMPHRIES"
+  },
+  {
+   "id": "manufacturer:MAJOR PHARM",
+   "type": "manufacturer",
+   "label": "MAJOR PHARM"
+  },
+  {
+   "id": "manufacturer:MALLINCKRODT",
+   "type": "manufacturer",
+   "label": "MALLINCKRODT"
+  },
+  {
+   "id": "manufacturer:MEDCHEM",
+   "type": "manufacturer",
+   "label": "MEDCHEM"
+  },
+  {
+   "id": "manufacturer:MEDEXUS INC",
+   "type": "manufacturer",
+   "label": "MEDEXUS INC"
+  },
+  {
+   "id": "manufacturer:MERCK & COMPANY",
+   "type": "manufacturer",
+   "label": "MERCK & COMPANY"
+  },
+  {
+   "id": "manufacturer:METHOD PHARMA, LLC",
+   "type": "manufacturer",
+   "label": "METHOD PHARMA, LLC"
+  },
+  {
+   "id": "manufacturer:NORTHSTAR RX",
+   "type": "manufacturer",
+   "label": "NORTHSTAR RX"
+  },
+  {
+   "id": "manufacturer:NOVARTIS RX",
+   "type": "manufacturer",
+   "label": "NOVARTIS RX"
+  },
+  {
+   "id": "manufacturer:No Manufacturer",
+   "type": "manufacturer",
+   "label": "No Manufacturer"
+  },
+  {
+   "id": "manufacturer:OAKLOCK, LLC",
+   "type": "manufacturer",
+   "label": "OAKLOCK, LLC"
+  },
+  {
+   "id": "manufacturer:ORGANON",
+   "type": "manufacturer",
+   "label": "ORGANON"
+  },
+  {
+   "id": "manufacturer:PACIRA PHARM",
+   "type": "manufacturer",
+   "label": "PACIRA PHARM"
+  },
+  {
+   "id": "manufacturer:PADAGIS LLC",
+   "type": "manufacturer",
+   "label": "PADAGIS LLC"
+  },
+  {
+   "id": "manufacturer:PARNELL PHARM",
+   "type": "manufacturer",
+   "label": "PARNELL PHARM"
+  },
+  {
+   "id": "manufacturer:PERFORMANCE HEALTH",
+   "type": "manufacturer",
+   "label": "PERFORMANCE HEALTH"
+  },
+  {
+   "id": "manufacturer:PFIZER",
+   "type": "manufacturer",
+   "label": "PFIZER"
+  },
+  {
+   "id": "manufacturer:PHARBEST PHARMA",
+   "type": "manufacturer",
+   "label": "PHARBEST PHARMA"
+  },
+  {
+   "id": "manufacturer:PHARMACEUT ASSOC",
+   "type": "manufacturer",
+   "label": "PHARMACEUT ASSOC"
+  },
+  {
+   "id": "manufacturer:PLX PHARMA",
+   "type": "manufacturer",
+   "label": "PLX PHARMA"
+  },
+  {
+   "id": "manufacturer:PRAGMA PHARMA, LLC",
+   "type": "manufacturer",
+   "label": "PRAGMA PHARMA, LLC"
+  },
+  {
+   "id": "manufacturer:PRESTIGE BRANDS",
+   "type": "manufacturer",
+   "label": "PRESTIGE BRANDS"
+  },
+  {
+   "id": "manufacturer:PRIVATE LABEL",
+   "type": "manufacturer",
+   "label": "PRIVATE LABEL"
+  },
+  {
+   "id": "manufacturer:PURETEK",
+   "type": "manufacturer",
+   "label": "PURETEK"
+  },
+  {
+   "id": "manufacturer:RHODES PHARM",
+   "type": "manufacturer",
+   "label": "RHODES PHARM"
+  },
+  {
+   "id": "manufacturer:ROCHE",
+   "type": "manufacturer",
+   "label": "ROCHE"
+  },
+  {
+   "id": "manufacturer:RX PHARMA PACK",
+   "type": "manufacturer",
+   "label": "RX PHARMA PACK"
+  },
+  {
+   "id": "manufacturer:SANDOZ",
+   "type": "manufacturer",
+   "label": "SANDOZ"
+  },
+  {
+   "id": "manufacturer:SILARX PHARM INC",
+   "type": "manufacturer",
+   "label": "SILARX PHARM INC"
+  },
+  {
+   "id": "manufacturer:STERLING-KNIGHT",
+   "type": "manufacturer",
+   "label": "STERLING-KNIGHT"
+  },
+  {
+   "id": "manufacturer:SUN PHARMACEUTICAL",
+   "type": "manufacturer",
+   "label": "SUN PHARMACEUTICAL"
+  },
+  {
+   "id": "manufacturer:TERRAIN PHARMA",
+   "type": "manufacturer",
+   "label": "TERRAIN PHARMA"
+  },
+  {
+   "id": "manufacturer:TERSERA THERAPEUT",
+   "type": "manufacturer",
+   "label": "TERSERA THERAPEUT"
+  },
+  {
+   "id": "manufacturer:TEVA ONCOLOGY",
+   "type": "manufacturer",
+   "label": "TEVA ONCOLOGY"
+  },
+  {
+   "id": "manufacturer:TEVA PARENTERAL ME",
+   "type": "manufacturer",
+   "label": "TEVA PARENTERAL ME"
+  },
+  {
+   "id": "manufacturer:US COMPOUNDING",
+   "type": "manufacturer",
+   "label": "US COMPOUNDING"
+  },
+  {
+   "id": "manufacturer:VIATRIS",
+   "type": "manufacturer",
+   "label": "VIATRIS"
+  },
+  {
+   "id": "manufacturer:WESTMINSTER PHARM",
+   "type": "manufacturer",
+   "label": "WESTMINSTER PHARM"
+  },
+  {
+   "id": "manufacturer:WOCKHARDT AMERICA",
+   "type": "manufacturer",
+   "label": "WOCKHARDT AMERICA"
+  },
+  {
+   "id": "manufacturer:XANODYNE PHARMA",
+   "type": "manufacturer",
+   "label": "XANODYNE PHARMA"
+  },
+  {
+   "id": "manufacturer:XLCARE PHARMACEUT",
+   "type": "manufacturer",
+   "label": "XLCARE PHARMACEUT"
+  },
+  {
+   "id": "manufacturer:ZYLA LIFE SCIENCES",
+   "type": "manufacturer",
+   "label": "ZYLA LIFE SCIENCES"
+  },
+  {
+   "id": "drug_class:branded_injectable",
+   "type": "drug_class",
+   "label": "branded injectable"
+  },
+  {
+   "id": "drug_class:generic_corticosteroid",
+   "type": "drug_class",
+   "label": "generic corticosteroid"
+  },
+  {
+   "id": "drug_class:not_applicable",
+   "type": "drug_class",
+   "label": "not applicable"
+  },
+  {
+   "id": "drug_class:nsaid_otc",
+   "type": "drug_class",
+   "label": "nsaid otc"
+  },
+  {
+   "id": "drug_class:opioid_other",
+   "type": "drug_class",
+   "label": "opioid other"
+  },
+  {
+   "id": "drug_class:unclassified",
+   "type": "drug_class",
+   "label": "unclassified"
+  },
+  {
+   "id": "group:other",
+   "type": "group",
+   "label": "Other products (NSAIDs, opioids, other)"
+  },
+  {
+   "id": "group:other_injectable_corticosteroid",
+   "type": "group",
+   "label": "Other injectable corticosteroids"
+  },
+  {
+   "id": "group:triamcinolone_ir",
+   "type": "group",
+   "label": "Triamcinolone (immediate release)"
+  },
+  {
+   "id": "group:zilretta",
+   "type": "group",
+   "label": "Zilretta"
+  },
+  {
+   "id": "specialty:ADDICTION MEDICINE",
+   "type": "specialty",
+   "label": "ADDICTION MEDICINE"
+  },
+  {
+   "id": "specialty:ALLERGY",
+   "type": "specialty",
+   "label": "ALLERGY"
+  },
+  {
+   "id": "specialty:ANESTHESIOLOGY",
+   "type": "specialty",
+   "label": "ANESTHESIOLOGY"
+  },
+  {
+   "id": "specialty:CARDIOLOGY",
+   "type": "specialty",
+   "label": "CARDIOLOGY"
+  },
+  {
+   "id": "specialty:CLINICAL NEUROPHYSIOL.",
+   "type": "specialty",
+   "label": "CLINICAL NEUROPHYSIOL."
+  },
+  {
+   "id": "specialty:CRITICAL CARE MEDICINE",
+   "type": "specialty",
+   "label": "CRITICAL CARE MEDICINE"
+  },
+  {
+   "id": "specialty:DERMATOLOGY",
+   "type": "specialty",
+   "label": "DERMATOLOGY"
+  },
+  {
+   "id": "specialty:EMERGENCY MEDICINE",
+   "type": "specialty",
+   "label": "EMERGENCY MEDICINE"
+  },
+  {
+   "id": "specialty:ENDOCRINOLOGY",
+   "type": "specialty",
+   "label": "ENDOCRINOLOGY"
+  },
+  {
+   "id": "specialty:FAMILY PRACTICE",
+   "type": "specialty",
+   "label": "FAMILY PRACTICE"
+  },
+  {
+   "id": "specialty:GASTROENTEROLOGY",
+   "type": "specialty",
+   "label": "GASTROENTEROLOGY"
+  },
+  {
+   "id": "specialty:GEN PREVENTIVE MEDICINE",
+   "type": "specialty",
+   "label": "GEN PREVENTIVE MEDICINE"
+  },
+  {
+   "id": "specialty:GENERAL PRACTICE",
+   "type": "specialty",
+   "label": "GENERAL PRACTICE"
+  },
+  {
+   "id": "specialty:GENERAL SURGERY",
+   "type": "specialty",
+   "label": "GENERAL SURGERY"
+  },
+  {
+   "id": "specialty:GERIATRICS",
+   "type": "specialty",
+   "label": "GERIATRICS"
+  },
+  {
+   "id": "specialty:HEMATOLOGY",
+   "type": "specialty",
+   "label": "HEMATOLOGY"
+  },
+  {
+   "id": "specialty:HOSPICE & PALLIATIVE MED",
+   "type": "specialty",
+   "label": "HOSPICE & PALLIATIVE MED"
+  },
+  {
+   "id": "specialty:INFECTIOUS DISEASE",
+   "type": "specialty",
+   "label": "INFECTIOUS DISEASE"
+  },
+  {
+   "id": "specialty:INTERNAL MED/PEDIATRICS",
+   "type": "specialty",
+   "label": "INTERNAL MED/PEDIATRICS"
+  },
+  {
+   "id": "specialty:INTERNAL MEDICINE",
+   "type": "specialty",
+   "label": "INTERNAL MEDICINE"
+  },
+  {
+   "id": "specialty:NATUROPATHIC DOCTOR",
+   "type": "specialty",
+   "label": "NATUROPATHIC DOCTOR"
+  },
+  {
+   "id": "specialty:NEPHROLOGY",
+   "type": "specialty",
+   "label": "NEPHROLOGY"
+  },
+  {
+   "id": "specialty:NEUROLOGICAL SURGERY",
+   "type": "specialty",
+   "label": "NEUROLOGICAL SURGERY"
+  },
+  {
+   "id": "specialty:NEUROLOGY",
+   "type": "specialty",
+   "label": "NEUROLOGY"
+  },
+  {
+   "id": "specialty:NUCLEAR MEDICINE",
+   "type": "specialty",
+   "label": "NUCLEAR MEDICINE"
+  },
+  {
+   "id": "specialty:NURSE PRACTITIONER",
+   "type": "specialty",
+   "label": "NURSE PRACTITIONER"
+  },
+  {
+   "id": "specialty:OBSTETRICS/GYNECOLOGY",
+   "type": "specialty",
+   "label": "OBSTETRICS/GYNECOLOGY"
+  },
+  {
+   "id": "specialty:OCCUPATIONAL MEDICINE",
+   "type": "specialty",
+   "label": "OCCUPATIONAL MEDICINE"
+  },
+  {
+   "id": "specialty:ONCOLOGY",
+   "type": "specialty",
+   "label": "ONCOLOGY"
+  },
+  {
+   "id": "specialty:ORTHO SURG OF SPINE",
+   "type": "specialty",
+   "label": "ORTHO SURG OF SPINE"
+  },
+  {
+   "id": "specialty:ORTHOPEDIC SURGERY",
+   "type": "specialty",
+   "label": "ORTHOPEDIC SURGERY"
+  },
+  {
+   "id": "specialty:OSTEOPATHIC MEDICINE",
+   "type": "specialty",
+   "label": "OSTEOPATHIC MEDICINE"
+  },
+  {
+   "id": "specialty:OTHER",
+   "type": "specialty",
+   "label": "OTHER"
+  },
+  {
+   "id": "specialty:OTHER SURGERY",
+   "type": "specialty",
+   "label": "OTHER SURGERY"
+  },
+  {
+   "id": "specialty:PAIN MEDICINE",
+   "type": "specialty",
+   "label": "PAIN MEDICINE"
+  },
+  {
+   "id": "specialty:PATHOLOGY",
+   "type": "specialty",
+   "label": "PATHOLOGY"
+  },
+  {
+   "id": "specialty:PEDIATRIC CRITICAL CARE",
+   "type": "specialty",
+   "label": "PEDIATRIC CRITICAL CARE"
+  },
+  {
+   "id": "specialty:PEDIATRICS",
+   "type": "specialty",
+   "label": "PEDIATRICS"
+  },
+  {
+   "id": "specialty:PHYSICAL MEDICINE & REHAB",
+   "type": "specialty",
+   "label": "PHYSICAL MEDICINE & REHAB"
+  },
+  {
+   "id": "specialty:PHYSICIAN ASSISTANT",
+   "type": "specialty",
+   "label": "PHYSICIAN ASSISTANT"
+  },
+  {
+   "id": "specialty:PLASTIC SURGERY",
+   "type": "specialty",
+   "label": "PLASTIC SURGERY"
+  },
+  {
+   "id": "specialty:PSYCHIATRY",
+   "type": "specialty",
+   "label": "PSYCHIATRY"
+  },
+  {
+   "id": "specialty:PULMONARY CRITICAL CARE",
+   "type": "specialty",
+   "label": "PULMONARY CRITICAL CARE"
+  },
+  {
+   "id": "specialty:PULMONARY DISEASES",
+   "type": "specialty",
+   "label": "PULMONARY DISEASES"
+  },
+  {
+   "id": "specialty:RADIOLOGY",
+   "type": "specialty",
+   "label": "RADIOLOGY"
+  },
+  {
+   "id": "specialty:RHEUMATOLOGY",
+   "type": "specialty",
+   "label": "RHEUMATOLOGY"
+  },
+  {
+   "id": "specialty:SLEEP MEDICINE",
+   "type": "specialty",
+   "label": "SLEEP MEDICINE"
+  },
+  {
+   "id": "specialty:SPORTS MEDICINE",
+   "type": "specialty",
+   "label": "SPORTS MEDICINE"
+  },
+  {
+   "id": "specialty:THORACIC SURGERY",
+   "type": "specialty",
+   "label": "THORACIC SURGERY"
+  },
+  {
+   "id": "specialty:UROLOGY",
+   "type": "specialty",
+   "label": "UROLOGY"
+  },
+  {
+   "id": "disease_area:OA",
+   "type": "disease_area",
+   "label": "OA (IQVIA disease area)"
+  },
+  {
+   "id": "disease_area:RA",
+   "type": "disease_area",
+   "label": "RA (IQVIA disease area)"
+  },
+  {
+   "id": "event:1",
+   "type": "event",
+   "label": "FDA approves Zilretta (triamcinolone acetonide extended-release; NDA 208845) for osteoarthritis pain of the knee",
+   "date": "2017-10-06",
+   "event_type": "regulatory",
+   "verified": 1,
+   "source": "FDA approval letter, signed 6 October 2017 (the package cover sheet's 14 December 2017 is a cover-sheet discrepancy); data/raw/New Datasets/FDA Zilretta/208845Orig1s000Approv.pdf"
+  },
+  {
+   "id": "event:10",
+   "type": "event",
+   "label": "Pacira and Flexion sign the merger agreement",
+   "date": "2021-10-11",
+   "event_type": "corporate",
+   "verified": 1,
+   "source": "Pacira BioSciences 10-K for 2021 (accession 0001396814-22-000021)"
+  },
+  {
+   "id": "event:11",
+   "type": "event",
+   "label": "Pacira completes the acquisition of Flexion; Zilretta moves from Flexion to Pacira (Zilretta net sales of $12.7 million are recognised by Pacira from this date to 31 December 2021)",
+   "date": "2021-11-19",
+   "event_type": "corporate",
+   "verified": 1,
+   "source": "Pacira BioSciences 10-K for 2021 (accession 0001396814-22-000021)"
+  },
+  {
+   "id": "event:12",
+   "type": "event",
+   "label": "Change Healthcare cyberattack begins: a national claims-clearinghouse outage that disrupted claims submission",
+   "date": "2024-02-21",
+   "event_type": "data",
+   "verified": 1,
+   "source": "AHA Change Healthcare cyberattack timeline (data/raw/New Datasets/Event Timeline); HHS readout of 12 March 2024"
+  },
+  {
+   "id": "event:13",
+   "type": "event",
+   "label": "Dip in IQVIA visit volumes across the data (observed in our exploratory analysis; the cause is unverified, and the claims outage is a hypothesis only)",
+   "date": "2024-03-01",
+   "end_date": "2024-07-31",
+   "event_type": "data",
+   "verified": 0,
+   "source": "notebooks/02_eda_cleaned_data.ipynb (IQVIA warehouse); cause not established"
+  },
+  {
+   "id": "event:14",
+   "type": "event",
+   "label": "Supplemental application S-021 submitted: room-temperature storage period shortened from six weeks to three weeks",
+   "date": "2024-06-03",
+   "event_type": "regulatory",
+   "verified": 1,
+   "source": "FDA supplement approval letter for NDA 208845/S-021; data/raw/New Datasets/FDA Zilretta/208845Orig1s021ltr_2024.pdf"
+  },
+  {
+   "id": "event:2",
+   "type": "event",
+   "label": "Zilretta has OPPS transitional pass-through payment status (a hospital outpatient payment rule; office-based payment is unaffected)",
+   "date": "2018-04-01",
+   "end_date": "2021-03-31",
+   "event_type": "payment",
+   "verified": 1,
+   "source": "CMS Transmittal 3988 (change request 10515, 2 March 2018) Table 5; CMS Transmittal 10666 (change request 12175, 8 March 2021) Table 11"
+  },
+  {
+   "id": "event:3",
+   "type": "event",
+   "label": "Durolane (hyaluronic acid; J7318) has OPPS pass-through status over the same window as Zilretta",
+   "date": "2018-04-01",
+   "end_date": "2021-03-31",
+   "event_type": "payment",
+   "verified": 1,
+   "source": "CMS Transmittal 3988 Table 5; CMS Transmittal 10666 Table 11"
+  },
+  {
+   "id": "event:4",
+   "type": "event",
+   "label": "Zilretta receives its product-specific HCPCS code J3304",
+   "date": "2019-01-01",
+   "event_type": "payment",
+   "verified": 1,
+   "source": "Flexion Therapeutics 10-K for 2018, accession 0001564590-19-005465 (\"As of January 1, 2019, we received a product-specific J-Code for ZILRETTA (J-3304)\")"
+  },
+  {
+   "id": "event:5",
+   "type": "event",
+   "label": "Supplemental application S-011 submitted: post-marketing experience added to the adverse reactions section of the Zilretta label",
+   "date": "2020-01-03",
+   "event_type": "regulatory",
+   "verified": 1,
+   "source": "FDA supplement approval letter for NDA 208845/S-011; data/raw/New Datasets/FDA Zilretta/208845Orig1s011ltr_2020.pdf"
+  },
+  {
+   "id": "event:6",
+   "type": "event",
+   "label": "ACR and Arthritis Foundation osteoarthritis guideline: strong recommendation for intra-articular steroids in knee and hip OA, conditional recommendation against hyaluronic acid injections in knee OA",
+   "date": "2020-01-07",
+   "event_type": "guideline",
+   "verified": 1,
+   "source": "American College of Rheumatology press release dated 7 January 2020 (rheumatology.org)"
+  },
+  {
+   "id": "event:7",
+   "type": "event",
+   "label": "World Health Organization assesses COVID-19 as a pandemic",
+   "date": "2020-03-11",
+   "event_type": "public_health",
+   "verified": 1,
+   "source": "Flexion Therapeutics 10-K for 2020 (accession 0001564590-21-012050)"
+  },
+  {
+   "id": "event:8",
+   "type": "event",
+   "label": "United States declares a national emergency and states impose stay-at-home measures (date approximate: the source says mid-March 2020); in-person medical practice and promotion disrupted",
+   "date": "2020-03-15",
+   "event_type": "public_health",
+   "verified": 1,
+   "source": "Flexion Therapeutics 10-K for 2020 (accession 0001564590-21-012050), COVID-19 section"
+  },
+  {
+   "id": "event:9",
+   "type": "event",
+   "label": "AAOS knee osteoarthritis guideline (3rd edition): hyaluronic acid injection not recommended for routine use; no recommendation for or against corticosteroid injection",
+   "date": "2021-08-31",
+   "event_type": "guideline",
+   "verified": 0,
+   "source": "AAOS guideline page (aaos.org) via search result; the date and wording are to be confirmed against the document itself"
+  },
+  {
+   "id": "market:iqvia_nmta",
+   "type": "market",
+   "label": "US osteoarthritis and rheumatoid arthritis visits (IQVIA NMTA)"
+  }
+ ],
+ "edges": [
+  {
+   "source": "product:A-HYDROCORT",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:A-METHAPRED",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACETAMINOPHEN",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACETAMINOPHEN CHILD",
+   "target": "manufacturer:PADAGIS LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACTEMRA",
+   "target": "manufacturer:GENENTECH,INC.",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ADVIL",
+   "target": "manufacturer:HALEON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ALEVE",
+   "target": "manufacturer:BAYER CONSUMER CAR",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ANACIN",
+   "target": "manufacturer:PRESTIGE BRANDS",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ANJESO",
+   "target": "manufacturer:BAUDAX BIO",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:APAP X",
+   "target": "manufacturer:MAGNO HUMPHRIES",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:APAP/CAF",
+   "target": "manufacturer:PRIVATE LABEL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARCALYST",
+   "target": "manufacturer:KINIKSA PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARISTOCORT",
+   "target": "manufacturer:ASTELLAS PHARMA US",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARISTOSPAN",
+   "target": "manufacturer:SANDOZ",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARZE-JECT-A",
+   "target": "manufacturer:INTEGRTD PHARM SOL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASA/APAP/CAF",
+   "target": "manufacturer:PRIVATE LABEL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASCRIPTIN",
+   "target": "manufacturer:HALEON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN",
+   "target": "manufacturer:PRIVATE LABEL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN (OTC)",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN BUFFERED",
+   "target": "manufacturer:PRIVATE LABEL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYCADRON",
+   "target": "manufacturer:WOCKHARDT AMERICA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYER ASP REGIMEN",
+   "target": "manufacturer:BAYER CONSUMER CAR",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYER ASPIRIN",
+   "target": "manufacturer:BAYER CONSUMER CAR",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETA 1",
+   "target": "manufacturer:OAKLOCK, LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETALOAN SUIK",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETH ACE/SOD PHOS",
+   "target": "manufacturer:AMERICAN REGENT IN",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETH DIP AUG",
+   "target": "manufacturer:SUN PHARMACEUTICAL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETHASONE",
+   "target": "manufacturer:No Manufacturer",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETHASONE COMBO",
+   "target": "manufacturer:US COMPOUNDING",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BIOFREEZE W/ILEX",
+   "target": "manufacturer:PERFORMANCE HEALTH",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUFFERIN",
+   "target": "manufacturer:GENOMMA LAB USA,IN",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUPRENORPHINE HCL",
+   "target": "manufacturer:ENDO USA INC.",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUTORPHANOL TART",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CELESTONE",
+   "target": "manufacturer:ORGANON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CELESTONE PHOS",
+   "target": "manufacturer:MERCK & COMPANY",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CHILDRENS MAPAP",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CLOBETASOL PROP",
+   "target": "manufacturer:NORTHSTAR RX",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CLONIDINE HCL",
+   "target": "manufacturer:HIKMA PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CORTEF",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVOCET-N 100",
+   "target": "manufacturer:XANODYNE PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVOCET-N 50",
+   "target": "manufacturer:XANODYNE PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVON",
+   "target": "manufacturer:XANODYNE PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVON-N",
+   "target": "manufacturer:XANODYNE PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DECADRON",
+   "target": "manufacturer:PRAGMA PHARMA, LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEMEROL",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEPO-MEDROL",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEX COMBO",
+   "target": "manufacturer:US COMPOUNDING",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETH S PH",
+   "target": "manufacturer:VIATRIS",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETHASONE",
+   "target": "manufacturer:FRESENIUS KABI USA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETHASONE INTN",
+   "target": "manufacturer:HIKMA PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXLIDO-M",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DICLOFENAC POT",
+   "target": "manufacturer:ARCHIS PHARMA LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DIFLUNISAL",
+   "target": "manufacturer:AVET PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DILAUDID",
+   "target": "manufacturer:RHODES PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DILAUDID SYRINGE",
+   "target": "manufacturer:FRESENIUS KABI USA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOANS X-STR",
+   "target": "manufacturer:DR REDDYS LAB",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOLOBID",
+   "target": "manufacturer:INA PHARMACEUTICAL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOUBLEDEX",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DURACLON",
+   "target": "manufacturer:VIATRIS",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DURAMORPH PF",
+   "target": "manufacturer:HIKMA PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DYLOJECT",
+   "target": "manufacturer:No Manufacturer",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DYURAL-80",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ECOTRIN",
+   "target": "manufacturer:PRESTIGE BRANDS",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN ASP/FREE",
+   "target": "manufacturer:HALEON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN EX STR",
+   "target": "manufacturer:HALEON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN MIGRAINE",
+   "target": "manufacturer:HALEON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN TEN HDCHE",
+   "target": "manufacturer:HALEON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FENOPROFEN CA",
+   "target": "manufacturer:STERLING-KNIGHT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FENTANYL CIT",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FEVERALL JUNIOR",
+   "target": "manufacturer:SUN PHARMACEUTICAL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HALFPRIN",
+   "target": "manufacturer:KRAMER LABS",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HEXATRIONE",
+   "target": "manufacturer:MEDEXUS INC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYCD/APAP",
+   "target": "manufacturer:XLCARE PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTISONE",
+   "target": "manufacturer:VIATRIS",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTISONE VAL",
+   "target": "manufacturer:SUN PHARMACEUTICAL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTONE",
+   "target": "manufacturer:No Manufacturer",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROMORPHONE HCL",
+   "target": "manufacturer:HIKMA PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN",
+   "target": "manufacturer:PRIVATE LABEL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC)",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC) CHILD",
+   "target": "manufacturer:PADAGIS LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (RX)",
+   "target": "manufacturer:AUROBINDO PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ILARIS",
+   "target": "manufacturer:NOVARTIS RX",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:INFLECTRA",
+   "target": "manufacturer:No Manufacturer",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:INFUMORPH",
+   "target": "manufacturer:HIKMA PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KENALOG",
+   "target": "manufacturer:BRISTOL-M SQ US PH",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KETOROLAC TROMETH",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KEYTRUDA",
+   "target": "manufacturer:MERCK & COMPANY",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KINERET",
+   "target": "manufacturer:BIOVITRUM AB",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LIDOCAINE",
+   "target": "manufacturer:PURETEK",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LIDOLOG",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LOFENA",
+   "target": "manufacturer:CARWIN ASSOCIATES",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:M-PAP",
+   "target": "manufacturer:METHOD PHARMA, LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MAPAP ARTHRITIS PAIN",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MARBETA-L",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEDROL",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEDROLOAN SUIK",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEPERIDINE HCL",
+   "target": "manufacturer:HIKMA PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPRED ACE",
+   "target": "manufacturer:TEVA PARENTERAL ME",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPRED SOD SUC",
+   "target": "manufacturer:FRESENIUS KABI USA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPREDNISOLONE",
+   "target": "manufacturer:EPIC PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MLK PROCEDUR F2",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MORPHINE SULF",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MORPHINE SULF C-JECT",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MOTRIN IB",
+   "target": "manufacturer:KENVUE",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MULTI-SPECIALTY",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NALBUPHINE HCL",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD",
+   "target": "manufacturer:PRIVATE LABEL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD (OTC)",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD (RX)",
+   "target": "manufacturer:DR REDDYS LAB",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OFIRMEV",
+   "target": "manufacturer:MALLINCKRODT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OPDIVO",
+   "target": "manufacturer:BRISTOL-M SQ US PH",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ORENCIA",
+   "target": "manufacturer:BRISTOL-M SQ US PH",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OXYCODONE HCL",
+   "target": "manufacturer:AUROBINDO PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OXYCODONE/APAP",
+   "target": "manufacturer:MALLINCKRODT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:P-CARE K40",
+   "target": "manufacturer:RX PHARMA PACK",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PAIN RELIEF",
+   "target": "manufacturer:GERI-CARE PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PAIN RELIEVER PLUS",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PHARBETOL",
+   "target": "manufacturer:PHARBEST PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PHYS EZ USE JOINT",
+   "target": "manufacturer:MEDCHEM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:POD-CARE 100C",
+   "target": "manufacturer:RX PHARMA PACK",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:POD-CARE 100K",
+   "target": "manufacturer:RX PHARMA PACK",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISOLONE",
+   "target": "manufacturer:AKORN, INC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISOLONE S PH",
+   "target": "manufacturer:PHARMACEUT ASSOC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISONE",
+   "target": "manufacturer:HIKMA PHARMACEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRIALT",
+   "target": "manufacturer:TERSERA THERAPEUT",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRO-C-DURE 5",
+   "target": "manufacturer:OAKLOCK, LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRO-C-DURE 6",
+   "target": "manufacturer:OAKLOCK, LLC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:Q-PAP",
+   "target": "manufacturer:ENDO USA INC.",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP ANES+KETO",
+   "target": "manufacturer:TERRAIN PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP BETAMET",
+   "target": "manufacturer:TERRAIN PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP DEXAMET",
+   "target": "manufacturer:TERRAIN PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:REMICADE",
+   "target": "manufacturer:JANSSEN PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:RENFLEXIS",
+   "target": "manufacturer:ORGANON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:RITUXAN",
+   "target": "manufacturer:GENENTECH,INC.",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SALSALATE",
+   "target": "manufacturer:WESTMINSTER PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SAPHNELO",
+   "target": "manufacturer:ASTRAZENECA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SARAPIN",
+   "target": "manufacturer:HIGH CHEM CO",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SILAPAP",
+   "target": "manufacturer:SILARX PHARM INC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SOLU-CORTEF",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SOLU-MEDROL",
+   "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ST. JOSEPH ASPIRIN",
+   "target": "manufacturer:FOUNDATION CONS",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:STELARA",
+   "target": "manufacturer:JANSSEN PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TAC-3",
+   "target": "manufacturer:PARNELL PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:THERAPY BAYER ASP",
+   "target": "manufacturer:BAYER CONSUMER CAR",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TORADOL",
+   "target": "manufacturer:ROCHE",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRAMADOL HCL",
+   "target": "manufacturer:AMNEAL PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRAMADOL HCL ER",
+   "target": "manufacturer:SUN PHARMACEUTICAL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRI-BUFFERED ASPIRIN",
+   "target": "manufacturer:MAJOR PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRIAMCINOLONE ACTN",
+   "target": "manufacturer:AMNEAL BIOSCIENCES",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRIAMCINOLONE DIAC",
+   "target": "manufacturer:US COMPOUNDING",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRUXIMA",
+   "target": "manufacturer:TEVA ONCOLOGY",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL 8 HOUR",
+   "target": "manufacturer:KENVUE",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL ARTHRITIS",
+   "target": "manufacturer:KENVUE",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL EXTRA STRG",
+   "target": "manufacturer:KENVUE",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL REGULAR",
+   "target": "manufacturer:KENVUE",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:VAZALORE",
+   "target": "manufacturer:PLX PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:YERVOY",
+   "target": "manufacturer:BRISTOL-M SQ US PH",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZILRETTA",
+   "target": "manufacturer:PACIRA PHARM",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZIPSOR",
+   "target": "manufacturer:ASSERTIO THERAPEU",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZORVOLEX",
+   "target": "manufacturer:ZYLA LIFE SCIENCES",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:A-HYDROCORT",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:A-METHAPRED",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACETAMINOPHEN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACETAMINOPHEN CHILD",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACTEMRA",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ADVIL",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ALEVE",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ANACIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ANJESO",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:APAP X",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:APAP/CAF",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARCALYST",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARISTOCORT",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARISTOSPAN",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARZE-JECT-A",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASA/APAP/CAF",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASCRIPTIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN (OTC)",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN BUFFERED",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYCADRON",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYER ASP REGIMEN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYER ASPIRIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETA 1",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETALOAN SUIK",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETH ACE/SOD PHOS",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETH DIP AUG",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETHASONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETHASONE COMBO",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BIOFREEZE W/ILEX",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUFFERIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUPRENORPHINE HCL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUTORPHANOL TART",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CELESTONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CELESTONE PHOS",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CHILDRENS MAPAP",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CLOBETASOL PROP",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CLONIDINE HCL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CORTEF",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVOCET-N 100",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVOCET-N 50",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVON",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVON-N",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DECADRON",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEMEROL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEPO-MEDROL",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEX COMBO",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETH S PH",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETHASONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETHASONE INTN",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXLIDO-M",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DICLOFENAC POT",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DIFLUNISAL",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DILAUDID",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DILAUDID SYRINGE",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOANS X-STR",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOLOBID",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOUBLEDEX",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DURACLON",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DURAMORPH PF",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DYLOJECT",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DYURAL-80",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ECOTRIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN ASP/FREE",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN EX STR",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN MIGRAINE",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN TEN HDCHE",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FENOPROFEN CA",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FENTANYL CIT",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FEVERALL JUNIOR",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HALFPRIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HEXATRIONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYCD/APAP",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTISONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTISONE VAL",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROMORPHONE HCL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC)",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC) CHILD",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (RX)",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ILARIS",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:INFLECTRA",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:INFUMORPH",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KENALOG",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KETOROLAC TROMETH",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KEYTRUDA",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KINERET",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LIDOCAINE",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LIDOLOG",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LOFENA",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:M-PAP",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MAPAP ARTHRITIS PAIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MARBETA-L",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEDROL",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEDROLOAN SUIK",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEPERIDINE HCL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPRED ACE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPRED SOD SUC",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPREDNISOLONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MLK PROCEDUR F2",
+   "target": "drug_class:unclassified",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MORPHINE SULF",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MORPHINE SULF C-JECT",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MOTRIN IB",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MULTI-SPECIALTY",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NALBUPHINE HCL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD (OTC)",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD (RX)",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OFIRMEV",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OPDIVO",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ORENCIA",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OXYCODONE HCL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OXYCODONE/APAP",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:P-CARE K40",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PAIN RELIEF",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PAIN RELIEVER PLUS",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PHARBETOL",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PHYS EZ USE JOINT",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:POD-CARE 100C",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:POD-CARE 100K",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISOLONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISOLONE S PH",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISONE",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRIALT",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRO-C-DURE 5",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRO-C-DURE 6",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:Q-PAP",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP ANES+KETO",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP BETAMET",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP DEXAMET",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:REMICADE",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:RENFLEXIS",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:RITUXAN",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SALSALATE",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SAPHNELO",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SARAPIN",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SILAPAP",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SOLU-CORTEF",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SOLU-MEDROL",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ST. JOSEPH ASPIRIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:STELARA",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TAC-3",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:THERAPY BAYER ASP",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TORADOL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRAMADOL HCL",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRAMADOL HCL ER",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRI-BUFFERED ASPIRIN",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRIAMCINOLONE ACTN",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRIAMCINOLONE DIAC",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRUXIMA",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL 8 HOUR",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL ARTHRITIS",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL EXTRA STRG",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL REGULAR",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:VAZALORE",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:YERVOY",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZILRETTA",
+   "target": "drug_class:branded_injectable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZIPSOR",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZORVOLEX",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:A-HYDROCORT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:A-METHAPRED",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACETAMINOPHEN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACETAMINOPHEN CHILD",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ACTEMRA",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ADVIL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ALEVE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ANACIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ANJESO",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:APAP X",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:APAP/CAF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARCALYST",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARISTOCORT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARISTOSPAN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ARZE-JECT-A",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASA/APAP/CAF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASCRIPTIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN (OTC)",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ASPIRIN BUFFERED",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYCADRON",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYER ASP REGIMEN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BAYER ASPIRIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETA 1",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETALOAN SUIK",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETH ACE/SOD PHOS",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETH DIP AUG",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETHASONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BETAMETHASONE COMBO",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BIOFREEZE W/ILEX",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUFFERIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUPRENORPHINE HCL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BUTORPHANOL TART",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CELESTONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CELESTONE PHOS",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CHILDRENS MAPAP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CLOBETASOL PROP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CLONIDINE HCL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CORTEF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVOCET-N 100",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVOCET-N 50",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVON",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DARVON-N",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DECADRON",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEMEROL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEPO-MEDROL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEX COMBO",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETH S PH",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETHASONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXAMETHASONE INTN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DEXLIDO-M",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DICLOFENAC POT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DIFLUNISAL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DILAUDID",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DILAUDID SYRINGE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOANS X-STR",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOLOBID",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DOUBLEDEX",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DURACLON",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DURAMORPH PF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DYLOJECT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:DYURAL-80",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ECOTRIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN ASP/FREE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN EX STR",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN MIGRAINE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:EXCEDRIN TEN HDCHE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FENOPROFEN CA",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FENTANYL CIT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:FEVERALL JUNIOR",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HALFPRIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HEXATRIONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYCD/APAP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTISONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTISONE VAL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROCORTONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:HYDROMORPHONE HCL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC)",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC) CHILD",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:IBUPROFEN (RX)",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ILARIS",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:INFLECTRA",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:INFUMORPH",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KENALOG",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KETOROLAC TROMETH",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KEYTRUDA",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KINERET",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LIDOCAINE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LIDOLOG",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:LOFENA",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:M-PAP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MAPAP ARTHRITIS PAIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MARBETA-L",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEDROL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEDROLOAN SUIK",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MEPERIDINE HCL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPRED ACE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPRED SOD SUC",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:METHYLPREDNISOLONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MLK PROCEDUR F2",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MORPHINE SULF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MORPHINE SULF C-JECT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MOTRIN IB",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MULTI-SPECIALTY",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NALBUPHINE HCL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD (OTC)",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:NAPROXEN SOD (RX)",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OFIRMEV",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OPDIVO",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ORENCIA",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OXYCODONE HCL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:OXYCODONE/APAP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:P-CARE K40",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PAIN RELIEF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PAIN RELIEVER PLUS",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PHARBETOL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PHYS EZ USE JOINT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:POD-CARE 100C",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:POD-CARE 100K",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISOLONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISOLONE S PH",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PREDNISONE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRIALT",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRO-C-DURE 5",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:PRO-C-DURE 6",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:Q-PAP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP ANES+KETO",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP BETAMET",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:READYSHARP DEXAMET",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:REMICADE",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:RENFLEXIS",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:RITUXAN",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SALSALATE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SAPHNELO",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SARAPIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SILAPAP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SOLU-CORTEF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:SOLU-MEDROL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ST. JOSEPH ASPIRIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:STELARA",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TAC-3",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:THERAPY BAYER ASP",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TORADOL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRAMADOL HCL",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRAMADOL HCL ER",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRI-BUFFERED ASPIRIN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRIAMCINOLONE ACTN",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRIAMCINOLONE DIAC",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRUXIMA",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL 8 HOUR",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL ARTHRITIS",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL EXTRA STRG",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TYLENOL REGULAR",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:VAZALORE",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:YERVOY",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZILRETTA",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZIPSOR",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:ZORVOLEX",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:A-HYDROCORT",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:A-METHAPRED",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:ACETAMINOPHEN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ACETAMINOPHEN CHILD",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ACTEMRA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ADVIL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ALEVE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ANACIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ANJESO",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:APAP X",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:APAP/CAF",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ARCALYST",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ARISTOCORT",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:ARISTOSPAN",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:ARZE-JECT-A",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:ASA/APAP/CAF",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ASCRIPTIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ASPIRIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ASPIRIN (OTC)",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ASPIRIN BUFFERED",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:BAYCADRON",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BAYER ASP REGIMEN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:BAYER ASPIRIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:BETA 1",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BETALOAN SUIK",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BETAMETH ACE/SOD PHOS",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BETAMETH DIP AUG",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BETAMETHASONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BETAMETHASONE COMBO",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BIOFREEZE W/ILEX",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:BUFFERIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:BUPRENORPHINE HCL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:BUTORPHANOL TART",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:CELESTONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:CELESTONE PHOS",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:CHILDRENS MAPAP",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:CLOBETASOL PROP",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:CLONIDINE HCL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:CORTEF",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DARVOCET-N 100",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DARVOCET-N 50",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DARVON",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DARVON-N",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DECADRON",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DEMEROL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DEPO-MEDROL",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DEX COMBO",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DEXAMETH S PH",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DEXAMETHASONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DEXAMETHASONE INTN",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DEXLIDO-M",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DICLOFENAC POT",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DIFLUNISAL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DILAUDID",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DILAUDID SYRINGE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DOANS X-STR",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DOLOBID",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DOUBLEDEX",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:DURACLON",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DURAMORPH PF",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DYLOJECT",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:DYURAL-80",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:ECOTRIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:EXCEDRIN ASP/FREE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:EXCEDRIN EX STR",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:EXCEDRIN MIGRAINE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:EXCEDRIN TEN HDCHE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:FENOPROFEN CA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:FENTANYL CIT",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:FEVERALL JUNIOR",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:HALFPRIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:HEXATRIONE",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:HYCD/APAP",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:HYDROCORTISONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:HYDROCORTISONE VAL",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:HYDROCORTONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:HYDROMORPHONE HCL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:IBUPROFEN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC)",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:IBUPROFEN (OTC) CHILD",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:IBUPROFEN (RX)",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ILARIS",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:INFLECTRA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:INFUMORPH",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:KENALOG",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:KETOROLAC TROMETH",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:KEYTRUDA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:KINERET",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:LIDOCAINE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:LIDOLOG",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:LOFENA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:M-PAP",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:MAPAP ARTHRITIS PAIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:MARBETA-L",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:MEDROL",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:MEDROLOAN SUIK",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:MEPERIDINE HCL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:METHYLPRED ACE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:METHYLPRED SOD SUC",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:METHYLPREDNISOLONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:MLK PROCEDUR F2",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:MORPHINE SULF",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:MORPHINE SULF C-JECT",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:MOTRIN IB",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:MULTI-SPECIALTY",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:NALBUPHINE HCL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:NAPROXEN SOD",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:NAPROXEN SOD (OTC)",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:NAPROXEN SOD (RX)",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:OFIRMEV",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:OPDIVO",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ORENCIA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:OXYCODONE HCL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:OXYCODONE/APAP",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:P-CARE K40",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:PAIN RELIEF",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:PAIN RELIEVER PLUS",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:PHARBETOL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:PHYS EZ USE JOINT",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:POD-CARE 100C",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:POD-CARE 100K",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:PREDNISOLONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:PREDNISOLONE S PH",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:PREDNISONE",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:PRIALT",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:PRO-C-DURE 5",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:PRO-C-DURE 6",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:Q-PAP",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:READYSHARP ANES+KETO",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:READYSHARP BETAMET",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:READYSHARP DEXAMET",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:REMICADE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:RENFLEXIS",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:RITUXAN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:SALSALATE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:SAPHNELO",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:SARAPIN",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:SILAPAP",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:SOLU-CORTEF",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:SOLU-MEDROL",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:ST. JOSEPH ASPIRIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:STELARA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TAC-3",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:THERAPY BAYER ASP",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TORADOL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TRAMADOL HCL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TRAMADOL HCL ER",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TRI-BUFFERED ASPIRIN",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TRIAMCINOLONE ACTN",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:TRIAMCINOLONE DIAC",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:TRUXIMA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TYLENOL 8 HOUR",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TYLENOL ARTHRITIS",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TYLENOL EXTRA STRG",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:TYLENOL REGULAR",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:VAZALORE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:YERVOY",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ZILRETTA",
+   "target": "group:zilretta",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "product name is Zilretta"
+  },
+  {
+   "source": "product:ZIPSOR",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "product:ZORVOLEX",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
+   "source": "group:zilretta",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "compared_with",
+   "evidence": "competitor_groups.csv"
+  },
+  {
+   "source": "group:zilretta",
+   "target": "group:triamcinolone_ir",
+   "relation": "compared_with",
+   "evidence": "competitor_groups.csv"
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:ADDICTION MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 7,
+   "share_of_group_visits": 1.4e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:ALLERGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 139,
+   "share_of_group_visits": 0.000275
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:ANESTHESIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4406,
+   "share_of_group_visits": 0.008706
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:CARDIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 281,
+   "share_of_group_visits": 0.000555
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:CLINICAL NEUROPHYSIOL.",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 2e-06
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:CRITICAL CARE MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4,
+   "share_of_group_visits": 8e-06
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:DERMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 10,
+   "share_of_group_visits": 2e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:EMERGENCY MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1046,
+   "share_of_group_visits": 0.002067
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:ENDOCRINOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 42,
+   "share_of_group_visits": 8.3e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:FAMILY PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 23863,
+   "share_of_group_visits": 0.047153
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:GASTROENTEROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 42,
+   "share_of_group_visits": 8.3e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:GEN PREVENTIVE MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 70,
+   "share_of_group_visits": 0.000138
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:GENERAL PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1156,
+   "share_of_group_visits": 0.002284
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:GENERAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 334,
+   "share_of_group_visits": 0.00066
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:GERIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1234,
+   "share_of_group_visits": 0.002438
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:HEMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 10,
+   "share_of_group_visits": 2e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:HOSPICE & PALLIATIVE MED",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 83,
+   "share_of_group_visits": 0.000164
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:INFECTIOUS DISEASE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 223,
+   "share_of_group_visits": 0.000441
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:INTERNAL MED/PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 450,
+   "share_of_group_visits": 0.000889
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:INTERNAL MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 24166,
+   "share_of_group_visits": 0.047752
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:NEPHROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 838,
+   "share_of_group_visits": 0.001656
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:NEUROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 170,
+   "share_of_group_visits": 0.000336
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:NUCLEAR MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 3,
+   "share_of_group_visits": 6e-06
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:NURSE PRACTITIONER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 74824,
+   "share_of_group_visits": 0.147852
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:OBSTETRICS/GYNECOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 48,
+   "share_of_group_visits": 9.5e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:OCCUPATIONAL MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 22,
+   "share_of_group_visits": 4.3e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:ONCOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 329,
+   "share_of_group_visits": 0.00065
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:ORTHO SURG OF SPINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 414,
+   "share_of_group_visits": 0.000818
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:ORTHOPEDIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 126674,
+   "share_of_group_visits": 0.250307
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:OSTEOPATHIC MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 30540,
+   "share_of_group_visits": 0.060347
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:OTHER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1107,
+   "share_of_group_visits": 0.002187
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:OTHER SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 265,
+   "share_of_group_visits": 0.000524
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PAIN MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2250,
+   "share_of_group_visits": 0.004446
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PATHOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 5,
+   "share_of_group_visits": 1e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PEDIATRIC CRITICAL CARE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 2e-06
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 246,
+   "share_of_group_visits": 0.000486
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PHYSICAL MEDICINE & REHAB",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4974,
+   "share_of_group_visits": 0.009829
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PHYSICIAN ASSISTANT",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 197858,
+   "share_of_group_visits": 0.390967
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PLASTIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 2e-06
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PSYCHIATRY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 41,
+   "share_of_group_visits": 8.1e-05
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PULMONARY CRITICAL CARE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 95,
+   "share_of_group_visits": 0.000188
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:PULMONARY DISEASES",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 184,
+   "share_of_group_visits": 0.000364
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:RADIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1788,
+   "share_of_group_visits": 0.003533
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:RHEUMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 3473,
+   "share_of_group_visits": 0.006863
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:SLEEP MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2,
+   "share_of_group_visits": 4e-06
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:SPORTS MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2352,
+   "share_of_group_visits": 0.004648
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:THORACIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 3,
+   "share_of_group_visits": 6e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:ADDICTION MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2,
+   "share_of_group_visits": 1e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:ALLERGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 85,
+   "share_of_group_visits": 3.7e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:ANESTHESIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 29173,
+   "share_of_group_visits": 0.012716
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:CARDIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 410,
+   "share_of_group_visits": 0.000179
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:CLINICAL NEUROPHYSIOL.",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 0.0
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:DERMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 20,
+   "share_of_group_visits": 9e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:EMERGENCY MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 831,
+   "share_of_group_visits": 0.000362
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:ENDOCRINOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 29,
+   "share_of_group_visits": 1.3e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:FAMILY PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 52272,
+   "share_of_group_visits": 0.022784
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GASTROENTEROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4,
+   "share_of_group_visits": 2e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GEN PREVENTIVE MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 7,
+   "share_of_group_visits": 3e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GENERAL PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1029,
+   "share_of_group_visits": 0.000449
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GENERAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2097,
+   "share_of_group_visits": 0.000914
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GERIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 653,
+   "share_of_group_visits": 0.000285
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:HEMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 3,
+   "share_of_group_visits": 1e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:HOSPICE & PALLIATIVE MED",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 8,
+   "share_of_group_visits": 3e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:INFECTIOUS DISEASE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4,
+   "share_of_group_visits": 2e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:INTERNAL MED/PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 372,
+   "share_of_group_visits": 0.000162
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:INTERNAL MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 21286,
+   "share_of_group_visits": 0.009278
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:NATUROPATHIC DOCTOR",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 15,
+   "share_of_group_visits": 7e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:NEPHROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 51,
+   "share_of_group_visits": 2.2e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:NEUROLOGICAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 37,
+   "share_of_group_visits": 1.6e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:NEUROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 178,
+   "share_of_group_visits": 7.8e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:NUCLEAR MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 22,
+   "share_of_group_visits": 1e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:NURSE PRACTITIONER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 192755,
+   "share_of_group_visits": 0.084016
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:OBSTETRICS/GYNECOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 38,
+   "share_of_group_visits": 1.7e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:OCCUPATIONAL MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 293,
+   "share_of_group_visits": 0.000128
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:ONCOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 808,
+   "share_of_group_visits": 0.000352
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:ORTHO SURG OF SPINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2400,
+   "share_of_group_visits": 0.001046
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:ORTHOPEDIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1066381,
+   "share_of_group_visits": 0.464802
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:OSTEOPATHIC MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 169602,
+   "share_of_group_visits": 0.073924
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:OTHER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4459,
+   "share_of_group_visits": 0.001944
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:OTHER SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 3054,
+   "share_of_group_visits": 0.001331
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PAIN MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 23904,
+   "share_of_group_visits": 0.010419
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PATHOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 0.0
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 871,
+   "share_of_group_visits": 0.00038
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PHYSICAL MEDICINE & REHAB",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 44840,
+   "share_of_group_visits": 0.019544
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PHYSICIAN ASSISTANT",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 569439,
+   "share_of_group_visits": 0.248201
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PLASTIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 56,
+   "share_of_group_visits": 2.4e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PSYCHIATRY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 167,
+   "share_of_group_visits": 7.3e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PULMONARY CRITICAL CARE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 32,
+   "share_of_group_visits": 1.4e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:PULMONARY DISEASES",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 114,
+   "share_of_group_visits": 5e-05
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:RADIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1208,
+   "share_of_group_visits": 0.000527
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:RHEUMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 53703,
+   "share_of_group_visits": 0.023407
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:SPORTS MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 51537,
+   "share_of_group_visits": 0.022463
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:UROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 16,
+   "share_of_group_visits": 7e-06
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:ADDICTION MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 3,
+   "share_of_group_visits": 1e-06
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:ALLERGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 100,
+   "share_of_group_visits": 3.8e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:ANESTHESIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 14363,
+   "share_of_group_visits": 0.005502
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:CARDIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 129,
+   "share_of_group_visits": 4.9e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:CRITICAL CARE MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 0.0
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:DERMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4,
+   "share_of_group_visits": 2e-06
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:EMERGENCY MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 765,
+   "share_of_group_visits": 0.000293
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:ENDOCRINOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 233,
+   "share_of_group_visits": 8.9e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:FAMILY PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 93433,
+   "share_of_group_visits": 0.035789
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:GASTROENTEROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4,
+   "share_of_group_visits": 2e-06
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:GEN PREVENTIVE MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 28,
+   "share_of_group_visits": 1.1e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:GENERAL PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 749,
+   "share_of_group_visits": 0.000287
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:GENERAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 3623,
+   "share_of_group_visits": 0.001388
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:GERIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1146,
+   "share_of_group_visits": 0.000439
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:HOSPICE & PALLIATIVE MED",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 11,
+   "share_of_group_visits": 4e-06
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:INFECTIOUS DISEASE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 10,
+   "share_of_group_visits": 4e-06
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:INTERNAL MED/PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 880,
+   "share_of_group_visits": 0.000337
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:INTERNAL MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 25629,
+   "share_of_group_visits": 0.009817
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:NEPHROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 117,
+   "share_of_group_visits": 4.5e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:NEUROLOGICAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 48,
+   "share_of_group_visits": 1.8e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:NEUROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 332,
+   "share_of_group_visits": 0.000127
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:NUCLEAR MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 0.0
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:NURSE PRACTITIONER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 183643,
+   "share_of_group_visits": 0.070344
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:OBSTETRICS/GYNECOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 39,
+   "share_of_group_visits": 1.5e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:OCCUPATIONAL MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 78,
+   "share_of_group_visits": 3e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:ONCOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1191,
+   "share_of_group_visits": 0.000456
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:ORTHO SURG OF SPINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1493,
+   "share_of_group_visits": 0.000572
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:ORTHOPEDIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1097910,
+   "share_of_group_visits": 0.420554
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:OSTEOPATHIC MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 211367,
+   "share_of_group_visits": 0.080964
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:OTHER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4467,
+   "share_of_group_visits": 0.001711
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:OTHER SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2628,
+   "share_of_group_visits": 0.001007
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PAIN MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 16801,
+   "share_of_group_visits": 0.006436
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 170,
+   "share_of_group_visits": 6.5e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PHYSICAL MEDICINE & REHAB",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 45867,
+   "share_of_group_visits": 0.017569
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PHYSICIAN ASSISTANT",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 765024,
+   "share_of_group_visits": 0.293042
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PLASTIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2,
+   "share_of_group_visits": 1e-06
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PSYCHIATRY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 74,
+   "share_of_group_visits": 2.8e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PULMONARY CRITICAL CARE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 364,
+   "share_of_group_visits": 0.000139
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:PULMONARY DISEASES",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 42,
+   "share_of_group_visits": 1.6e-05
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:RADIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1031,
+   "share_of_group_visits": 0.000395
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:RHEUMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 42953,
+   "share_of_group_visits": 0.016453
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:SPORTS MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 93870,
+   "share_of_group_visits": 0.035957
+  },
+  {
+   "source": "group:triamcinolone_ir",
+   "target": "specialty:UROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 7,
+   "share_of_group_visits": 3e-06
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:ALLERGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 18,
+   "share_of_group_visits": 0.000133
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:ANESTHESIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1439,
+   "share_of_group_visits": 0.01065
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:EMERGENCY MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 120,
+   "share_of_group_visits": 0.000888
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:FAMILY PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1009,
+   "share_of_group_visits": 0.007467
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:GENERAL PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 116,
+   "share_of_group_visits": 0.000859
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:GENERAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 30,
+   "share_of_group_visits": 0.000222
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:GERIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 5,
+   "share_of_group_visits": 3.7e-05
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:INTERNAL MED/PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 7e-06
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:INTERNAL MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 311,
+   "share_of_group_visits": 0.002302
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:NEUROLOGICAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 7e-06
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:NEUROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 21,
+   "share_of_group_visits": 0.000155
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:NURSE PRACTITIONER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 13375,
+   "share_of_group_visits": 0.098987
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:ORTHO SURG OF SPINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 12,
+   "share_of_group_visits": 8.9e-05
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:ORTHOPEDIC SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 50865,
+   "share_of_group_visits": 0.376446
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:OSTEOPATHIC MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 12018,
+   "share_of_group_visits": 0.088944
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:OTHER",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4,
+   "share_of_group_visits": 3e-05
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:OTHER SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 77,
+   "share_of_group_visits": 0.00057
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:PAIN MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1040,
+   "share_of_group_visits": 0.007697
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:PEDIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 307,
+   "share_of_group_visits": 0.002272
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:PHYSICAL MEDICINE & REHAB",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 5375,
+   "share_of_group_visits": 0.03978
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:PHYSICIAN ASSISTANT",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 40171,
+   "share_of_group_visits": 0.297301
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:RADIOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 96,
+   "share_of_group_visits": 0.00071
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:RHEUMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1807,
+   "share_of_group_visits": 0.013373
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:SPORTS MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 6899,
+   "share_of_group_visits": 0.051059
+  },
+  {
+   "source": "group:zilretta",
+   "target": "specialty:UROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2,
+   "share_of_group_visits": 1.5e-05
+  },
+  {
+   "source": "event:1",
+   "target": "product:ZILRETTA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:10",
+   "target": "manufacturer:PACIRA PHARM",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:11",
+   "target": "manufacturer:PACIRA PHARM",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:11",
+   "target": "product:ZILRETTA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:14",
+   "target": "product:ZILRETTA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:2",
+   "target": "product:ZILRETTA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:4",
+   "target": "product:ZILRETTA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:5",
+   "target": "product:ZILRETTA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:6",
+   "target": "disease_area:OA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:9",
+   "target": "disease_area:OA",
+   "relation": "involves",
+   "evidence": "event_links.csv"
+  },
+  {
+   "source": "event:1",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:10",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:11",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:12",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:13",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:14",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:2",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:3",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:4",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:5",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:6",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:7",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:8",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  },
+  {
+   "source": "event:9",
+   "target": "market:iqvia_nmta",
+   "relation": "occurred_in",
+   "evidence": "events.csv"
+  }
+ ]
+}

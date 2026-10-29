@@ -1,0 +1,11 @@
+event_date,match,entity,note
+2017-10-06,FDA approves Zilretta,product:ZILRETTA,the event's text names Zilretta
+2018-04-01,Zilretta has OPPS,product:ZILRETTA,the event's text names Zilretta
+2019-01-01,product-specific HCPCS code,product:ZILRETTA,the event's text names Zilretta
+2020-01-03,Supplemental application S-011,product:ZILRETTA,the event's text names Zilretta
+2020-01-07,ACR and Arthritis Foundation,disease_area:OA,an osteoarthritis guideline
+2021-08-31,AAOS knee osteoarthritis guideline,disease_area:OA,an osteoarthritis guideline
+2021-10-11,Pacira and Flexion sign,manufacturer:PACIRA PHARM,the event's text names Pacira
+2021-11-19,Pacira completes the acquisition,manufacturer:PACIRA PHARM,the event's text names Pacira
+2021-11-19,Pacira completes the acquisition,product:ZILRETTA,the event's text says Zilretta moves to Pacira
+2024-06-03,Supplemental application S-021,product:ZILRETTA,the event's text names Zilretta
