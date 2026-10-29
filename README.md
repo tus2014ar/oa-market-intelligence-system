@@ -191,6 +191,3 @@ The earlier full build (leak-safe features, evaluation harness, models, a Stream
 
 **In use (`requirements.txt`):** `pandas`, `numpy`, `openpyxl`, `requests`, `pandera`, `sqlalchemy`, `scipy`, `scikit-learn`, `statsmodels`, `matplotlib`, `seaborn`, `jupyter` and its kernel tools, `ruff`, `pytest`. **Infrastructure:** SQLite, GitHub Actions (lint and tests on every pull request; a monthly publish workflow).
 
-## Authors
-
-Tushar, Saakshaat Saini
