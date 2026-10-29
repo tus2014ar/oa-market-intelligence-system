@@ -83,20 +83,68 @@ def use_and_dont(adoption: dict) -> list[dict]:
     return [
         {
             "what": "National share forecast",
+            "status": "Rely on it as a baseline",
+            "color": "green",
             "use": "Plan on last month's value, with its likely range",
             "dont": "Do not expect a model to beat it: none did at 1, 3 or 6 months",
         },
         {
             "what": "Segment forecast",
+            "status": "Use with care",
+            "color": "orange",
             "use": f"A small improvement at {seg_used}, read as optimistic (it runs high)",
             "dont": "Do not plan six months ahead on it, or read it as a prediction of change",
         },
         {
             "what": "Decline alert",
+            "status": "A supporting flag only",
+            "color": "red",
             "use": "A supporting flag at 1 month only",
             "dont": "Never act on an alert alone: about half of the alerts are not real declines",
         },
     ]
+
+
+def share_series(monthly: pd.DataFrame, months: int = 36) -> list[float]:
+    """The last `months` shares, in percent, for a sparkline."""
+    return [round(100 * v, 3) for v in monthly["visit_share"].tail(months)]
+
+
+def since_peak_series(monthly: pd.DataFrame) -> list[float]:
+    """The share in percent from the peak month to the latest month, for a sparkline."""
+    peak = monthly["visit_share"].idxmax()
+    return [round(100 * v, 3) for v in monthly.loc[peak:, "visit_share"]]
+
+
+def monthly_csv(monthly: pd.DataFrame) -> bytes:
+    """The monthly series as a CSV the reader can open in Excel: the month, the three visit counts
+    and the share in percent."""
+    frame = pd.DataFrame(
+        {
+            "month": monthly["month"].dt.strftime("%Y-%m"),
+            "zilretta_visits": monthly["zilretta"],
+            "generic_corticosteroid_visits": monthly["corticosteroid"],
+            "nsaid_otc_visits": monthly["nsaid_otc"],
+            "zilretta_share_pct": (100 * monthly["visit_share"]).round(3),
+        }
+    )
+    return frame.to_csv(index=False).encode("utf-8")
+
+
+def forecast_csv(pred: pd.DataFrame) -> bytes:
+    """The national forecast with its 90% range as a CSV, plus the bias note for segments."""
+    table = national_forecast(pred)
+    frame = pd.DataFrame(
+        {
+            "months_ahead": table["months_ahead"],
+            "target_month": table["month"],
+            "forecast_share_pct": table["forecast_pct"].round(3),
+            "likely_low_90_pct": table["low_90_pct"].round(3),
+            "likely_high_90_pct": table["high_90_pct"].round(3),
+            "method": [method_text(m) for m in table["model"]],
+        }
+    )
+    return frame.to_csv(index=False).encode("utf-8")
 
 
 # ------------------------------------------------------------------ market trend

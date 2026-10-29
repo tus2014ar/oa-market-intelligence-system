@@ -1,0 +1,20 @@
+# The site's look. Streamlit follows the visitor's light or dark setting and uses the matching
+# colours below. Secrets never go in this file: they live in .streamlit/secrets.toml, which git ignores.
+
+[theme]
+font = "sans serif"
+
+[theme.light]
+primaryColor = "#0F8B8D"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#EEF3F5"
+textColor = "#1B2A41"
+
+[theme.dark]
+primaryColor = "#2DB5B7"
+backgroundColor = "#0E1626"
+secondaryBackgroundColor = "#1B2A41"
+textColor = "#E6E8EC"
+
+[browser]
+gatherUsageStats = false

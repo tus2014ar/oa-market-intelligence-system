@@ -254,8 +254,26 @@ st.caption(
     "Zilretta's share of visits against generic steroid injections and NSAIDs, from IQVIA NMTA "
     "visit counts (aggregated; no patient-level data). Built for an OA and RA injectable brand manager."
 )
-if STATUS["banner"]:
-    st.warning(STATUS["banner"])
+
+
+def data_chip() -> None:
+    """A one-line note at the top of every tab but Overview: how old the data are."""
+    if not STATUS["last_month_id"]:
+        return
+    stale = STATUS["freshness"] == "stale"
+    text = f"Data to {views.month_label(STATUS['last_month_id'])}"
+    if stale:
+        text += f" · {STATUS['age_days']} days old, no newer extract"
+    st.markdown(f":{'orange' if stale else 'green'}-badge[{text}]")
+
+
+def dark_page() -> bool:
+    """True when the page is showing the dark theme (the map is drawn to match)."""
+    try:
+        return st.context.theme.type == "dark"
+    except Exception:  # noqa: BLE001 - older Streamlit or no theme information
+        return False
+
 
 tabs = st.tabs(
     [
@@ -273,22 +291,48 @@ tabs = st.tabs(
 
 # ------------------------------------------------------------------ overview
 with tabs[0]:
+    if STATUS["banner"]:
+        st.warning(STATUS["banner"])
     c = st.columns(4)
-    c[0].metric(f"Share in {HEAD['latest_month']}", views.pct(HEAD["latest_share"]))
-    c[1].metric(f"Peak ({HEAD['peak_month']})", views.pct(HEAD["peak_share"]))
-    c[2].metric("Change since the peak", f"{100 * HEAD['change_since_peak']:.0f}%")
     low, high = HEAD["next_month_range90"]
+    c[0].metric(
+        f"Share in {HEAD['latest_month']}",
+        views.pct(HEAD["latest_share"]),
+        border=True,
+        chart_data=views.share_series(D["monthly"]),
+        chart_type="line",
+        help="The line is the last 36 months.",
+    )
+    c[1].metric(f"Peak ({HEAD['peak_month']})", views.pct(HEAD["peak_share"]), border=True)
+    c[2].metric(
+        "Change since the peak",
+        f"{100 * HEAD['change_since_peak']:.0f}%",
+        border=True,
+        chart_data=views.since_peak_series(D["monthly"]),
+        chart_type="area",
+        help="The area is the share from the peak month to the latest month.",
+    )
     c[3].metric(
         f"Forecast for {HEAD['next_month']}",
         views.pct(HEAD["next_month_forecast"]),
-        help=f"Likely range (90%): {views.pct(low)} to {views.pct(high)}",
+        delta=f"likely {views.pct(low)} to {views.pct(high)}",
+        delta_color="off",
+        delta_arrow="off",
+        border=True,
+        help="The 90% range: it held in about 9 months in 10 at 1 month ahead in testing.",
+    )
+    st.altair_chart(charts.forecast_chart(D["monthly"], D["pred"]), width="stretch")
+    st.caption(
+        "Share so far (blue) and the national forecast with its 90% range (orange). The "
+        "forecast is last month's value: no model beat that simple rule."
     )
     st.subheader("What to use, and what not to trust")
-    st.table(
-        pd.DataFrame(views.use_and_dont(ADOPTION))
-        .rename(columns={"what": "Forecast", "use": "Use it for", "dont": "Do not"})
-        .set_index("Forecast")
-    )
+    for col, row in zip(st.columns(3), views.use_and_dont(ADOPTION), strict=True):
+        with col.container(border=True, height=310):
+            st.badge(row["status"], color=row["color"])
+            st.markdown(f"**{row['what']}**")
+            st.write(f"**Use it for:** {row['use']}")
+            st.write(f"**Do not:** {row['dont']}")
     st.subheader("Read this first")
     st.markdown(
         "- The numbers describe **visits in IQVIA's panel**, not company sales, and they do not explain "
@@ -298,9 +342,25 @@ with tabs[0]:
         "simple rule, the site says so.\n"
         "- Payer, regional and prescription-volume data are not part of this analysis."
     )
+    left, right = st.columns(2)
+    left.download_button(
+        "Download the monthly share (CSV)",
+        views.monthly_csv(D["monthly"]),
+        "zilretta_monthly_share.csv",
+        "text/csv",
+        width="stretch",
+    )
+    right.download_button(
+        "Download the forecast (CSV)",
+        views.forecast_csv(D["pred"]),
+        "zilretta_forecast.csv",
+        "text/csv",
+        width="stretch",
+    )
 
 # ------------------------------------------------------------------ market trend
 with tabs[1]:
+    data_chip()
     trend = views.trend_frame(D["monthly"])
     events = views.event_frame(D["monthly"])
     dip = pd.DataFrame({"start": [pd.Timestamp("2024-03-01")], "end": [pd.Timestamp("2024-07-31")]})
@@ -346,6 +406,7 @@ with tabs[1]:
 
 # ------------------------------------------------------------------ segments
 with tabs[2]:
+    data_chip()
     by = st.radio("Group visits by", ["Specialty", "Age band", "Gender"], horizontal=True)
     frame = views.specialty_frame(
         {"Specialty": D["by_specialty"], "Age band": D["by_age"], "Gender": D["by_gender"]}[by]
@@ -399,6 +460,7 @@ with tabs[2]:
 
 # ------------------------------------------------------------------ forecasts
 with tabs[3]:
+    data_chip()
     pred = D["pred"]
     bias = views.known_bias(pred)
     st.subheader("National share")
@@ -479,6 +541,7 @@ with tabs[3]:
 
 # ------------------------------------------------------------------ model results
 with tabs[4]:
+    data_chip()
     board = views.scoreboard(D["scores"], ADOPTION, POSTHOC)
     st.write(
         "Each row compares the models with a simple rule, under tests fixed before anything ran. "
@@ -554,6 +617,7 @@ with tabs[4]:
 
 # ------------------------------------------------------------------ data status
 with tabs[5]:
+    data_chip()
     c = st.columns(4)
     c[0].metric("Last publish run", STATUS["run_status"])
     c[1].metric("Months of data", STATUS["months"])
@@ -578,6 +642,7 @@ with tabs[5]:
 
 # ------------------------------------------------------------------ findings
 with tabs[6]:
+    data_chip()
     st.write("What the analyses found, with the evidence and what it means for decisions.")
     for _, row in views.findings_frame(FINDINGS).iterrows():
         with st.expander(f"{row['id']}. {row['finding']}"):
@@ -587,6 +652,7 @@ with tabs[6]:
 
 # ------------------------------------------------------------------ market map
 with tabs[7]:
+    data_chip()
     GRAPH = SNAPSHOT.graph
     st.write(
         "The facts behind the numbers (products, makers, specialties and events) as a map you can "
@@ -611,7 +677,7 @@ with tabs[7]:
     moving = right.checkbox("Let the points drift and spread out", value=False)
     view = market_map.view_graph(GRAPH, view_key, top, show_events)
     try:
-        st.iframe(market_map.to_html(view, 620, moving), height=700)
+        st.iframe(market_map.to_html(view, 620, moving, dark_page()), height=700)
     except ImportError:
         st.info("The interactive map needs the pyvis package. The details and events below work.")
 
@@ -647,6 +713,7 @@ with tabs[7]:
 
 # ------------------------------------------------------------------ ask claude
 with tabs[8]:
+    data_chip()
     st.write(
         "Ask a question about the market trend, the segments, the forecasts or how the models "
         "scored. The answer comes from the same tables as the other tabs."
