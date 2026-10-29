@@ -55,3 +55,7 @@ extend-exclude = ["notebooks/*.ipynb"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# the page is layout code with long literal strings (headlines, captions); the logic is in src/
+"app/*.py" = ["E501"]

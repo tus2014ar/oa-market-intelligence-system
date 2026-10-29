@@ -1,0 +1,6 @@
+# What the site needs (Streamlit Community Cloud installs this file). streamlit is pinned to the
+# version the site was built and tested on; the rest are lower bounds.
+streamlit==1.65.0
+pandas>=3.0
+numpy>=2.0
+sqlalchemy>=2.0

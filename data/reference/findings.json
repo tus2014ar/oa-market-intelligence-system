@@ -1,0 +1,123 @@
+{
+ "findings": [
+  {
+   "id": 1,
+   "finding": "Company sales kept rising while IQVIA's Zilretta visits fell",
+   "evidence": "Visits -14% (2023) and -36% (2024) against net sales +5% and +6%; net sales per IQVIA visit +94% from 2021 to 2024",
+   "impact": "The size of the IQVIA decline must not be quoted as a market fact: a target or forecast built on it could be wrong by a large factor. Ask IQVIA whether panel coverage changed (2024 in particular) before using it",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 2,
+   "finding": "No tested explanation accounts for the gap",
+   "evidence": "Age and payer mix ruled out (IQVIA 65+ visits -34% against Medicare Zilretta patients -1.5%, a 32-point gap against 15 allowed); care setting ruled out (facility share 0.05% to 0.09%); value per visit +10% in Medicare, about a ninth of the +94%",
+   "impact": "Narrows the search: the remaining causes (panel coverage, company-side adjustments) are untested and need data we do not hold",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 3,
+   "finding": "The fall is concentrated",
+   "evidence": "Orthopedic surgery and physician assistants are 64% of the net fall of 11,256 visits",
+   "impact": "Where a field or marketing review should look first",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 4,
+   "finding": "The IQVIA specialty ranking is not confirmed by Medicare billing",
+   "evidence": "Rank correlation 0.35 (95% interval 0.18 to 0.44) against 0.6 required; 1 of the top 3 specialties shared",
+   "impact": "Which specialties look \"best\" depends on the population (Original Medicare against IQVIA's panel); use both views, do not rely on one",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 5,
+   "finding": "Medicare adoption rose then eased, like the visits",
+   "evidence": "Share of billing injectors using Zilretta 1.08% (2019), 1.78% (2021 peak), 1.47% (2024): about a sixth below peak",
+   "impact": "Independent, provider-level support that the turn is real in direction, though smaller than IQVIA's fall",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 6,
+   "finding": "A stable state list exists",
+   "evidence": "2022 vs 2024 state rank correlation 0.92 (51 states); 0.97 without the Medicare Advantage effect; most room to grow in Michigan, Arizona, Florida, Minnesota and Indiana",
+   "impact": "A defensible shortlist for territory prioritisation",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 7,
+   "finding": "Promotion fell before the turn, but nothing links it month by month",
+   "evidence": "Sharpest 6-month fall in payments -81%, coinciding with the Flexion acquisition (19 Nov 2021); no lag from 0 to 6 months passes the correction (smallest p = 0.11)",
+   "impact": "Do not attribute the share decline to promotion; the timing is suggestive only",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 8,
+   "finding": "The turn is not the end of pass-through status",
+   "evidence": "The detected break (March 2022) is 11 months after the 31 Mar 2021 end of pass-through",
+   "impact": "Removes a tempting but unsupported explanation",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 9,
+   "finding": "A data-capture dip in Mar to Jul 2024",
+   "evidence": "Zilretta -47%, corticosteroids -25%, NSAID/OTC -16% over the five months; Zilretta fell about twice as much as the others",
+   "impact": "Flagged months in every later analysis; results are re-checked without them",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 10,
+   "finding": "Price relative to the comparator rose, but not cleanly",
+   "evidence": "Ratio +11.7%, driven by the comparator's limit falling 14% while Zilretta's fell 4%",
+   "impact": "Not evidence that Zilretta's price moved the share",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 11,
+   "finding": "Zilretta did not dip in 2020 when most hyaluronic injectables did",
+   "evidence": "Zilretta Medicare patients 36,500 (2019), 53,400 (2021), 47,200 (2024, 12% below peak); Durolane patients 19,700 to 57,100 (almost threefold)",
+   "impact": "The competitor set is not moving as one; Durolane is the one competitor that stands out",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 12,
+   "finding": "The data is thin where it matters for modelling",
+   "evidence": "60% of segment-months have fewer than 20 visits and 65% have no Zilretta visit; month-to-month changes have lag-12 autocorrelation +0.27 and lag-1 -0.19; only price and company sales are known for all 72 months",
+   "impact": "Sets realistic expectations for feature engineering: small effects at best, and \"same as last month\" will be hard to beat",
+   "source": "EDA and public-data analyses"
+  },
+  {
+   "id": 13,
+   "finding": "Only one input group improves the segment forecast, and none improves the national one",
+   "evidence": "Of 7 groups tested, specialty and market context gains +0.06% of log-loss (better in 42 of 46 months, robust to COVID and the 2024 dip); no group beats \"same as last month\" nationally",
+   "impact": "Price, company sales and promotion do not predict monthly share, so they should not drive a monthly forecast",
+   "source": "feature test and modelling run"
+  },
+  {
+   "id": 14,
+   "finding": "The national share is best forecast by last month's value",
+   "evidence": "Ridge and two ETS models at 1, 3 and 6 months: none beats it (error 0.125, 0.180, 0.239 points); the trained models' 90% ranges cover as little as 47% of months",
+   "impact": "Plan on the last value with its range; a model would add cost and no accuracy",
+   "source": "feature test and modelling run"
+  },
+  {
+   "id": 15,
+   "finding": "Segment forecasts gain a little at 1 and 3 months and run too high",
+   "evidence": "Logistic regression +0.44% of log-loss (better in 46 of 46 months) and +0.21% (33 of 44), none at 6 months; forecasts +5.5%, +10.9%, +18.2% above actual",
+   "impact": "A ranking aid and an optimistic estimate: quote the bias beside it and do not plan six months ahead on it",
+   "source": "feature test and modelling run"
+  },
+  {
+   "id": 16,
+   "finding": "The decline alert is mostly regression to the mean",
+   "evidence": "PR-AUC 0.55 against 0.23 no-skill under the registered baselines, but 0.50 once a baseline with a reversed sign is corrected (post hoc); a reliable gain only at 1 month (+0.049); precision 0.45 to 0.49",
+   "impact": "Use it only as a 1-month supporting flag; never act on an alert alone",
+   "source": "feature test and modelling run"
+  },
+  {
+   "id": 17,
+   "finding": "The forecasts are only as fresh as the last extract",
+   "evidence": "The data end in July 2025; the monitoring stage marks a latest month older than 100 days as stale and reported 454 days at the last run; the next forecasts are for August 2025, October 2025 and January 2026; no month has arrived to check earlier forecasts against",
+   "impact": "A new IQVIA extract is what refreshes the forecasts and tests how well the earlier ones held; until then treat the forecasts as a method and a baseline, not as a current view",
+   "source": "monitoring"
+  }
+ ]
+}
