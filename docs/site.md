@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88)
+# The site (DL-85, DL-86, DL-88, DL-89)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -18,6 +18,7 @@ streamlit run app/streamlit_app.py
 | Model results | for each task and horizon, the simple rule, the model the registered rule chose, whether it is adopted (DL-79) and what that means in plain words; the forecast bias; the post-hoc caveat on the alert | `model_scores`, `modelling_posthoc.json` |
 | Data status | the last publish run: stages, freshness, drift, versions, input extracts | `run_log.jsonl` |
 | Findings | the 17 findings with evidence and business impact | `data/reference/findings.json` (equal to the README table, tested) |
+| Market map | the knowledge graph as three views you can explore (Zilretta and the groups it is compared with; which specialties each group's visits come from; the event timeline), a closer look at any point with its sources, and the events drawn against the share | `serving/market_map.py`, `data/reference/knowledge_graph.json` |
 | Ask Claude | a conversation that answers from eleven read-only tools (the tables above and the knowledge graph), with sources, charts on request and a check on the figures; off unless an API key is configured | `serving/qa.py`, `serving/qa_tools.py`, `serving/guard.py`, `serving/charts.py`, `serving/answer_check.py` |
 
 A banner under the title says when the latest month of data is stale, which it is while there is one static extract (the data end in July 2025).
@@ -71,3 +72,20 @@ A banner under the title says when the latest month of data is stale, which it i
   $env:ANTHROPIC_API_KEY = "<your key>"
   oa-ask-check --out data/processed/answers.json
   ```
+
+## The Market map (DL-89)
+The knowledge graph ([knowledge_graph.md](knowledge_graph.md)) as a picture, because a table of 827 connections is not something a brand manager reads. Three views, because all 311 points at once is a hairball:
+
+| View | Shows |
+|---|---|
+| Zilretta and the groups it is compared with | the Zilretta product and its group; the two groups it is compared with; each group's leading manufacturers; Zilretta's leading specialties (point size and line width follow its visits); the events that name Zilretta or its maker |
+| Which specialties each group's visits come from | the three groups and the top specialties by combined visits; each line's width is the specialty's share of *that group's own* visits, so the groups' mixes can be compared |
+| The event timeline and who each event names | all 14 events, the market, and the product, maker or disease area each event's own text names |
+
+- **Controls.** The view; how many manufacturers and specialties (3 to 15); whether to show the events; and "Let the points drift and spread out" (off by default: the layout is worked out in advance with a fixed seed so the map opens whole and looks the same every time, and turning drift on lets the points move from there).
+- **Reading it.** Each kind of point has its own colour and shape (star product, box group, square manufacturer, dot specialty, diamond event; a grey diamond is an event that is not verified), shown in a legend above the map. Hover a point or a line for its facts and its source; drag to move, scroll to zoom. Dashed lines are comparisons or derived, not direct facts: a line from a manufacturer to a group means the manufacturer makes products the project placed in that group (derived from `made_by` and `in_group`, and its tooltip says so).
+- **Look closer.** A picker lists every point in the view; choosing one shows what the graph holds about it, its connections (relation, other end, visits and share where there are any) and the sources.
+- **Events against the share.** The share line with the events that fall inside the data (August 2019 to July 2025) as thin rules, a shaded band for an event with an end date, and dashed grey for one that is not verified; hover for the event and its type. Below it, the table of all 14 events with their sources. Events before the data begins are in the table only.
+- **What it does not claim.** No line is a cause; the March to July 2024 dip is tied to the market only. Competitor groups are the project's own grouping, not a market fact. Visits are product-visits inside IQVIA's panel. IQVIA's "No Manufacturer" placeholder (4 products) is not drawn or listed as a company (it stays in the graph as the source gives it).
+- **How it is drawn.** `serving/market_map.py` builds each view as plain nodes and edges (tested without any drawing library) and `to_html` draws it with `pyvis` as one self-contained page: the drawing library is embedded and the Bootstrap link pyvis adds is removed, so the map needs no network. The page is shown in an iframe. `pyvis` is in `app/requirements.txt`; if it is missing the tab says so and the details and events below still work.
+- **Tests.** `tests/test_serving_market_map.py` (each view's contents, a source on every line and a tooltip on every point, derived lines marked, the slider clamped, no cause drawn, the placeholder left out, details and the event table, a fixed layout, a self-contained page), the events chart in `tests/test_serving_charts.py` and the tab in `tests/test_site_app.py`. The drawing tests need `pyvis` and `networkx`, so they run in the CI job `site` and are skipped where those are not installed.

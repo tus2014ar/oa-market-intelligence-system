@@ -221,6 +221,8 @@ def test_the_competitor_view_is_the_projects_grouping_with_visit_shares(snap):
         100, abs=0.2
     )
     assert out["groups"][0]["manufacturers"] == [{"name": "PACIRA PHARM", "products": 1}]
+    listed = {m["name"].lower() for g in out["groups"] for m in g["manufacturers"]}
+    assert "no manufacturer" not in listed and "No Manufacturer" in out["note"]
     assert "not a market fact" in out["note"] and "product-visits" in out["note"]
     other = _run(snap, "get_competitors", product="KENALOG")
     assert other["own_group"] == "Triamcinolone (immediate release)"

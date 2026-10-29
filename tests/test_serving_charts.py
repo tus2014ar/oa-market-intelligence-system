@@ -106,3 +106,17 @@ def test_build_draws_each_named_chart_and_refuses_others(snap):
     assert set(qa_tools.CHARTS) == {"trend", "segments", "forecast", "specialty_mix"}
     with pytest.raises(ValueError, match="unknown chart"):
         charts.build("pie", {}, snap)
+
+
+def test_the_events_chart_draws_the_events_inside_the_data_and_marks_unverified_ones(snap):
+    chart = charts.events_chart(snap.monthly, snap.graph)
+    spec = _spec(chart)
+    sets = {len(rows): rows for rows in spec["datasets"].values()}
+    assert 72 in sets  # the share line
+    events = next(rows for size, rows in sets.items() if size != 72 and size > 3)
+    assert len(events) == 12  # 14 events, less the two that end or fall before August 2019
+    assert {r["kind"] for r in events} == {"Verified event", "Not verified"}
+    assert sum(r["kind"] == "Not verified" for r in events) == 2
+    assert min(r["x"] for r in events) >= "2019-08-01"  # a window that began earlier is clipped
+    assert {"Date", "Event", "Type", "Verified"} <= set(_tooltip_titles(chart))
+    assert not any("caus" in title.lower() for title in _tooltip_titles(chart))
