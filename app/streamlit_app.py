@@ -20,7 +20,15 @@ import altair as alt  # noqa: E402
 import pandas as pd  # noqa: E402
 import streamlit as st  # noqa: E402
 
-from oa_market_intelligence.serving import data, guard, qa, qa_tools, views  # noqa: E402
+from oa_market_intelligence import knowledge_graph  # noqa: E402
+from oa_market_intelligence.serving import (  # noqa: E402
+    charts,
+    data,
+    guard,
+    qa,
+    qa_tools,
+    views,
+)
 
 DB = Path(os.environ.get("OA_DB_PATH", data.DB_PATH))
 RUN_LOG = Path(os.environ.get("OA_RUN_LOG", data.RUN_LOG))
@@ -62,13 +70,35 @@ SNAPSHOT = qa_tools.Snapshot(
     adoption=ADOPTION,
     posthoc=POSTHOC,
     findings=FINDINGS,
+    graph=knowledge_graph.Graph.load(),
 )
-EXAMPLE_QUESTIONS = [
-    "How has Zilretta's share changed since its peak?",
-    "Which specialties have the highest share?",
-    "What is the forecast for the next three months, and how far can I trust it?",
-    "Which segments does the decline alert flag, and how reliable is it?",
-]
+EXAMPLE_QUESTIONS = {
+    "For a brand manager": [
+        "How has Zilretta's share changed since its peak?",
+        "What is the forecast for the next three months, and how far can I trust it?",
+        "Who are Zilretta's competitors in this project?",
+        "Show me the share trend as a chart.",
+    ],
+    "For an analyst": [
+        "Which model is used for the national forecast, and did any model beat the simple rule?",
+        "Do the segment forecasts run high?",
+        "Which segments does the decline alert flag, and how reliable is it?",
+        "Where do Zilretta's visits come from?",
+    ],
+}
+TOOL_LABELS = {
+    "get_data_status": "the headline numbers",
+    "get_market_trend": "the market trend",
+    "get_segments": "the segments",
+    "get_forecasts": "the forecasts",
+    "get_model_results": "how the models scored",
+    "get_findings": "the findings",
+    "get_entity": "the knowledge graph",
+    "get_neighbors": "the knowledge graph",
+    "get_competitors": "the competitor groups",
+    "get_events": "the event timeline",
+    "show_chart": "a chart",
+}
 
 
 def _secret(name: str, default: str | None = None) -> str | None:
@@ -89,9 +119,28 @@ def get_limits() -> dict:
     }
 
 
+def _show_answer(message: dict) -> None:
+    """One assistant turn: the answer, any chart it asked for, its sources and its caveats."""
+    st.write(message["content"])
+    for spec in message.get("charts", []):
+        st.altair_chart(charts.build(spec["chart"], spec["params"], SNAPSHOT), width="stretch")
+    if message.get("sources"):
+        st.caption("Sources: " + "; ".join(message["sources"]))
+    if message.get("unchecked"):
+        st.caption(
+            "Check these figures: " + ", ".join(message["unchecked"]) + " (not found in the "
+            "data it looked up; it may be a calculation)."
+        )
+    if message.get("tool_calls"):
+        with st.expander("Data the answer used"):
+            for name, arguments in message["tool_calls"]:
+                st.code(f"{name}({arguments})")
+
+
 def ask_box() -> None:
-    """The question box. It works only where an API key is configured, and then behind an
-    optional access code, a per-visitor limit and a daily token budget."""
+    """The question box: a conversation with streamed answers, charts, sources and a number
+    check. It works only where an API key is configured, and then behind an optional access code,
+    a per-visitor limit and a daily token budget."""
     api_key = _secret("ANTHROPIC_API_KEY")
     if not api_key:
         st.info("The question box is not switched on for this copy of the site (no API key).")
@@ -105,18 +154,40 @@ def ask_box() -> None:
             st.caption("Enter the access code to use the question box.")
             return
 
+    chat = st.session_state.setdefault("chat", [])
     st.caption(
-        "Claude answers from read-only summaries of the tables on this site. It cannot see "
-        "patient-level rows or run its own queries, and it can be wrong: check the numbers "
-        "against the tabs."
+        "Claude answers from read-only summaries of the tables and the knowledge graph on this "
+        "site. It cannot see patient-level rows or run its own queries, and it can be wrong: "
+        "check the numbers against the tabs."
     )
-    for example in EXAMPLE_QUESTIONS:
-        if st.button(example, key=example):
-            st.session_state["question"] = example
-    question = st.text_area("Your question", key="question", max_chars=500)
-    if not st.button("Ask", type="primary"):
-        return
+    pending = st.session_state.pop("pending", None)
+    if not chat and not pending:
+        for audience, questions in EXAMPLE_QUESTIONS.items():
+            st.write(f"**{audience}**")
+            for question in questions:
+                if st.button(question, key=f"ex-{question}"):
+                    st.session_state["pending"] = question
+                    st.rerun()
+    for message in chat:
+        with st.chat_message(message["role"]):
+            if message["role"] == "assistant":
+                _show_answer(message)
+            else:
+                st.write(message["content"])
+    if chat and chat[-1]["role"] == "assistant" and chat[-1].get("followups") and not pending:
+        st.write("**Ask next**")
+        for i, text in enumerate(chat[-1]["followups"]):
+            if st.button(text, key=f"fu-{len(chat)}-{i}"):
+                st.session_state["pending"] = text
+                st.rerun()
+    if chat and st.button("Clear the conversation"):
+        st.session_state["chat"] = []
+        st.rerun()
 
+    typed = st.chat_input("Ask about the market, the forecasts or the data", max_chars=500)
+    question = typed or pending
+    if not question:
+        return
     try:
         question = guard.validate_question(question)
     except ValueError as error:
@@ -133,19 +204,48 @@ def ask_box() -> None:
     import anthropic  # imported here so the rest of the site works without it
 
     client = anthropic.Anthropic(api_key=api_key)
-    with st.spinner("Asking Claude..."):
+    history = [{"role": m["role"], "content": m["content"]} for m in chat if m.get("ok", True)]
+    with st.chat_message("user"):
+        st.write(question)
+    with st.chat_message("assistant"):
+        status, box, text = st.empty(), st.empty(), [""]
+
+        def on_round() -> None:
+            text[0] = ""
+            box.empty()
+
+        def on_text(piece: str) -> None:
+            text[0] += piece
+            box.markdown(text[0])
+
+        def on_tool(name: str, arguments: dict) -> None:
+            status.caption(f"Looking up {TOOL_LABELS.get(name, 'the data')}...")
+
         result = qa.ask(
             question,
             client=client,
             snapshot=SNAPSHOT,
+            history=history,
             model=_secret("CLAUDE_MODEL", qa.DEFAULT_MODEL),
+            on_text=on_text,
+            on_tool=on_tool,
+            on_round=on_round,
         )
     limits["tokens"].charge(result["input_tokens"] + result["output_tokens"])
-    (st.write if result["ok"] else st.warning)(result["answer"])
-    if result["tool_calls"]:
-        with st.expander("Data the answer used"):
-            for name, arguments in result["tool_calls"]:
-                st.code(f"{name}({arguments})")
+    chat.append({"role": "user", "content": question})
+    chat.append(
+        {
+            "role": "assistant",
+            "content": result["answer"],
+            "ok": result["ok"],
+            "tool_calls": result["tool_calls"],
+            "sources": result["sources"],
+            "charts": result["charts"],
+            "unchecked": result["unchecked_numbers"],
+            "followups": result["followups"],
+        }
+    )
+    st.rerun()
 
 
 st.title("OA and RA Market Intelligence")

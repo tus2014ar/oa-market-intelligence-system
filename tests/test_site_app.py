@@ -83,12 +83,8 @@ def _box(monkeypatch, **env):
     return AppTest.from_file(APP, default_timeout=90).run()
 
 
-def _ask_button(at):
-    return next(b for b in at.button if b.label == "Ask")
-
-
-def _stub_claude(monkeypatch, answer="Share was 1.88% in Jul 2025.", tokens=(100, 20)):
-    """Replace the network: a fake Anthropic client and a canned answer, recording the calls."""
+def _stub_claude(monkeypatch, answer="Share was 1.88% in Jul 2025.", tokens=(100, 20), **extra):
+    """Replace the network: a fake Anthropic client and a canned, streamed answer."""
     anthropic = pytest.importorskip("anthropic")
     from oa_market_intelligence.serving import qa
 
@@ -97,65 +93,138 @@ def _stub_claude(monkeypatch, answer="Share was 1.88% in Jul 2025.", tokens=(100
 
     def fake_ask(question, **kwargs):
         calls.append((question, kwargs))
+        kwargs["on_round"]()
+        kwargs["on_tool"]("get_data_status", {})
+        for piece in answer.split(" "):
+            kwargs["on_text"](piece + " ")
         return {
             "ok": True,
             "answer": answer,
             "tool_calls": [("get_data_status", {})],
+            "sources": ["Overview tab (market series, forecasts, last run)"],
+            "charts": [],
+            "unchecked_numbers": [],
+            "followups": ["How reliable are the forecasts?", "Show me the share trend as a chart"],
             "input_tokens": tokens[0],
             "output_tokens": tokens[1],
+            **extra,
         }
 
     monkeypatch.setattr(qa, "ask", fake_ask)
     return calls
 
 
+def _say(at, text):
+    return at.chat_input[0].set_value(text).run()
+
+
+def _labels(at):
+    return [b.label for b in at.button]
+
+
 def test_without_a_key_the_box_is_off_and_the_site_still_works(monkeypatch):
     at = _box(monkeypatch)
-    assert not at.exception and not at.text_area
+    assert not at.exception and not at.chat_input and not at.text_area
     assert any("not switched on" in i.value for i in at.info)
     assert os.environ.get("ANTHROPIC_API_KEY") is None
 
 
 def test_the_access_code_gates_the_box(monkeypatch):
     at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test", ACCESS_CODE="open-sesame")
-    assert [t.label for t in at.text_input] == ["Access code"] and not at.text_area
+    assert [t.label for t in at.text_input] == ["Access code"] and not at.chat_input
     assert at.text_input[0].proto.type == TextInputProto.PASSWORD  # typed characters are masked
     at.text_input[0].set_value("wrong").run()
-    assert not at.text_area and any("Enter the access code" in c.value for c in at.caption)
+    assert not at.chat_input and any("Enter the access code" in c.value for c in at.caption)
     at.text_input[0].set_value("open-sesame").run()
-    assert at.text_area and _ask_button(at)
+    assert at.chat_input
 
 
-def test_a_question_is_answered_from_the_tools_and_the_tokens_are_charged(monkeypatch):
+def test_the_box_opens_with_example_questions_for_two_audiences(monkeypatch):
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    text = " ".join(m.value for m in at.markdown)
+    assert "For a brand manager" in text and "For an analyst" in text
+    assert "How has Zilretta's share changed since its peak?" in _labels(at)
+    assert len([b for b in at.button if b.label.endswith("?") or b.label.endswith(".")]) == 8
+
+
+def test_an_answer_streams_in_with_its_sources_and_follow_ups_and_tokens_are_charged(monkeypatch):
     calls = _stub_claude(monkeypatch)
     at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test", DAILY_TOKEN_BUDGET="100")
-    at.text_area[0].set_value("What is the latest share?")
-    _ask_button(at).click().run()
+    _say(at, "What is the latest share?")
     assert not at.exception
-    assert any("1.88%" in m.value for m in at.markdown)
-    assert any("get_data_status" in c.value for c in at.code)
     question, kwargs = calls[0]
-    assert question == "What is the latest share?" and kwargs["snapshot"].monthly.shape[0] == 72
+    assert question == "What is the latest share?" and kwargs["history"] == []
+    assert kwargs["snapshot"].monthly.shape[0] == 72 and kwargs["snapshot"].graph is not None
     assert kwargs["client"].api_key == "sk-test"
+    assert [m.name for m in at.chat_message] == ["user", "assistant"]
+    assert any("1.88%" in m.value for m in at.markdown)
+    assert any(c.value.startswith("Sources: Overview tab") for c in at.caption)
+    assert any("get_data_status" in c.value for c in at.code)
+    assert "How reliable are the forecasts?" in _labels(at)
     # 120 tokens were used against a budget of 100: the next question is refused, not sent
-    _ask_button(at).click().run()
+    _say(at, "And the peak?")
     assert len(calls) == 1 and any("daily limit" in w.value for w in at.warning)
 
 
-def test_an_empty_question_is_refused_before_anything_is_sent(monkeypatch):
+def test_the_conversation_carries_over_and_can_be_cleared(monkeypatch):
+    calls = _stub_claude(monkeypatch, tokens=(1, 1))
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    _say(at, "What is the latest share?")
+    _say(at, "And the peak?")
+    history = calls[1][1]["history"]
+    assert [m["role"] for m in history] == ["user", "assistant"]
+    assert history[0]["content"] == "What is the latest share?"
+    assert len(at.chat_message) == 4
+    next(b for b in at.button if b.label == "Clear the conversation").click().run()
+    assert len(
+        at.chat_message
+    ) == 0 and "How has Zilretta's share changed since its peak?" in _labels(at)
+
+
+def test_clicking_a_follow_up_or_an_example_asks_it(monkeypatch):
+    calls = _stub_claude(monkeypatch, tokens=(1, 1))
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    next(b for b in at.button if b.label == "Do the segment forecasts run high?").click().run()
+    assert calls[0][0] == "Do the segment forecasts run high?"
+    next(b for b in at.button if b.label == "How reliable are the forecasts?").click().run()
+    assert calls[1][0] == "How reliable are the forecasts?"
+
+
+def test_a_chart_and_the_figures_to_check_are_shown_with_the_answer(monkeypatch):
+    _stub_claude(
+        monkeypatch,
+        charts=[{"chart": "trend", "params": {"start_month_id": 202101}}],
+        unchecked_numbers=["2.5%"],
+    )
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    _say(at, "Show me the share trend as a chart.")
+    assert not at.exception and at.get("vega_lite_chart")
+    assert any(c.value.startswith("Check these figures: 2.5%") for c in at.caption)
+
+
+def test_an_empty_or_over_long_question_is_refused_before_anything_is_sent(monkeypatch):
     calls = _stub_claude(monkeypatch)
     at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
-    _ask_button(at).click().run()
+    _say(at, "   ")
     assert not calls and any("empty" in w.value.lower() for w in at.warning)
+    _say(at, "x" * 600)
+    assert not calls and any("too long" in w.value.lower() for w in at.warning)
 
 
 def test_one_visitor_is_limited_to_eight_questions_an_hour(monkeypatch):
     calls = _stub_claude(monkeypatch, tokens=(1, 1))
     at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
-    at.text_area[0].set_value("What is the latest share?")
-    for _ in range(9):
-        _ask_button(at).click().run()
+    for i in range(9):
+        _say(at, f"Question {i}?")
     assert len(calls) == 8 and any("Too many questions" in w.value for w in at.warning)
+
+
+def test_a_failed_answer_is_shown_but_not_sent_back_as_history(monkeypatch):
+    calls = _stub_claude(monkeypatch, tokens=(0, 0), ok=False)
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    _say(at, "First?")
+    _say(at, "Second?")
+    assert calls[1][1]["history"] == [{"role": "user", "content": "First?"}]
 
 
 def test_the_key_never_appears_on_the_page(monkeypatch):

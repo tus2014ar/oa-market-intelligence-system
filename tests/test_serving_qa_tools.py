@@ -22,8 +22,8 @@ def snap():
         engine.dispose()
 
 
-def _run(snap, name, **arguments):
-    return qa_tools.run_tool(name, arguments, snapshot=snap)
+def _run(snap, _tool, **arguments):
+    return qa_tools.run_tool(_tool, arguments, snapshot=snap)
 
 
 def _keys(value):
@@ -49,6 +49,11 @@ CALLS = [
     ("get_forecasts", {"view": "alerts"}),
     ("get_model_results", {}),
     ("get_findings", {}),
+    ("get_entity", {"name": "zilretta"}),
+    ("get_neighbors", {"entity": "group:zilretta", "relation": "prescribed_by"}),
+    ("get_competitors", {}),
+    ("get_events", {}),
+    ("show_chart", {"chart": "trend"}),
 ]
 
 
@@ -161,3 +166,109 @@ def test_a_tool_that_breaks_is_reported_without_a_stack_trace(snap, monkeypatch)
     monkeypatch.setitem(qa_tools.TOOLS, "get_findings", boom)
     out = _run(snap, "get_findings")
     assert "secret detail" not in json.dumps(out) and "error" in out
+
+
+# ------------------------------------------------------------------ the knowledge-graph tools
+
+
+def test_an_entity_is_found_by_name_with_its_connections_and_sources(snap):
+    out = _run(
+        snap, "get_entity", name="zilretta"
+    )  # product and group share the name: product wins
+    assert (
+        out["id"] == "product:ZILRETTA" and out["attributes"]["first_fda_approval"] == "2017-10-06"
+    )
+    assert out["connections"]["made_by (out)"] == 1 and out["connections"]["involves (in)"] == 6
+    assert "dim_product" in out["evidence"]
+    assert _run(snap, "get_entity", name="group:zilretta")["type"] == "group"
+    assert _run(snap, "get_entity", name="pacira")["id"] == "manufacturer:PACIRA PHARM"
+
+
+def test_an_ambiguous_name_lists_the_candidates_and_a_missing_one_is_an_error(snap):
+    out = _run(snap, "get_entity", name="zil")
+    assert {m["id"] for m in out["matches"]} >= {"product:ZILRETTA", "group:zilretta"}
+    assert "error" in _run(snap, "get_entity", name="no such thing")
+    assert "error" in _run(snap, "get_entity", name="")
+    assert "error" in _run(snap, "get_entity", name="zilretta", type="planet")
+    assert "error" in _run(snap, "get_neighbors", entity="zil")  # asks for an id
+
+
+def test_neighbors_show_the_maker_the_group_members_and_the_visits_by_specialty(snap):
+    made = _run(snap, "get_neighbors", entity="product:ZILRETTA", relation="made_by")
+    assert [c["other_label"] for c in made["connections"]] == ["PACIRA PHARM"]
+    assert made["connections"][0]["evidence"] == "dim_product"
+    by = _run(snap, "get_neighbors", entity="group:zilretta", relation="prescribed_by", top=3)
+    assert [c["other_label"] for c in by["connections"]][0] == "ORTHOPEDIC SURGERY"
+    visits = [c["visits"] for c in by["connections"]]
+    assert (
+        visits == sorted(visits, reverse=True) and by["shown"] == 3 and by["total_connections"] > 3
+    )
+    capped = _run(snap, "get_neighbors", entity="group:zilretta", top=1000)
+    assert len(capped["connections"]) <= qa_tools.MAX_EDGES
+    assert "error" in _run(snap, "get_neighbors", entity="product:ZILRETTA", relation="caused")
+    assert "error" in _run(snap, "get_neighbors", entity="product:ZILRETTA", direction="up")
+
+
+def test_the_competitor_view_is_the_projects_grouping_with_visit_shares(snap):
+    out = _run(snap, "get_competitors")
+    names = [g["group"] for g in out["groups"]]
+    assert names[0] == "Zilretta"  # its own group first, then the two it is compared with
+    assert set(names[1:]) == {
+        "Triamcinolone (immediate release)",
+        "Other injectable corticosteroids",
+    }
+    assert sum(g["share_of_compared_visits_pct"] for g in out["groups"]) == pytest.approx(
+        100, abs=0.2
+    )
+    assert out["groups"][0]["manufacturers"] == [{"name": "PACIRA PHARM", "products": 1}]
+    assert "not a market fact" in out["note"] and "product-visits" in out["note"]
+    other = _run(snap, "get_competitors", product="KENALOG")
+    assert other["own_group"] == "Triamcinolone (immediate release)"
+    assert "Only Zilretta's group" in other["note"]
+    assert "error" in _run(snap, "get_competitors", product="nope")
+
+
+def test_events_can_be_cut_by_date_or_entity_and_always_say_they_are_not_causes(snap):
+    year = _run(snap, "get_events", start_date="2021-01-01", end_date="2021-12-31")
+    descriptions = " ".join(e["description"] for e in year["events"])
+    assert "Pacira completes" in descriptions and "FDA approves" not in descriptions
+    assert any(e["end_date"] == "2021-03-31" for e in year["events"])  # a window that overlaps
+    mine = _run(snap, "get_events", entity="zilretta")
+    assert mine["count"] == 6 and all("ZILRETTA" in e["involves"] for e in mine["events"])
+    assert all(e["source"] for e in year["events"])
+    assert "links no event to a change in share" in year["note"] and "unverified" in year["note"]
+    dip = _run(snap, "get_events", start_date="2024-03-01", end_date="2024-03-01")["events"]
+    assert any(e["verified"] is False for e in dip)
+    assert "error" in _run(snap, "get_events", start_date="not a date")
+    dates = [e["date"] for e in _run(snap, "get_events")["events"]]
+    assert dates == sorted(dates) and len(dates) == 14
+
+
+def test_show_chart_validates_its_choices_and_returns_only_parameters(snap):
+    out = _run(snap, "show_chart", chart="segments", by="age_band", top=999)
+    assert out["params"] == {"by": "age_band", "top": qa_tools.MAX_TOP} and out["shown"] is True
+    assert _run(snap, "show_chart", chart="trend", start_month_id=202101)["params"] == {
+        "start_month_id": 202101
+    }
+    assert _run(snap, "show_chart", chart="forecast")["params"] == {}
+    assert "error" in _run(snap, "show_chart", chart="pie")
+    assert "error" in _run(snap, "show_chart", chart="segments", by="patient_id")
+    assert "error" in _run(snap, "show_chart", chart="trend", start_month_id="2021")
+    assert "error" in _run(snap, "show_chart")
+
+
+def test_without_a_graph_the_graph_tools_say_so(snap):
+    import dataclasses
+
+    bare = dataclasses.replace(snap, graph=None)
+    for name, arguments in [
+        ("get_entity", {"name": "zilretta"}),
+        ("get_neighbors", {"entity": "x"}),
+        ("get_competitors", {}),
+        ("get_events", {}),
+        ("show_chart", {"chart": "specialty_mix"}),
+    ]:
+        assert "knowledge graph is not available" in qa_tools.run_tool(
+            name, arguments, snapshot=bare
+        ).get("error", "")
+    assert "error" not in qa_tools.run_tool("show_chart", {"chart": "trend"}, snapshot=bare)
