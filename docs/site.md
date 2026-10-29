@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88, DL-89)
+# The site (DL-85, DL-86, DL-88, DL-89, DL-90)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -11,7 +11,7 @@ streamlit run app/streamlit_app.py
 
 | Tab | Content | Source |
 |---|---|---|
-| Overview | latest share, the peak, the change since it, the next-month forecast with its range; what to use each forecast for and what not to trust; four caveats | `gold_visit_share_monthly`, `pred_batch`, `data/reference/serving_models.json` |
+| Overview | four cards (the latest share with the last 36 months as a line, the peak, the change since it with the run down from the peak as an area, and the next-month forecast with its likely range); a chart of the share so far with the national forecast and its 90% range; three cards saying what to use each forecast for and what not to trust, each with a status (green, amber, red) and a label; the caveats; two downloads (the monthly share and the forecast, as CSV) | `gold_visit_share_monthly`, `pred_batch`, `data/reference/serving_models.json` |
 | Market trend | the monthly share with the peak, the turn and the March to July 2024 data-capture dip marked, and a table by year | `gold_visit_share_monthly` |
 | Segments | Zilretta's share by specialty, age band or gender (groups under 1,000 visits left out), and specialties over time | `gold_segment_adoption` and the dimensions |
 | Forecasts | the national forecast with its 90% range; the segment forecasts rolled up by specialty with the bias recorded in testing; the 1-month decline alert list with its precision | `pred_batch`, `model_scores` |
@@ -89,3 +89,12 @@ The knowledge graph ([knowledge_graph.md](knowledge_graph.md)) as a picture, bec
 - **What it does not claim.** No line is a cause; the March to July 2024 dip is tied to the market only. Competitor groups are the project's own grouping, not a market fact. Visits are product-visits inside IQVIA's panel. IQVIA's "No Manufacturer" placeholder (4 products) is not drawn or listed as a company (it stays in the graph as the source gives it).
 - **How it is drawn.** `serving/market_map.py` builds each view as plain nodes and edges (tested without any drawing library) and `to_html` draws it with `pyvis` as one self-contained page: the drawing library is embedded and the Bootstrap link pyvis adds is removed, so the map needs no network. The page is shown in an iframe. `pyvis` is in `app/requirements.txt`; if it is missing the tab says so and the details and events below still work.
 - **Tests.** `tests/test_serving_market_map.py` (each view's contents, a source on every line and a tooltip on every point, derived lines marked, the slider clamped, no cause drawn, the placeholder left out, details and the event table, a fixed layout, a self-contained page), the events chart in `tests/test_serving_charts.py` and the tab in `tests/test_site_app.py`. The drawing tests need `pyvis` and `networkx`, so they run in the CI job `site` and are skipped where those are not installed.
+
+## The redesign, tab by tab (DL-90)
+The site is being reworked one tab at a time, so each change can be looked at and corrected before the next. Done so far:
+
+- **The look (every tab).** A project theme in `.streamlit/config.toml`: teal as the accent, navy text and a navy dark mode. Streamlit follows the visitor's light or dark setting and uses the matching colours; the charts take their text and grid colours from the page (the first version fixed them to a grey that was hard to read in dark mode), and the Market map is drawn in light or dark colours to match.
+- **The data-age note.** The long yellow warning is on Overview only. Every other tab starts with a one-line badge, for example "Data to Jul 2025 · 454 days old, no newer extract" (orange when stale, green when fresh), so the first screen of each tab is not taken up by it.
+- **Overview.** As in the table above. The three status cards come from `views.use_and_dont`, which now also returns a status and a colour for each forecast (national: "Rely on it as a baseline", green; segment: "Use with care", orange; alert: "A supporting flag only", red); the words carry the meaning as well as the colour. The sparklines and the two CSV files are built by tested functions in `views` (`share_series`, `since_peak_series`, `monthly_csv`, `forecast_csv`).
+- **Still to do, in this order:** Market trend, Segments, Forecasts, Model results, Findings, then a Context tab (company sales against visits, Medicare adoption by state).
+- **Tests.** `tests/test_serving_views.py` (status and colour, the sparklines, the CSV files) and `tests/test_site_app.py` (the Overview's chart, cards and downloads; one data-age badge on each of the eight other tabs and the long warning once).

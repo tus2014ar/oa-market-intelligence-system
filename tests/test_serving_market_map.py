@@ -177,3 +177,12 @@ def test_the_map_page_is_self_contained_with_a_legend_and_tooltips(graph):
     assert '"enabled": true' in moving.lower().replace('"enabled":true', '"enabled": true')
     still = mm.to_html(view, physics=False)
     assert '"enabled": false' in still.lower().replace('"enabled":false', '"enabled": false')
+
+
+def test_the_map_page_can_be_drawn_in_dark_colours_to_match_the_page(graph):
+    pytest.importorskip("pyvis")
+    view = mm.view_graph(graph, "events")
+    dark, light = mm.to_html(view, dark=True), mm.to_html(view)
+    assert f"body{{background:{mm.DARK['bg']}" in dark and mm.DARK["bg"] not in light
+    assert f"body{{background:{mm.LIGHT['bg']}" in light
+    assert mm.DARK["text"] in dark and mm.LIGHT["text"] in light  # labels and legend follow too

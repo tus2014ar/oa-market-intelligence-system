@@ -18,20 +18,14 @@ from oa_market_intelligence.serving.qa_tools import Snapshot
 
 PRIMARY = "#2a78d6"
 PROJECTED = "#eb6834"
-INK = "#52514e"
-GRID = "#e4e3df"
 HEIGHT = 300
 BAR_STEP = 28  # pixels per bar, so a long list grows the chart instead of squeezing it
 
 
 def _style(chart: alt.Chart) -> alt.Chart:
-    return (
-        chart.configure_axis(
-            gridColor=GRID, domainColor=GRID, tickColor=GRID, labelColor=INK, titleColor=INK
-        )
-        .configure_view(stroke=None)
-        .configure_title(color=INK, anchor="start", fontSize=14)
-    )
+    """Quiet frame. Text and grid colours are left to Streamlit's theme so the chart reads in both
+    light and dark mode; only the series colours are ours."""
+    return chart.configure_view(stroke=None).configure_title(anchor="start", fontSize=14)
 
 
 def trend_chart(

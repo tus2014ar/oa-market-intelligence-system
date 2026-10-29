@@ -62,6 +62,29 @@ def test_the_caveats_are_on_the_page(app):
     assert "+5.5% too high" in infos and "+10.9% too high" in infos
 
 
+def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(app):
+    assert app.get("vega_lite_chart")  # the forecast chart under the cards
+    badges = [m.value for m in app.markdown if m.value.startswith(":")]
+    page = " ".join(m.value for m in app.markdown)
+    for text in ("Rely on it as a baseline", "Use with care", "A supporting flag only"):
+        assert text in page
+    assert [d.proto.label for d in app.get("download_button")] == [
+        "Download the monthly share (CSV)",
+        "Download the forecast (CSV)",
+    ]
+    assert any("Use it for:" in m.value and "last month" in m.value for m in app.markdown)
+    assert badges  # the data chips are badges too
+
+
+def test_every_other_tab_starts_with_a_one_line_note_on_how_old_the_data_are(app):
+    chips = [m.value for m in app.markdown if "-badge[Data to " in m.value]
+    assert len(chips) == 8  # every tab but Overview
+    assert all(c.startswith(":orange-badge[Data to Jul 2025") for c in chips)
+    assert all("454 days old, no newer extract" in c for c in chips)
+    banners = [w.value for w in app.warning if "No newer extract has arrived" in w.value]
+    assert len(banners) == 1  # the long warning is on Overview only
+
+
 def test_the_findings_tab_lists_all_seventeen(app):
     assert len(app.expander) == 17
     assert app.expander[0].label.startswith("1. ")

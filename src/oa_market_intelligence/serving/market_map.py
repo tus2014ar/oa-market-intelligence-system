@@ -410,15 +410,21 @@ def positions(view: dict, width: int = 600, height: int = 340) -> dict[str, tupl
     }
 
 
-def to_html(view: dict, height: int = 620, physics: bool = False) -> str:
-    """The view drawn with pyvis as one self-contained HTML page (no network needed)."""
+LIGHT = {"bg": "#ffffff", "text": "#52514e", "edge": "#b9b8b2", "border": "#d5d4cf"}
+DARK = {"bg": "#0e1626", "text": "#e6e8ec", "edge": "#5d6b82", "border": "#2c3a52"}
+
+
+def to_html(view: dict, height: int = 620, physics: bool = False, dark: bool = False) -> str:
+    """The view drawn with pyvis as one self-contained HTML page (no network needed), in light or
+    dark colours to match the page."""
+    palette = DARK if dark else LIGHT
     from pyvis.network import Network  # imported here so the rest works without pyvis
 
     net = Network(
         height=f"{height}px",
         width="100%",
-        bgcolor="#ffffff",
-        font_color="#52514e",
+        bgcolor=palette["bg"],
+        font_color=palette["text"],
         directed=False,
         notebook=False,
         cdn_resources="in_line",
@@ -442,7 +448,7 @@ def to_html(view: dict, height: int = 620, physics: bool = False) -> str:
             width=edge["width"],
             title=edge["title"],
             dashes=edge["dashes"],
-            color="#b9b8b2",
+            color=palette["edge"],
         )
     net.set_options(
         json.dumps(
@@ -454,12 +460,18 @@ def to_html(view: dict, height: int = 620, physics: bool = False) -> str:
                     "barnesHut": {"gravitationalConstant": -9000, "springLength": 150},
                     "stabilization": {"enabled": False},
                 },
-                "nodes": {"font": {"size": 15, "color": "#52514e"}},
+                "nodes": {"font": {"size": 15, "color": palette["text"]}},
                 "edges": {"smooth": {"type": "continuous"}},
             }
         )
     )
     html = net.generate_html()
+    html = html.replace(
+        "</head>",
+        f"<style>body{{background:{palette['bg']};margin:0}}"
+        f"#mynetwork{{border:1px solid {palette['border']} !important}}</style></head>",
+        1,
+    )
     # pyvis always links Bootstrap from a CDN; the page needs none of it, and without the link
     # the map also draws with no network
     html = re.sub(r"<link[^>]*bootstrap[^>]*>", "", html)
@@ -480,7 +492,7 @@ def to_html(view: dict, height: int = 620, physics: bool = False) -> str:
         for g, c, n in legend(view)
     )
     bar = (
-        '<div style="font:13px sans-serif;color:#52514e;padding:6px 4px">'
+        f'<div style="font:13px sans-serif;color:{palette["text"]};padding:6px 4px">'
         f"{key}<br>Hover a point for its facts and source. Drag to move, scroll to zoom. "
         "Dashed lines are derived or comparisons, not direct facts.</div>"
     )

@@ -101,6 +101,40 @@ def test_use_and_dont_names_the_horizons_that_are_used():
     assert "1 month only" in rows[2]["use"]
 
 
+def test_each_use_row_has_a_status_and_a_colour_the_page_can_show():
+    rows = views.use_and_dont(ADOPTION)
+    assert [r["status"] for r in rows] == [
+        "Rely on it as a baseline",
+        "Use with care",
+        "A supporting flag only",
+    ]
+    assert [r["color"] for r in rows] == ["green", "orange", "red"]
+    assert {r["color"] for r in rows} <= {"green", "orange", "red"}  # the page's badge colours
+
+
+def test_the_sparklines_are_the_last_months_and_the_run_down_from_the_peak():
+    m = _monthly()
+    assert views.share_series(m) == [3.38, 3.0, 2.5, 2.0]
+    assert views.share_series(m, months=2) == [2.5, 2.0]
+    assert views.since_peak_series(m) == [3.38, 3.0, 2.5, 2.0]  # the peak is the first month here
+    later = m.copy()
+    later.loc[0, "visit_share"] = 0.01  # now the peak is the second month
+    assert views.since_peak_series(later) == [3.0, 2.5, 2.0]
+
+
+def test_the_downloads_are_csv_the_reader_can_open_in_excel():
+    csv = views.monthly_csv(_monthly()).decode("utf-8").splitlines()
+    assert csv[0] == (
+        "month,zilretta_visits,generic_corticosteroid_visits,nsaid_otc_visits,zilretta_share_pct"
+    )
+    assert csv[1] == "2021-12,338,4000,5662,3.38" and len(csv) == 5
+    forecast = views.forecast_csv(_pred()).decode("utf-8").splitlines()
+    assert forecast[0] == (
+        "months_ahead,target_month,forecast_share_pct,likely_low_90_pct,likely_high_90_pct,method"
+    )
+    assert forecast[1] == "1,Apr 2022,2.0,1.5,2.5,same as last month"
+
+
 def test_the_trend_frame_flags_the_dip_and_the_events_include_the_peak():
     m = _monthly()
     m.loc[1, "month_id"] = 202403
