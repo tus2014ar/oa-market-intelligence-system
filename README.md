@@ -1,4 +1,4 @@
-# OA & RA Market Intelligence System
+# Osteoarthritis Market Share Forecasting Pipeline 
 
 A monthly-refreshable analytics foundation that tracks Zilretta's visit share against generic corticosteroid injections and NSAIDs in Osteoarthritis (OA) and Rheumatoid Arthritis (RA), built on real IQVIA National Medical and Treatment Audit (NMTA) patient-visit data and a set of public datasets. Built around one stakeholder, an OA/RA Injectable Brand Manager.
 
