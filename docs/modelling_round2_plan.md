@@ -150,3 +150,19 @@ Fixed on 5 Nov 2026 while the code for E2 was written; nothing had been run on t
 - **Robustness scenarios** (COVID months, the 2024 dip, PEDIATRICS) are run and reported as in section 7, removing rows by the month the label resolves (the later of the two outcomes); only the main scenario decides.
 - **Code and tests.** `modeling/round2/e2_alert.py`; `tests/test_round2_e2.py` (the label at every threshold and the eligibility edge, the pairing, the one-fewer-test-month check, the training-row time guard, the rewrite-the-future test with a planted leak that it must catch, precision at 10 by hand with ties, the pass rule at each threshold, planted good and random rankings, and a small run that reproduces itself).
 
+## 16. Implementation choices fixed while building E3 (before any run)
+
+Fixed on 5 Nov 2026 while the code for E3 was written; nothing had been run on the real data. None of them changes a rule or a threshold in section 6; each settles a point the plan left open.
+
+- **The model is round 1's segment logistic regression at 3 months**, walked exactly as in round 1 (the same splits and tuning). The run stops if its pooled log-loss differs from the stored round 1 figure by more than 1e-9.
+- **Eligible segments** are round 1's rule (a positive share and at least 100 category visits at the origin) and, in addition, a known share three months before the origin. The extra condition is there so that every method, the trend comparators included, is scored on the same rows.
+- **The changes are measured from the origin share.** Predicted change = forecast share minus the share at the origin. Actual change = share at origin + 3 minus the share at the origin.
+- **"The segment's own 3-month change continuing"** = its share at the origin minus its share three months earlier, taken as the predicted change. **"The specialty's own 3-month change continuing"** = the same for the specialty (all its segments pooled, visit-weighted), so every segment of a specialty gets the same score. Both read the outcome table at the origin month and three months earlier only; a test rewrites every later month and requires the scores not to move.
+- **A random order** is a fixed hash of each row's month and segment, as in E2, so it repeats exactly.
+- **Ties** get their average rank in Spearman. A test origin where a method gives everyone the same score counts as 0 for that method (it ranks nothing). A test origin with fewer than 5 eligible segments is left out for every method.
+- **Top-fifth hit rate.** The top fifth is the ceiling of 0.2 x n segments by predicted change, and the top two fifths the ceiling of 0.4 x n by actual change; ties are broken by segment name. It is averaged over test origins and reported beside the share a random pick would reach (the top two fifths' share of the segments, about 0.4).
+- **The best comparator** is chosen on the whole test set by mean Spearman correlation. The paired comparison resamples whole test origins (2,000 draws, seed 0) at the round's percentile (0.05 / 7). The comparison with each comparator is reported too; only the best one decides.
+- **Robustness scenarios** (COVID months, the 2024 dip, PEDIATRICS) are run and reported as in section 7, by the outcome month; the comparators read the full outcome table. Only the main scenario decides.
+- **"Same as last month"** is reported as a tie and not scored, as the plan says: it predicts no change for anyone.
+- **Code and tests.** `modeling/round2/e3_ranking.py`; `tests/test_round2_e3.py` (Spearman and the top-fifth hit rate by hand with ties, the history by hand, the time guard on it, the eligibility edges, the pass rule, planted good and random rankings, and a small run that reproduces itself, survives a rewrite of the last month and stops on a wrong stored score).
+
