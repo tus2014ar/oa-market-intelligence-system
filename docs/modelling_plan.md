@@ -2,6 +2,8 @@
 
 **Status: fixed before any model is built or run (16 Oct 2026).** Everything below is the rule. A change made after a result has been seen is a deviation: it is written in the decision log with its reason, and both versions are shown. "No model beats the baseline" is a valid result and leaves the baseline serving.
 
+> A second, exploratory round is registered separately in [`modelling_round2_plan.md`](modelling_round2_plan.md) (DL-92). Nothing in this plan changes because of it.
+
 ## 1. Purpose and scope
 
 Decide, under rules fixed here, which model (if any) should serve for each prediction task and each forecast horizon, how large its advantage over a simple baseline is, and how wide the uncertainty is. A stakeholder suggested batch prediction ("take some months, predict the next ones"); this plan adds multi-month horizons and a batch demonstration to the original one-month-ahead tests.
