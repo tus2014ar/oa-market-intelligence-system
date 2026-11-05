@@ -72,6 +72,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
         "Download the monthly share (CSV)",
         "Download the forecast (CSV)",
         "Download this series (CSV)",  # the Market trend tab's own download
+        "Download this table (CSV)",  # the Segments tab's own download
     ]
     assert any("Use it for:" in m.value and "last month" in m.value for m in app.markdown)
     assert badges  # the data chips are badges too
@@ -118,7 +119,8 @@ def test_the_market_trend_tab_opens_on_all_visits_with_four_cards_and_the_filter
     assert next(s for s in app.selectbox if s.label == "Specialty").value == "All"
     assert [t.label for t in app.toggle] == ["Trend line", "Markers"]
     cards = _cards(app)
-    assert len(cards) == 4
+    assert len(cards) == 8  # four on this tab, four on Segments
+    cards = cards[:4]
     assert "Share in Jul 2025" in cards[0] and "1.88%" in cards[0] and "-0.10 pp" in cards[0]
     assert "3.38%" in cards[1] and "Dec 2021" in cards[1] and "44% below" in cards[1]
     assert "135,119" in cards[2] and "5,434,092" in cards[2]
@@ -165,6 +167,53 @@ def test_a_shorter_period_changes_the_visit_total_but_not_the_peak(monkeypatch):
     assert "3.38%" in cards[1] and "Dec 2021" in cards[1]
     quarters = _trend(monkeypatch, trend_grain="Quarterly")
     assert not quarters.exception and quarters.get("vega_lite_chart")
+
+
+# ------------------------------------------------------------------ the segments tab
+
+
+def _segments(monkeypatch, **state):
+    """The site with the Segments tab's widgets set before the run."""
+    return _trend(monkeypatch, **state)
+
+
+def test_the_segments_tab_opens_on_specialties_with_four_cards_and_the_grid(app):
+    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value]
+    assert len(cards) == 8  # four on Market trend and four on Segments
+    segments_cards = cards[4:]
+    assert "Highest share" in segments_cards[0] and "Physical Medicine" in segments_cards[0]
+    assert "Largest source of visits" in segments_cards[1]
+    assert "Orthopedic Surgery" in segments_cards[1]
+    assert "Biggest rise" in segments_cards[2] and "Family Practice" in segments_cards[2]
+    assert "Biggest fall" in segments_cards[3] and "Sports Medicine" in segments_cards[3]
+    page = " ".join(m.value for m in app.markdown)
+    assert "How concentrated are the visits?" in page and "Where the share is highest" in page
+    assert "Specialty over time" in page and "Three largest together" in page
+    assert any(
+        "among 14 specialty groups with at least 5,000 visits" in m.value for m in app.markdown
+    )
+
+
+def test_the_segments_tab_keeps_its_caveats(app):
+    page = " ".join([m.value for m in app.markdown] + [c.value for c in app.caption])
+    assert "one prescription moves a small group's share a lot" in page
+    assert "not company sales" in page and "Small groups are noisy" in page
+    assert "too few to show a rate" in page
+
+
+def test_grouping_by_age_or_gender_and_changing_the_period_all_run(monkeypatch):
+    for state in (
+        {"seg_by": "age_band"},
+        {"seg_by": "gender"},
+        {"seg_period": "1Y"},
+        {"seg_show": "visits"},
+        {"seg_show": "change", "seg_by": "age_band"},
+    ):
+        at = _segments(monkeypatch, **state)
+        assert not at.exception, state
+    age = _segments(monkeypatch, seg_by="age_band")
+    assert any("Age band over time" in m.value for m in age.markdown)
+    assert any("65 to 74" in m.value for m in age.markdown)
 
 
 # ------------------------------------------------------------------ the market map

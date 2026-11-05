@@ -20,6 +20,18 @@ PRIMARY = "#2a78d6"
 PROJECTED = "#eb6834"
 SERIES = "#0F8B8D"  # the site's teal, for the tab-level series
 TREND_GUIDE = "#E8A33D"  # amber: the straight-line guide and the data-capture dip
+FALL = "#C8553D"  # rust: a fall
+GRID_CAP = 8  # the grid's colour scale stops here, so a few extreme cells do not wash out the rest
+CATEGORICAL = [
+    "#0F8B8D",
+    "#E8A33D",
+    "#1B2A41",
+    "#C8553D",
+    "#7A8794",
+    "#2a78d6",
+    "#8B5FBF",
+    "#3FA34D",
+]
 HEIGHT = 300
 BAR_STEP = 28  # pixels per bar, so a long list grows the chart instead of squeezing it
 
@@ -96,6 +108,124 @@ def market_trend_chart(
             .encode(x="month:T", tooltip=alt.Tooltip("label:N", title="Marker"))
         )
     return _style(alt.layer(*layers).properties(height=HEIGHT + 60))
+
+
+def group_chart(table: pd.DataFrame, show: str = "share") -> alt.Chart:
+    """The Segments tab's ranked bars: share, Zilretta's visits, or the change in share over the
+    last 12 months (teal for a rise, rust for a fall). Groups with few visits are drawn faded."""
+    column, title, fmt = {
+        "share": ("share_pct", "Zilretta's share of visits (%)", ".2f"),
+        "visits": ("zilretta_visits", "Zilretta visits", ","),
+        "change": ("delta_pp", "Change in share, last 12 months vs the 12 before (points)", "+.2f"),
+    }[show]
+    frame = table.dropna(subset=[column]).assign(
+        size=lambda f: f["small"].map({True: "Small group (noisy)", False: "Group"}),
+        direction=lambda f: (f[column] >= 0).map({True: "up", False: "down"}),
+    )
+    colour = (
+        alt.Color(
+            "direction:N",
+            scale=alt.Scale(domain=["up", "down"], range=[SERIES, FALL]),
+            legend=None,
+        )
+        if show == "change"
+        else alt.value(SERIES)
+    )
+    return _style(
+        alt.Chart(frame)
+        .mark_bar(cornerRadiusEnd=3)
+        .encode(
+            y=alt.Y(
+                "label:N", sort="-x", title=None, axis=alt.Axis(labelLimit=260, labelOverlap=False)
+            ),
+            x=alt.X(f"{column}:Q", title=title),
+            color=colour,
+            opacity=alt.Opacity(
+                "size:N",
+                scale=alt.Scale(domain=["Group", "Small group (noisy)"], range=[1.0, 0.4]),
+                legend=alt.Legend(title=None, orient="bottom"),
+            ),
+            tooltip=[
+                alt.Tooltip("label:N", title="Group"),
+                alt.Tooltip("share_pct:Q", title="Share (%)", format=".2f"),
+                alt.Tooltip("zilretta_visits:Q", title="Zilretta visits", format=","),
+                alt.Tooltip("category_visits:Q", title="All three classes", format=","),
+                alt.Tooltip("delta_pp:Q", title="Change (points)", format="+.2f"),
+            ],
+        )
+        .properties(height=alt.Step(BAR_STEP))
+    )
+
+
+def share_grid(cells: pd.DataFrame) -> alt.Chart:
+    """Specialty by age band: a grid coloured by Zilretta's share, with the share written in each
+    cell that has enough visits and grey where it does not."""
+    base = alt.Chart(cells).encode(
+        y=alt.Y(
+            "row_label:N",
+            sort=list(dict.fromkeys(cells["row_label"])),
+            title=None,
+            axis=alt.Axis(labelLimit=240, labelOverlap=False),
+        ),
+        x=alt.X(
+            "column_label:N",
+            sort=list(dict.fromkeys(cells["column_label"])),
+            title=None,
+            axis=alt.Axis(labelAngle=0),
+        ),
+    )
+    tip = [
+        alt.Tooltip("row_label:N", title="Specialty"),
+        alt.Tooltip("column_label:N", title="Age band"),
+        alt.Tooltip("share_pct:Q", title="Share (%)", format=".2f"),
+        alt.Tooltip("zilretta:Q", title="Zilretta visits", format=","),
+        alt.Tooltip("category:Q", title="All three classes", format=","),
+    ]
+    empty = base.transform_filter("!datum.shown").mark_rect(color="#7A879433").encode(tooltip=tip)
+    filled = (
+        base.transform_filter("datum.shown")
+        .mark_rect()
+        .encode(
+            color=alt.Color(
+                "share_pct:Q",
+                scale=alt.Scale(
+                    domain=[0, GRID_CAP], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]
+                ),
+                legend=alt.Legend(title=f"Share (%), darkest at {GRID_CAP}%+", orient="bottom"),
+            ),
+            tooltip=tip,
+        )
+    )
+    text = (
+        base.transform_filter("datum.shown")
+        .mark_text(fontSize=11)
+        .encode(
+            text=alt.Text("share_pct:Q", format=".1f"),
+            color=alt.condition("datum.share_pct > 4", alt.value("white"), alt.value("#1B2A41")),
+        )
+    )
+    return _style((empty + filled + text).properties(height=alt.Step(26)))
+
+
+def group_trend_chart(frame: pd.DataFrame) -> alt.Chart:
+    """The chosen groups' share by calendar year (a part year is marked in the tooltip)."""
+    labels = list(dict.fromkeys(frame["label"]))
+    colours = alt.Scale(domain=labels, range=CATEGORICAL[: max(len(labels), 1)])
+    base = alt.Chart(frame).encode(
+        x=alt.X("year:O", title=None, axis=alt.Axis(labelAngle=0)),
+        y=alt.Y("share_pct:Q", title="Zilretta's share of visits (%)"),
+        color=alt.Color("label:N", scale=colours, legend=alt.Legend(title=None, orient="bottom")),
+    )
+    tip = [
+        alt.Tooltip("label:N", title="Group"),
+        alt.Tooltip("year:O", title="Year"),
+        alt.Tooltip("share_pct:Q", title="Share (%)", format=".2f"),
+        alt.Tooltip("zilretta:Q", title="Zilretta visits", format=","),
+        alt.Tooltip("partial_year:N", title="Part year"),
+    ]
+    line = base.mark_line(strokeWidth=2.5)
+    points = base.mark_circle(size=55).encode(tooltip=tip)
+    return _style((line + points).properties(height=HEIGHT))
 
 
 def segments_chart(seg: pd.DataFrame, by: str, top: int = 10) -> alt.Chart:
