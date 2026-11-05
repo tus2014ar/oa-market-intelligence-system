@@ -121,3 +121,17 @@ New code lives apart from the adopted pipeline so it cannot change it: `modeling
 - **The business-shaped measures (precision at 10, rank correlation) are our own choice** of what a brand manager would use; they have not been validated with one.
 - **IQVIA's panel coverage is still unconfirmed.** If it changed in 2023 or 2024, every model here learned from a series with a break in it, and no experiment in this round can fix that.
 - Nothing here claims a model will predict what happens to a segment; round 1's limits all stand.
+
+## 14. Implementation choices fixed while building E1 (before any run)
+
+Fixed on 5 Nov 2026 while the code for E1 was written; nothing had been run on the real data. None of them changes a rule or a threshold above; each settles a point the plan left open.
+
+- **"The last 12 forecasts"** (section 4, E1a) means the forecasts of the **12 most recent target months** at that horizon, pooled over every segment, whose target month is at most the origin. The factor is computed from the **uncorrected** forecasts, so corrections never compound. With fewer than 12 such months the factor is 1, which makes the first 12 + h - 1 test months uncorrected.
+- **Rule 1 of the pass rule (the bias limit) is measured over all test months of the horizon**, including the first months where the factor is 1. That is the stricter reading. The bias over only the months where a correction was applied is reported as well, beside the uncorrected bias for the same months.
+- **The rolling window** (E1b) keeps the training rows whose **outcome month** lies in the 36 months ending at the origin. Until the history is 36 months long it equals round 1's full history.
+- **Non-inferiority** (rule 2) is relative: the lower end of the paired improvement over the uncorrected forecast must be at least minus 0.1% of the uncorrected pooled log-loss, at the round's percentile (0.05 / 7).
+- **Rule 3** ("still beats the best baseline") uses round 1's own rule at that horizon: the paired gain's lower end above zero at round 1's percentile (the 1.67th at 1 month, the 0.83th at 3 months).
+- **A reproduction guard.** The uncorrected walk is round 1's logistic regression. The run stops unless its pooled log-loss equals the stored round 1 value to 1e-9, so E1 cannot be comparing against something else.
+- **Robustness scenarios** (COVID months, the 2024 dip, PEDIATRICS) are run for every variant and reported, as in section 7; only the main scenario decides.
+- **Code and tests.** `modeling/round2/e1_bias.py`; `tests/test_round2_e1.py` (the factor by hand and its time guard, the clipping and the cap, the window, the pass rule at each threshold, a small run that must reproduce itself).
+
