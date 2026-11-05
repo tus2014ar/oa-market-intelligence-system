@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT / "src"))
 import altair as alt  # noqa: E402
 import market_trend  # noqa: E402  (app/market_trend.py, the Market trend tab)
 import pandas as pd  # noqa: E402
+import segments_tab  # noqa: E402  (app/segments_tab.py, the Segments tab)
 import streamlit as st  # noqa: E402
 
 from oa_market_intelligence import knowledge_graph  # noqa: E402
@@ -366,57 +367,7 @@ with tabs[1]:
 
 # ------------------------------------------------------------------ segments
 with tabs[2]:
-    data_chip()
-    by = st.radio("Group visits by", ["Specialty", "Age band", "Gender"], horizontal=True)
-    frame = views.specialty_frame(
-        {"Specialty": D["by_specialty"], "Age band": D["by_age"], "Gender": D["by_gender"]}[by]
-    )
-    bars = (
-        alt.Chart(frame)
-        .mark_bar(color=TEAL)
-        .encode(
-            y=alt.Y("group:N", sort="-x", title=None),
-            x=alt.X("share_pct:Q", title="Zilretta share of visits (%)"),
-            tooltip=["group", alt.Tooltip("share_pct:Q", format=".2f"), "category_visits"],
-        )
-    )
-    st.altair_chart(bars.properties(height=max(120, 28 * len(frame))), width="stretch")
-    st.dataframe(
-        frame[["group", "share_pct", "zilretta_visits", "category_visits"]].rename(
-            columns={
-                "group": by,
-                "share_pct": "Share (%)",
-                "zilretta_visits": "Zilretta visits",
-                "category_visits": "All three classes",
-            }
-        ),
-        hide_index=True,
-        column_config={"Share (%)": st.column_config.NumberColumn(format="%.2f")},
-    )
-    st.caption(
-        "Over all 72 months; groups under 1,000 visits are left out. Small groups are noisy: "
-        "one prescription can move a small group's share a lot."
-    )
-    if by == "Specialty":
-        top = list(D["by_specialty"].head(5)["group"])
-        pick = st.multiselect(
-            "Specialties over time", list(D["by_specialty"]["group"]), default=top
-        )
-        tr = views.specialty_trend(D["by_year"], pick)
-        if len(tr):
-            st.altair_chart(
-                alt.Chart(tr)
-                .mark_line(point=True)
-                .encode(
-                    x=alt.X("year:O", title=None),
-                    y=alt.Y("share_pct:Q", title="Share (%)"),
-                    color="specialty:N",
-                    tooltip=["specialty", "year", alt.Tooltip("share_pct:Q", format=".2f")],
-                )
-                .properties(height=340),
-                width="stretch",
-            )
-            st.caption("2019 and 2025 are part years.")
+    segments_tab.render(D, data_chip)
 
 # ------------------------------------------------------------------ forecasts
 with tabs[3]:
