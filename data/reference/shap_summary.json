@@ -7,8 +7,8 @@
    "C": 1.0,
    "typical_segment_pct": 1.85,
    "segments": 113,
-   "max_gap_to_stored_forecast": 0.0,
-   "additivity_max_error": 8.881784197001252e-16,
+   "matches_stored_forecasts": true,
+   "contributions_add_up": true,
    "group_share_of_movement_pct": {
     "The segment's own recent share": 40.4,
     "Specialty and market context": 19.0,
@@ -56,8 +56,8 @@
    "C": 1.0,
    "typical_segment_pct": 1.9,
    "segments": 113,
-   "max_gap_to_stored_forecast": 0.0,
-   "additivity_max_error": 8.881784197001252e-16,
+   "matches_stored_forecasts": true,
+   "contributions_add_up": true,
    "group_share_of_movement_pct": {
     "The segment's own recent share": 46.6,
     "Specialty and market context": 16.8,

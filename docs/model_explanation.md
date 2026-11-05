@@ -6,7 +6,7 @@ SHAP was in the original proposal but was not part of the rebuilt project until 
 
 ## Method
 - **Exact SHAP for a linear model.** A logistic regression is linear on the log-odds scale, so each input's SHAP value has a closed form: `coefficient x (value - the average value)`. The contributions add up to the model's own log-odds minus the average segment's. `modeling/explain.py` computes this directly, with no extra package.
-- **The model is refitted exactly as the monthly scoring job fits it** at the latest origin (July 2025), and `explain` refuses to report unless the refit reproduces the stored `pred_batch` forecasts to 1e-9 and the contributions add up to each forecast to 1e-9. Both hold (largest difference 0.0 and about 9e-16).
+- **The model is refitted exactly as the monthly scoring job fits it** at the latest origin (July 2025), and `explain` refuses to report unless the refit reproduces the stored `pred_batch` forecasts to 1e-9 and the contributions add up to each forecast to 1e-9. Both hold. The committed file records that they passed, not the raw rounding errors, which differ between machines at the 1e-16 level.
 - **The average ("typical segment")** is taken over the feature rows the model was fitted on, unweighted: about 1.85% at 1 month and 1.9% at 3 months.
 - **Grouping.** The 13 numeric inputs, the 3 specialty-and-market context inputs and the specialty indicators are grouped into nine plain-language kinds of information (for example the segment's own recent share is its last month and its 3-month mean). A new input with no group is an error.
 - **Cross-check.** Where the `shap` package is installed, a test confirms the closed form equals `shap.LinearExplainer` to 1e-9. The pipeline does not depend on that package.

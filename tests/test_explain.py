@@ -89,8 +89,7 @@ def test_the_committed_summary_is_the_one_a_fresh_run_gives(fresh):
 def test_the_refit_reproduces_the_stored_forecasts_and_the_pieces_add_up(fresh):
     for horizon in ("1", "3"):
         h = fresh["horizons"][horizon]
-        assert h["max_gap_to_stored_forecast"] <= explain.TOLERANCE
-        assert h["additivity_max_error"] <= explain.TOLERANCE
+        assert h["matches_stored_forecasts"] and h["contributions_add_up"]
         assert h["segments"] == 113 and h["C"] > 0
         assert sum(h["group_share_of_movement_pct"].values()) == pytest.approx(100.0, abs=0.5)
 

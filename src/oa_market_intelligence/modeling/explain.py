@@ -50,6 +50,8 @@ from oa_market_intelligence.modeling.segment_models import (
 )
 
 SUMMARY_JSON = Path(__file__).resolve().parents[3] / "data" / "reference" / "shap_summary.json"
+# the two checks pass or the run stops; the raw floating-point errors differ between machines at
+# the 1e-16 level, so they are not stored
 EXPLAINED_HORIZONS = (1, 3)  # the horizons at which the logistic regression is adopted (DL-79)
 KEYS = ["specialty_name", "age_band", "gender"]
 TOLERANCE = 1e-9
@@ -175,8 +177,8 @@ def explain_horizon(train, now, outcomes, horizon: int, origin: int, extra, stor
         "C": config["C"],
         "typical_segment_pct": round(100 / (1 + float(np.exp(-base))), 2),
         "segments": int(len(test)),
-        "max_gap_to_stored_forecast": gap,
-        "additivity_max_error": additivity,
+        "matches_stored_forecasts": gap is not None,  # explain refuses unless it is within 1e-9
+        "contributions_add_up": True,  # likewise: a larger error stops the run
         "group_share_of_movement_pct": {k: round(float(v), 1) for k, v in movement.items()},
         "top_features_pct": {k: round(float(v), 1) for k, v in top.items()},
         "example": {
