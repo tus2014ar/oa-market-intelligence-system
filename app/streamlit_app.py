@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-import altair as alt  # noqa: E402
+import forecasts_tab  # noqa: E402  (app/forecasts_tab.py, the Forecasts tab)
 import market_trend  # noqa: E402  (app/market_trend.py, the Market trend tab)
 import pandas as pd  # noqa: E402
 import segments_tab  # noqa: E402  (app/segments_tab.py, the Segments tab)
@@ -371,84 +371,7 @@ with tabs[2]:
 
 # ------------------------------------------------------------------ forecasts
 with tabs[3]:
-    data_chip()
-    pred = D["pred"]
-    bias = views.known_bias(pred)
-    st.subheader("National share")
-    nat = views.national_forecast(pred)
-    base = alt.Chart(nat).encode(x=alt.X("month:N", sort=list(nat["month"]), title=None))
-    st.altair_chart(
-        (
-            base.mark_area(opacity=0.2, color=TEAL).encode(
-                y=alt.Y("low_90_pct:Q", title="Share (%)", scale=alt.Scale(zero=False)),
-                y2="high_90_pct:Q",
-            )
-            + base.mark_line(point=True, color=TEAL).encode(y="forecast_pct:Q")
-        ).properties(height=300),
-        width="stretch",
-    )
-    st.dataframe(
-        nat[["months_ahead", "month", "forecast_pct", "low_90_pct", "high_90_pct", "model"]].rename(
-            columns={
-                "months_ahead": "Months ahead",
-                "month": "Target month",
-                "forecast_pct": "Forecast (%)",
-                "low_90_pct": "Likely low (%)",
-                "high_90_pct": "Likely high (%)",
-                "model": "Method",
-            }
-        ),
-        hide_index=True,
-        column_config={
-            c: st.column_config.NumberColumn(format="%.2f")
-            for c in ("Forecast (%)", "Likely low (%)", "Likely high (%)")
-        },
-    )
-    st.caption(
-        'The method is "same as last month": the forecast is the latest value with a likely range. '
-        f"No model beat it. {views.coverage_sentence(D['scores'])}"
-    )
-    st.subheader("Segments, by specialty")
-    shown = ", ".join(
-        f"{h} month{'s' if h != 1 else ''}: "
-        + (f"+{100 * b:.1f}% too high" if b is not None else "no tested bias (simple rule)")
-        for h, b in bias.items()
-    )
-    st.info(f"Known bias in testing: {shown}.")
-    sf = views.specialty_forecast(pred)
-    st.dataframe(
-        sf.rename(
-            columns={
-                "specialty": "Specialty",
-                "1_month_pct": "1 month (%)",
-                "3_month_pct": "3 months (%)",
-                "6_month_pct": "6 months (%)",
-                "visits_at_origin": "Visits in latest month",
-            }
-        ),
-        hide_index=True,
-        column_config={
-            c: st.column_config.NumberColumn(format="%.2f")
-            for c in ("1 month (%)", "3 months (%)", "6 months (%)")
-        },
-    )
-    one = st.selectbox("See the segments in one specialty", ["(none)"] + list(sf["specialty"]))
-    if one != "(none)":
-        st.dataframe(views.segment_forecast(pred, one), hide_index=True)
-    st.subheader("Decline alert (1 month)")
-    alerts = views.alert_frame(pred)
-    summ = views.alert_summary(alerts, D["scores"])
-    st.write(
-        f"{summ['flagged']} of {summ['scored']} scored segments are flagged as likely to fall by 30% or more. "
-        f"About {round(100 * summ['precision'])}% of alerts were real declines in testing, so treat the list as a "
-        "starting point for a look, never as a reason to act on its own."
-    )
-    st.dataframe(
-        alerts[alerts["alert_flag"] == 1]
-        .drop(columns="alert_flag")
-        .rename(columns={"alert_score": "Alert score", "origin_visits": "Visits in latest month"}),
-        hide_index=True,
-    )
+    forecasts_tab.render(D, ADOPTION, data_chip)
 
 # ------------------------------------------------------------------ model results
 with tabs[4]:
