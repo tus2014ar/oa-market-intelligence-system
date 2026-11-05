@@ -63,6 +63,24 @@ def segments(engine: Engine, by: str = "specialty", min_visits: int = 1000) -> p
     return table
 
 
+def segment_monthly(engine: Engine) -> pd.DataFrame:
+    """Zilretta's visits and the three-class visits for every month and segment (specialty x age
+    band x gender): aggregates only, one row per segment-month. The filters of the Market trend tab
+    are applied to this frame."""
+    frame = _read(
+        engine,
+        "SELECT g.month_id AS month_id, s.specialty_name AS specialty, d.age_band AS age_band, "
+        "d.gender AS gender, g.branded_injectable_visits AS zilretta, "
+        "g.total_category_visits AS category "
+        "FROM gold_segment_adoption g "
+        "JOIN dim_specialty s ON s.specialty_id = g.specialty_id "
+        "JOIN dim_demographics d ON d.demographic_id = g.demographic_id "
+        "ORDER BY g.month_id, s.specialty_name, d.age_band, d.gender",
+    )
+    frame.insert(1, "month", pd.to_datetime(frame["month_id"].astype(str), format="%Y%m"))
+    return frame
+
+
 def specialty_by_year(engine: Engine) -> pd.DataFrame:
     """Zilretta's share by specialty and calendar year (all age bands and genders together)."""
     table = _read(

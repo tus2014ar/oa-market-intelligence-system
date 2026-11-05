@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 import altair as alt  # noqa: E402
+import market_trend  # noqa: E402  (app/market_trend.py, the Market trend tab)
 import pandas as pd  # noqa: E402
 import streamlit as st  # noqa: E402
 
@@ -44,6 +45,7 @@ def load(db: str, run_log: str) -> dict:
     try:
         return {
             "monthly": data.market_monthly(engine),
+            "seg": data.segment_monthly(engine),
             "pred": data.predictions(engine),
             "scores": data.model_scores(engine),
             "by_specialty": data.segments(engine, "specialty"),
@@ -360,49 +362,7 @@ with tabs[0]:
 
 # ------------------------------------------------------------------ market trend
 with tabs[1]:
-    data_chip()
-    trend = views.trend_frame(D["monthly"])
-    events = views.event_frame(D["monthly"])
-    dip = pd.DataFrame({"start": [pd.Timestamp("2024-03-01")], "end": [pd.Timestamp("2024-07-31")]})
-    line = (
-        alt.Chart(trend)
-        .mark_line(color=TEAL, strokeWidth=3)
-        .encode(
-            x=alt.X("month:T", title=None),
-            y=alt.Y(
-                "share_pct:Q", title="Zilretta share of visits (%)", scale=alt.Scale(zero=False)
-            ),
-            tooltip=[
-                alt.Tooltip("month:T", format="%b %Y"),
-                alt.Tooltip("share_pct:Q", format=".2f", title="share %"),
-            ],
-        )
-    )
-    band = alt.Chart(dip).mark_rect(color=AMBER, opacity=0.2).encode(x="start:T", x2="end:T")
-    rules = (
-        alt.Chart(events)
-        .mark_rule(color=GREY, strokeDash=[4, 4])
-        .encode(x="month:T", tooltip=alt.Tooltip("label:N", title="Event"))
-    )
-    st.altair_chart((band + line + rules).properties(height=380), width="stretch")
-    st.caption(
-        "Dotted lines: the peak, the turn and the start of the 2024 dip. Shaded: the March to July 2024 data-capture dip."
-    )
-    st.write(views.trend_note(D["monthly"]))
-    yearly = views.yearly_table(D["monthly"])
-    st.dataframe(
-        yearly[["year", "share_pct", "zilretta", "months", "partial_year"]].rename(
-            columns={
-                "year": "Year",
-                "share_pct": "Share (%)",
-                "zilretta": "Zilretta visits",
-                "months": "Months of data",
-                "partial_year": "Part year",
-            }
-        ),
-        hide_index=True,
-        column_config={"Share (%)": st.column_config.NumberColumn(format="%.2f")},
-    )
+    market_trend.render(D, data_chip)
 
 # ------------------------------------------------------------------ segments
 with tabs[2]:

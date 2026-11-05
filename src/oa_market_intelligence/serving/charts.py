@@ -18,6 +18,8 @@ from oa_market_intelligence.serving.qa_tools import Snapshot
 
 PRIMARY = "#2a78d6"
 PROJECTED = "#eb6834"
+SERIES = "#0F8B8D"  # the site's teal, for the tab-level series
+TREND_GUIDE = "#E8A33D"  # amber: the straight-line guide and the data-capture dip
 HEIGHT = 300
 BAR_STEP = 28  # pixels per bar, so a long list grows the chart instead of squeezing it
 
@@ -53,6 +55,47 @@ def trend_chart(
         ],
     )
     return _style((line + points).properties(height=HEIGHT).interactive(bind_y=False))
+
+
+def market_trend_chart(
+    frame: pd.DataFrame,
+    fitted: pd.Series | None = None,
+    events: pd.DataFrame | None = None,
+    dip: tuple[pd.Timestamp, pd.Timestamp] | None = None,
+) -> alt.Chart:
+    """The Market trend tab's chart: the share by month (or quarter) with an optional straight-line
+    guide (amber, dashed), the 2024 data-capture dip (shaded) and dated markers (grey, dotted).
+    `frame` comes from `trend.monthly` or `trend.quarterly`."""
+    data = frame.assign(fitted=None if fitted is None else fitted.to_numpy())
+    base = alt.Chart(data)
+    x = alt.X("month:T", title=None)
+    y = alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False))
+    tip = [
+        alt.Tooltip("label:N", title="Period"),
+        alt.Tooltip("share_pct:Q", title="Share (%)", format=".2f"),
+        alt.Tooltip("zilretta:Q", title="Zilretta visits", format=","),
+        alt.Tooltip("category:Q", title="All three classes", format=","),
+    ]
+    layers = []
+    if dip is not None:
+        band = pd.DataFrame({"start": [dip[0]], "end": [dip[1]]})
+        shade = alt.Chart(band).mark_rect(color=TREND_GUIDE, opacity=0.18)
+        layers.append(shade.encode(x="start:T", x2="end:T"))
+    layers.append(base.mark_line(color=SERIES, strokeWidth=3).encode(x=x, y=y))
+    layers.append(base.mark_circle(color=SERIES, size=46).encode(x=x, y=y, tooltip=tip))
+    if fitted is not None:
+        layers.append(
+            base.mark_line(color=TREND_GUIDE, strokeDash=[6, 5], strokeWidth=2).encode(
+                x="month:T", y="fitted:Q"
+            )
+        )
+    if events is not None and len(events):
+        layers.append(
+            alt.Chart(events)
+            .mark_rule(color="#7A8794", strokeDash=[3, 4])
+            .encode(x="month:T", tooltip=alt.Tooltip("label:N", title="Marker"))
+        )
+    return _style(alt.layer(*layers).properties(height=HEIGHT + 60))
 
 
 def segments_chart(seg: pd.DataFrame, by: str, top: int = 10) -> alt.Chart:
