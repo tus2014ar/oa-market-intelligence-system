@@ -184,9 +184,12 @@ def test_the_uncorrected_walk_must_equal_round_1s_stored_score():
 
 @pytest.fixture(scope="module")
 def small_run():
-    segment_models.MODEL_CONFIGS["logistic"] = [{"C": 0.1}]
-    rows, outcomes, _ = make_inputs(n_months=44)
-    return run(rows, outcomes)
+    with (
+        pytest.MonkeyPatch.context() as patch
+    ):  # restored afterwards: other tests use the real grid
+        patch.setitem(segment_models.MODEL_CONFIGS, "logistic", [{"C": 0.1}])
+        rows, outcomes, _ = make_inputs(n_months=44)
+        yield run(rows, outcomes)
 
 
 def run(rows, outcomes, **kwargs):
