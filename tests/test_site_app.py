@@ -71,6 +71,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
     assert [d.proto.label for d in app.get("download_button")] == [
         "Download the monthly share (CSV)",
         "Download the forecast (CSV)",
+        "Download this series (CSV)",  # the Market trend tab's own download
     ]
     assert any("Use it for:" in m.value and "last month" in m.value for m in app.markdown)
     assert badges  # the data chips are badges too
@@ -86,12 +87,84 @@ def test_every_other_tab_starts_with_a_one_line_note_on_how_old_the_data_are(app
 
 
 def test_the_findings_tab_lists_all_seventeen(app):
-    assert len(app.expander) == 17
-    assert app.expander[0].label.startswith("1. ")
+    findings = [e for e in app.expander if e.label[0].isdigit()]
+    assert len(findings) == 17 and findings[0].label.startswith("1. ")
 
 
 def test_no_secret_or_sql_input_exists_on_the_page(app):
     assert not app.text_input and not app.text_area  # no free-text box in this phase
+
+
+# ------------------------------------------------------------------ the market trend tab
+
+
+def _trend(monkeypatch, **state):
+    """The site with the Market trend tab's widgets set before the run."""
+    for name in ("ANTHROPIC_API_KEY", "ACCESS_CODE", "DAILY_TOKEN_BUDGET"):
+        monkeypatch.delenv(name, raising=False)
+    at = AppTest.from_file(APP, default_timeout=90)
+    for key, value in state.items():
+        at.session_state[key] = value
+    return at.run()
+
+
+def _cards(at):
+    return [m.value for m in at.markdown if 'class="oa-kpi"' in m.value]
+
+
+def test_the_market_trend_tab_opens_on_all_visits_with_four_cards_and_the_filter_bar(app):
+    labels = [s.label for s in app.selectbox]
+    assert {"Specialty", "Age band", "Gender"} <= set(labels)
+    assert next(s for s in app.selectbox if s.label == "Specialty").value == "All"
+    assert [t.label for t in app.toggle] == ["Trend line", "Markers"]
+    cards = _cards(app)
+    assert len(cards) == 4
+    assert "Share in Jul 2025" in cards[0] and "1.88%" in cards[0] and "-0.10 pp" in cards[0]
+    assert "3.38%" in cards[1] and "Dec 2021" in cards[1] and "44% below" in cards[1]
+    assert "135,119" in cards[2] and "5,434,092" in cards[2]
+    assert "Trend per year" in cards[3] and "a guide, not a forecast" in cards[3]
+    page = " ".join(m.value for m in app.markdown)
+    assert "Where the share stands" in page and "Next month (Aug 2025)" in page
+    assert "Where it is moving, by specialty" in page and "The three classes" in page
+    assert page.count("By specialty") + page.count("By age band") + page.count("By gender") == 3
+    assert any("below its peak of 3.38% (Dec 2021)" in m.value for m in app.markdown)
+
+
+def test_the_market_trend_tab_keeps_its_caveats(app):
+    page = " ".join([m.value for m in app.markdown] + [c.value for c in app.caption])
+    assert "not company sales" in page and "nothing here says why the share moved" in page
+    assert "a guide, not a forecast" in page and "data-capture dip" in page
+    assert 'The method is "same as last month": no model beat it' in page
+    assert "the data cannot say why visits moved" in page
+
+
+def test_choosing_a_group_filters_every_number_and_flags_a_small_one(monkeypatch):
+    at = _trend(monkeypatch, trend_specialty="RHEUMATOLOGY")
+    assert not at.exception
+    assert "Share in Jul 2025" in _cards(at)[0] and "1.88%" not in _cards(at)[0]
+    page = " ".join(m.value for m in at.markdown)
+    assert "Where it is moving, by age band" in page and "How this group compares" in page
+    assert "The three classes" not in page  # the class split exists for the whole market only
+    assert "Forecasts for a group are on the Forecasts tab" in " ".join(c.value for c in at.caption)
+    small = _trend(
+        monkeypatch,
+        trend_specialty="RHEUMATOLOGY",
+        trend_age="65 TO 74",
+        trend_gender="MALE",  # a median of about 100 visits a month
+    )
+    assert not small.exception
+    assert any("This group is small" in w.value for w in small.warning)
+    assert "Every filter is set" in " ".join(c.value for c in small.caption)
+
+
+def test_a_shorter_period_changes_the_visit_total_but_not_the_peak(monkeypatch):
+    at = _trend(monkeypatch, trend_period="1Y")
+    assert not at.exception
+    cards = _cards(at)
+    assert "135,119" not in cards[2] and "Last year" in cards[2]
+    assert "3.38%" in cards[1] and "Dec 2021" in cards[1]
+    quarters = _trend(monkeypatch, trend_grain="Quarterly")
+    assert not quarters.exception and quarters.get("vega_lite_chart")
 
 
 # ------------------------------------------------------------------ the market map
