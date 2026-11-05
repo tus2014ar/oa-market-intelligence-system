@@ -135,3 +135,18 @@ Fixed on 5 Nov 2026 while the code for E1 was written; nothing had been run on t
 - **Robustness scenarios** (COVID months, the 2024 dip, PEDIATRICS) are run for every variant and reported, as in section 7; only the main scenario decides.
 - **Code and tests.** `modeling/round2/e1_bias.py`; `tests/test_round2_e1.py` (the factor by hand and its time guard, the clipping and the cap, the window, the pass rule at each threshold, a small run that must reproduce itself).
 
+## 15. Implementation choices fixed while building E2 (before any run)
+
+Fixed on 5 Nov 2026 while the code for E2 was written; nothing had been run on the real data. None of them changes a rule or a threshold in sections 5 to 8; each settles a point the plan left open.
+
+- **The label resolves at origin + h + 1.** The walk-forward treats the lasting-decline label as a horizon of h + 1 months: a training row is used at an origin only if the *later* of its two outcome months is at most that origin. The first origin is round 1's (after 24 months of data), so the last test month is one earlier: one fewer test month, as section 5 says.
+- **The base rate is the pooled share** of eligible test segments (across all test months) that truly had a lasting decline. Precision at 10 is the plain mean of the monthly values, each month counting once. The lift is that mean divided by the pooled base rate, and the first condition of the pass rule is a lift of at least 2.
+- **A month with fewer than 10 eligible segments** uses all of them for its precision at 10.
+- **The best comparator** is chosen on the whole test set by mean precision at 10, among the four comparators: the corrected "just spiked" rule, the small-segment rule, a random order and round 1's alert. The paired comparison resamples whole test months (2,000 draws, seed 0) at the round's percentile, 0.05 / 7.
+- **The corrected "just spiked" rule** is round 1's recent-drop score with its sign flipped, exactly as the post-hoc check defined it.
+- **A random order** is a fixed function of each row's month and segment (a hash), so the same rows always get the same scores and the result repeats exactly.
+- **Round 1's alert as a comparator** is the same logistic-regression classifier trained on round 1's label (a fall to 70% of the origin share at the horizon) on the same rows, and scored on the new label. Its training rows are those whose *both* outcomes were known at the origin, which is stricter than round 1's own training set. It ranks segments; no alert cut-off is used anywhere in E2, since the measure needs only the ranking.
+- **The method's settings** are round 1's alert grid for the logistic regression (C in 0.01, 0.1, 1), chosen on log-loss inside the training window and re-chosen every 6 origins.
+- **Robustness scenarios** (COVID months, the 2024 dip, PEDIATRICS) are run and reported as in section 7, removing rows by the month the label resolves (the later of the two outcomes); only the main scenario decides.
+- **Code and tests.** `modeling/round2/e2_alert.py`; `tests/test_round2_e2.py` (the label at every threshold and the eligibility edge, the pairing, the one-fewer-test-month check, the training-row time guard, the rewrite-the-future test with a planted leak that it must catch, precision at 10 by hand with ties, the pass rule at each threshold, planted good and random rankings, and a small run that reproduces itself).
+
