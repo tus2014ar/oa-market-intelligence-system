@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import forecasts_tab  # noqa: E402  (app/forecasts_tab.py, the Forecasts tab)
 import market_trend  # noqa: E402  (app/market_trend.py, the Market trend tab)
+import model_results_tab  # noqa: E402  (app/model_results_tab.py, Model results)
 import pandas as pd  # noqa: E402
 import segments_tab  # noqa: E402  (app/segments_tab.py, the Segments tab)
 import streamlit as st  # noqa: E402
@@ -61,6 +62,11 @@ def load(db: str, run_log: str) -> dict:
 
 D = load(str(DB), str(RUN_LOG))
 ADOPTION, POSTHOC, FINDINGS = data.serving_map(), data.posthoc(), data.findings()
+ROUND2 = {
+    "round2": data.round2(),
+    "round2_posthoc": data.round2_posthoc(),
+    "shap": data.shap_summary(),
+}
 STATUS = views.status_block(D["run"])
 HEAD = views.headline(D["monthly"], D["pred"])
 SNAPSHOT = qa_tools.Snapshot(
@@ -375,79 +381,7 @@ with tabs[3]:
 
 # ------------------------------------------------------------------ model results
 with tabs[4]:
-    data_chip()
-    board = views.scoreboard(D["scores"], ADOPTION, POSTHOC)
-    st.write(
-        "Each row compares the models with a simple rule, under tests fixed before anything ran. "
-        '"Adopted" is what the project uses (decision DL-79).'
-    )
-    order = [
-        "task",
-        "horizon",
-        "verdict",
-        "adopted",
-        "adopted_model",
-        "measure",
-        "simple_rule",
-        "simple_rule_score",
-        "chosen_model",
-        "chosen_model_score",
-    ]
-    st.dataframe(
-        board[order].rename(
-            columns={
-                "task": "Task",
-                "horizon": "Months ahead",
-                "measure": "Measure",
-                "simple_rule": "Simple rule",
-                "simple_rule_score": "Simple rule score",
-                "chosen_model": "Model chosen by the rule",
-                "chosen_model_score": "Its score",
-                "adopted": "Adopted",
-                "adopted_model": "Adopted model",
-                "verdict": "In plain words",
-            }
-        ),
-        hide_index=True,
-        column_config={
-            "Simple rule score": st.column_config.NumberColumn(format="%.4f"),
-            "Its score": st.column_config.NumberColumn(format="%.4f"),
-        },
-    )
-    st.caption(
-        "Lower is better for the first two measures; higher is better for the ranking score."
-    )
-    st.subheader("Do the segment forecasts run high?")
-    st.dataframe(
-        views.bias_table(D["scores"]).rename(
-            columns={
-                "horizon": "Months ahead",
-                "forecast_above_actual_pct": "Forecast above what happened (%)",
-            }
-        ),
-        hide_index=True,
-    )
-    st.subheader("The caveat on the decline alert")
-    st.write(
-        "The alert passed its registered test, but one of the simple rules it was tested against was written "
-        "the wrong way round. With only that corrected (a check made after the results were seen), a one-line "
-        'rule "this segment just spiked" does almost as well as the model, and the model\'s gain is reliable only at 1 month.'
-    )
-    ph = views.posthoc_table(POSTHOC)
-    st.dataframe(
-        ph.rename(
-            columns={
-                "horizon": "Months ahead",
-                "decline_share": "A guess",
-                "registered_simple_rule": "Simple rule as registered",
-                "corrected_simple_rule": "Same rule, corrected",
-                "model": "The alert",
-                "gain_over_corrected": "Gain over corrected rule",
-                "reliable": "Reliable",
-            }
-        ),
-        hide_index=True,
-    )
+    model_results_tab.render(D, ADOPTION, POSTHOC, ROUND2, data_chip)
 
 # ------------------------------------------------------------------ data status
 with tabs[5]:

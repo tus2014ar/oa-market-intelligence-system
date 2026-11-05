@@ -39,6 +39,14 @@ CSS = f"""<style>
 .oa-call {{background:rgba(15,139,141,.13);border-radius:8px;padding:.45rem .75rem;
   font-size:.84rem;margin-top:.55rem}}
 .oa-call.down {{background:rgba(200,85,61,.13)}}
+.oa-test {{padding:.6rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
+.oa-test-head {{display:flex;justify-content:space-between;gap:.6rem;font-weight:600}}
+.oa-test-sub {{font-weight:400;opacity:.7}}
+.oa-pill2 {{border-radius:999px;padding:1px 10px;font-size:.78rem;font-weight:600;
+  white-space:nowrap;background:rgba(127,127,127,.2)}}
+.oa-pill2.pass {{background:rgba(30,158,90,.18);color:{GREEN}}}
+.oa-test-res {{font-size:.88rem;font-variant-numeric:tabular-nums;margin-top:.15rem}}
+.oa-test-plain {{font-size:.84rem;opacity:.8;margin-top:.1rem}}
 .oa-stand {{display:flex;justify-content:space-between;align-items:baseline;
   padding:.4rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-stand .k {{font-size:.88rem;opacity:.8}} .oa-stand .x {{font-weight:700;font-size:1.05rem}}
@@ -103,6 +111,22 @@ def rank_rows(rows: list[tuple[str, str, float | None, str]], headers: tuple[str
 
 def callout(text: str, kind: str = "up") -> str:
     return f'<div class="oa-call{" down" if kind == "down" else ""}">{escape(text)}</div>'
+
+
+def test_rows(rows: list[tuple[str, str, str, bool, str, str]]) -> str:
+    """A list of tests: (name, what it is, the verdict pill, passed, the result, a plain reading).
+    A pass is green and a non-pass grey, and each pill carries its words."""
+    out = []
+    for name, sub, pill, passed, result, plain in rows:
+        kind = "pass" if passed else "no"
+        out.append(
+            '<div class="oa-test"><div class="oa-test-head">'
+            f'<span>{escape(name)}<span class="oa-test-sub"> · {escape(sub)}</span></span>'
+            f'<span class="oa-pill2 {kind}">{escape(pill)}</span></div>'
+            f'<div class="oa-test-res">{escape(result)}</div>'
+            f'<div class="oa-test-plain">{escape(plain)}</div></div>'
+        )
+    return "".join(out)
 
 
 def stand_rows(rows: list[tuple[str, str]]) -> str:
