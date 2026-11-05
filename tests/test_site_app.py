@@ -58,8 +58,8 @@ def test_the_caveats_are_on_the_page(app):
     assert "No newer extract has arrived" in page or "Fresh" in {m.value for m in app.metric}
     assert "run high" in page and "5.5% at 1 month and 10.9% at 3 months" in page
     assert "Payer, regional and prescription-volume data are not part of this analysis" in page
-    infos = " ".join(i.value for i in app.info)
-    assert "+5.5% too high" in infos and "+10.9% too high" in infos
+    forecast_page = " ".join(m.value for m in app.markdown)
+    assert "ran 5.5% too high in testing" in forecast_page  # the Forecasts tab opens at 1 month
 
 
 def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(app):
@@ -73,6 +73,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
         "Download the forecast (CSV)",
         "Download this series (CSV)",  # the Market trend tab's own download
         "Download this table (CSV)",  # the Segments tab's own download
+        "Download these forecasts (CSV)",  # the Forecasts tab's own download
     ]
     assert any("Use it for:" in m.value and "last month" in m.value for m in app.markdown)
     assert badges  # the data chips are badges too
@@ -119,7 +120,7 @@ def test_the_market_trend_tab_opens_on_all_visits_with_four_cards_and_the_filter
     assert next(s for s in app.selectbox if s.label == "Specialty").value == "All"
     assert [t.label for t in app.toggle] == ["Trend line", "Markers"]
     cards = _cards(app)
-    assert len(cards) == 8  # four on this tab, four on Segments
+    assert len(cards) == 12  # four each on this tab, Segments and Forecasts
     cards = cards[:4]
     assert "Share in Jul 2025" in cards[0] and "1.88%" in cards[0] and "-0.10 pp" in cards[0]
     assert "3.38%" in cards[1] and "Dec 2021" in cards[1] and "44% below" in cards[1]
@@ -128,7 +129,7 @@ def test_the_market_trend_tab_opens_on_all_visits_with_four_cards_and_the_filter
     page = " ".join(m.value for m in app.markdown)
     assert "Where the share stands" in page and "Next month (Aug 2025)" in page
     assert "Where it is moving, by specialty" in page and "The three classes" in page
-    assert page.count("By specialty") + page.count("By age band") + page.count("By gender") == 3
+    assert [page.count(f"**By {n}**") for n in ("specialty", "age band", "gender")] == [1, 1, 1]
     assert any("below its peak of 3.38% (Dec 2021)" in m.value for m in app.markdown)
 
 
@@ -179,8 +180,8 @@ def _segments(monkeypatch, **state):
 
 def test_the_segments_tab_opens_on_specialties_with_four_cards_and_the_grid(app):
     cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value]
-    assert len(cards) == 8  # four on Market trend and four on Segments
-    segments_cards = cards[4:]
+    assert len(cards) == 12  # four each on Market trend, Segments and Forecasts
+    segments_cards = cards[4:8]
     assert "Highest share" in segments_cards[0] and "Physical Medicine" in segments_cards[0]
     assert "Largest source of visits" in segments_cards[1]
     assert "Orthopedic Surgery" in segments_cards[1]
@@ -214,6 +215,48 @@ def test_grouping_by_age_or_gender_and_changing_the_period_all_run(monkeypatch):
     age = _segments(monkeypatch, seg_by="age_band")
     assert any("Age band over time" in m.value for m in age.markdown)
     assert any("65 to 74" in m.value for m in age.markdown)
+
+
+# ------------------------------------------------------------------ the forecasts tab
+
+
+def test_the_forecasts_tab_opens_with_the_three_national_forecasts_and_the_range_held(app):
+    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value][8:12]
+    assert len(cards) == 4
+    assert "In 1 month (Aug 2025)" in cards[0] and "1.88%" in cards[0]
+    assert "1.58% to 2.15% (90%)" in cards[0] and "same as last month" in cards[0]
+    assert "In 3 months (Oct 2025)" in cards[1] and "In 6 months (Jan 2026)" in cards[2]
+    assert "Range held at 1 month" in cards[3] and "96%" in cards[3]
+    page = " ".join(m.value for m in app.markdown)
+    assert "How far to trust it, 1 month ahead" in page and "Segment forecasts" in page
+    assert "Decline alert, 1 month ahead" in page
+    assert "Flagged as likely to fall 30% or more" in page
+    assert "ran 5.5% too high in testing: read it as optimistic" in page
+
+
+def test_the_forecasts_tab_keeps_its_caveats(app):
+    page = " ".join([m.value for m in app.markdown] + [c.value for c in app.caption])
+    assert "no model beat that simple rule at any horizon" in page
+    assert "have already passed: no newer extract has arrived" in page
+    assert "not as a prediction for one segment" in page
+    assert "never as a reason to act on its own" in page and "a 1-month flag only" in page
+    assert "Segment forecasts run high: 5.5% at 1 month and 10.9% at 3 months in testing" in page
+
+
+def test_each_horizon_and_a_chosen_specialty_changes_the_forecasts_tab(monkeypatch):
+    three = _trend(monkeypatch, fc_horizon=3)
+    assert not three.exception
+    page3 = " ".join(m.value for m in three.markdown)
+    assert "ran 10.9% too high in testing" in page3
+    assert "How far to trust it, 3 months ahead" in page3 and "Range held at 3 months" in page3
+    six = _trend(monkeypatch, fc_horizon=6)
+    assert not six.exception
+    page6 = " ".join(m.value for m in six.markdown)
+    assert "the segment forecast is the simple rule" in page6
+    assert "too high in testing: read" not in page6
+    one = _trend(monkeypatch, fc_specialty="RHEUMATOLOGY")
+    assert not one.exception
+    assert "Segments in Rheumatology" in " ".join(m.value for m in one.markdown)
 
 
 # ------------------------------------------------------------------ the market map

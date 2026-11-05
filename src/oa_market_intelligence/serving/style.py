@@ -14,6 +14,7 @@ NAVY, TEAL, GREEN, RED, GREY = "#1B2A41", "#0F8B8D", "#1E9E5A", "#C8553D", "#7A8
 
 CSS = f"""<style>
 .oa-kpi {{background:{NAVY};color:#fff;border-radius:14px;padding:16px 20px;min-height:152px}}
+@media (max-width:640px) {{.oa-kpi {{min-height:0}}}}
 .oa-kpi .l {{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;opacity:.78}}
 .oa-kpi .v {{font-size:2rem;font-weight:700;line-height:1.2;margin:.15rem 0}}
 .oa-kpi .c {{font-size:.8rem;opacity:.82;line-height:1.35}}

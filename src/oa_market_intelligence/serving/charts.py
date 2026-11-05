@@ -110,6 +110,95 @@ def market_trend_chart(
     return _style(alt.layer(*layers).properties(height=HEIGHT + 60))
 
 
+def national_fan_chart(frames: dict[str, pd.DataFrame]) -> alt.Chart:
+    """The national share so far and the forecast at each horizon: a dotted line from the latest
+    month to each forecast, a thick bar for the 80% range, a thin one for the 90% range and a
+    point for the forecast. `frames` comes from `forecasts.fan`."""
+    history, forecast, links = frames["history"], frames["forecast"], frames["links"]
+    axis = alt.Axis(format="%b %Y", tickCount=5, labelOverlap=True)
+    x = alt.X("month:T", title=None, axis=axis)
+    y = alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False))
+    line = (
+        alt.Chart(history)
+        .mark_line(color=SERIES, strokeWidth=3)
+        .encode(x=x, y=y)
+    )
+    dots = (
+        alt.Chart(history)
+        .mark_circle(color=SERIES, size=30, opacity=0)
+        .encode(
+            x=x,
+            y=y,
+            tooltip=[
+                alt.Tooltip("label:N", title="Month"),
+                alt.Tooltip("share_pct:Q", title="Share (%)", format=".2f"),
+            ],
+        )
+    )
+    dotted = (
+        alt.Chart(links)
+        .mark_line(color=PROJECTED, strokeDash=[3, 4], strokeWidth=1.5)
+        .encode(x=x, y=y, detail="horizon:N")
+    )
+    fx = alt.X("date:T", title=None, axis=axis)
+    wide = (
+        alt.Chart(forecast)
+        .mark_rule(color=PROJECTED, strokeWidth=2, opacity=0.45)
+        .encode(x=fx, y="lo90_pct:Q", y2="hi90_pct:Q")
+    )
+    narrow = (
+        alt.Chart(forecast)
+        .mark_rule(color=PROJECTED, strokeWidth=7, opacity=0.8)
+        .encode(x=fx, y="lo80_pct:Q", y2="hi80_pct:Q")
+    )
+    points = (
+        alt.Chart(forecast)
+        .mark_point(color="white", filled=True, size=60, stroke=PROJECTED, strokeWidth=2)
+        .encode(
+            x=fx,
+            y="forecast_pct:Q",
+            tooltip=[
+                alt.Tooltip("month:N", title="Month"),
+                alt.Tooltip("horizon:Q", title="Months ahead"),
+                alt.Tooltip("forecast_pct:Q", title="Forecast (%)", format=".2f"),
+                alt.Tooltip("lo80_pct:Q", title="80% low (%)", format=".2f"),
+                alt.Tooltip("hi80_pct:Q", title="80% high (%)", format=".2f"),
+                alt.Tooltip("lo90_pct:Q", title="90% low (%)", format=".2f"),
+                alt.Tooltip("hi90_pct:Q", title="90% high (%)", format=".2f"),
+                alt.Tooltip("method:N", title="Method"),
+            ],
+        )
+    )
+    return _style((line + dots + dotted + wide + narrow + points).properties(height=HEIGHT + 40))
+
+
+def specialty_forecast_chart(spec: pd.DataFrame, horizon: int) -> alt.Chart:
+    """Each specialty's forecast (a bar) next to its share in the latest month (a dark tick),
+    largest specialties first. `spec` comes from `forecasts.specialty_view`."""
+    order = list(spec["label"])
+    y = alt.Y(
+        "label:N", sort=order, title=None, axis=alt.Axis(labelLimit=260, labelOverlap=False)
+    )
+    tip = [
+        alt.Tooltip("label:N", title="Specialty"),
+        alt.Tooltip("forecast_pct:Q", title=f"Forecast, {horizon} mo (%)", format=".2f"),
+        alt.Tooltip("last_pct:Q", title="Latest month (%)", format=".2f"),
+        alt.Tooltip("visits:Q", title="Visits in latest month", format=","),
+        alt.Tooltip("segments:Q", title="Segments"),
+    ]
+    bars = (
+        alt.Chart(spec)
+        .mark_bar(color=PROJECTED, opacity=0.75, cornerRadiusEnd=3)
+        .encode(y=y, x=alt.X("forecast_pct:Q", title="Share of visits (%)"), tooltip=tip)
+    )
+    ticks = (
+        alt.Chart(spec)
+        .mark_tick(color="#1B2A41", thickness=3, size=18)
+        .encode(y=y, x="last_pct:Q", tooltip=tip)
+    )
+    return _style((bars + ticks).properties(height=alt.Step(BAR_STEP)))
+
+
 def group_chart(table: pd.DataFrame, show: str = "share") -> alt.Chart:
     """The Segments tab's ranked bars: share, Zilretta's visits, or the change in share over the
     last 12 months (teal for a rise, rust for a fall). Groups with few visits are drawn faded."""
