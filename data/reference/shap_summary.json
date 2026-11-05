@@ -1,0 +1,105 @@
+{
+ "description": "SHAP values of the adopted segment logistic regression (DL-91): how much each kind of information moves the forecasts. A post-hoc explanation of the model, not a cause of share changes; it did not influence which model was chosen.",
+ "method": "Exact SHAP for a linear model: coefficient x (value - average of the fitted rows).",
+ "origin_month_id": 202507,
+ "horizons": {
+  "1": {
+   "C": 1.0,
+   "typical_segment_pct": 1.85,
+   "segments": 113,
+   "max_gap_to_stored_forecast": 0.0,
+   "additivity_max_error": 8.881784197001252e-16,
+   "group_share_of_movement_pct": {
+    "The segment's own recent share": 40.4,
+    "Specialty and market context": 19.0,
+    "The segment's long-run share": 14.9,
+    "Age and gender": 8.6,
+    "The specialty's long-run share": 7.2,
+    "Which specialty it is": 4.1,
+    "The whole market's share and its recent change": 3.5,
+    "How big the segment is": 2.2,
+    "Time of year": 0.1
+   },
+   "top_features_pct": {
+    "logit_roll3": 29.2,
+    "g4_logit_spec_share_lag1": 14.1,
+    "logit_seg_history": 10.5,
+    "age_ordinal": 6.1,
+    "logit_spec_history": 5.0,
+    "specialty_grouped_PHYSICIAN ASSISTANT": 2.8,
+    "lag1_x_visits": 2.8,
+    "specialty_grouped_ORTHOPEDIC SURGERY": 2.7
+   },
+   "example": {
+    "segment": {
+     "specialty_name": "PHYSICIAN ASSISTANT",
+     "age_band": "65 TO 74",
+     "gender": "FEMALE"
+    },
+    "visits_last_month": 6104.0,
+    "forecast_pct": 1.96,
+    "last_month_pct": 2.05,
+    "pushes": {
+     "The segment's long-run share": 0.083,
+     "The segment's own recent share": 0.082,
+     "Which specialty it is": -0.051,
+     "The whole market's share and its recent change": -0.04,
+     "Age and gender": 0.03,
+     "The specialty's long-run share": -0.03,
+     "Specialty and market context": -0.009,
+     "How big the segment is": -0.008,
+     "Time of year": -0.001
+    }
+   }
+  },
+  "3": {
+   "C": 1.0,
+   "typical_segment_pct": 1.9,
+   "segments": 113,
+   "max_gap_to_stored_forecast": 0.0,
+   "additivity_max_error": 8.881784197001252e-16,
+   "group_share_of_movement_pct": {
+    "The segment's own recent share": 46.6,
+    "Specialty and market context": 16.8,
+    "The segment's long-run share": 9.0,
+    "Age and gender": 8.9,
+    "The specialty's long-run share": 8.8,
+    "Which specialty it is": 5.0,
+    "How big the segment is": 2.0,
+    "Time of year": 1.6,
+    "The whole market's share and its recent change": 1.3
+   },
+   "top_features_pct": {
+    "logit_roll3": 30.7,
+    "g4_logit_spec_share_lag1": 12.9,
+    "logit_seg_history": 6.4,
+    "age_ordinal": 6.3,
+    "logit_spec_history": 6.2,
+    "specialty_grouped_ORTHOPEDIC SURGERY": 3.3,
+    "specialty_grouped_PHYSICIAN ASSISTANT": 3.0,
+    "logit_lag1": 2.8
+   },
+   "example": {
+    "segment": {
+     "specialty_name": "PHYSICIAN ASSISTANT",
+     "age_band": "65 TO 74",
+     "gender": "FEMALE"
+    },
+    "visits_last_month": 6104.0,
+    "forecast_pct": 2.03,
+    "last_month_pct": 2.05,
+    "pushes": {
+     "The segment's own recent share": 0.07,
+     "Which specialty it is": -0.058,
+     "The segment's long-run share": 0.05,
+     "The specialty's long-run share": -0.037,
+     "How big the segment is": 0.026,
+     "Age and gender": 0.025,
+     "Time of year": 0.018,
+     "The whole market's share and its recent change": -0.015,
+     "Specialty and market context": -0.01
+    }
+   }
+  }
+ }
+}
