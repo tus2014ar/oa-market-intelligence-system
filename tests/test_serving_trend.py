@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 
 from modelling_fixtures import month_ids
-from oa_market_intelligence.serving import charts, style, trend
+from oa_market_intelligence.serving import style, trend
 
 
 def _seg():
@@ -275,6 +275,9 @@ def test_the_stylesheet_is_one_style_block():
 
 
 def test_the_chart_has_the_share_the_guide_the_dip_and_the_markers_when_asked():
+    pytest.importorskip("altair")  # the CI jobs without the site packages skip this
+    from oa_market_intelligence.serving import charts
+
     full = trend.monthly(_seg())
     fitted, _ = trend.trend_line(full)
     spec = charts.market_trend_chart(
@@ -287,6 +290,9 @@ def test_the_chart_has_the_share_the_guide_the_dip_and_the_markers_when_asked():
 
 
 def test_a_chart_of_quarters_draws_from_the_quarterly_frame():
+    pytest.importorskip("altair")  # the CI jobs without the site packages skip this
+    from oa_market_intelligence.serving import charts
+
     q = trend.quarterly(trend.monthly(_seg()))
     spec = charts.market_trend_chart(q).to_dict()
     assert spec["datasets"] and not math.isnan(q["share_pct"].iloc[0])
