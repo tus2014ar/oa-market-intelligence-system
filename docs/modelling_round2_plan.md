@@ -1,6 +1,6 @@
 # Modelling round 2: plan (exploratory; written before any run)
 
-**Status: nothing in this document has been run.** It fixes the experiments, the metrics and the pass rules before any code is written, in the same way as [`modelling_plan.md`](modelling_plan.md) did for round 1. It is **exploratory**: it never replaces a round 1 result, and nothing it finds changes what the site serves until the adoption rules in section 9 are met.
+**Status: run on 5 Nov 2026; the results are in [`modelling_round2_results.md`](modelling_round2_results.md) (DL-96). The plan below is unchanged from before the run.** It fixes the experiments, the metrics and the pass rules before any code is written, in the same way as [`modelling_plan.md`](modelling_plan.md) did for round 1. It is **exploratory**: it never replaces a round 1 result, and nothing it finds changes what the site serves until the adoption rules in section 9 are met.
 
 ## 1. Why a second round, and what it is for
 
