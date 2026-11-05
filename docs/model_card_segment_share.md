@@ -54,6 +54,9 @@ The same comparison without the COVID months, without the 2024 dip months and wi
 
 By size at 1 month the bias is about +6% for segments with 200 or more visits and -4.6% for those under 50. In the December 2023 batch demonstration, which runs into the 2024 dip, the segment forecast was 13 to 41% too high.
 
+## What the model relies on
+At the latest origin the forecasts move mostly on the segment's own recent share (about 40% of the movement at 1 month, 47% at 3 months), then on specialty and market context (about 19% at 1 month); time of year is under 1%. This is a description of the model, not of the market: see [model_explanation.md](model_explanation.md) (DL-91).
+
 ## Limitations
 
 - **Upward bias that grows with the horizon.** This is the bias the archived attempt found (about +7% in a falling market); the new inputs did not remove it. A user of the 3-month forecast should read it as optimistic.
