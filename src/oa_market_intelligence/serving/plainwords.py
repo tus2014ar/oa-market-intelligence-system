@@ -357,6 +357,17 @@ EXPLAIN: dict[str, dict[str, str]] = {
             "not verified have not been checked against their source."
         ),
     },
+    "ask_answer": {
+        "read": (
+            "Under each answer, Sources names the pages whose tables it used and opens them, "
+            "'Check these figures' lists numbers it quoted that were not in the data it looked "
+            "up, and 'Data the answer used' shows exactly what it looked up."
+        ),
+        "not": (
+            "It is a language model, so it can be wrong even with sources. Check a figure on the "
+            "page it came from before you quote it."
+        ),
+    },
     "mr_scoreboard": {
         "read": (
             "Each model is compared with the simple rule 'same as last month'. A model counts as "

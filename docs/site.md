@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-108)
+# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-109)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -156,6 +156,16 @@ A bar, a cell, a tile or a table row is also a click target. The chart carries a
 - **The filter bar follows.** `common.go` no longer sets the filter bar's widgets (Streamlit forbids it once they are drawn, which a click in a chart is); it marks them to take the new values when the bar is next drawn.
 - **A click that is not understood does nothing.** No click, a click with the wrong fields or an empty selection never moves the page.
 - **The state panel is Medicare billing, not IQVIA**, and says so. It does not say why a state's rate is what it is.
+
+## The question box, brought up to the site's standard (DL-109)
+The box's behaviour, tools, limits and prompt are unchanged. What changed is the page around it, in `serving/askview.py` (tested; no model is called) and `app/ask_tab.py`:
+
+- **What it would look up.** Where no key is configured the page used to show one line. It now also lets you pick any of the eight example questions and shows the lookups that question needs (the same read-only tools Claude is given, run on the same snapshot) and, folded, the data each returns, with the page that shows the same thing. It shows the data an answer would be written from, never an answer: only a model can write one, and the page says so.
+- **Sources open the page behind them.** Under an answer, each source that has a page gets an "Open <page>" button. It moves inside the app, so the conversation is kept, and the page it lands on offers "Back to Ask Claude". A source with no page gets no button.
+- **How it works, and what it can and cannot do.** A folded note, shown with or without a key: Claude sees only short read-only summaries, never patient-level rows, queries or the internet; every answer lists its sources and the data it used, and figures not in that data are listed under "Check these figures"; the per-visitor and daily limits; it can still be wrong; and **it has not yet been tried with a live model** (so far only a scripted stand-in plays back answers; the owner runs the real test with their own key). The eleven tools are listed in plain words with the page each matches.
+- **A "What does this mean?" note** on how to read an answer (the 18th note).
+- **Tests.** `tests/test_serving_askview.py` (the eight examples and the lookups each needs are real tools; the eleven tools are all named in plain words and match the tool list; each source the box can give points at its page; the preview of every example returns data, never an error, and equals what the tool gives Claude; the how-it-works text keeps its limits and its not-yet-tried line) and, in `tests/test_site_app.py`, the preview and its choice, the note with and without a key, the source buttons moving to the page with the chat kept, no button for a source with no page, and that the key and access code never appear.
+- **Still true.** No real answer has been graded. `oa-ask-check` with the owner's own key is the next step for the box, and it stays off until then.
 
 ## Interactive charts (DL-108)
 - **Drag a range on Market trend.** Drag across the share chart and the four cards and the "Where the share stands" panel describe only those months (latest and peak in the range, visits and share in the range, the slope of a line through them). A line above the cards says which months are shown and offers "Clear range". A range of under two months is ignored and says so. The range belongs to the group and period it was dragged on and to the chart's view: changing the grain, the trend line or the markers, changing a filter, or clearing starts the chart again with no range, so the chart and the cards never disagree. The page reads the range from the chart's own state before it draws the cards (`trend.in_range`, `links.brushed`, `common.brushed`).

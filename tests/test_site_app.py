@@ -1037,7 +1037,7 @@ def test_the_charts_have_a_what_does_this_mean_button_where_a_chart_is_drawn(pag
         "Findings": 0,
         "Context": 2,
         "Market map": 1,
-        "Ask Claude": 0,
+        "Ask Claude": 1,
     }
 
 
@@ -1159,3 +1159,81 @@ def test_the_groups_over_time_picker_and_the_shap_switch_still_work():
     model = run_page("Model results")
     model.get("segmented_control")  # the switch is drawn inside the fragment
     assert not model.exception
+
+
+# ---------------------- the Ask Claude page, brought up to the site's standard
+
+
+def test_without_a_key_the_page_shows_what_the_box_would_look_up(monkeypatch):
+    at = _box(monkeypatch)
+    assert not at.exception and not at.chat_input
+    [pick] = [s for s in at.selectbox if s.key == "ask_preview"]
+    assert (
+        len(pick.options) == 8 and pick.value == "How has Zilretta's share changed since its peak?"
+    )
+    text = " ".join(m.value for m in at.markdown)
+    assert "What it would look up" in text and "The headline numbers, how old the data are" in text
+    assert len(at.get("json")) == 1  # the one lookup's data, folded
+    assert any("not switched on" in i.value for i in at.info)
+
+
+def test_choosing_another_example_shows_its_own_lookups(monkeypatch):
+    at = _box(monkeypatch)
+    [pick] = [s for s in at.selectbox if s.key == "ask_preview"]
+    pick.select("Which segments does the decline alert flag, and how reliable is it?").run()
+    assert not at.exception
+    text = " ".join(m.value for m in at.markdown)
+    assert "The forecasts and the decline-alert list" in text
+    assert "How each forecast scored, and what to use it for" in text
+    assert len(at.get("json")) == 2
+    pick = [s for s in at.selectbox if s.key == "ask_preview"][0]
+    pick.select("Show me the share trend as a chart.").run()
+    assert "Draws one of four charts" in " ".join(m.value for m in at.markdown)
+
+
+def test_the_page_explains_what_it_can_and_cannot_do_with_or_without_a_key(monkeypatch):
+    for env in ({}, {"ANTHROPIC_API_KEY": "sk-test"}):
+        at = _box(monkeypatch, **env)
+        [how] = [e for e in at.expander if e.proto.label.startswith("How it works")]
+        text = " ".join(m.value for m in at.markdown)
+        assert "not yet been tried with a live model" in text
+        assert "The eleven things it can look at" in text
+        assert text.count("page)") >= 9  # each tool that reads says which page shows the same
+
+
+def test_an_answers_sources_open_the_page_behind_them_and_the_chat_is_kept(monkeypatch):
+    _stub_claude(
+        monkeypatch,
+        sources=[
+            "Forecasts page (pred_batch, model_scores)",
+            "Model results page (model_scores, modelling_posthoc.json)",
+            "Forecasts page (pred_batch, model_scores)",
+        ],
+    )
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    _say(at, "How reliable are the forecasts?")
+    assert not at.exception
+    labels = _labels(at)
+    assert labels.count("Open Forecasts") == 1 and labels.count("Open Model results") == 1
+    assert any(c.value.startswith("Sources: Forecasts page") for c in at.caption)
+    next(b for b in at.button if b.label == "Open Forecasts").click().run()
+    assert not at.exception
+    assert at.session_state["from"] == ("Ask Claude", "Forecasts")
+    assert len(at.session_state["chat"]) == 2  # the conversation survives the move
+    assert [b.proto.label for b in at.get("page_link")] == ["Back to Ask Claude"]
+
+
+def test_an_answer_with_no_page_behind_its_source_has_no_open_button(monkeypatch):
+    _stub_claude(monkeypatch, sources=["Something with no page"])
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    _say(at, "Anything?")
+    assert not [label for label in _labels(at) if label.startswith("Open ")]
+    assert any(c.value == "Sources: Something with no page" for c in at.caption)
+
+
+def test_the_key_and_the_access_code_never_appear_in_the_new_page_text(monkeypatch):
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test-secret", ACCESS_CODE="code-xyz")
+    text = " ".join(
+        [m.value for m in at.markdown] + [c.value for c in at.caption] + [i.value for i in at.info]
+    )
+    assert "sk-test-secret" not in text and "code-xyz" not in text

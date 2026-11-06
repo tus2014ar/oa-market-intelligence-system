@@ -9,24 +9,12 @@ from __future__ import annotations
 import os
 import uuid
 
+import common
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, guard, qa
+from oa_market_intelligence.serving import askview, charts, guard, qa
 
-EXAMPLE_QUESTIONS = {
-    "For a brand manager": [
-        "How has Zilretta's share changed since its peak?",
-        "What is the forecast for the next three months, and how far can I trust it?",
-        "Who are Zilretta's competitors in this project?",
-        "Show me the share trend as a chart.",
-    ],
-    "For an analyst": [
-        "Which model is used for the national forecast, and did any model beat the simple rule?",
-        "Do the segment forecasts run high?",
-        "Which segments does the decline alert flag, and how reliable is it?",
-        "Where do Zilretta's visits come from?",
-    ],
-}
+EXAMPLE_QUESTIONS = askview.EXAMPLE_QUESTIONS  # kept here under its old name
 TOOL_LABELS = {
     "get_data_status": "the headline numbers",
     "get_market_trend": "the market trend",
@@ -54,19 +42,34 @@ def _secret(name: str, default: str | None = None) -> str | None:
 def get_limits() -> dict:
     """Shared by all visitors, so one person cannot spend the whole day's budget."""
     return {
-        "per_visitor": guard.RateLimiter(max_per_window=8, window_seconds=3600),
-        "site": guard.RateLimiter(max_per_window=200, window_seconds=3600),
-        "tokens": guard.TokenBudget(daily_tokens=int(_secret("DAILY_TOKEN_BUDGET", "300000"))),
+        "per_visitor": guard.RateLimiter(
+            max_per_window=askview.PER_VISITOR_PER_HOUR, window_seconds=3600
+        ),
+        "site": guard.RateLimiter(max_per_window=askview.SITE_PER_HOUR, window_seconds=3600),
+        "tokens": guard.TokenBudget(
+            daily_tokens=int(_secret("DAILY_TOKEN_BUDGET", str(askview.DEFAULT_DAILY_TOKENS)))
+        ),
     }
 
 
-def _show_answer(message: dict, snapshot) -> None:
+def _show_answer(message: dict, snapshot, index: int) -> None:
     """One assistant turn: the answer, any chart it asked for, its sources and its caveats."""
     st.write(message["content"])
     for spec in message.get("charts", []):
         st.altair_chart(charts.build(spec["chart"], spec["params"], snapshot), width="stretch")
     if message.get("sources"):
         st.caption("Sources: " + "; ".join(message["sources"]))
+        pages = askview.source_pages(message["sources"])
+        if pages:  # in the app, so the conversation is kept; the page offers a way back
+            with st.container(horizontal=True):
+                for title in pages:
+                    if st.button(
+                        f"Open {title}",
+                        key=f"src-{index}-{title}",
+                        type="tertiary",
+                        icon=":material/open_in_new:",
+                    ):
+                        common.go(title, "Ask Claude")
     if message.get("unchecked"):
         st.caption(
             "Check these figures: " + ", ".join(message["unchecked"]) + " (not found in the "
@@ -78,6 +81,36 @@ def _show_answer(message: dict, snapshot) -> None:
                 st.code(f"{name}({arguments})")
 
 
+def _preview(snapshot) -> None:
+    """With no key there is no answer to show, but the data an answer would be written from can
+    be: pick an example question and see the lookups it needs and what each returns."""
+    with st.container(border=True):
+        st.markdown("**What it would look up**")
+        st.write(
+            "Pick an example question to see the read-only data Claude would be given to answer "
+            "it. This is the same data as the pages. Writing the answer needs a model, which is "
+            "what the key switches on."
+        )
+        questions = [q for group in askview.EXAMPLE_QUESTIONS.values() for q in group]
+        question = st.selectbox("Example question", questions, key="ask_preview")
+        for number, look in enumerate(askview.lookup_preview(question, snapshot), start=1):
+            where = f" The same data is on the {look['page']} page." if look["page"] else ""
+            st.markdown(f"**{number}. {look['label']}**")
+            st.caption(f"Lookup: {look['tool']}({look['arguments']}).{where}")
+            with st.expander("The data it returns"):
+                st.json(look["output"], expanded=1)
+
+
+def _how_it_works() -> None:
+    """What Claude can see, what keeps its answers honest and what has been tested."""
+    with st.expander("How it works, and what it can and cannot do"):
+        for line in askview.HOW_IT_WORKS:
+            st.markdown(f"- {line}")
+        st.markdown("**The eleven things it can look at**")
+        for tool, (label, page) in askview.TOOL_PLAIN.items():
+            st.markdown(f"- {label}" + (f" ({page} page)" if page else ""))
+
+
 def ask_box(snapshot) -> None:
     """The question box: a conversation with streamed answers, charts, sources and a number
     check. It works only where an API key is configured, and then behind an optional access code,
@@ -85,6 +118,7 @@ def ask_box(snapshot) -> None:
     api_key = _secret("ANTHROPIC_API_KEY")
     if not api_key:
         st.info("The question box is not switched on for this copy of the site (no API key).")
+        _preview(snapshot)
         return
     gate = guard.AccessGate(_secret("ACCESS_CODE"))
     if "visitor" not in st.session_state:
@@ -112,10 +146,10 @@ def ask_box(snapshot) -> None:
                     if st.button(question, key=f"ex-{question}", width="stretch"):
                         st.session_state["pending"] = question
                         st.rerun()
-    for message in chat:
+    for index, message in enumerate(chat):
         with st.chat_message(message["role"]):
             if message["role"] == "assistant":
-                _show_answer(message, snapshot)
+                _show_answer(message, snapshot, index)
             else:
                 st.write(message["content"])
     if chat and chat[-1]["role"] == "assistant" and chat[-1].get("followups") and not pending:
@@ -200,4 +234,6 @@ def render(snapshot, data_chip) -> None:
             "Ask a question about the market trend, the segments, the forecasts or how the models "
             "scored. The answer comes from the same tables as the other pages."
         )
+    common.explain("ask_answer")
+    _how_it_works()
     ask_box(snapshot)
