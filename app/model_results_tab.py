@@ -160,7 +160,9 @@ def _round2(round2, round2_posthoc) -> None:
         )
 
 
+@st.fragment
 def _shap(shap) -> None:
+    # the months-ahead switch moves only this part of the page
     with st.container(border=True):
         horizon = st.segmented_control(
             "Months ahead",

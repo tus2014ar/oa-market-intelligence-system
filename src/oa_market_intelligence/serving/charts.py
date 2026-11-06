@@ -75,6 +75,8 @@ def market_trend_chart(
     fitted: pd.Series | None = None,
     events: pd.DataFrame | None = None,
     dip: tuple[pd.Timestamp, pd.Timestamp] | None = None,
+    brush: bool = False,
+    shown: tuple[float, float] | None = None,
 ) -> alt.Chart:
     """The Market trend tab's chart: the share by month (or quarter) with an optional straight-line
     guide (amber, dashed), the 2024 data-capture dip (shaded) and dated markers (grey, dotted).
@@ -95,7 +97,8 @@ def market_trend_chart(
         shade = alt.Chart(band).mark_rect(color=TREND_GUIDE, opacity=0.18)
         layers.append(shade.encode(x="start:T", x2="end:T"))
     layers.append(base.mark_line(color=SERIES, strokeWidth=3).encode(x=x, y=y))
-    layers.append(base.mark_circle(color=SERIES, size=46).encode(x=x, y=y, tooltip=tip))
+    dots = base.mark_circle(color=SERIES, size=46).encode(x=x, y=y, tooltip=tip)
+    layers.append(dots.add_params(_brush(shown)) if brush else dots)
     if fitted is not None:
         layers.append(
             base.mark_line(color=TREND_GUIDE, strokeDash=[6, 5], strokeWidth=2).encode(
@@ -109,6 +112,14 @@ def market_trend_chart(
             .encode(x="month:T", tooltip=alt.Tooltip("label:N", title="Marker"))
         )
     return _style(alt.layer(*layers).properties(height=HEIGHT + 60))
+
+
+def _brush(shown: tuple[float, float] | None = None) -> alt.Parameter:
+    """A range dragged along the time axis, called "brush": the page reads which months were
+    covered (see `links.brushed`) and gives the numbers for them. `shown` is the range already
+    chosen (milliseconds since 1970), drawn again when the page runs, so it stays on the chart."""
+    value = None if shown is None else {"x": [int(shown[0]), int(shown[1])]}
+    return alt.selection_interval(name="brush", encodings=["x"], value=value)
 
 
 def _pick(*fields: str) -> alt.Parameter:
@@ -307,7 +318,12 @@ def state_trend_chart(by_year: pd.DataFrame, name: str) -> alt.Chart:
     return _style((band + line + points).properties(height=HEIGHT - 40))
 
 
-def compare_chart(frame: pd.DataFrame, group_label: str) -> alt.Chart:
+def compare_chart(
+    frame: pd.DataFrame,
+    group_label: str,
+    brush: bool = False,
+    shown: tuple[float, float] | None = None,
+) -> alt.Chart:
     """One group's monthly share beside the whole market's, so the gap between them is the picture.
     `frame` comes from `detail.compare_series`; the group is teal and the market grey and dashed."""
     long = frame.melt(
@@ -331,6 +347,8 @@ def compare_chart(frame: pd.DataFrame, group_label: str) -> alt.Chart:
     dash = alt.condition(alt.datum.series == "All visits", alt.value([6, 5]), alt.value([1, 0]))
     line = base.mark_line(strokeWidth=3).encode(strokeDash=dash)
     points = base.mark_circle(size=40).encode(tooltip=tip)
+    if brush:
+        points = points.add_params(_brush(shown))
     return _style((line + points).properties(height=HEIGHT))
 
 
@@ -449,8 +467,14 @@ def group_trend_chart(frame: pd.DataFrame) -> alt.Chart:
         alt.Tooltip("zilretta:Q", title="Zilretta visits", format=","),
         alt.Tooltip("partial_year:N", title="Part year"),
     ]
-    line = base.mark_line(strokeWidth=2.5)
-    points = base.mark_circle(size=55).encode(tooltip=tip)
+    hover = alt.selection_point(
+        fields=["label"], on="pointerover", clear="pointerout", nearest=True
+    )  # client-side only: the line under the pointer stands out and the others fade
+    fade = alt.condition(hover, alt.value(1.0), alt.value(0.25))
+    line = base.mark_line().encode(
+        opacity=fade, strokeWidth=alt.condition(hover, alt.value(4), alt.value(2.5))
+    )
+    points = base.mark_circle(size=55).encode(tooltip=tip, opacity=fade).add_params(hover)
     return _style((line + points).properties(height=HEIGHT))
 
 

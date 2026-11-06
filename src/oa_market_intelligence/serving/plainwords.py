@@ -236,7 +236,8 @@ EXPLAIN: dict[str, dict[str, str]] = {
             "Each point is one month: Zilretta's visits as a share of the three treatments' "
             "visits for the group you chose. The amber dashes are a straight line fitted to the "
             "points to show the overall direction. The shaded band is a stretch of months when "
-            "the data capture dipped for all three treatments."
+            "the data capture dipped for all three treatments. Drag across the chart to pick a "
+            "range: the cards and the panel beside it then describe only those months."
         ),
         "not": (
             "A move in one month, especially for a small group, can be chance. The line shows "
@@ -261,7 +262,7 @@ EXPLAIN: dict[str, dict[str, str]] = {
     "seg_time": {
         "read": (
             "One line per group you pick, with Zilretta's share for each calendar year, so you "
-            "can see whether groups rise and fall together."
+            "can see whether groups rise and fall together. Point at a line to bring it forward."
         ),
         "not": "The first and last years are part years, so compare them with care.",
     },
@@ -269,7 +270,8 @@ EXPLAIN: dict[str, dict[str, str]] = {
         "read": (
             "The group's share each month (teal line) against the share across all visits "
             "(grey dashed line). Above the grey line, Zilretta takes a bigger share in this group "
-            "than in the market as a whole."
+            "than in the market as a whole. Drag across the chart to see the average of both over "
+            "a range of months."
         ),
         "not": "A gap to the market is a description, not a reason.",
     },

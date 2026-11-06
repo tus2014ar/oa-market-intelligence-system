@@ -210,3 +210,47 @@ def test_the_real_detail_of_orthopedic_surgery_matches_the_figures_on_the_other_
     assert total == 22 and 1 <= rank <= total  # 22 specialties are ranked on the Segments page
     block = detail.forecast_block(pred, seg, "ORTHOPEDIC SURGERY", None, None)
     assert len(block["rows"]) == 3 and block["rows"][0]["segments"] >= 1
+
+
+# ------------------------------------------------------------------ a range dragged on the chart
+
+
+def _ms(text):
+    return pd.Timestamp(text).timestamp() * 1000
+
+
+def test_over_a_range_the_group_and_the_market_are_averaged_by_hand():
+    series = detail.compare_series(_seg(), "A", None, None, _market(), "All")
+    r = detail.range_compare(series, (_ms("2023-10-01"), _ms("2024-03-01")))
+    # A is 2% in Oct to Dec 2023 and 3% in Jan to Mar 2024; the market is 1.5% then 2%
+    assert r["months"] == 6 and r["from"] == "Oct 2023" and r["to"] == "Mar 2024"
+    assert r["group_pct"] == pytest.approx(2.5) and r["market_pct"] == pytest.approx(1.75)
+    assert r["gap_pp"] == pytest.approx(0.75)
+    text = detail.range_sentence("Specialty A", r)
+    assert "Oct 2023 to Mar 2024 (6 months)" in text and "averaged 2.50% against 1.75%" in text
+    assert "0.75 points above" in text
+
+
+def test_a_range_below_the_market_says_below_and_a_thin_range_gives_nothing():
+    series = detail.compare_series(_seg(), "B", None, None, _market(), "All")
+    r = detail.range_compare(series, (_ms("2024-01-01"), _ms("2024-03-01")))
+    assert r["gap_pp"] < 0 and "points below" in detail.range_sentence("B", r)
+    assert detail.range_compare(series, None) is None
+    assert detail.range_compare(series, (_ms("2024-01-01"), _ms("2024-01-20"))) is None  # 1 month
+    assert detail.range_compare(series, (_ms("2035-01-01"), _ms("2036-01-01"))) is None
+
+
+def test_a_group_with_no_share_in_the_range_gives_nothing():
+    series = detail.compare_series(_seg(), "A", None, None, _market(), "All")
+    series["group_pct"] = float("nan")
+    assert detail.range_compare(series, (_ms("2024-01-01"), _ms("2024-03-01"))) is None
+
+
+def test_the_compare_chart_takes_a_dragged_range_only_when_asked():
+    pytest.importorskip("altair")
+    from oa_market_intelligence.serving import charts
+
+    series = detail.compare_series(_seg(), "A", None, None, _market(), "All")
+    assert "params" not in charts.compare_chart(series, "A").to_dict()
+    [brush] = charts.compare_chart(series, "A", brush=True).to_dict()["params"]
+    assert brush["name"] == "brush" and brush["select"]["type"] == "interval"

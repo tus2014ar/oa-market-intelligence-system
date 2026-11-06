@@ -99,6 +99,37 @@ def compare_series(
     return out.reset_index(drop=True)
 
 
+def range_compare(series: pd.DataFrame, bounds: tuple[float, float] | None) -> dict | None:
+    """The group against the whole market over a range dragged on the chart (milliseconds since
+    1970): the average of the monthly shares of each and the gap, in points. None when there is no
+    range, it holds fewer than two months, or the group has no share in it."""
+    if bounds is None:
+        return None
+    low, high = (pd.to_datetime(b, unit="ms") for b in bounds)
+    rows = series[(series["month"] >= low) & (series["month"] <= high)]
+    if len(rows) < 2 or rows["group_pct"].notna().sum() == 0:
+        return None
+    group, market = float(rows["group_pct"].mean()), float(rows["market_pct"].mean())
+    return {
+        "from": str(rows["label"].iloc[0]),
+        "to": str(rows["label"].iloc[-1]),
+        "months": int(len(rows)),
+        "group_pct": group,
+        "market_pct": market,
+        "gap_pp": group - market,
+    }
+
+
+def range_sentence(who: str, r: dict) -> str:
+    """The chosen range in one plain sentence: the group's average share against the market's."""
+    side = "above" if r["gap_pp"] > 0 else "below"
+    return (
+        f"{who}, {r['from']} to {r['to']} ({r['months']} months): Zilretta's share averaged "
+        f"{r['group_pct']:.2f}% against {r['market_pct']:.2f}% across all visits, "
+        f"{abs(r['gap_pp']):.2f} points {side}."
+    )
+
+
 def _share(frame: pd.DataFrame) -> float | None:
     c = float(frame["category"].sum())
     return None if c <= 0 else float(frame["zilretta"].sum()) / c

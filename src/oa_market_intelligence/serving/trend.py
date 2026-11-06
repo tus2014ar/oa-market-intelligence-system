@@ -25,6 +25,7 @@ PERIOD_PHRASE = {
 MIN_PEAK_VISITS = 100  # a month with fewer visits is too noisy to be called a peak
 SMALL_GROUP_VISITS = 300  # median visits a month under which a group's share is mostly noise
 MIN_GROUP_VISITS = 1000  # visits in a 12-month period under which a group is left out of a ranking
+MIN_RANGE_MONTHS = 2  # a dragged range holds at least this many months to be used
 COMPARE_MONTHS = 12  # the "change" columns compare the last 12 months with the 12 before
 
 
@@ -72,6 +73,22 @@ def window(frame: pd.DataFrame, period: str) -> pd.DataFrame:
     """The last months of the series named by the period ("1Y", "3Y", "5Y" or "All")."""
     months = PERIOD_MONTHS[period]
     return frame if months is None else frame.tail(months)
+
+
+def in_range(frame: pd.DataFrame, bounds: tuple[float, float] | None) -> pd.DataFrame | None:
+    """The months of `frame` inside a range dragged on the chart (milliseconds since 1970), or None
+    when there is no range or it holds fewer than two months (one month is not a range)."""
+    if bounds is None:
+        return None
+    low, high = (pd.to_datetime(b, unit="ms") for b in bounds)
+    inside = frame[(frame["month"] >= low) & (frame["month"] <= high)]
+    return inside.reset_index(drop=True) if len(inside) >= MIN_RANGE_MONTHS else None
+
+
+def range_label(frame: pd.DataFrame) -> str:
+    """The months a range covers, in words: "Mar 2022 to Jul 2024"."""
+    first, last = int(frame["month_id"].iloc[0]), int(frame["month_id"].iloc[-1])
+    return f"{views.month_label(first)} to {views.month_label(last)}"
 
 
 def quarterly(frame: pd.DataFrame) -> pd.DataFrame:

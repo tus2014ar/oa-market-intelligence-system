@@ -138,10 +138,19 @@ def render(ctx, data_chip, flt: dict) -> None:
     with left.container(border=True):
         st.markdown("**This group against all visits**")
         series = detail.compare_series(seg, specialty, age, gender, market, period)
-        st.altair_chart(charts.compare_chart(series, who), width="stretch")
+        event = st.altair_chart(
+            charts.compare_chart(series, who, brush=True),
+            width="stretch",
+            on_select="rerun",
+            key=f"detail_brush_{st.session_state.get('nav', 0)}_{specialty}|{age}|{gender}|{period}",
+        )
+        picked = detail.range_compare(series, common.brushed(event, "month"))
+        if picked is not None:
+            st.markdown(style.callout(detail.range_sentence(who, picked)), unsafe_allow_html=True)
         st.caption(
             "Zilretta's visits as a share of the visits of Zilretta, generic steroid injections "
-            "and NSAID/OTC together: this group (teal) and every group (grey, dashed)."
+            "and NSAID/OTC together: this group (teal) and every group (grey, dashed). Drag "
+            "across the chart to compare the two over a range of months."
         )
         common.explain("detail_compare")
     block = detail.forecast_block(pred, seg, specialty, age, gender)

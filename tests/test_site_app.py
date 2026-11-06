@@ -1055,3 +1055,107 @@ def test_the_segment_detail_chart_and_the_state_panel_each_add_a_button():
     assert len(detail.get("popover")) == 1
     context_page = run_page("Context", ctx_state="TX")
     assert len(context_page.get("popover")) == 3
+
+
+# ---------------------- dragging a range on a chart
+
+
+def _drag(start, end):
+    """What Streamlit hands the page after a range is dragged on a chart's time axis."""
+    import pandas as pd
+
+    ms = [pd.Timestamp(d).timestamp() * 1000 for d in (start, end)]
+    return {"selection": {"brush": {"month": ms}}}
+
+
+ALL_KEY = "trend_brush_0_None|None|None|All|Monthly|1|1"
+
+
+def test_without_a_range_the_market_trend_cards_describe_the_period(page):
+    at = page("Market trend")
+    text = " ".join(c for c in _cards(at))
+    assert "All months" in text and "Selected range" not in text
+    assert not [b for b in at.button if b.key == "trend_clear"]
+    assert not any("Showing" in m.value for m in at.markdown)
+
+
+def test_a_range_dragged_on_the_trend_chart_moves_the_cards_to_its_months():
+    at = run_page("Market trend", **{ALL_KEY: _drag("2022-03-01", "2024-07-01")})
+    assert not at.exception
+    text = " ".join(m.value for m in at.markdown)
+    assert "Showing Mar 2022 to Jul 2024 (29 months)" in text
+    cards = _cards(at)
+    assert "Share in Jul 2024" in cards[0] and "Selected range" in cards[2]
+    assert "Mar 2022" in cards[1]  # the peak of the range, not of the whole series
+    assert "through the range" in cards[3]
+    assert [b for b in at.button if b.key == "trend_clear"]
+
+
+def test_the_range_leaves_the_filters_and_the_period_alone():
+    at = run_page("Market trend", **{ALL_KEY: _drag("2022-03-01", "2024-07-01")})
+    assert dict(at.session_state["flt"]) == flt()
+
+
+def test_a_range_follows_the_group_it_was_dragged_on():
+    key = "trend_brush_0_RHEUMATOLOGY|None|None|All|Monthly|1|1"
+    at = run_page(
+        "Market trend",
+        flt=flt(specialty="RHEUMATOLOGY"),
+        **{key: _drag("2022-03-01", "2024-07-01")},
+    )
+    assert any("Showing Mar 2022 to Jul 2024" in m.value for m in at.markdown)
+    other = run_page(
+        "Market trend", flt=flt(specialty="OTHER"), **{key: _drag("2022-03-01", "2024-07-01")}
+    )
+    assert not any("Showing" in m.value for m in other.markdown)  # that range was not dragged here
+
+
+def test_a_range_under_two_months_says_so_and_does_not_change_the_cards():
+    at = run_page("Market trend", **{ALL_KEY: _drag("2024-01-05", "2024-01-20")})
+    assert not at.exception
+    assert any("under two months" in c.value for c in at.caption)
+    assert "Selected range" not in " ".join(_cards(at))
+
+
+def test_clearing_the_range_puts_the_period_back():
+    at = run_page("Market trend", **{ALL_KEY: _drag("2022-03-01", "2024-07-01")})
+    [clear] = [b for b in at.button if b.key == "trend_clear"]
+    clear.click().run()
+    assert not at.exception
+    assert not any("Showing" in m.value for m in at.markdown)
+    assert "Selected range" not in " ".join(_cards(at))
+    assert not [b for b in at.button if b.key == "trend_clear"]
+
+
+def test_changing_the_chart_view_starts_it_again_with_no_range():
+    at = run_page("Market trend", **{ALL_KEY: _drag("2022-03-01", "2024-07-01")})
+    assert any("Showing" in m.value for m in at.markdown)
+    at.toggle(key="trend_line").set_value(False).run()
+    assert not at.exception
+    assert not any("Showing" in m.value for m in at.markdown)  # a new view, a new chart
+    assert "Selected range" not in " ".join(_cards(at))
+
+
+def test_a_range_dragged_on_the_segment_detail_chart_is_averaged_against_the_market():
+    key = "detail_brush_0_ORTHOPEDIC SURGERY|None|None|All"
+    at = run_page(
+        "Segment detail",
+        flt=flt(specialty="ORTHOPEDIC SURGERY"),
+        **{key: _drag("2024-01-01", "2024-06-01")},
+    )
+    assert not at.exception
+    text = " ".join(m.value for m in at.markdown)
+    assert "Jan 2024 to Jun 2024 (6 months)" in text and "Zilretta&#x27;s share averaged" in text
+    plain = run_page("Segment detail", flt=flt(specialty="ORTHOPEDIC SURGERY"))
+    assert "share averaged" not in " ".join(m.value for m in plain.markdown)
+
+
+def test_the_groups_over_time_picker_and_the_shap_switch_still_work():
+    at = run_page("Segments")
+    picker = at.multiselect(key="seg_pick_specialty")
+    first = picker.value[0]
+    picker.set_value([first]).run()
+    assert not at.exception and at.multiselect(key="seg_pick_specialty").value == [first]
+    model = run_page("Model results")
+    model.get("segmented_control")  # the switch is drawn inside the fragment
+    assert not model.exception

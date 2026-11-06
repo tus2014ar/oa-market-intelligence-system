@@ -58,6 +58,33 @@ def _card(
     )
 
 
+@st.fragment
+def _over_time(seg, by, table, calendar) -> None:
+    """The groups-over-time chart with its picker: choosing groups moves only this part of the
+    page."""
+    with st.container(border=True):
+        options = list(table.sort_values("zilretta_visits", ascending=False)["group"])
+        pick = st.multiselect(
+            f"{segments.GROUPS[by]} groups to compare",
+            options,
+            default=options[:5],
+            format_func=trend.pretty,
+            key=f"seg_pick_{by}",
+        )
+        if pick:
+            st.altair_chart(
+                charts.group_trend_chart(segments.group_trend(seg, by, pick, calendar=calendar)),
+                width="stretch",
+            )
+            st.caption(
+                "Share by calendar year; the first and last years are part years (August 2019 to "
+                "July 2025). Every year uses all months of the series, whatever the period above."
+            )
+            common.explain("seg_time")
+        else:
+            st.write("Pick at least one group to draw.")
+
+
 def render(D: dict, data_chip, flt: dict) -> None:
     """Draw the page from the loaded tables `D` (needs `seg`) and the shared filters `flt`."""
     data_chip()
@@ -185,27 +212,7 @@ def render(D: dict, data_chip, flt: dict) -> None:
 
     # ---- groups over time
     st.markdown(f"##### {segments.GROUPS[by]} over time")
-    with st.container(border=True):
-        options = list(table.sort_values("zilretta_visits", ascending=False)["group"])
-        pick = st.multiselect(
-            f"{segments.GROUPS[by]} groups to compare",
-            options,
-            default=options[:5],
-            format_func=trend.pretty,
-            key=f"seg_pick_{by}",
-        )
-        if pick:
-            st.altair_chart(
-                charts.group_trend_chart(segments.group_trend(seg, by, pick, calendar=calendar)),
-                width="stretch",
-            )
-            st.caption(
-                "Share by calendar year; the first and last years are part years (August 2019 to "
-                "July 2025). Every year uses all months of the series, whatever the period above."
-            )
-            common.explain("seg_time")
-        else:
-            st.write("Pick at least one group to draw.")
+    _over_time(seg, by, table, calendar)
 
     # ---- the numbers behind it
     with st.expander("The table, and download"):
