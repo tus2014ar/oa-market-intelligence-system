@@ -183,7 +183,6 @@ def _shap(shap) -> None:
 
 def render(D: dict, adoption: dict, posthoc: dict, extras: dict, data_chip) -> None:
     """Draw the tab. `extras` holds `round2`, `round2_posthoc` and `shap` (stored results)."""
-    st.markdown(style.CSS, unsafe_allow_html=True)
     data_chip()
     scores = D["scores"]
     board = views.scoreboard(scores, adoption, posthoc)

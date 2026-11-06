@@ -64,6 +64,11 @@ CSS = f"""<style>
 .oa-tl-what {{margin-top:.25rem;font-size:.92rem}}
 .oa-tl-src {{margin-top:.2rem;font-size:.78rem;opacity:.65}}
 .oa-tl-flag {{color:{RED};opacity:1;font-weight:600}}
+.oa-spark {{display:block;margin-top:.55rem}}
+.oa-guide {{display:grid;grid-template-columns:minmax(96px,1fr) 4fr;gap:.8rem;padding:.4rem 0;
+  border-bottom:1px solid rgba(127,127,127,.18);font-size:.9rem}}
+.oa-guide-tab {{font-weight:700;color:{TEAL}}}
+@media (max-width:640px) {{.oa-guide {{grid-template-columns:1fr;gap:.1rem}}}}
 .oa-stand {{display:flex;justify-content:space-between;align-items:baseline;
   padding:.4rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-stand .k {{font-size:.88rem;opacity:.8}} .oa-stand .x {{font-weight:700;font-size:1.05rem}}
@@ -82,14 +87,51 @@ def signed(value: float | None, unit: str = " pp", digits: int = 2) -> str:
     return "–" if value is None else f"{value:+.{digits}f}{unit}"
 
 
+def sparkline(values: list[float], width: int = 180, height: int = 34, area: bool = False) -> str:
+    """A small inline line (optionally filled below) for a card: white on the navy card, drawn from
+    `values` scaled to its own range. Nothing is drawn for fewer than two numbers."""
+    vals = [float(v) for v in values if v is not None and float(v) == float(v)]
+    if len(vals) < 2:
+        return ""
+    low, high, pad = min(vals), max(vals), 3
+    span = (high - low) or 1.0
+    step = (width - 2 * pad) / (len(vals) - 1)
+    points = [
+        (pad + i * step, height - pad - (v - low) / span * (height - 2 * pad))
+        for i, v in enumerate(vals)
+    ]
+    line = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
+    fill = (
+        f'<polygon points="{pad},{height - pad} {line} {width - pad},{height - pad}" '
+        'fill="rgba(255,255,255,.18)"/>'
+        if area
+        else ""
+    )
+    return (
+        f'<svg class="oa-spark" viewBox="0 0 {width} {height}" width="100%" height="{height}" '
+        f'preserveAspectRatio="none" aria-hidden="true">{fill}'
+        f'<polyline points="{line}" fill="none" stroke="#fff" stroke-width="2" '
+        'stroke-linejoin="round" stroke-linecap="round" opacity=".9"/></svg>'
+    )
+
+
 def kpi_card(
-    label: str, value: str, caption: str = "", delta: float | None = None, pill: str = ""
+    label: str,
+    value: str,
+    caption: str = "",
+    delta: float | None = None,
+    pill: str = "",
+    spark: list[float] | None = None,
+    area: bool = False,
 ) -> str:
-    """A navy card: a small label, one big number, an optional change pill and a caption."""
+    """A navy card: a small label, one big number, an optional change pill, a caption and an
+    optional sparkline."""
     chip = f'<span class="oa-pill {tone(delta)}">{escape(pill)}</span>' if pill else ""
+    line = sparkline(spark, area=area) if spark else ""
     return (
         f'<div class="oa-kpi"><div class="l">{escape(label)}</div>'
-        f'<div class="v">{escape(value)}{chip}</div><div class="c">{escape(caption)}</div></div>'
+        f'<div class="v">{escape(value)}{chip}</div><div class="c">{escape(caption)}</div>'
+        f"{line}</div>"
     )
 
 
@@ -182,6 +224,15 @@ def timeline_rows(rows: list[dict]) -> str:
             f'<div class="oa-tl-src">Source: {escape(r["source"])}{note}</div></div>'
         )
     return "".join(out)
+
+
+def guide_rows(rows: list[tuple[str, str]]) -> str:
+    """A two-column guide: a tab's name on the left, the question it answers on the right."""
+    return "".join(
+        f'<div class="oa-guide"><span class="oa-guide-tab">{escape(tab)}</span>'
+        f"<span>{escape(question)}</span></div>"
+        for tab, question in rows
+    )
 
 
 def stand_rows(rows: list[tuple[str, str]]) -> str:
