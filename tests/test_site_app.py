@@ -608,7 +608,9 @@ def _labels(at):
 
 def test_without_a_key_the_box_is_off_and_the_site_still_works(monkeypatch):
     at = _box(monkeypatch)
-    assert not at.exception and not at.chat_input and not at.text_area
+    assert not at.exception and not at.text_area
+    [box] = at.chat_input  # the chat box is there, visibly switched off
+    assert box.proto.disabled and "switched on" in box.proto.placeholder
     assert any("not switched on" in i.value for i in at.info)
     assert os.environ.get("ANTHROPIC_API_KEY") is None
 
@@ -1166,13 +1168,14 @@ def test_the_groups_over_time_picker_and_the_shap_switch_still_work():
 
 def test_without_a_key_the_page_shows_what_the_box_would_look_up(monkeypatch):
     at = _box(monkeypatch)
-    assert not at.exception and not at.chat_input
+    assert not at.exception and all(c.proto.disabled for c in at.chat_input)
     [pick] = [s for s in at.selectbox if s.key == "ask_preview"]
     assert (
         len(pick.options) == 8 and pick.value == "How has Zilretta's share changed since its peak?"
     )
     text = " ".join(m.value for m in at.markdown)
-    assert "What it would look up" in text and "The headline numbers, how old the data are" in text
+    assert any(e.proto.label.startswith("What it would look up") for e in at.expander)
+    assert "The headline numbers, how old the data are" in text
     assert len(at.get("json")) == 1  # the one lookup's data, folded
     assert any("not switched on" in i.value for i in at.info)
 
@@ -1237,3 +1240,33 @@ def test_the_key_and_the_access_code_never_appear_in_the_new_page_text(monkeypat
         [m.value for m in at.markdown] + [c.value for c in at.caption] + [i.value for i in at.info]
     )
     assert "sk-test-secret" not in text and "code-xyz" not in text
+
+
+# ---------------------- a chat box first, the example questions an optional extra
+
+
+def test_the_box_is_a_chat_box_first_and_the_examples_are_a_folded_extra(monkeypatch):
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    [box] = at.chat_input
+    assert not box.proto.disabled and "your own words" in box.proto.placeholder
+    [examples] = [e for e in at.expander if "example questions" in e.proto.label.lower()]
+    assert "optional" in examples.proto.label and not examples.proto.expanded
+    text = " ".join(m.value for m in at.markdown)
+    assert "Type any question in the box at the bottom of the page, in your own words" in text
+
+
+def test_a_question_typed_in_the_box_is_sent_as_written_without_using_an_example(monkeypatch):
+    calls = _stub_claude(monkeypatch, tokens=(1, 1))
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    typed = "Is the fall in visits since 2022 a fact I can quote?"
+    _say(at, typed)
+    assert not at.exception and calls[0][0] == typed
+    assert [m.name for m in at.chat_message] == ["user", "assistant"]
+
+
+def test_once_a_conversation_has_started_the_examples_are_gone_but_the_box_stays(monkeypatch):
+    _stub_claude(monkeypatch, tokens=(1, 1))
+    at = _box(monkeypatch, ANTHROPIC_API_KEY="sk-test")
+    _say(at, "What is the latest share?")
+    assert not [e for e in at.expander if "example questions" in e.proto.label.lower()]
+    assert len(at.chat_input) == 1 and not at.chat_input[0].proto.disabled
