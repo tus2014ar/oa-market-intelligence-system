@@ -17,6 +17,9 @@ REFERENCE = REPO_ROOT / "data" / "reference"
 FINDINGS_JSON = REFERENCE / "findings.json"
 POSTHOC_JSON = REFERENCE / "modelling_posthoc.json"
 SERVING_JSON = REFERENCE / "serving_models.json"
+ROUND2_JSON = REFERENCE / "modelling_round2_results.json"
+ROUND2_POSTHOC_JSON = REFERENCE / "modelling_round2_posthoc.json"
+SHAP_JSON = REFERENCE / "shap_summary.json"
 GROUPINGS = {"specialty": "s.specialty_name", "age_band": "d.age_band", "gender": "d.gender"}
 
 
@@ -132,4 +135,19 @@ def posthoc(path: Path | str = POSTHOC_JSON) -> dict:
 
 
 def serving_map(path: Path | str = SERVING_JSON) -> dict:
+    return _json(path)
+
+
+def round2(path: Path | str = ROUND2_JSON) -> dict:
+    """The stored results of modelling round 2 (the seven registered tests; provisional)."""
+    return _json(path)
+
+
+def round2_posthoc(path: Path | str = ROUND2_POSTHOC_JSON) -> dict:
+    """The post-hoc check of round 2's ranking test (the trend scores flipped)."""
+    return _json(path)
+
+
+def shap_summary(path: Path | str = SHAP_JSON) -> dict:
+    """The stored SHAP explanation of the adopted segment model (DL-91)."""
     return _json(path)

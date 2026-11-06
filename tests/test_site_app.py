@@ -120,7 +120,7 @@ def test_the_market_trend_tab_opens_on_all_visits_with_four_cards_and_the_filter
     assert next(s for s in app.selectbox if s.label == "Specialty").value == "All"
     assert [t.label for t in app.toggle] == ["Trend line", "Markers"]
     cards = _cards(app)
-    assert len(cards) == 12  # four each on this tab, Segments and Forecasts
+    assert len(cards) == 16  # four each on this tab, Segments, Forecasts and Model results
     cards = cards[:4]
     assert "Share in Jul 2025" in cards[0] and "1.88%" in cards[0] and "-0.10 pp" in cards[0]
     assert "3.38%" in cards[1] and "Dec 2021" in cards[1] and "44% below" in cards[1]
@@ -180,7 +180,7 @@ def _segments(monkeypatch, **state):
 
 def test_the_segments_tab_opens_on_specialties_with_four_cards_and_the_grid(app):
     cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value]
-    assert len(cards) == 12  # four each on Market trend, Segments and Forecasts
+    assert len(cards) == 16  # four each on Market trend, Segments, Forecasts and Model results
     segments_cards = cards[4:8]
     assert "Highest share" in segments_cards[0] and "Physical Medicine" in segments_cards[0]
     assert "Largest source of visits" in segments_cards[1]
@@ -257,6 +257,44 @@ def test_each_horizon_and_a_chosen_specialty_changes_the_forecasts_tab(monkeypat
     one = _trend(monkeypatch, fc_specialty="RHEUMATOLOGY")
     assert not one.exception
     assert "Segments in Rheumatology" in " ".join(m.value for m in one.markdown)
+
+
+# ------------------------------------------------------------------ the model results tab
+
+
+def test_the_model_results_tab_opens_with_four_headlines_and_marks_round_2_provisional(app):
+    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value][12:16]
+    assert len(cards) == 4
+    assert "No model wins" in cards[0] and "+0.4% / +0.2%" in cards[1]
+    assert "1 of 3" in cards[2] and "3 of 7" in cards[3] and "none adopted" in cards[3]
+    page = " ".join(m.value for m in app.markdown)
+    assert "Round 2: improvements tried after round 1" in page
+    assert "Nothing from round 2 is used by the site yet" in page
+    assert page.count("Passes (provisional)") == 3 and page.count("No pass") == 4
+    for name in ("Bias correction factor", "Rolling 36-month window", "Lasting-decline top 10"):
+        assert name in page
+    assert "Ranking winners and losers" in page and "+0.38" in page  # the mean-reversion check
+    assert "What the segment model relies on" in page
+    assert "own recent share" in page  # the apostrophe is escaped in the HTML
+
+
+def test_the_model_results_tab_keeps_its_caveats_and_the_scoreboard(app):
+    page = " ".join([m.value for m in app.markdown] + [c.value for c in app.caption])
+    assert "Do the segment forecasts run high?" in page and "+18.2%" in page
+    assert "one-line rule" in page and "reliable only at 1 month" in page
+    assert "designed after seeing round 1" in page
+    assert "not influence which model was chosen" in page
+    boards = [d.value for d in app.dataframe if "In plain words" in d.value.columns]
+    assert len(boards) == 1 and len(boards[0]) == 9
+    assert set(boards[0]["Task"]) == {"National share", "Segment share", "Decline alert"}
+
+
+def test_the_scoreboard_can_be_cut_to_one_task_and_the_explanation_to_three_months(monkeypatch):
+    at = _trend(monkeypatch, mr_task="Segment share", mr_shap_h=3)
+    assert not at.exception
+    boards = [d.value for d in at.dataframe if "In plain words" in d.value.columns]
+    assert len(boards) == 1 and set(boards[0]["Task"]) == {"Segment share"} and len(boards[0]) == 3
+    assert any("Physician Assistant, ages 65 to 74, female" in c.value for c in at.caption)
 
 
 # ------------------------------------------------------------------ the market map
