@@ -8,41 +8,36 @@ from __future__ import annotations
 
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, forecasts, style, trend, views
+from oa_market_intelligence.serving import charts, forecasts, style, views
 
-ALL = "All"
 HORIZON_LABELS = {1: "1 month", 3: "3 months", 6: "6 months"}
 
 
-def _filters(view) -> tuple[int, str | None]:
+def _horizon() -> int:
+    """The one control that belongs to this page alone: how many months ahead. The specialty, age
+    and gender filters are the shared bar's."""
     with st.container(border=True, key="fc_filters"):
-        cols = st.columns([2.2, 3])
-        horizon = cols[0].segmented_control(
+        horizon = st.segmented_control(
             "Months ahead",
             list(HORIZON_LABELS),
             default=1,
             format_func=HORIZON_LABELS.get,
             key="fc_horizon",
         )
-        specialties = sorted(view["specialty"].unique()) if view is not None else []
-        specialty = cols[1].selectbox(
-            "Specialty (segment forecasts)",
-            [ALL, *specialties],
-            format_func=lambda v: "All specialties" if v == ALL else trend.pretty(v),
-            key="fc_specialty",
-        )
-    return horizon or 1, None if specialty == ALL else specialty
+    return horizon or 1
 
 
-def render(D: dict, adoption: dict, data_chip) -> None:
-    """Draw the tab from the loaded tables `D` (needs `monthly`, `pred`, `scores` and `seg`)."""
+def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
+    """Draw the page from the loaded tables `D` (needs `monthly`, `pred`, `scores` and `seg`) and
+    the shared filters `flt` (specialty, age and gender; the period is not used here)."""
     data_chip()
     pred, scores, seg = D["pred"], D["scores"], D["seg"]
-    horizon, specialty = _filters(forecasts.segment_view(pred, seg, 1))
+    horizon = _horizon()
+    specialty, age, gender = flt["specialty"], flt["age"], flt["gender"]
     nat = forecasts.national(pred)
     held = forecasts.coverage(scores)
-    view = forecasts.segment_view(pred, seg, horizon)
-    first = forecasts.segment_view(pred, seg, 1)
+    view = forecasts.select(forecasts.segment_view(pred, seg, horizon), specialty, age, gender)
+    first = forecasts.select(forecasts.segment_view(pred, seg, 1), specialty, age, gender)
 
     # ---- headline cards: the national forecast at each horizon, and how often the range held
     cards = st.columns(4)
@@ -112,7 +107,12 @@ def render(D: dict, adoption: dict, data_chip) -> None:
     spec = forecasts.specialty_view(view)
     with st.container(border=True):
         st.markdown(f"**By specialty, {forecasts.horizon_label(horizon)} ahead**")
-        st.altair_chart(charts.specialty_forecast_chart(spec.head(14), horizon), width="stretch")
+        if spec.empty:
+            st.write("No specialty in this selection has enough visits to chart.")
+        else:
+            st.altair_chart(
+                charts.specialty_forecast_chart(spec.head(14), horizon), width="stretch"
+            )
         left_out = spec.attrs.get("left_out", 0)
         st.caption(
             "Orange bar: the forecast. Dark tick: the share in the latest month. Specialties "
@@ -127,9 +127,9 @@ def render(D: dict, adoption: dict, data_chip) -> None:
             "so read the forecast as a baseline, not as a prediction for one segment."
         )
     with st.container(border=True):
-        shown = view if specialty is None else view[view["specialty"] == specialty]
+        shown = view
         st.markdown(
-            f"**Segments{'' if specialty is None else ' in ' + trend.pretty(specialty)}"
+            f"**Segments{' in this selection' if (specialty or age or gender) else ''}"
             f" ({len(shown)})**"
         )
         st.dataframe(

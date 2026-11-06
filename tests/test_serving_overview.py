@@ -108,3 +108,18 @@ def test_a_card_has_a_sparkline_only_when_given_one():
     lined = style.kpi_card("L", "1%", "c", spark=[1.0, 2.0, 3.0])
     assert "oa-spark" not in plain and "oa-spark" in lined
     assert lined.index('class="c"') < lined.index("oa-spark")  # the line sits under the caption
+
+
+# ---------------- the pages the navigation is built from
+
+
+def test_each_page_has_a_script_in_views_an_icon_and_its_own_lowercase_address():
+    titles = [title for title, *_ in overview.PAGES]
+    scripts = [script for _, script, *_ in overview.PAGES]
+    icons = [icon for _, _, icon, _ in overview.PAGES]
+    addresses = [slug for *_, slug in overview.PAGES]
+    assert titles == list(overview.TAB_NAMES) and len(set(scripts)) == len(scripts) == 10
+    assert all(s.startswith("views/") and s.endswith(".py") for s in scripts)
+    assert all(i.startswith(":material/") and i.endswith(":") for i in icons)
+    assert len(set(addresses)) == 10 and all(a == a.lower() and " " not in a for a in addresses)
+    assert dict((t, s) for t, s, *_ in overview.PAGES)["Overview"] == "views/overview.py"

@@ -296,7 +296,7 @@ def test_sources_name_the_tab_and_the_graph_evidence_in_the_order_used(snap):
     )
     sources = _ask(client, snap)["sources"]
     assert (
-        sources[0] == "Forecasts tab (pred_batch, model_scores)" and sources.count(sources[0]) == 1
+        sources[0] == "Forecasts page (pred_batch, model_scores)" and sources.count(sources[0]) == 1
     )
     assert sources[-1].startswith("Knowledge graph (") and "dim_product" in sources[-1]
     assert len(sources) == 2

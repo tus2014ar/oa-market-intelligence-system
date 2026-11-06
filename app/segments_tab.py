@@ -12,13 +12,14 @@ from oa_market_intelligence.serving import charts, segments, style, trend
 
 SHOW = {"share": "Share", "visits": "Visits", "change": "Change"}
 SHOW_COLUMN = {"share": "share_pct", "visits": "zilretta_visits", "change": "delta_pp"}
-PERIOD_LABELS = {"1Y": "1Y", "3Y": "3Y", "5Y": "5Y", "All": "All"}
 GROUP_LABELS = {"specialty": "Specialty", "age_band": "Age", "gender": "Gender"}
 
 
-def _filters() -> tuple[str, str, str]:
+def _controls() -> tuple[str, str]:
+    """The two controls that belong to this page alone: what to group by and what to show. The
+    specialty, age, gender and period filters are the shared bar's."""
     with st.container(border=True, key="seg_filters"):
-        cols = st.columns([2.6, 1.9, 1.9])
+        cols = st.columns([2.6, 2.4])
         by = cols[0].segmented_control(
             "Group visits by",
             list(segments.GROUPS),
@@ -26,21 +27,14 @@ def _filters() -> tuple[str, str, str]:
             format_func=GROUP_LABELS.get,
             key="seg_by",
         )
-        period = cols[1].segmented_control(
-            "Period",
-            list(PERIOD_LABELS),
-            default="All",
-            format_func=PERIOD_LABELS.get,
-            key="seg_period",
-        )
-        show = cols[2].segmented_control(
+        show = cols[1].segmented_control(
             "Show",
             list(SHOW),
             default="share",
             format_func=SHOW.get,
             key="seg_show",
         )
-    return by or "specialty", period or "All", show or "share"
+    return by or "specialty", show or "share"
 
 
 def _card(label: str, found: tuple[str, float] | None, caption: str, *, as_change: bool) -> str:
@@ -51,14 +45,16 @@ def _card(label: str, found: tuple[str, float] | None, caption: str, *, as_chang
     return style.kpi_card(label, text, f"{name} · {caption}", delta=value if as_change else None)
 
 
-def render(D: dict, data_chip) -> None:
-    """Draw the tab from the loaded tables `D` (needs `seg`)."""
+def render(D: dict, data_chip, flt: dict) -> None:
+    """Draw the page from the loaded tables `D` (needs `seg`) and the shared filters `flt`."""
     data_chip()
-    seg = D["seg"]
-    by, period, show = _filters()
+    calendar = sorted(D["seg"]["month_id"].unique())  # every month, whatever the filters leave
+    seg = trend.select(D["seg"], flt["specialty"], flt["age"], flt["gender"])
+    period = flt["period"]
+    by, show = _controls()
     name = segments.GROUPS[by].lower()
 
-    table = segments.group_table(seg, by, period)
+    table = segments.group_table(seg, by, period, calendar=calendar)
     notes = segments.extremes(table)
     conc = segments.concentration(table)
 
@@ -129,8 +125,13 @@ def render(D: dict, data_chip) -> None:
     # ---- the specialty-by-age grid
     st.markdown("##### Where the share is highest")
     with st.container(border=True):
-        cells = segments.cross_table(seg, period)
-        st.altair_chart(charts.share_grid(cells), width="stretch")
+        cells = segments.cross_table(seg, period, calendar=calendar)
+        if cells.empty or not cells["shown"].any():
+            st.write(
+                "No specialty and age band in this selection has enough visits to show a rate."
+            )
+        else:
+            st.altair_chart(charts.share_grid(cells), width="stretch")
         st.caption(
             "Specialty by age band over the same period: the twelve specialties with the most "
             f"Zilretta visits and the age bands with at least {segments.MIN_VISITS:,} visits. A grey "
@@ -150,7 +151,8 @@ def render(D: dict, data_chip) -> None:
         )
         if pick:
             st.altair_chart(
-                charts.group_trend_chart(segments.group_trend(seg, by, pick)), width="stretch"
+                charts.group_trend_chart(segments.group_trend(seg, by, pick, calendar=calendar)),
+                width="stretch",
             )
             st.caption(
                 "Share by calendar year; the first and last years are part years (August 2019 to "

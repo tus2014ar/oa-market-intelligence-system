@@ -158,12 +158,17 @@ def is_small(k: dict) -> bool:
 
 
 def movers(
-    seg: pd.DataFrame, by: str, *, min_visits: int = MIN_GROUP_VISITS, compare: int = COMPARE_MONTHS
+    seg: pd.DataFrame,
+    by: str,
+    *,
+    min_visits: int = MIN_GROUP_VISITS,
+    compare: int = COMPARE_MONTHS,
+    calendar: list[int] | None = None,
 ) -> pd.DataFrame:
     """Each group's share in the last `compare` months against the `compare` months before, for
     groups with at least `min_visits` visits in both. `by` is "specialty", "age_band" or "gender".
     Sorted by Zilretta's visits in the latest period, largest first."""
-    ids = sorted(seg["month_id"].unique())
+    ids = sorted(calendar) if calendar is not None else sorted(seg["month_id"].unique())
     if len(ids) < 2 * compare:
         return pd.DataFrame(columns=["group", "label", "share_pct", "prior_pct", "delta_pp"])
     last, prior = ids[-compare:], ids[-2 * compare : -compare]

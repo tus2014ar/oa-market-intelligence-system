@@ -10,49 +10,7 @@ import streamlit as st
 
 from oa_market_intelligence.serving import charts, style, trend, views
 
-ALL = "All"
-PERIOD_LABELS = {"1Y": "1Y", "3Y": "3Y", "5Y": "5Y", "All": "All"}
 DIMENSIONS = (("specialty", "specialty"), ("age_band", "age band"), ("gender", "gender"))
-
-
-def _pick(value: str) -> str | None:
-    return None if value == ALL else value
-
-
-def _filters(seg) -> tuple[str | None, str | None, str | None, str]:
-    """The filter bar: three selections and the period. Returns specialty, age band, gender and
-    the period key."""
-    with st.container(border=True, key="trend_filters"):
-        cols = st.columns([2.3, 1.4, 1.3, 2.4])
-        by_visits = seg.groupby("specialty")["category"].sum().sort_values(ascending=False)
-        specialty = cols[0].selectbox(
-            "Specialty",
-            [ALL, *by_visits.index],
-            format_func=lambda v: "All specialties" if v == ALL else trend.pretty(v),
-            key="trend_specialty",
-        )
-        ages = sorted(seg["age_band"].unique())
-        age = cols[1].selectbox(
-            "Age band",
-            [ALL, *ages],
-            format_func=lambda v: "All ages" if v == ALL else trend.pretty(v),
-            key="trend_age",
-        )
-        genders = sorted(seg["gender"].unique())
-        gender = cols[2].selectbox(
-            "Gender",
-            [ALL, *genders],
-            format_func=lambda v: "All genders" if v == ALL else trend.pretty(v),
-            key="trend_gender",
-        )
-        period = cols[3].segmented_control(
-            "Period",
-            list(PERIOD_LABELS),
-            default="All",
-            format_func=PERIOD_LABELS.get,
-            key="trend_period",
-        )
-    return _pick(specialty), _pick(age), _pick(gender), period or "All"
 
 
 def _who(specialty, age, gender) -> str:
@@ -69,11 +27,12 @@ def _share(value: float | None) -> str:
     return "n/a" if value is None else views.pct(value)
 
 
-def render(D: dict, data_chip) -> None:
-    """Draw the tab from the loaded tables `D` (needs `seg`, `monthly` and `pred`)."""
+def render(D: dict, data_chip, flt: dict) -> None:
+    """Draw the page from the loaded tables `D` (needs `seg`, `monthly` and `pred`) and the shared
+    filters `flt` (specialty, age, gender and period)."""
     data_chip()
     seg, national, pred = D["seg"], D["monthly"], D["pred"]
-    specialty, age, gender, period = _filters(seg)
+    specialty, age, gender, period = (flt[k] for k in ("specialty", "age", "gender", "period"))
     filtered = any(v is not None for v in (specialty, age, gender))
     who = _who(specialty, age, gender)
 
@@ -205,11 +164,11 @@ def render(D: dict, data_chip) -> None:
                 unsafe_allow_html=True,
             )
             st.caption(
-                'The method is "same as last month": no model beat it. More on the Forecasts tab.'
+                'The method is "same as last month": no model beat it. More on the Forecasts page.'
             )
         else:
             st.caption(
-                "Forecasts for a group are on the Forecasts tab. The segment forecasts run high "
+                "Forecasts for a group are on the Forecasts page. The segment forecasts run high "
                 "in testing, so read them as optimistic."
             )
 

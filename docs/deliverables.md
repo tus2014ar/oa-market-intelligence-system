@@ -10,7 +10,7 @@ This page records what each deliverable is, what it contains, where it comes fro
 |---|---|---|---|---|
 | 1 | Database on Datasette | One read-only SQLite file, browsed in Datasette | `data/published/warehouse.db` and `data/published/external_subset.db` | Exists locally, but is out of date: it was built before the modelling tables (`model_scores`, `backtest_batch`, `pred_batch`) existed. Needs a rebuild |
 | 2 | Stakeholder demo | One self-contained HTML page plus a launcher that also starts Datasette | The stakeholder database and committed reference files | Exists locally. Needs the modelling results, the decline-alert (T3) slide and removal of the open "Questions for you" box |
-| 3 | Analytics website | Streamlit site, seven tabs | `app/streamlit_app.py`, the published warehouse | Built and merged (DL-85, PR #84). Not hosted. Delivered as run-it-locally steps plus a screenshot set |
+| 3 | Analytics website | Streamlit site, ten pages with a navigation on the right | `app/streamlit_app.py`, the published warehouse | Built and merged (DL-85, PR #84). Not hosted. Delivered as run-it-locally steps plus a screenshot set |
 | 4 | Project zip and steps to run it on another machine | One zip and a one-page run guide | `git archive` of the tagged commit, plus the files in items 1, 2, 5 and 6 | Not started |
 | 5 | Project report | Word document (.docx) | The README, `docs/`, the model cards and the stored results | Not started |
 | 6 | Full project presentation | PowerPoint (.pptx) | The same sources, in the order of the project's seven stages | Not started. Three topic decks exist locally and are inputs, not the deliverable |

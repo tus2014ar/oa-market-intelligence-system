@@ -9,18 +9,19 @@ from __future__ import annotations
 
 from oa_market_intelligence.serving import views
 
-TAB_NAMES = (
-    "Overview",
-    "Market trend",
-    "Segments",
-    "Forecasts",
-    "Model results",
-    "Data status",
-    "Findings",
-    "Context",
-    "Market map",
-    "Ask Claude",
-)
+PAGES = (
+    ("Overview", "views/overview.py", ":material/home:", "overview"),
+    ("Market trend", "views/market_trend.py", ":material/show_chart:", "market-trend"),
+    ("Segments", "views/segments.py", ":material/pie_chart:", "segments"),
+    ("Forecasts", "views/forecasts.py", ":material/query_stats:", "forecasts"),
+    ("Model results", "views/model_results.py", ":material/analytics:", "model-results"),
+    ("Data status", "views/data_status.py", ":material/fact_check:", "data-status"),
+    ("Findings", "views/findings.py", ":material/lightbulb:", "findings"),
+    ("Context", "views/context.py", ":material/public:", "context"),
+    ("Market map", "views/market_map.py", ":material/hub:", "market-map"),
+    ("Ask Claude", "views/ask_claude.py", ":material/chat:", "ask-claude"),
+)  # (title, script, icon, address): the navigation is built from this list
+TAB_NAMES = tuple(title for title, *_ in PAGES)
 TAB_GUIDE = (
     (
         "Market trend",
@@ -44,7 +45,7 @@ TAB_GUIDE = (
 
 
 def guide() -> list[tuple[str, str]]:
-    """What each tab answers, in the order of the tab row (Overview itself is the guide)."""
+    """What each page answers, in the order of the navigation (Overview itself is the guide)."""
     return list(TAB_GUIDE)
 
 

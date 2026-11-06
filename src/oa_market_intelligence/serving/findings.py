@@ -42,7 +42,7 @@ START_HERE = (1, 2, 14, 16)  # the four a brand manager should read first
 ROUND2_NOTE = (
     "These findings are from the first modelling round. A second round, tried after seeing it, "
     "found a provisional fix for the segment forecast's upward bias; it is not adopted and is "
-    "shown on the Model results tab."
+    "shown on the Model results page."
 )
 
 

@@ -277,3 +277,32 @@ def test_the_specialty_chart_has_a_bar_for_the_forecast_and_a_tick_for_last_mont
     spec = forecasts.specialty_view(forecasts.segment_view(_pred(), _seg(), 1), min_visits=0)
     chart = charts.specialty_forecast_chart(spec, 1).to_dict()
     assert [layer["mark"]["type"] for layer in chart["layer"]] == ["bar", "tick"]
+
+
+# ------------------------------------------------------------------ the shared filters
+
+
+def test_the_segment_view_can_be_narrowed_by_specialty_age_and_gender():
+    view = forecasts.segment_view(_pred(), _seg(), 1)
+    assert len(forecasts.select(view)) == 3
+    assert list(forecasts.select(view, specialty="A")["age_band"]) == ["65 TO 74", "40 TO 59"]
+    one = forecasts.select(view, "A", "40 TO 59", "FEMALE")
+    assert len(one) == 1 and one["forecast_pct"].iloc[0] == pytest.approx(3.0)
+    assert forecasts.select(view, age="40 TO 59")["specialty"].tolist() == ["A", "B"]
+    assert forecasts.select(view, specialty="ZZZ").empty
+    assert list(forecasts.select(view, specialty="A").index) == [0, 1]  # a fresh index
+
+
+def test_an_empty_selection_gives_empty_but_well_formed_results():
+    view = forecasts.select(forecasts.segment_view(_pred(), _seg(), 1), specialty="ZZZ")
+    assert forecasts.specialty_view(view).empty
+    assert list(forecasts.specialty_view(view).columns) == [
+        "specialty",
+        "label",
+        "forecast_pct",
+        "last_pct",
+        "visits",
+        "segments",
+    ]
+    assert forecasts.alerts(view).empty
+    assert forecasts.csv(view).decode().count("\n") == 1  # just the header

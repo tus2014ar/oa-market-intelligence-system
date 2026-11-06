@@ -13,6 +13,29 @@ from html import escape
 NAVY, TEAL, GREEN, RED, GREY = "#1B2A41", "#0F8B8D", "#1E9E5A", "#C8553D", "#7A8794"
 
 CSS = f"""<style>
+/* the navigation sits on the right, as a collapsible list with icons */
+[data-testid="stAppViewContainer"] {{flex-direction:row-reverse}}
+[data-testid="stSidebar"] {{border-right:0;border-left:1px solid rgba(127,127,127,.22)}}
+[data-testid="stSidebarResizeHandle"] {{left:0;right:auto}}
+/* collapsed: Streamlit slides the bar out to the left, which on the right would leave a sliver */
+[data-testid="stSidebar"][aria-expanded="false"] {{transform:none !important;margin:0 !important;
+  width:0 !important;min-width:0 !important;border:0 !important;overflow:hidden !important;
+  visibility:hidden !important}}
+[data-testid="stSidebarHeader"] {{flex-direction:row-reverse}}
+[data-testid="stSidebarCollapseButton"] svg {{transform:scaleX(-1)}}
+[data-testid="stExpandSidebarButton"] {{position:fixed;top:16px;right:11rem;transform:scaleX(-1)}}
+[data-testid="stSidebarNavLink"] {{border-radius:10px;
+  transition:background-color .2s ease,transform .2s ease}}
+[data-testid="stSidebarNavLink"]:hover {{transform:translateX(-3px)}}
+/* a short fade-and-rise for anything new on the page, and a lift on cards */
+@keyframes oa-in {{from {{opacity:0;transform:translateY(8px)}} to {{opacity:1;transform:none}}}}
+[data-testid="stMain"] [data-testid="stElementContainer"] {{animation:oa-in .4s ease both}}
+[data-testid="stVerticalBlockBorderWrapper"] {{transition:border-color .2s ease}}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {{border-color:rgba(15,139,141,.45)}}
+.oa-kpi {{transition:transform .2s ease,box-shadow .2s ease}}
+.oa-kpi:hover {{transform:translateY(-3px);box-shadow:0 10px 24px rgba(27,42,65,.28)}}
+@media (prefers-reduced-motion:reduce) {{*,*::before,*::after
+  {{animation:none !important;transition:none !important}}}}
 .oa-kpi {{background:{NAVY};color:#fff;border-radius:14px;padding:16px 20px;min-height:152px}}
 @media (max-width:640px) {{.oa-kpi, .oa-kpi.tall {{min-height:0}}}}
 .oa-kpi.tall {{min-height:260px}}
