@@ -20,6 +20,7 @@ SERVING_JSON = REFERENCE / "serving_models.json"
 ROUND2_JSON = REFERENCE / "modelling_round2_results.json"
 ROUND2_POSTHOC_JSON = REFERENCE / "modelling_round2_posthoc.json"
 SHAP_JSON = REFERENCE / "shap_summary.json"
+EXTERNAL_DB_PATH = REPO_ROOT / "data" / "published" / "external_subset.db"
 GROUPINGS = {"specialty": "s.specialty_name", "age_band": "d.age_band", "gender": "d.gender"}
 
 
@@ -151,3 +152,34 @@ def round2_posthoc(path: Path | str = ROUND2_POSTHOC_JSON) -> dict:
 def shap_summary(path: Path | str = SHAP_JSON) -> dict:
     """The stored SHAP explanation of the adopted segment model (DL-91)."""
     return _json(path)
+
+
+def external_context(engine: Engine) -> dict[str, pd.DataFrame]:
+    """What the Context tab shows, from the committed public-data subset: the company's quarterly
+    net sales beside IQVIA's Zilretta visits, Medicare adoption by state, the dated events and the
+    stored verdicts of the pre-registered analyses. Aggregates only; nothing at provider level."""
+    return {
+        "company": _read(
+            engine,
+            "SELECT quarter_id, company, net_sales_usd, iqvia_zilretta_visits "
+            "FROM gold_ext_company_vs_visits ORDER BY quarter_id",
+        ),
+        "states": _read(
+            engine,
+            "SELECT a.year, a.state_code, s.state_name, a.n_visible_providers, "
+            "a.n_zilretta_providers, a.adoption_rate, a.ci_low, a.ci_high, a.reported, "
+            "a.ma_participation_rate, a.arthritis_prevalence_pct, a.headroom "
+            "FROM gold_ext_state_adoption a JOIN dim_state s ON s.state_code = a.state_code "
+            "ORDER BY a.year, a.state_code",
+        ),
+        "events": _read(
+            engine,
+            "SELECT event_id, event_date, event_end_date, event_type, description, source, "
+            "verified FROM dim_event ORDER BY event_date, event_id",
+        ),
+        "verdicts": _read(
+            engine,
+            "SELECT run_id, check_id, metric, value, threshold, verdict "
+            "FROM gold_ext_verdicts ORDER BY run_id, check_id",
+        ),
+    }

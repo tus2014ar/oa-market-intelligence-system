@@ -40,6 +40,7 @@ def test_the_page_runs_without_an_error_and_has_every_tab(app):
         "Model results",
         "Data status",
         "Findings",
+        "Context",
         "Market map",
         "Ask Claude",
     ]
@@ -75,6 +76,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
         "Download this table (CSV)",  # the Segments tab's own download
         "Download these forecasts (CSV)",  # the Forecasts tab's own download
         "Download the findings (CSV)",  # the Findings tab's own download
+        "Download sales and visits (CSV)",  # the Context tab's own download
     ]
     assert any("Use it for:" in m.value and "last month" in m.value for m in app.markdown)
     assert badges  # the data chips are badges too
@@ -82,7 +84,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
 
 def test_every_other_tab_starts_with_a_one_line_note_on_how_old_the_data_are(app):
     chips = [m.value for m in app.markdown if "-badge[Data to " in m.value]
-    assert len(chips) == 8  # every tab but Overview
+    assert len(chips) == 9  # every tab but Overview
     assert all(c.startswith(":orange-badge[Data to Jul 2025") for c in chips)
     assert all("454 days old, no newer extract" in c for c in chips)
     banners = [w.value for w in app.warning if "No newer extract has arrived" in w.value]
@@ -317,6 +319,58 @@ def test_a_theme_can_be_chosen_on_the_findings_tab(monkeypatch):
     assert page.count('class="oa-find"') == 4
     assert any("4 of 17 findings" in c.value for c in at.caption)
     assert "Segment forecasts gain a little at 1 and 3 months and run too high" in page
+
+
+# ------------------------------------------------------------------ the context tab
+
+
+def test_the_context_tab_sets_sales_beside_visits_and_keeps_the_decline_caveat(app):
+    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value]
+    sales = next(c for c in cards if "Net sales, 2024 vs 2021" in c)
+    visits = next(c for c in cards if "IQVIA visits, 2024 vs 2021" in c)
+    assert "+15%" in sales and "6.3%" in sales
+    assert "-41%" in visits and "-35.9%" in visits
+    adoption = next(c for c in cards if "Medicare providers billing it, 2024" in c)
+    assert "1.47%" in adoption and "Peak 1.78% in 2021" in adoption
+    assert any("Tested explanations for the gap" in c and "None" in c for c in cards)
+    page = " ".join(m.value for m in app.markdown)
+    assert "Company sales against IQVIA visits" in page
+    assert "must not be quoted as a market fact" in page
+    assert "Ask IQVIA whether panel coverage changed" in page
+    notes = " ".join(c.value for c in app.caption)
+    assert "different sources and are set side by side, not combined" in notes
+
+
+def test_the_context_tab_reports_what_was_tested_without_naming_a_cause(app):
+    page = " ".join([m.value for m in app.markdown] + [c.value for c in app.caption])
+    for text in (
+        "What was tested to explain the gap",
+        "Is it the population (age, payer mix)?",
+        "Not supported",
+        "Supported on direction only",
+        "Concentrated",
+        "none of the four accounts for the size of the gap",
+        "None of this identifies a cause",
+        "company-side causes",
+    ):
+        assert text in page
+
+
+def test_the_context_tab_has_the_state_map_the_unverified_events_and_the_medicare_caveat(app):
+    page = " ".join([m.value for m in app.markdown] + [c.value for c in app.caption])
+    assert "Medicare adoption by state" in page and "Furthest below the national rate" in page
+    assert "It is not IQVIA data" in page and "Medicare Advantage patients are not in it" in page
+    assert "National, 2024" in page and "Order kept, 2022 to 2024" in page
+    assert "Events, oldest first" in page and page.count('class="oa-tl"') == 14
+    assert page.count("not verified against its source") == 2
+    assert "nothing here says an event changed the share" in page
+
+
+def test_another_year_can_be_chosen_for_the_state_map(monkeypatch):
+    at = _trend(monkeypatch, ctx_year=2021)
+    assert not at.exception
+    page = " ".join(m.value for m in at.markdown)
+    assert "National, 2021" in page and "1.78%" in page
 
 
 # ------------------------------------------------------------------ the market map
