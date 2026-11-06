@@ -234,7 +234,7 @@ EXPLAIN: dict[str, dict[str, str]] = {
     "trend_chart": {
         "read": (
             "Each point is one month: Zilretta's visits as a share of the three treatments' "
-            "visits for the group you chose. The amber dashes are a straight line fitted to the "
+            "visits for the group you chose. The orange dashes are a straight line fitted to the "
             "points to show the overall direction. The shaded band is a stretch of months when "
             "the data capture dipped for all three treatments. Drag across the chart to pick a "
             "range: the cards and the panel beside it then describe only those months."
@@ -268,7 +268,7 @@ EXPLAIN: dict[str, dict[str, str]] = {
     },
     "detail_compare": {
         "read": (
-            "The group's share each month (teal line) against the share across all visits "
+            "The group's share each month (blue line) against the share across all visits "
             "(grey dashed line). Above the grey line, Zilretta takes a bigger share in this group "
             "than in the market as a whole. Drag across the chart to see the average of both over "
             "a range of months."
@@ -340,7 +340,7 @@ EXPLAIN: dict[str, dict[str, str]] = {
     },
     "ctx_state": {
         "read": (
-            "The teal line is the state's rate each year with its 95% interval shaded. The "
+            "The blue line is the state's rate each year with its 95% interval shaded. The "
             "dashed grey line is the national rate. The figures at the side are for the latest "
             "year."
         ),

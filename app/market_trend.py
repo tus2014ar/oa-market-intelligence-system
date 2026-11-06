@@ -65,7 +65,7 @@ def _chart(win, who: str, chart_key: str, bounds) -> None:
     )
     st.caption(
         f"{who}: Zilretta's visits as a share of Zilretta, generic steroid injection and "
-        "NSAID/OTC visits. Amber dashes: the straight-line guide. Grey dotted lines: the peak, "
+        "NSAID/OTC visits. Orange dashes: the straight-line guide. Grey dotted lines: the peak, "
         "the turn in March 2022 and the start of the 2024 dip. Shaded: the March to July 2024 "
         "data-capture dip, which hit all three classes. Drag across the chart to pick a range: "
         "the cards and the panel beside it follow your range. Changing the view above clears it."

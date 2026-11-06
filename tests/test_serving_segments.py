@@ -228,7 +228,7 @@ def test_the_ranked_bars_draw_each_measure_and_colour_a_fall():
         spec = charts.group_chart(table, show).to_dict()
         assert spec["mark"]["type"] == "bar"
     change = charts.group_chart(table, "change").to_dict()
-    assert change["encoding"]["color"]["field"] == "direction"  # teal up, rust down
+    assert change["encoding"]["color"]["field"] == "direction"  # blue up, red down
     assert "datum" not in str(charts.group_chart(table, "share").to_dict()["encoding"]["color"])
 
 

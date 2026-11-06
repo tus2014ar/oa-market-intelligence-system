@@ -1,18 +1,29 @@
 """The site's look, as tested functions: one block of CSS and small builders for the cards, bars and
 ranked lists the redesigned tabs share (DL-97).
 
-Everything that comes from data is escaped before it goes into HTML. The cards are a fixed navy
-with white text and the bars use the site's teal on a faint track, so both read in light and dark
-mode; green, red and grey for a change always come with a sign or a word.
+Everything that comes from data is escaped before it goes into HTML. The cards are the reference
+site's blue with white text and the bars use the same blue on a faint track; green, red and grey
+for a change always come with a sign or a word. The look is light only (DL-112).
 """
 
 from __future__ import annotations
 
 from html import escape
 
-NAVY, TEAL, GREEN, RED, GREY = "#1B2A41", "#0F8B8D", "#1E9E5A", "#C8553D", "#7A8794"
+# the labour-market reference site's palette (DL-112): its blue, its green and a red from the
+# same family (its red was not seen), and the grey of its secondary text
+BLUE, GREEN, RED, GREY = "#0d47a1", "#2e7d32", "#c62828", "#616468"
 
 CSS = f"""<style>
+/* the type and the greys of the reference site (DL-112); icons keep their own font */
+.stApp, .stApp *:not([data-testid="stIconMaterial"]):not(code):not(pre):not(pre *) {{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif
+  !important}}
+h1 {{color:#000 !important;letter-spacing:0 !important}}
+[data-testid="stMarkdownContainer"] p, [data-testid="stMarkdownContainer"] li {{font-size:.94rem}}
+[data-testid="stCaptionContainer"] {{color:{GREY} !important;font-size:13px !important}}
+[data-testid="stSidebarNavLink"][aria-current="page"] {{background:rgba(13,71,161,.1);
+  color:{BLUE};font-weight:600}}
 /* the navigation sits on the right, as a collapsible list with icons */
 [data-testid="stAppViewContainer"] {{flex-direction:row-reverse}}
 [data-testid="stSidebar"] {{border-right:0;border-left:1px solid rgba(127,127,127,.22)}}
@@ -31,27 +42,27 @@ CSS = f"""<style>
 @keyframes oa-in {{from {{opacity:0;transform:translateY(8px)}} to {{opacity:1;transform:none}}}}
 [data-testid="stMain"] [data-testid="stElementContainer"] {{animation:oa-in .4s ease both}}
 [data-testid="stVerticalBlockBorderWrapper"] {{transition:border-color .2s ease}}
-[data-testid="stVerticalBlockBorderWrapper"]:hover {{border-color:rgba(15,139,141,.45)}}
+[data-testid="stVerticalBlockBorderWrapper"]:hover {{border-color:rgba(13,71,161,.45)}}
 .oa-kpi {{transition:transform .2s ease,box-shadow .2s ease}}
-.oa-kpi:hover {{transform:translateY(-3px);box-shadow:0 10px 24px rgba(27,42,65,.28)}}
+.oa-kpi:hover {{transform:translateY(-3px);box-shadow:0 10px 24px rgba(13,71,161,.28)}}
 @media (prefers-reduced-motion:reduce) {{*,*::before,*::after
   {{animation:none !important;transition:none !important}}}}
-.oa-kpi {{background:{NAVY};color:#fff;border-radius:14px;padding:16px 20px;min-height:152px}}
+.oa-kpi {{background:{BLUE};color:#fff;border-radius:10px;padding:20px 24px;min-height:152px}}
 @media (max-width:640px) {{.oa-kpi, .oa-kpi.tall {{min-height:0}}}}
 .oa-kpi.tall {{min-height:260px}}
-.oa-kpi .l {{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;opacity:.78}}
+.oa-kpi .l {{font-size:12px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}}
 .oa-kpi .v {{font-size:2rem;font-weight:700;line-height:1.2;margin:.15rem 0}}
-.oa-kpi .c {{font-size:.8rem;opacity:.82;line-height:1.35}}
+.oa-kpi .c {{font-size:12px;opacity:.9;line-height:1.35}}
 .oa-pill {{display:inline-block;border-radius:999px;padding:1px 9px;font-size:.78rem;
   font-weight:600;margin-left:.4rem;vertical-align:middle}}
-.oa-pill.up {{background:rgba(30,158,90,.22);color:#6fe0a3}}
-.oa-pill.down {{background:rgba(200,85,61,.28);color:#ffab98}}
+.oa-pill.up {{background:rgba(46,125,50,.22);color:#6fe0a3}}
+.oa-pill.down {{background:rgba(198,40,40,.28);color:#ffab98}}
 .oa-pill.flat {{background:rgba(255,255,255,.16);color:#fff}}
 .oa-row {{display:grid;grid-template-columns:1fr auto;gap:.15rem .6rem;align-items:baseline;
   margin:.55rem 0;font-size:.9rem}}
 .oa-track {{grid-column:1 / -1;display:block;background:rgba(127,127,127,.2);border-radius:6px;
   height:10px;overflow:hidden}}
-.oa-fill {{display:block;background:{TEAL};height:10px;border-radius:6px}}
+.oa-fill {{display:block;background:{BLUE};height:10px;border-radius:6px}}
 .oa-val {{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}}
 .oa-rank {{display:grid;grid-template-columns:minmax(110px,2fr) auto auto;gap:.8rem;
   align-items:center;padding:.42rem 0;font-size:.9rem;
@@ -60,13 +71,13 @@ CSS = f"""<style>
 .oa-rank .n {{text-align:right;font-variant-numeric:tabular-nums}}
 .oa-up {{color:{GREEN};font-weight:600}} .oa-down {{color:{RED};font-weight:600}}
 .oa-flat {{color:{GREY};font-weight:600}}
-.oa-call {{background:rgba(15,139,141,.13);border-radius:8px;padding:.45rem .75rem;
+.oa-call {{background:rgba(13,71,161,.13);border-radius:8px;padding:.45rem .75rem;
   font-size:.84rem;margin-top:.55rem}}
-.oa-call.down {{background:rgba(200,85,61,.13)}}
-.oa-plain {{background:rgba(15,139,141,.08);border-radius:10px;padding:.7rem .95rem;
+.oa-call.down {{background:rgba(198,40,40,.13)}}
+.oa-plain {{background:rgba(13,71,161,.08);border-radius:10px;padding:.7rem .95rem;
   margin:.2rem 0 .9rem;line-height:1.5}}
 .oa-plain .k {{display:block;font-size:.72rem;letter-spacing:.06em;font-weight:700;
-  text-transform:uppercase;color:#0F8B8D;margin-bottom:.15rem}}
+  text-transform:uppercase;color:{BLUE};margin-bottom:.15rem}}
 .oa-gloss {{padding:.5rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-gloss b {{display:block}} .oa-gloss span {{opacity:.85;font-size:.92rem}}
 .oa-test {{padding:.6rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
@@ -74,13 +85,13 @@ CSS = f"""<style>
 .oa-test-sub {{font-weight:400;opacity:.7}}
 .oa-pill2 {{border-radius:999px;padding:1px 10px;font-size:.78rem;font-weight:600;
   white-space:nowrap;background:rgba(127,127,127,.2)}}
-.oa-pill2.pass {{background:rgba(30,158,90,.18);color:{GREEN}}}
+.oa-pill2.pass {{background:rgba(46,125,50,.18);color:{GREEN}}}
 .oa-test-res {{font-size:.88rem;font-variant-numeric:tabular-nums;margin-top:.15rem}}
 .oa-test-plain {{font-size:.84rem;opacity:.8;margin-top:.1rem}}
 .oa-kpi .v.t {{font-size:1.1rem;line-height:1.3;margin:.3rem 0 .4rem}}
 .oa-find {{padding:.8rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-find-head {{display:flex;gap:.7rem;align-items:center}}
-.oa-find-id {{flex:none;width:1.7rem;height:1.7rem;border-radius:50%;background:{TEAL};
+.oa-find-id {{flex:none;width:1.7rem;height:1.7rem;border-radius:50%;background:{BLUE};
   color:#fff;text-align:center;line-height:1.7rem;font-size:.8rem;font-weight:700}}
 .oa-find-title {{font-weight:700}}
 .oa-find-impact {{font-size:.9rem;margin:.4rem 0 .25rem 2.4rem}}
@@ -95,21 +106,21 @@ CSS = f"""<style>
 .oa-tl-flag {{color:{RED};opacity:1;font-weight:600}}
 .oa-spark {{display:block;margin-top:.55rem}}
 a.oa-link {{display:block;text-decoration:none !important;color:inherit !important}}
-a.oa-link:hover .oa-kpi {{transform:translateY(-3px);box-shadow:0 10px 24px rgba(27,42,65,.28)}}
+a.oa-link:hover .oa-kpi {{transform:translateY(-3px);box-shadow:0 10px 24px rgba(13,71,161,.28)}}
 .oa-kpi {{position:relative;margin-bottom:.6rem}}
 .oa-go {{position:absolute;top:10px;right:14px;opacity:.65;font-size:1rem;
   transition:opacity .2s ease,transform .2s ease}}
 a.oa-link:hover .oa-go {{opacity:1;transform:translate(2px,-2px)}}
-a.oa-rowlink:hover {{background:rgba(15,139,141,.09);border-radius:8px}}
-a.oa-link.oa-crumb {{display:inline;color:{TEAL} !important;text-decoration:none !important}}
+a.oa-rowlink:hover {{background:rgba(13,71,161,.09);border-radius:8px}}
+a.oa-link.oa-crumb {{display:inline;color:{BLUE} !important;text-decoration:none !important}}
 a.oa-crumb:hover {{text-decoration:underline !important}}
-a.oa-see {{color:{TEAL} !important;font-weight:600;font-size:.85rem;
+a.oa-see {{color:{BLUE} !important;font-weight:600;font-size:.85rem;
   text-decoration:none !important}}
 a.oa-see:hover {{text-decoration:underline !important}}
 .oa-find-see {{margin:.3rem 0 0 2.4rem}}
 .oa-guide {{display:grid;grid-template-columns:minmax(96px,1fr) 4fr;gap:.8rem;padding:.4rem 0;
   border-bottom:1px solid rgba(127,127,127,.18);font-size:.9rem}}
-.oa-guide-tab {{font-weight:700;color:{TEAL}}}
+.oa-guide-tab {{font-weight:700;color:{BLUE}}}
 @media (max-width:640px) {{.oa-guide {{grid-template-columns:1fr;gap:.1rem}}}}
 .oa-stand {{display:flex;justify-content:space-between;align-items:baseline;
   padding:.4rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
@@ -140,7 +151,7 @@ def signed(value: float | None, unit: str = " pp", digits: int = 2) -> str:
 
 
 def sparkline(values: list[float], width: int = 180, height: int = 34, area: bool = False) -> str:
-    """A small inline line (optionally filled below) for a card: white on the navy card, drawn from
+    """A small inline line (optionally filled below) for a card: white on the blue card, drawn from
     `values` scaled to its own range. Nothing is drawn for fewer than two numbers."""
     vals = [float(v) for v in values if v is not None and float(v) == float(v)]
     if len(vals) < 2:
@@ -177,7 +188,7 @@ def kpi_card(
     area: bool = False,
     href: str | None = None,
 ) -> str:
-    """A navy card: a small label, one big number, an optional change pill, a caption and an
+    """A blue card: a small label, one big number, an optional change pill, a caption and an
     optional sparkline. With `href` the whole card is a link and shows a small arrow."""
     chip = f'<span class="oa-pill {tone(delta)}">{escape(pill)}</span>' if pill else ""
     line = sparkline(spark, area=area) if spark else ""
@@ -269,7 +280,7 @@ def test_rows(rows: list[tuple[str, str, str, bool, str, str]]) -> str:
 
 
 def text_card(label: str, title: str, caption: str = "") -> str:
-    """A navy card whose main line is a sentence (a finding's title) rather than a number."""
+    """A blue card whose main line is a sentence (a finding's title) rather than a number."""
     return (
         f'<div class="oa-kpi tall"><div class="l">{escape(label)}</div>'
         f'<div class="v t">{escape(title)}</div><div class="c">{escape(caption)}</div></div>'
@@ -329,7 +340,7 @@ def guide_rows(rows: list[tuple[str, str]], links: list[str | None] | None = Non
 
 
 def link_line(label: str, href: str) -> str:
-    """A small teal link with an arrow, for the end of a card or a section."""
+    """A small blue link with an arrow, for the end of a card or a section."""
     return f'<a class="oa-see" href="{escape(href)}" target="_self">{escape(label)} →</a>'
 
 

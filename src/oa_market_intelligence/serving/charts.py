@@ -16,22 +16,22 @@ import pandas as pd
 from oa_market_intelligence.serving import views
 from oa_market_intelligence.serving.qa_tools import Snapshot
 
-PRIMARY = "#2a78d6"
-PROJECTED = "#eb6834"
-SERIES = "#0F8B8D"  # the site's teal, for the tab-level series
-TREND_GUIDE = "#E8A33D"  # amber: the straight-line guide and the data-capture dip
-FALL = "#C8553D"  # rust: a fall
+PRIMARY = "#0d47a1"
+PROJECTED = "#ffa726"
+SERIES = "#0d47a1"  # the reference site's blue, for the page-level series
+TREND_GUIDE = "#ffa726"  # orange: the straight-line guide and the data-capture dip
+FALL = "#c62828"  # red: a fall
 DATE_AXIS = alt.Axis(format="%b %Y", tickCount=6, labelOverlap=True)
 GRID_CAP = 8  # the grid's colour scale stops here, so a few extreme cells do not wash out the rest
 CATEGORICAL = [
-    "#0F8B8D",
-    "#E8A33D",
-    "#1B2A41",
-    "#C8553D",
-    "#7A8794",
-    "#2a78d6",
-    "#8B5FBF",
-    "#3FA34D",
+    "#0d47a1",
+    "#ffa726",
+    "#2e7d32",
+    "#8b8e94",
+    "#c62828",
+    "#1976d2",
+    "#7b1fa2",
+    "#00838f",
 ]
 HEIGHT = 300
 BAR_STEP = 28  # pixels per bar, so a long list grows the chart instead of squeezing it
@@ -39,7 +39,7 @@ BAR_STEP = 28  # pixels per bar, so a long list grows the chart instead of squee
 
 def _style(chart: alt.Chart) -> alt.Chart:
     """Quiet frame. Text and grid colours are left to Streamlit's theme so the chart reads in both
-    light and dark mode; only the series colours are ours."""
+    Streamlit's light theme; only the series colours are ours."""
     return chart.configure_view(stroke=None).configure_title(anchor="start", fontSize=14)
 
 
@@ -79,7 +79,7 @@ def market_trend_chart(
     shown: tuple[float, float] | None = None,
 ) -> alt.Chart:
     """The Market trend tab's chart: the share by month (or quarter) with an optional straight-line
-    guide (amber, dashed), the 2024 data-capture dip (shaded) and dated markers (grey, dotted).
+    guide (orange, dashed), the 2024 data-capture dip (shaded) and dated markers (grey, dotted).
     `frame` comes from `trend.monthly` or `trend.quarterly`."""
     data = frame.assign(fitted=None if fitted is None else fitted.to_numpy())
     base = alt.Chart(data)
@@ -108,7 +108,7 @@ def market_trend_chart(
     if events is not None and len(events):
         layers.append(
             alt.Chart(events)
-            .mark_rule(color="#7A8794", strokeDash=[3, 4])
+            .mark_rule(color="#A3A6AD", strokeDash=[3, 4])
             .encode(x="month:T", tooltip=alt.Tooltip("label:N", title="Marker"))
         )
     return _style(alt.layer(*layers).properties(height=HEIGHT + 60))
@@ -206,7 +206,7 @@ def specialty_forecast_chart(spec: pd.DataFrame, horizon: int) -> alt.Chart:
     )
     ticks = (
         alt.Chart(spec)
-        .mark_tick(color="#1B2A41", thickness=3, size=18)
+        .mark_tick(color="#353639", thickness=3, size=18)
         .encode(y=y, x="last_pct:Q", tooltip=tip)
     )
     return _style((bars + ticks).properties(height=alt.Step(BAR_STEP)))
@@ -230,7 +230,7 @@ def company_visits_chart(indexed: pd.DataFrame) -> alt.Chart:
         alt.Tooltip("index:Q", title="Index (2021 = 100)", format=".0f"),
         alt.Tooltip("value:Q", title="Value", format=","),
     ]
-    rule = alt.Chart(pd.DataFrame({"y": [100]})).mark_rule(color="#7A8794", strokeDash=[3, 4])
+    rule = alt.Chart(pd.DataFrame({"y": [100]})).mark_rule(color="#A3A6AD", strokeDash=[3, 4])
     line = base.mark_line(strokeWidth=3) + base.mark_circle(size=50).encode(tooltip=tip)
     return _style((rule.encode(y="y:Q") + line).properties(height=HEIGHT))
 
@@ -265,7 +265,7 @@ def state_tile_map(view: pd.DataFrame) -> alt.Chart:
         .encode(
             color=alt.Color(
                 "pct:Q",
-                scale=alt.Scale(domain=[0, cap], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]),
+                scale=alt.Scale(domain=[0, cap], clamp=True, range=["#E8F0FB", SERIES, "#06265a"]),
                 legend=alt.Legend(title=f"Adoption (%), darkest at {cap:g}%+", orient="bottom"),
             ),
             opacity=alt.Opacity(
@@ -278,13 +278,13 @@ def state_tile_map(view: pd.DataFrame) -> alt.Chart:
     )
     labels = base.mark_text(fontSize=11, fontWeight="bold").encode(
         text="state_code:N",
-        color=alt.condition("datum.pct > 2", alt.value("white"), alt.value("#1B2A41")),
+        color=alt.condition("datum.pct > 2", alt.value("white"), alt.value("#353639")),
     )
     return _style((tiles + labels).properties(height=alt.Step(30), width=alt.Step(30)))
 
 
 def state_trend_chart(by_year: pd.DataFrame, name: str) -> alt.Chart:
-    """One state's Medicare adoption by year: its rate and interval (teal, with a band) beside the
+    """One state's Medicare adoption by year: its rate and interval (blue, with a band) beside the
     national rate (grey, dashed). `by_year` comes from `context.state_detail`."""
     long = by_year.melt(
         id_vars=["year", "ci_low_pct", "ci_high_pct"],
@@ -293,7 +293,7 @@ def state_trend_chart(by_year: pd.DataFrame, name: str) -> alt.Chart:
         value_name="pct",
     )
     long["series"] = long["series"].map({"adoption_pct": name, "national_pct": "National"})
-    colours = alt.Scale(domain=[name, "National"], range=[SERIES, "#7A8794"])
+    colours = alt.Scale(domain=[name, "National"], range=[SERIES, "#A3A6AD"])
     x = alt.X("year:O", title=None, axis=alt.Axis(labelAngle=0))
     band = (
         alt.Chart(by_year)
@@ -325,7 +325,7 @@ def compare_chart(
     shown: tuple[float, float] | None = None,
 ) -> alt.Chart:
     """One group's monthly share beside the whole market's, so the gap between them is the picture.
-    `frame` comes from `detail.compare_series`; the group is teal and the market grey and dashed."""
+    `frame` comes from `detail.compare_series`; the group is blue and the market grey and dashed."""
     long = frame.melt(
         id_vars=["month", "label", "category"],
         value_vars=["group_pct", "market_pct"],
@@ -333,7 +333,7 @@ def compare_chart(
         value_name="share_pct",
     )
     long["series"] = long["series"].map({"group_pct": group_label, "market_pct": "All visits"})
-    colours = alt.Scale(domain=[group_label, "All visits"], range=[SERIES, "#7A8794"])
+    colours = alt.Scale(domain=[group_label, "All visits"], range=[SERIES, "#A3A6AD"])
     base = alt.Chart(long).encode(
         x=alt.X("month:T", title=None, axis=DATE_AXIS),
         y=alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False)),
@@ -354,7 +354,7 @@ def compare_chart(
 
 def group_chart(table: pd.DataFrame, show: str = "share") -> alt.Chart:
     """The Segments tab's ranked bars: share, Zilretta's visits, or the change in share over the
-    last 12 months (teal for a rise, rust for a fall). Groups with few visits are drawn faded."""
+    last 12 months (blue for a rise, red for a fall). Groups with few visits are drawn faded."""
     column, title, fmt = {
         "share": ("share_pct", "Zilretta's share of visits (%)", ".2f"),
         "visits": ("zilretta_visits", "Zilretta visits", ","),
@@ -424,7 +424,7 @@ def share_grid(cells: pd.DataFrame) -> alt.Chart:
         alt.Tooltip("zilretta:Q", title="Zilretta visits", format=","),
         alt.Tooltip("category:Q", title="All three classes", format=","),
     ]
-    empty = base.transform_filter("!datum.shown").mark_rect(color="#7A879433").encode(tooltip=tip)
+    empty = base.transform_filter("!datum.shown").mark_rect(color="#A3A6AD33").encode(tooltip=tip)
     filled = (
         base.transform_filter("datum.shown")
         .mark_rect(cursor="pointer")
@@ -433,7 +433,7 @@ def share_grid(cells: pd.DataFrame) -> alt.Chart:
             color=alt.Color(
                 "share_pct:Q",
                 scale=alt.Scale(
-                    domain=[0, GRID_CAP], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]
+                    domain=[0, GRID_CAP], clamp=True, range=["#E8F0FB", SERIES, "#06265a"]
                 ),
                 legend=alt.Legend(title=f"Share (%), darkest at {GRID_CAP}%+", orient="bottom"),
             ),
@@ -445,7 +445,7 @@ def share_grid(cells: pd.DataFrame) -> alt.Chart:
         .mark_text(fontSize=11)
         .encode(
             text=alt.Text("share_pct:Q", format=".1f"),
-            color=alt.condition("datum.share_pct > 4", alt.value("white"), alt.value("#1B2A41")),
+            color=alt.condition("datum.share_pct > 4", alt.value("white"), alt.value("#353639")),
         )
     )
     return _style((empty + filled + text).properties(height=alt.Step(26)))
@@ -642,7 +642,7 @@ def events_chart(monthly: pd.DataFrame, graph) -> alt.Chart:
             color=alt.Color(
                 "kind:N",
                 scale=alt.Scale(
-                    domain=["Verified event", "Not verified"], range=["#6250d6", "#9a9a94"]
+                    domain=["Verified event", "Not verified"], range=["#353639", "#A3A6AD"]
                 ),
                 legend=alt.Legend(title=None, orient="bottom"),
             ),
@@ -662,7 +662,7 @@ def events_chart(monthly: pd.DataFrame, graph) -> alt.Chart:
             color=alt.Color(
                 "kind:N",
                 scale=alt.Scale(
-                    domain=["Verified event", "Not verified"], range=["#6250d6", "#9a9a94"]
+                    domain=["Verified event", "Not verified"], range=["#353639", "#A3A6AD"]
                 ),
                 legend=None,
             ),

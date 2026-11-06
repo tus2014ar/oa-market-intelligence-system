@@ -1,20 +1,23 @@
-# The site's look. Streamlit follows the visitor's light or dark setting and uses the matching
-# colours below. Secrets never go in this file: they live in .streamlit/secrets.toml, which git ignores.
+# The site's look, taken from the labour-market reference site (DL-112): white, one blue,
+# system fonts, bold headings. Light only: that blue does not read on a dark background.
+# Secrets never go in this file: they live in .streamlit/secrets.toml, which git ignores.
 
 [theme]
-font = "sans serif"
-
-[theme.light]
-primaryColor = "#0F8B8D"
+base = "light"
+font = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+primaryColor = "#0d47a1"
 backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#EEF3F5"
-textColor = "#1B2A41"
+secondaryBackgroundColor = "#F5F7FA"
+textColor = "#353639"
+linkColor = "#0d47a1"
+borderColor = "#E8EBF0"
+baseRadius = "0.75rem"
+headingFontSizes = ["2rem", "1.5rem", "1.25rem", "1.125rem", "1.125rem", "0.875rem"]
+headingFontWeights = [700, 700, 700, 700, 700, 700]
 
-[theme.dark]
-primaryColor = "#2DB5B7"
-backgroundColor = "#0E1626"
-secondaryBackgroundColor = "#1B2A41"
-textColor = "#E6E8EC"
+[theme.sidebar]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F7FA"
 
 [browser]
 gatherUsageStats = false
