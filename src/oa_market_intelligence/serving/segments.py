@@ -19,15 +19,22 @@ MIN_CELL_VISITS = 300  # visits in a specialty-by-age cell under which its share
 SHARE_OF_VISITS = 0.8  # "how many groups make up four fifths of Zilretta's visits"
 
 
-def months_in(seg: pd.DataFrame, period: str) -> list[int]:
-    """The month ids of the last months of the series named by the period."""
-    ids = sorted(seg["month_id"].unique())
+def months_in(seg: pd.DataFrame, period: str, calendar: list[int] | None = None) -> list[int]:
+    """The month ids of the last months of the series named by the period. `calendar` is every
+    month of the whole series: pass it when `seg` has been narrowed by a filter, so a month a small
+    group happens to lack does not shift the window."""
+    ids = sorted(calendar) if calendar is not None else sorted(seg["month_id"].unique())
     months = trend.PERIOD_MONTHS[period]
     return ids if months is None else ids[-months:]
 
 
 def group_table(
-    seg: pd.DataFrame, by: str, period: str = "All", *, min_visits: int = MIN_VISITS
+    seg: pd.DataFrame,
+    by: str,
+    period: str = "All",
+    *,
+    min_visits: int = MIN_VISITS,
+    calendar: list[int] | None = None,
 ) -> pd.DataFrame:
     """One row per group with at least `min_visits` visits in the period: its share, its visits, its
     share of Zilretta's visits among the groups listed, whether it is small, and its change (the
@@ -36,7 +43,7 @@ def group_table(
     the number of groups under the floor."""
     if by not in GROUPS:
         raise ValueError(f"by must be one of {sorted(GROUPS)}, got {by!r}")
-    part = seg[seg["month_id"].isin(months_in(seg, period))]
+    part = seg[seg["month_id"].isin(months_in(seg, period, calendar))]
     grouped = part.groupby(by)[["zilretta", "category"]].sum()
     kept = grouped[grouped["category"] >= min_visits]
     out = kept.reset_index().rename(columns={by: "group", "zilretta": "zilretta_visits"})
@@ -46,7 +53,7 @@ def group_table(
     out["pct_of_zilretta"] = 100 * out["zilretta_visits"] / total if total else 0.0
     out["small"] = out["category_visits"] < SMALL_VISITS
     out["label"] = out["group"].map(trend.pretty)
-    change = trend.movers(seg, by)[["group", "delta_pp"]]
+    change = trend.movers(seg, by, calendar=calendar)[["group", "delta_pp"]]
     out = out.merge(change, on="group", how="left")
     out = out.sort_values(["share_pct", "group"], ascending=[False, True]).reset_index(drop=True)
     out.attrs["left_out"] = int(len(grouped) - len(kept))
@@ -110,12 +117,13 @@ def cross_table(
     top_rows: int = 12,
     min_cell: int = MIN_CELL_VISITS,
     min_column: int = MIN_VISITS,
+    calendar: list[int] | None = None,
 ) -> pd.DataFrame:
     """Zilretta's share for each specialty (the `top_rows` with the most Zilretta visits) and age
     band (those with at least `min_column` visits), long form: `row`, `column`, `share_pct`,
     `zilretta`, `category`, `shown`. A cell with fewer than `min_cell` visits is kept but not
     shown (its share is NaN), so the grid never presents a few visits as a rate."""
-    part = seg[seg["month_id"].isin(months_in(seg, period))]
+    part = seg[seg["month_id"].isin(months_in(seg, period, calendar))]
     rows = part.groupby("specialty")["zilretta"].sum().sort_values(ascending=False).head(top_rows)
     columns = part.groupby("age_band")["category"].sum()
     columns = sorted(columns[columns >= min_column].index)
@@ -135,11 +143,14 @@ def cross_table(
     return cells
 
 
-def group_trend(seg: pd.DataFrame, by: str, groups: list[str]) -> pd.DataFrame:
+def group_trend(
+    seg: pd.DataFrame, by: str, groups: list[str], calendar: list[int] | None = None
+) -> pd.DataFrame:
     """The chosen groups' share by calendar year; a year under 12 months of data is part."""
     sub = seg[seg[by].isin(groups)].copy()
     sub["year"] = sub["month_id"] // 100
-    months = seg.assign(year=seg["month_id"] // 100).groupby("year")["month_id"].nunique()
+    counted = pd.DataFrame({"month_id": sorted(calendar)}) if calendar is not None else seg
+    months = counted.assign(year=counted["month_id"] // 100).groupby("year")["month_id"].nunique()
     out = sub.groupby([by, "year"])[["zilretta", "category"]].sum().reset_index()
     out = out.rename(columns={by: "group"})
     out["share_pct"] = 100 * out["zilretta"] / out["category"].where(out["category"] > 0)

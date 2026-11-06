@@ -84,10 +84,10 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
             "nothing beat a simple rule, the site says so.\n"
             "- Payer, regional and prescription-volume data are not part of this analysis.\n"
             "- Company sales kept rising while these visits fell, and the size of the visits "
-            "decline is unverified: see the Context tab before quoting it."
+            "decline is unverified: see the Context page before quoting it."
         )
 
-    st.markdown("##### What each tab answers")
+    st.markdown("##### What each page answers")
     with st.container(border=True):
         st.markdown(style.guide_rows(overview.guide()), unsafe_allow_html=True)
 

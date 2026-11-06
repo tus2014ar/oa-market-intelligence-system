@@ -207,6 +207,6 @@ def render(D: dict, adoption: dict, posthoc: dict, extras: dict, data_chip) -> N
     st.markdown("##### What the segment model relies on")
     _shap(shap)
     st.caption(
-        "Everything on this tab is stored output of the modelling runs, not fitted while the "
+        "Everything on this page is stored output of the modelling runs, not fitted while the "
         "page loads. Visits are in IQVIA's panel, not company sales."
     )

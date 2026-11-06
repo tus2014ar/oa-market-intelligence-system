@@ -110,6 +110,20 @@ def segment_view(pred: pd.DataFrame, seg: pd.DataFrame, horizon: int) -> pd.Data
     return out[columns].sort_values("origin_visits", ascending=False).reset_index(drop=True)
 
 
+def select(
+    view: pd.DataFrame,
+    specialty: str | None = None,
+    age: str | None = None,
+    gender: str | None = None,
+) -> pd.DataFrame:
+    """The segment view narrowed to a specialty, an age band and a gender (None means all)."""
+    mask = pd.Series(True, index=view.index)
+    for column, value in (("specialty", specialty), ("age_band", age), ("gender", gender)):
+        if value is not None:
+            mask &= view[column] == value
+    return view[mask].reset_index(drop=True)
+
+
 def specialty_view(view: pd.DataFrame, min_visits: int = MIN_SPECIALTY_VISITS) -> pd.DataFrame:
     """The segment view rolled up to specialties: the forecast and last month's share, both
     weighted by the segments' visits in the latest month, and the number of segments. A specialty
@@ -129,7 +143,8 @@ def specialty_view(view: pd.DataFrame, min_visits: int = MIN_SPECIALTY_VISITS) -
                 "segments": int(len(part)),
             }
         )
-    out = pd.DataFrame(rows)
+    columns = ["specialty", "label", "forecast_pct", "last_pct", "visits", "segments"]
+    out = pd.DataFrame(rows, columns=columns)
     kept = out[out["visits"] >= min_visits].sort_values("visits", ascending=False)
     kept = kept.reset_index(drop=True)
     kept.attrs["left_out"] = int(len(out) - len(kept))

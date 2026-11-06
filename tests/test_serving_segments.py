@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from modelling_fixtures import month_ids
-from oa_market_intelligence.serving import data, segments
+from oa_market_intelligence.serving import data, segments, trend
 
 
 def _seg():
@@ -247,3 +247,38 @@ def test_the_yearly_lines_chart_has_a_line_and_points():
     frame = segments.group_trend(_seg(), "specialty", ["A", "B"])
     spec = charts.group_trend_chart(frame).to_dict()
     assert [layer["mark"]["type"] for layer in spec["layer"]] == ["line", "circle"]
+
+
+# ---------------- a narrowed selection keeps the calendar
+
+
+def test_a_filter_does_not_shift_the_window_when_the_whole_calendar_is_given():
+    seg = _seg()
+    calendar = sorted(seg["month_id"].unique())
+    early = seg[(seg["specialty"] == "A") & (seg["month_id"] <= 202312)]  # nothing after 2023
+    # on its own the frame's last 12 months are 2023, so A looks present
+    assert list(segments.group_table(early, "specialty", "1Y")["group"]) == ["A"]
+    # against the real calendar the last 12 months are 2024, where A has no visits
+    assert segments.group_table(early, "specialty", "1Y", calendar=calendar).empty
+    assert segments.months_in(early, "1Y", calendar)[0] == 202401
+    assert segments.months_in(early, "1Y")[0] == 202301
+
+
+def test_the_movers_use_the_real_calendar_too():
+    seg = _seg()
+    calendar = sorted(seg["month_id"].unique())
+    early = seg[(seg["specialty"] == "A") & (seg["month_id"] <= 202312)]
+    assert trend.movers(early, "specialty").empty  # only 12 months of its own: nothing to compare
+    assert trend.movers(early, "specialty", calendar=calendar).empty  # and none in the last 12
+    kept = trend.movers(seg, "specialty", calendar=calendar)
+    assert list(kept["group"]) == list(trend.movers(seg, "specialty")["group"])
+
+
+def test_a_part_year_is_judged_on_the_series_not_on_the_group():
+    seg = _seg()
+    calendar = sorted(seg["month_id"].unique())
+    short = seg[(seg["specialty"] == "A") & (seg["month_id"] <= 202406)]
+    own = segments.group_trend(short, "specialty", ["A"])
+    assert own["partial_year"].tolist() == [False, True]  # 2024 looks part: it has only 6 months
+    real = segments.group_trend(short, "specialty", ["A"], calendar=calendar)
+    assert real["partial_year"].tolist() == [False, False]  # the series has all 12 months of 2024

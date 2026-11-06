@@ -67,12 +67,12 @@ FRIENDLY_FAILURE = (
 ROUND_LIMIT = "I could not finish answering that within the allowed number of steps."
 
 TABLE_SOURCES = {
-    "get_data_status": "Overview tab (market series, forecasts, last run)",
-    "get_market_trend": "Market trend tab (gold_visit_share_monthly)",
-    "get_segments": "Segments tab (gold_segment_adoption)",
-    "get_forecasts": "Forecasts tab (pred_batch, model_scores)",
-    "get_model_results": "Model results tab (model_scores, modelling_posthoc.json)",
-    "get_findings": "Findings tab (findings.json)",
+    "get_data_status": "Overview page (market series, forecasts, last run)",
+    "get_market_trend": "Market trend page (gold_visit_share_monthly)",
+    "get_segments": "Segments page (gold_segment_adoption)",
+    "get_forecasts": "Forecasts page (pred_batch, model_scores)",
+    "get_model_results": "Model results page (model_scores, modelling_posthoc.json)",
+    "get_findings": "Findings page (findings.json)",
 }
 GRAPH_TOOLS = ("get_entity", "get_neighbors", "get_competitors", "get_events")
 FOLLOWUPS = {
