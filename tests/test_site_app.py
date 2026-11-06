@@ -1270,3 +1270,15 @@ def test_once_a_conversation_has_started_the_examples_are_gone_but_the_box_stays
     _say(at, "What is the latest share?")
     assert not [e for e in at.expander if "example questions" in e.proto.label.lower()]
     assert len(at.chat_input) == 1 and not at.chat_input[0].proto.disabled
+
+
+# ---------------------- the site's name
+
+
+SITE_NAME = "Osteoarthritis and Rheumatoid Arthritis Market Share Forecasting Pipeline"
+
+
+def test_every_page_carries_the_sites_name_as_its_title(page):
+    for title in overview.TAB_NAMES:
+        at = page(title)
+        assert [t.value for t in at.title] == [SITE_NAME], title
