@@ -1,0 +1,43 @@
+# The whole stack on one machine (DL-116):  docker compose up --build
+#   site  http://localhost:8501   the website
+#   api   http://localhost:8000   the read-only API; the documentation is at /docs
+# Settings are read from your shell when set, and are never stored in this file:
+#   ANTHROPIC_API_KEY, ACCESS_CODE, DAILY_TOKEN_BUDGET, CLAUDE_MODEL (the AI Question Box)
+#   API_KEYS, API_RATE_PER_MINUTE                                      (the API)
+# The monthly pipeline is a job, not a service:  docker compose run --rm pipeline
+services:
+  site:
+    build:
+      context: .
+      dockerfile: Dockerfile.site
+    image: oa-site
+    ports:
+      - "8501:8501"
+    environment:
+      - ANTHROPIC_API_KEY
+      - ACCESS_CODE
+      - DAILY_TOKEN_BUDGET
+      - CLAUDE_MODEL
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: oa-api
+    ports:
+      - "8000:8000"
+    environment:
+      - API_KEYS
+      - API_RATE_PER_MINUTE
+    restart: unless-stopped
+
+  pipeline:
+    profiles: ["pipeline"]
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: oa-market-intelligence
+    volumes:
+      - ./data:/app/data
+    command: ["oa-publish", "--help"]

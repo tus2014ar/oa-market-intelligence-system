@@ -113,6 +113,8 @@ pip install -r requirements.txt && pip install --no-deps -e .   # then oa-pipeli
 docker build -t oa-market-intelligence .                          # the same environment as a container
 ```
 
+The website and a read-only API each have their own container, and `docker compose up --build` starts both (site on 8501, API on 8000 with interactive documentation at `/docs`): see [`docs/docker.md`](docs/docker.md) and [`docs/api.md`](docs/api.md).
+
 Run:
 
 ```bash
@@ -164,6 +166,8 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/database_schema.md`](docs/database_schema.md) sections 13 and 14 | The two feature tables and the two model-result tables the publish step writes into the warehouse |
 | [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its eight stages (including the monthly scoring job and monitoring), the public-data modes, the run record with versions, the monthly schedule and the CI gates |
 | [`docs/site.md`](docs/site.md) | The website: its seven tabs, where each number comes from, how to run it locally and how it is tested (live) |
+| [`docs/api.md`](docs/api.md) | The read-only API: its endpoints, API keys and rate limits, errors, and how it is tested |
+| [`docs/docker.md`](docs/docker.md) | The three Docker images (pipeline, website, API), the one-command stack and what CI checks |
 | [`docs/runbook.md`](docs/runbook.md) | The monthly run: what a normal month looks like, what to do when each stage fails, going back to the last good database, forecast drift and tracing a number to its data and code |
 | [`docs/environment.md`](docs/environment.md) | The supported Python, the pinned packages, installing the project and the Docker image, and the environment behind the stored modelling results |
 | [`docs/modelling_plan.md`](docs/modelling_plan.md) | The modelling plan: three tasks, horizons, baselines and models, the evaluation and promotion rules, the leakage timeline and tests, fixed before any model ran (with the T3 amendment and the implementation choices) |
