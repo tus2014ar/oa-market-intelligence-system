@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-107)
+# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-108)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -140,7 +140,7 @@ Cards, rows and bars that stand for something are links to the page that shows i
 
 - **Back link.** A page reached by a link shows "Back to <page>", in the app (no reload), above its content. It is shown only on the page the link brought you to, so it does not follow you around.
 - **A click on a card or row reloads the page** (about 2 to 3 seconds), because it is a plain link; the filters travel in the address so nothing is lost. Buttons and the filter bar stay in the app and are instant.
-- **Not done yet.** The other detail pages (competitors, state, price and promotion) are the next pieces, and so are the more interactive charts.
+- **Not done yet.** The other detail pages (competitors, state, price and promotion) come after the deliverables.
 ## Clicks inside charts and tables (DL-106)
 A bar, a cell, a tile or a table row is also a click target. The chart carries a click selection (`charts._pick`, named `pick`), the page reads which point was clicked (`links.picked`, `common.clicked`) and either moves you or opens a panel. Clicks in a chart or table run inside the app, so they do not reload the page.
 
@@ -156,6 +156,14 @@ A bar, a cell, a tile or a table row is also a click target. The chart carries a
 - **The filter bar follows.** `common.go` no longer sets the filter bar's widgets (Streamlit forbids it once they are drawn, which a click in a chart is); it marks them to take the new values when the bar is next drawn.
 - **A click that is not understood does nothing.** No click, a click with the wrong fields or an empty selection never moves the page.
 - **The state panel is Medicare billing, not IQVIA**, and says so. It does not say why a state's rate is what it is.
+
+## Interactive charts (DL-108)
+- **Drag a range on Market trend.** Drag across the share chart and the four cards and the "Where the share stands" panel describe only those months (latest and peak in the range, visits and share in the range, the slope of a line through them). A line above the cards says which months are shown and offers "Clear range". A range of under two months is ignored and says so. The range belongs to the group and period it was dragged on and to the chart's view: changing the grain, the trend line or the markers, changing a filter, or clearing starts the chart again with no range, so the chart and the cards never disagree. The page reads the range from the chart's own state before it draws the cards (`trend.in_range`, `links.brushed`, `common.brushed`).
+- **Drag a range on Segment detail.** The group-against-market chart takes a range too, and a line under it gives the average of the monthly shares of the group and of all visits over those months and the gap in points (`detail.range_compare`). It is an average of monthly shares, not a pooled share, and says so.
+- **Point at a line on Segments.** In "over time" the line under the pointer stands out and the others fade. This is done in the browser (no page run).
+- **Parts of a page that move on their own.** The groups-over-time picker on Segments and the months-ahead switch under "What the segment model relies on" on Model results are fragments: they redraw only themselves, so they are instant and do not move the rest of the page. The Market trend controls are not, because a range has to stay in step with the cards.
+- **Not done.** No scroll-to-zoom on any chart: the mouse wheel keeps scrolling the page. The Forecasts, Overview and Context charts have no range, because there are no cards under them to follow it.
+- **Tests.** In `tests/test_serving_links.py` (reading a dragged range, and an empty, backwards or odd one never narrowing anything), `tests/test_serving_trend.py` and `tests/test_serving_detail.py` (the months inside a range, the numbers for a range and the average against the market, all by hand) and in `tests/test_site_app.py` (cards move with a range, the filters are untouched, a range follows its group, a short one is ignored, Clear and a change of view start again, Segment detail shows the average).
 
 ## The plain-words layer (DL-107)
 Three small additions on every page, all in `serving/plainwords.py` (wording only, tested) and drawn by `common.plain_words`, `common.explain` and `common.terms`:

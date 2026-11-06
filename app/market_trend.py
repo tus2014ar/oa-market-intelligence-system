@@ -29,6 +29,50 @@ def _share(value: float | None) -> str:
     return "n/a" if value is None else views.pct(value)
 
 
+def _clear_range() -> None:
+    st.session_state["trend_brush_n"] = st.session_state.get("trend_brush_n", 0) + 1  # new chart
+
+
+def _chart(win, who: str, chart_key: str, bounds) -> None:
+    """The chart and its controls. A range dragged on the chart is kept in the chart's own state,
+    which the page reads before it draws the cards (see `render`), so the cards follow the range
+    and the chart draws it again each time the page runs."""
+    st.markdown("**Share of visits over time**")
+    top = st.columns([1.6, 1, 1])
+    grain = top[0].segmented_control(
+        "Grain",
+        ["Monthly", "Quarterly"],
+        default="Monthly",
+        key="trend_grain",
+        label_visibility="collapsed",
+    )
+    show_line = top[1].toggle("Trend line", value=True, key="trend_line")
+    show_events = top[2].toggle("Markers", value=True, key="trend_markers")
+    frame = trend.quarterly(win) if grain == "Quarterly" else win
+    fitted, _ = trend.trend_line(frame)
+    st.altair_chart(
+        charts.market_trend_chart(
+            frame,
+            fitted if show_line else None,
+            trend.events(win) if show_events else None,
+            trend.dip_range(win) if show_events else None,
+            brush=True,
+            shown=bounds,
+        ),
+        width="stretch",
+        on_select="rerun",
+        key=chart_key,
+    )
+    st.caption(
+        f"{who}: Zilretta's visits as a share of Zilretta, generic steroid injection and "
+        "NSAID/OTC visits. Amber dashes: the straight-line guide. Grey dotted lines: the peak, "
+        "the turn in March 2022 and the start of the 2024 dip. Shaded: the March to July 2024 "
+        "data-capture dip, which hit all three classes. Drag across the chart to pick a range: "
+        "the cards and the panel beside it follow your range. Changing the view above clears it."
+    )
+    common.explain("trend_chart")
+
+
 def render(D: dict, data_chip, flt: dict) -> None:
     """Draw the page from the loaded tables `D` (needs `seg`, `monthly` and `pred`) and the shared
     filters `flt` (specialty, age, gender and period)."""
@@ -40,9 +84,34 @@ def render(D: dict, data_chip, flt: dict) -> None:
 
     full = trend.monthly(seg, specialty, age, gender)
     win = trend.window(full, period)
-    k = trend.kpis(full, win)
+    # a range belongs to the group and period it was dragged on and to the view of the chart (grain,
+    # line, markers): change any of them, or clear it, and the chart starts again with no range
+    view = "|".join(
+        [
+            str(st.session_state.get("trend_grain", "Monthly")),
+            str(int(st.session_state.get("trend_line", True))),
+            str(int(st.session_state.get("trend_markers", True))),
+        ]
+    )
+    key = f"{specialty}|{age}|{gender}|{period}|{view}"
+    chart_key = f"trend_brush_{st.session_state.get('trend_brush_n', 0)}_{key}"
+    bounds = common.brushed(st.session_state.get(chart_key), "month")
+    picked = trend.in_range(win, bounds)  # the months dragged on the chart, if two or more
+    k = trend.kpis(picked, picked) if picked is not None else trend.kpis(full, win)
 
     # ---- headline cards
+    if picked is not None:
+        note, clear = st.columns([5, 1], vertical_alignment="center")
+        note.markdown(
+            style.callout(
+                f"Showing {trend.range_label(picked)} ({len(picked)} months), the range you "
+                "dragged on the chart. The cards and the panel beside the chart follow it."
+            ),
+            unsafe_allow_html=True,
+        )
+        clear.button("Clear range", key="trend_clear", on_click=_clear_range, width="stretch")
+    elif bounds is not None:
+        st.caption("The range you dragged covers under two months. Drag over more of the chart.")
     cards = st.columns(4)
     gap = k["change_vs_year_ago_pp"]
     cards[0].markdown(
@@ -80,7 +149,8 @@ def render(D: dict, data_chip, flt: dict) -> None:
         style.kpi_card(
             "Zilretta visits",
             f"{k['period_zilretta_visits']:,}",
-            f"{trend.PERIOD_NAMES[period].capitalize()} · {_share(k['period_share'])} of "
+            f"{'Selected range' if picked is not None else trend.PERIOD_NAMES[period].capitalize()}"
+            f" · {_share(k['period_share'])} of "
             f"{k['period_category_visits']:,} visits",
         ),
         unsafe_allow_html=True,
@@ -90,7 +160,8 @@ def render(D: dict, data_chip, flt: dict) -> None:
         style.kpi_card(
             "Trend per year",
             "n/a" if slope is None else f"{slope:+.2f} pp",
-            "A straight line through the period: a guide, not a forecast",
+            f"A straight line through the {'range' if picked is not None else 'period'}: a guide, "
+            "not a forecast",
             delta=slope,
         ),
         unsafe_allow_html=True,
@@ -105,35 +176,7 @@ def render(D: dict, data_chip, flt: dict) -> None:
     # ---- the chart and where the share stands
     left, right = st.columns([2.1, 1])
     with left.container(border=True):
-        st.markdown("**Share of visits over time**")
-        top = st.columns([1.6, 1, 1])
-        grain = top[0].segmented_control(
-            "Grain",
-            ["Monthly", "Quarterly"],
-            default="Monthly",
-            key="trend_grain",
-            label_visibility="collapsed",
-        )
-        show_line = top[1].toggle("Trend line", value=True, key="trend_line")
-        show_events = top[2].toggle("Markers", value=True, key="trend_markers")
-        frame = trend.quarterly(win) if grain == "Quarterly" else win
-        fitted, _ = trend.trend_line(frame)
-        st.altair_chart(
-            charts.market_trend_chart(
-                frame,
-                fitted if show_line else None,
-                trend.events(win) if show_events else None,
-                trend.dip_range(win) if show_events else None,
-            ),
-            width="stretch",
-        )
-        st.caption(
-            f"{who}: Zilretta's visits as a share of Zilretta, generic steroid injection and "
-            "NSAID/OTC visits. Amber dashes: the straight-line guide. Grey dotted lines: the peak, "
-            "the turn in March 2022 and the start of the 2024 dip. Shaded: the March to July 2024 "
-            "data-capture dip, which hit all three classes."
-        )
-        common.explain("trend_chart")
+        _chart(win, who, chart_key, bounds)
     with right.container(border=True, height="stretch"):
         st.markdown("**Where the share stands**")
         st.caption(who)

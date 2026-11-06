@@ -296,3 +296,54 @@ def test_a_chart_of_quarters_draws_from_the_quarterly_frame():
     q = trend.quarterly(trend.monthly(_seg()))
     spec = charts.market_trend_chart(q).to_dict()
     assert spec["datasets"] and not math.isnan(q["share_pct"].iloc[0])
+
+
+# ------------------------------------------------------------------ a range dragged on the chart
+
+
+def _ms(text):
+    return pd.Timestamp(text).timestamp() * 1000
+
+
+def test_a_dragged_range_keeps_the_months_inside_it_and_names_them():
+    full = trend.monthly(_seg())
+    inside = trend.in_range(full, (_ms("2024-01-01"), _ms("2024-06-01")))
+    assert list(inside["month_id"]) == [202401, 202402, 202403, 202404, 202405, 202406]
+    assert trend.range_label(inside) == "Jan 2024 to Jun 2024"
+    between = trend.in_range(full, (_ms("2024-01-10"), _ms("2024-03-20")))
+    assert list(between["month_id"]) == [202402, 202403]  # a month counts when its date is inside
+
+
+def test_a_range_of_under_two_months_or_none_is_not_a_range():
+    full = trend.monthly(_seg())
+    assert trend.in_range(full, None) is None
+    assert trend.in_range(full, (_ms("2024-01-10"), _ms("2024-01-20"))) is None  # no month
+    assert trend.in_range(full, (_ms("2024-01-01"), _ms("2024-01-20"))) is None  # one month
+    assert trend.in_range(full, (_ms("2030-01-01"), _ms("2031-01-01"))) is None  # outside
+
+
+def test_the_numbers_for_a_range_are_the_numbers_of_its_months_by_hand():
+    full = trend.monthly(_seg())  # 12 Zilretta visits of 800 a month in 2023, 16 of 800 in 2024
+    inside = trend.in_range(full, (_ms("2024-01-01"), _ms("2024-06-01")))
+    k = trend.kpis(inside, inside)
+    assert k["period_zilretta_visits"] == 6 * 16 and k["period_category_visits"] == 6 * 800
+    assert k["period_share"] == pytest.approx(0.02)
+    assert k["latest_month_id"] == 202406 and k["latest_share"] == pytest.approx(0.02)
+    assert k["year_ago_share"] is None  # the range is under a year long
+    assert k["slope_pp_per_year"] == pytest.approx(0.0, abs=1e-9)
+    across = trend.in_range(full, (_ms("2023-07-01"), _ms("2024-06-01")))
+    assert trend.kpis(across, across)["slope_pp_per_year"] > 0  # 1.5% up to 2.0%
+
+
+def test_the_chart_takes_a_dragged_range_only_when_asked():
+    pytest.importorskip("altair")
+    from oa_market_intelligence.serving import charts
+
+    full = trend.monthly(_seg())
+    plain = charts.market_trend_chart(full).to_dict()
+    assert "params" not in plain
+    spec = charts.market_trend_chart(full, brush=True).to_dict()
+    [brush] = spec["params"]
+    assert brush["name"] == "brush" and brush["select"]["type"] == "interval"
+    assert brush["select"]["encodings"] == ["x"]
+    assert [layer["mark"]["type"] for layer in spec["layer"]] == ["line", "circle"]

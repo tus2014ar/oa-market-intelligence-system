@@ -296,3 +296,16 @@ def test_a_click_on_a_bar_or_a_grid_cell_is_read_from_the_group_it_names():
     grid = charts.share_grid(segments.cross_table(_seg(), top_rows=3)).to_dict()
     picks = grid["params"]  # a layered chart keeps its selections at the top
     assert [p["select"]["fields"] for p in picks] == [["row", "column"]]
+
+
+def test_the_yearly_lines_stand_out_under_the_pointer_and_the_rest_fade():
+    pytest.importorskip("altair")
+    from oa_market_intelligence.serving import charts
+
+    frame = segments.group_trend(_seg(), "specialty", ["A", "B"])
+    spec = charts.group_trend_chart(frame).to_dict()
+    [hover] = spec["params"]
+    assert hover["select"]["on"] == "pointerover" and hover["select"]["fields"] == ["label"]
+    assert hover["select"]["nearest"] is True  # client-side only: no page run on a hover
+    line = spec["layer"][0]["encoding"]
+    assert line["opacity"]["condition"]["param"] == hover["name"] and line["opacity"]["value"] < 1

@@ -202,3 +202,26 @@ def test_no_click_or_an_odd_one_never_gives_a_choice():
 def test_only_the_first_point_clicked_is_used():
     selection = {"pick": [{"group": "A"}, {"group": "B"}]}
     assert links.picked(selection, "pick", ["group"]) == {"group": "A"}
+
+
+# ------------------------------------------------------------------ a range dragged on a chart
+
+
+def test_a_dragged_range_gives_its_start_and_end_in_milliseconds():
+    selection = {"brush": {"month": [1646092800000, 1719792000000.5]}}
+    assert links.brushed(selection, "brush", "month") == (1646092800000.0, 1719792000000.5)
+
+
+def test_no_range_or_an_odd_one_never_narrows_anything():
+    assert links.brushed(None, "brush", "month") is None
+    assert links.brushed({}, "brush", "month") is None
+    assert links.brushed({"brush": {}}, "brush", "month") is None
+    assert links.brushed({"brush": {"other": [1, 2]}}, "brush", "month") is None
+    assert links.brushed({"brush": {"month": [1]}}, "brush", "month") is None
+    assert links.brushed({"brush": {"month": [1, 2, 3]}}, "brush", "month") is None
+    assert links.brushed({"brush": {"month": ["a", "b"]}}, "brush", "month") is None
+    assert links.brushed({"brush": {"month": [True, 5]}}, "brush", "month") is None
+    assert links.brushed({"brush": {"month": [float("nan"), 5]}}, "brush", "month") is None
+    assert links.brushed({"brush": {"month": [5, 5]}}, "brush", "month") is None  # empty range
+    assert links.brushed({"brush": {"month": [9, 5]}}, "brush", "month") is None  # backwards
+    assert links.brushed({"brush": "x"}, "brush", "month") is None

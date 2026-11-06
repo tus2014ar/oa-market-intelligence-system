@@ -292,6 +292,13 @@ def clicked(event: object, fields: list[str]) -> dict | None:
     return links.picked(selection, "pick", fields)
 
 
+def brushed(event: object, field: str) -> tuple[float, float] | None:
+    """The range dragged on a chart's time axis (milliseconds since 1970), or None. Accepts the
+    event Streamlit returns and the plain dict a test presets."""
+    selection = dict(event).get("selection") if event is not None else None
+    return links.brushed(selection, "brush", field)
+
+
 def clicked_row(event: object) -> int | None:
     """The position of the row clicked in a table (a selection of one row), or None."""
     selection = dict(event).get("selection") if event is not None else None

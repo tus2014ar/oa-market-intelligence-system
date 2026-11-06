@@ -119,6 +119,20 @@ def picked(selection: object, name: str, fields: list[str]) -> dict | None:
     return {f: first[f] for f in fields}
 
 
+def brushed(selection: object, name: str, field: str) -> tuple[float, float] | None:
+    """The range dragged on a chart's time axis: (start, end) in milliseconds since 1970 for the
+    selection called `name` on `field`, or None when nothing is dragged or the selection is not in
+    the shape expected (so an empty or odd selection never narrows anything)."""
+    box = selection.get(name) if hasattr(selection, "get") else None
+    bounds = box.get(field) if hasattr(box, "get") else None
+    if not isinstance(bounds, (list, tuple)) or len(bounds) != 2:
+        return None
+    if not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in bounds):
+        return None
+    start, end = float(bounds[0]), float(bounds[1])
+    return (start, end) if start == start and end == end and end > start else None
+
+
 def finding_link(finding_id: int, source: str = "Findings") -> tuple[str, str] | None:
     """(label, address) for the page that shows a finding's evidence, or None if no page does."""
     target = FINDING_LINKS.get(int(finding_id))
