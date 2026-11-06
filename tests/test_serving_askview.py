@@ -101,7 +101,8 @@ def test_the_preview_is_the_same_data_the_tool_gives_claude(snap):
 def test_the_account_of_how_it_works_is_honest_about_limits_and_testing():
     text = " ".join(askview.HOW_IT_WORKS)
     assert "read-only" in text and "patient-level" in text and "can still be wrong" in text
-    assert "not yet been tried with a live model" in text
+    assert "It is a demonstration" in text and "only a small number of questions" in text
+    assert "full set of 28 test questions has not been run" in text
     assert f"{askview.PER_VISITOR_PER_HOUR} questions an hour" in text
     assert askview.PER_VISITOR_PER_HOUR == 8 and askview.SITE_PER_HOUR == 200
     assert askview.DEFAULT_DAILY_TOKENS == 300_000

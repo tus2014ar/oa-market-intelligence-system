@@ -73,8 +73,9 @@ HOW_IT_WORKS = (
     f"Each visitor can ask {PER_VISITOR_PER_HOUR} questions an hour, and the site has a daily "
     "limit, so one person cannot use up the budget.",
     "It can still be wrong. Check any figure on the page it came from before you quote it.",
-    "It has not yet been tried with a live model: so far it has been tested with a scripted "
-    "stand-in that plays back answers. The owner runs the real test with their own key.",
+    "It is a demonstration. It has been tried with Claude on only a small number of questions, "
+    "and the full set of 28 test questions has not been run, so check any figure on the page "
+    "it came from before you quote it.",
 )
 
 

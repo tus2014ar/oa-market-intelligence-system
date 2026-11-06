@@ -1199,7 +1199,7 @@ def test_the_page_explains_what_it_can_and_cannot_do_with_or_without_a_key(monke
         at = _box(monkeypatch, **env)
         [how] = [e for e in at.expander if e.proto.label.startswith("How it works")]
         text = " ".join(m.value for m in at.markdown)
-        assert "not yet been tried with a live model" in text
+        assert "full set of 28 test questions has not been run" in text
         assert "The eleven things it can look at" in text
         assert text.count("page)") >= 9  # each tool that reads says which page shows the same
 
