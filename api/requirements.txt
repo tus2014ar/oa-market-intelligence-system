@@ -1,0 +1,7 @@
+# What the API needs (its container installs this file). The API reads the published warehouse
+# read-only and serves aggregates; the versions are lower bounds the code relies on.
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pandas>=3.0
+numpy>=2.0
+sqlalchemy>=2.0

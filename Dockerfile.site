@@ -1,0 +1,36 @@
+# The website as a container (DL-116): Streamlit with the site's own packages, the code and the
+# published data (about 15 MB), run as an unprivileged user with a health check. The Anthropic key
+# and the other settings are never in the image: pass them when the container starts, e.g.
+#
+#   docker build -f Dockerfile.site -t oa-site .
+#   docker run --rm -p 8501:8501 oa-site                                  (the AI box is off)
+#   docker run --rm -p 8501:8501 -e ANTHROPIC_API_KEY oa-site             (the key from your shell)
+#
+# Then open http://localhost:8501. `docker compose up` starts it with the API (docker-compose.yml).
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /app
+
+# The site's packages first, so this layer is rebuilt only when app/requirements.txt changes.
+COPY app/requirements.txt app/requirements.txt
+RUN pip install -r app/requirements.txt
+
+COPY .streamlit ./.streamlit
+COPY src ./src
+COPY app ./app
+COPY data/reference ./data/reference
+COPY data/published ./data/published
+
+RUN useradd --create-home --uid 10001 appuser && chown -R appuser /app
+USER appuser
+
+EXPOSE 8501
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=4).read() == b'ok' else 1)"
+
+CMD ["streamlit", "run", "app/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]

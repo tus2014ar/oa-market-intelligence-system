@@ -37,6 +37,7 @@ oa-graph = "oa_market_intelligence.knowledge_graph:main"
 oa-ask-check = "oa_market_intelligence.serving.qa_check:main"
 oa-explain = "oa_market_intelligence.modeling.explain:main"
 oa-model-round2 = "oa_market_intelligence.modeling.round2.run:main"
+oa-api = "oa_market_intelligence.api.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

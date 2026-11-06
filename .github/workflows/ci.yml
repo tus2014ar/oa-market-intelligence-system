@@ -116,17 +116,63 @@ jobs:
       - name: Site tests
         run: pytest tests/test_serving_views.py tests/test_serving_data.py tests/test_serving_charts.py tests/test_serving_market_map.py tests/test_site_app.py -q
 
-  # Builds the project image (no push) and runs it, so a broken Dockerfile or pin file fails here.
+  # The read-only API (DL-116): its tests run in an environment with only the API's own packages
+  # (api/requirements.txt), the same set its container installs, on the committed warehouse.
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: api/requirements.txt
+
+      - name: Install the API's packages and the test tools
+        run: pip install -r api/requirements.txt pytest httpx filelock
+
+      - name: API tests
+        run: pytest tests/test_api.py -q
+
+  # Builds the three images (no push) and runs them, so a broken Dockerfile, pin file or start-up
+  # fails here: the pipeline image, the website and the API, each checked as it would run.
   docker-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the image
+      - name: Build the pipeline image
         run: docker build -t oa-market-intelligence .
 
-      - name: Smoke test the image
+      - name: Smoke test the pipeline image
         run: |
           docker run --rm oa-market-intelligence oa-publish --help
           docker run --rm oa-market-intelligence oa-model --help
           docker run --rm oa-market-intelligence python -c "import oa_market_intelligence, pandas; print(pandas.__version__)"
+
+      - name: Build the website and API images
+        run: |
+          docker build -f Dockerfile.site -t oa-site .
+          docker build -f Dockerfile.api -t oa-api .
+
+      - name: Run the API image, with a key, and check it
+        run: |
+          docker run -d --name api -e API_KEYS=ci-key -p 8000:8000 oa-api
+          for i in $(seq 1 30); do curl -fs http://localhost:8000/health && break; sleep 2; done
+          curl -fs http://localhost:8000/health | grep -q '"auth":"api-key"'
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/v1/status)" = "401"
+          curl -fs -H "X-API-Key: ci-key" http://localhost:8000/v1/status | grep -q "Jul 2025"
+          test "$(docker exec api id -u)" != "0"
+          docker logs api | tail -5
+          docker rm -f api
+
+      - name: Run the website image and check its health
+        run: |
+          docker run -d --name site -p 8501:8501 oa-site
+          for i in $(seq 1 40); do curl -fs http://localhost:8501/_stcore/health && break; sleep 3; done
+          test "$(curl -fs http://localhost:8501/_stcore/health)" = "ok"
+          test "$(docker exec site id -u)" != "0"
+          docker logs site | tail -5
+          docker rm -f site
