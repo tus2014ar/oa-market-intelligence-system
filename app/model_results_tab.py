@@ -6,6 +6,7 @@ which hold (and test) the logic and the wording.
 
 from __future__ import annotations
 
+import common
 import streamlit as st
 
 from oa_market_intelligence.serving import links, results, style, views
@@ -210,14 +211,17 @@ def render(D: dict, adoption: dict, posthoc: dict, extras: dict, data_chip) -> N
 
     st.markdown("##### How the models scored")
     _scoreboard(board)
+    common.explain("mr_scoreboard")
     _bias(bias)
     _alert(alert)
 
     st.markdown("##### Round 2: improvements tried after round 1")
     _round2(round2, round2_posthoc)
+    common.explain("mr_round2")
 
     st.markdown("##### What the segment model relies on")
     _shap(shap)
+    common.explain("mr_shap")
     st.caption(
         "Everything on this page is stored output of the modelling runs, not fitted while the "
         "page loads. Visits are in IQVIA's panel, not company sales."

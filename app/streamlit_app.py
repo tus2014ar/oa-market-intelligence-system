@@ -30,8 +30,10 @@ st.caption(
     "Zilretta's share of visits against generic steroid injections and NSAIDs, from IQVIA NMTA "
     "visit counts (aggregated; no patient-level data). Built for an OA and RA injectable brand manager."
 )
+common.plain_words(page.title)
 if page.title in common.FILTERED_PAGES:
     common.filter_bar(page.title)
     common.sync_url(page.title)  # the address always shows the filters, so it can be shared
 common.back_link(page.title)
 page.run()
+common.terms(page.title)

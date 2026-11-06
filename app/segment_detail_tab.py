@@ -143,6 +143,7 @@ def render(ctx, data_chip, flt: dict) -> None:
             "Zilretta's visits as a share of the visits of Zilretta, generic steroid injections "
             "and NSAID/OTC together: this group (teal) and every group (grey, dashed)."
         )
+        common.explain("detail_compare")
     block = detail.forecast_block(pred, seg, specialty, age, gender)
     with right.container(border=True, height="stretch"):
         st.markdown("**Forecast for this group**")

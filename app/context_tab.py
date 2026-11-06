@@ -77,6 +77,7 @@ def _sales_and_visits(ctx, years, findings_items) -> None:
             "2021, Pacira from 2022; the fourth quarter of each year is derived). Visits are "
             "IQVIA's sample, so compare direction and timing, not levels."
         )
+        common.explain("ctx_company")
     with right.container(border=True, height="stretch"):
         st.markdown("**Change from the year before**")
         rows = []
@@ -165,6 +166,7 @@ def _state_panel(states) -> None:
             + " Room is the providers who would need to bill for the state to reach the national "
             "rate. Nothing here says why a state's rate is what it is."
         )
+        common.explain("ctx_state")
 
 
 def _states(ctx) -> None:
@@ -228,6 +230,7 @@ def _states(ctx) -> None:
             f"{context.rank_stability(states):.2f}), which passes the project's own test (0.7) for using the order. Click a state to see it "
             "on its own."
         )
+        common.explain("ctx_map")
         _state_panel(states)
 
 

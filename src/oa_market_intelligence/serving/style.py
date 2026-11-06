@@ -63,6 +63,12 @@ CSS = f"""<style>
 .oa-call {{background:rgba(15,139,141,.13);border-radius:8px;padding:.45rem .75rem;
   font-size:.84rem;margin-top:.55rem}}
 .oa-call.down {{background:rgba(200,85,61,.13)}}
+.oa-plain {{background:rgba(15,139,141,.08);border-radius:10px;padding:.7rem .95rem;
+  margin:.2rem 0 .9rem;line-height:1.5}}
+.oa-plain .k {{display:block;font-size:.72rem;letter-spacing:.06em;font-weight:700;
+  text-transform:uppercase;color:#0F8B8D;margin-bottom:.15rem}}
+.oa-gloss {{padding:.5rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
+.oa-gloss b {{display:block}} .oa-gloss span {{opacity:.85;font-size:.92rem}}
 .oa-test {{padding:.6rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-test-head {{display:flex;justify-content:space-between;gap:.6rem;font-weight:600}}
 .oa-test-sub {{font-weight:400;opacity:.7}}
@@ -231,6 +237,19 @@ def rank_rows(
 
 def callout(text: str, kind: str = "up") -> str:
     return f'<div class="oa-call{" down" if kind == "down" else ""}">{escape(text)}</div>'
+
+
+def plain_box(text: str) -> str:
+    """The "In plain words" paragraph under a page's title."""
+    return f'<div class="oa-plain"><span class="k">In plain words</span>{escape(text)}</div>'
+
+
+def glossary_rows(terms: list[tuple[str, str]]) -> str:
+    """A list of terms, each with its plain definition."""
+    return "".join(
+        f'<div class="oa-gloss"><b>{escape(term)}</b><span>{escape(meaning)}</span></div>'
+        for term, meaning in terms
+    )
 
 
 def test_rows(rows: list[tuple[str, str, str, bool, str, str]]) -> str:

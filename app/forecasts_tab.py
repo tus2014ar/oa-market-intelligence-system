@@ -73,6 +73,7 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             "for the 80% range and a thin one for the 90% range. The forecast is last month's "
             "value: no model beat that simple rule at any horizon."
         )
+        common.explain("fc_fan")
     trust = forecasts.trust(adoption, scores, horizon)
     with right.container(border=True, height="stretch"):
         st.markdown(f"**How far to trust it, {forecasts.horizon_label(horizon)} ahead**")
@@ -141,6 +142,7 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             "so read the forecast as a baseline, not as a prediction for one segment. Click a "
             "bar to open that specialty."
         )
+        common.explain("fc_spec")
     with st.container(border=True):
         shown = view
         st.markdown(
@@ -197,6 +199,7 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             f"Segments under {forecasts.MIN_ALERT_VISITS} visits in the latest month are marked "
             "small: one prescription moves their share a lot. Click a row to open that segment."
         )
+        common.explain("fc_table")
         st.download_button(
             "Download these forecasts (CSV)",
             forecasts.csv(shown),
@@ -267,6 +270,7 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             "a look, never as a reason to act on its own. The alert is a 1-month flag only. Click a "
             "row to open that segment."
         )
+        common.explain("fc_alerts")
         st.markdown(
             style.link_line(
                 "How reliable the alert is, on Model results",
