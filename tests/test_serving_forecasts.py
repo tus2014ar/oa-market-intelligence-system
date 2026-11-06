@@ -306,3 +306,13 @@ def test_an_empty_selection_gives_empty_but_well_formed_results():
     ]
     assert forecasts.alerts(view).empty
     assert forecasts.csv(view).decode().count("\n") == 1  # just the header
+
+
+def test_a_click_on_a_specialty_bar_is_read_from_the_specialty_it_names():
+    pytest.importorskip("altair")
+    from oa_market_intelligence.serving import charts
+
+    spec = forecasts.specialty_view(forecasts.segment_view(_pred(), _seg(), 1), min_visits=0)
+    chart = charts.specialty_forecast_chart(spec, 1).to_dict()
+    picks = chart["params"]  # a layered chart keeps its selections at the top
+    assert [p["select"]["fields"] for p in picks] == [["specialty"]]

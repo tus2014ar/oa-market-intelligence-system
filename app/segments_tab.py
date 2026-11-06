@@ -118,11 +118,19 @@ def render(D: dict, data_chip, flt: dict) -> None:
         if drawable.empty:
             st.write("Not enough visits to draw this.")
         else:
-            st.altair_chart(charts.group_chart(table, show), width="stretch")
+            event = st.altair_chart(
+                charts.group_chart(table, show),
+                width="stretch",
+                on_select="rerun",
+                key=common.nav_key("seg_bars"),
+            )
+            hit = common.clicked(event, ["group"])
+            if hit:
+                common.go_detail(by, hit["group"], flt, FROM)
         st.caption(
             "Share is Zilretta's visits over the visits of Zilretta, generic steroid injections and "
             f"NSAID/OTC together. Groups under {segments.SMALL_VISITS:,} visits are drawn faded: "
-            "one prescription moves a small group's share a lot. Change compares the last 12 "
+            "one prescription moves a small group's share a lot. Click a bar to open that group. Change compares the last 12 "
             "months with the 12 before."
         )
     with right.container(border=True, height="stretch"):
@@ -157,11 +165,20 @@ def render(D: dict, data_chip, flt: dict) -> None:
                 "No specialty and age band in this selection has enough visits to show a rate."
             )
         else:
-            st.altair_chart(charts.share_grid(cells), width="stretch")
+            event = st.altair_chart(
+                charts.share_grid(cells),
+                width="stretch",
+                on_select="rerun",
+                key=common.nav_key("seg_grid"),
+            )
+            hit = common.clicked(event, ["row", "column"])
+            if hit:
+                common.go_detail("specialty", hit["row"], flt, FROM, age=hit["column"])
         st.caption(
             "Specialty by age band over the same period: the twelve specialties with the most "
             f"Zilretta visits and the age bands with at least {segments.MIN_VISITS:,} visits. A grey "
-            f"cell has under {segments.MIN_CELL_VISITS} visits, too few to show a rate."
+            f"cell has under {segments.MIN_CELL_VISITS} visits, too few to show a rate. Click a "
+            "cell to open that specialty and age band."
         )
 
     # ---- groups over time

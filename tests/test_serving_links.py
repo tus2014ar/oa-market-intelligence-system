@@ -176,3 +176,29 @@ def test_a_finding_shows_its_see_it_link_after_the_evidence_when_there_is_one():
 def test_a_small_see_link_has_an_arrow_and_an_escaped_address():
     html = style.link_line("Go", "forecasts?a=1&b=2#x")
     assert html == ('<a class="oa-see" href="forecasts?a=1&amp;b=2#x" target="_self">Go →</a>')
+
+
+# ------------------------------------------------------------------ what a click in a chart chose
+
+
+def test_a_click_gives_the_values_of_the_fields_asked_for():
+    selection = {"pick": [{"group": "RHEUMATOLOGY", "vlc_ignored": 1}]}
+    assert links.picked(selection, "pick", ["group"]) == {"group": "RHEUMATOLOGY"}
+    cell = {"pick": [{"row": "OTHER", "column": "65 TO 74"}]}
+    assert links.picked(cell, "pick", ["row", "column"]) == {"row": "OTHER", "column": "65 TO 74"}
+
+
+def test_no_click_or_an_odd_one_never_gives_a_choice():
+    assert links.picked(None, "pick", ["group"]) is None
+    assert links.picked({}, "pick", ["group"]) is None
+    assert links.picked({"pick": []}, "pick", ["group"]) is None
+    assert links.picked({"pick": "x"}, "pick", ["group"]) is None
+    assert links.picked({"pick": [None]}, "pick", ["group"]) is None
+    assert links.picked({"pick": [{"other": 1}]}, "pick", ["group"]) is None  # field missing
+    assert links.picked({"pick": [{"row": "A"}]}, "pick", ["row", "column"]) is None
+    assert links.picked({"another": [{"group": "A"}]}, "pick", ["group"]) is None
+
+
+def test_only_the_first_point_clicked_is_used():
+    selection = {"pick": [{"group": "A"}, {"group": "B"}]}
+    assert links.picked(selection, "pick", ["group"]) == {"group": "A"}

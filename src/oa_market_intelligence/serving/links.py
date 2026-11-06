@@ -106,6 +106,19 @@ def to_params(filters: dict, source: str | None = None) -> dict[str, str]:
     return out
 
 
+def picked(selection: object, name: str, fields: list[str]) -> dict | None:
+    """What a click in a chart chose: the values of `fields` for the first point of the selection
+    called `name`, or None when nothing is chosen or the selection is not in the shape expected
+    (so a chart with no click, or an odd one, never navigates)."""
+    points = selection.get(name) if hasattr(selection, "get") else None
+    if not points or not isinstance(points, (list, tuple)):
+        return None
+    first = points[0]
+    if not isinstance(first, dict) or any(f not in first for f in fields):
+        return None
+    return {f: first[f] for f in fields}
+
+
 def finding_link(finding_id: int, source: str = "Findings") -> tuple[str, str] | None:
     """(label, address) for the page that shows a finding's evidence, or None if no page does."""
     target = FINDING_LINKS.get(int(finding_id))

@@ -282,3 +282,17 @@ def test_a_part_year_is_judged_on_the_series_not_on_the_group():
     assert own["partial_year"].tolist() == [False, True]  # 2024 looks part: it has only 6 months
     real = segments.group_trend(short, "specialty", ["A"], calendar=calendar)
     assert real["partial_year"].tolist() == [False, False]  # the series has all 12 months of 2024
+
+
+def test_a_click_on_a_bar_or_a_grid_cell_is_read_from_the_group_it_names():
+    pytest.importorskip("altair")
+    from oa_market_intelligence.serving import charts
+
+    bars = charts.group_chart(segments.group_table(_seg(), "specialty"), "share").to_dict()
+    assert bars["params"][0]["name"] == "pick" and bars["params"][0]["select"]["fields"] == [
+        "group"
+    ]
+    assert bars["mark"]["cursor"] == "pointer"
+    grid = charts.share_grid(segments.cross_table(_seg(), top_rows=3)).to_dict()
+    picks = grid["params"]  # a layered chart keeps its selections at the top
+    assert [p["select"]["fields"] for p in picks] == [["row", "column"]]

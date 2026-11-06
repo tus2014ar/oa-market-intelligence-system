@@ -228,6 +228,67 @@ def state_year(states: pd.DataFrame, year: int) -> pd.DataFrame:
     return part.reset_index(drop=True)
 
 
+def state_detail(states: pd.DataFrame, code: str, year: int | None = None) -> dict | None:
+    """One state on its own: its adoption by year with the interval and the national rate beside it,
+    and, for `year` (the latest by default), the providers behind the rate, how far it sits from the
+    national rate, its rank among the states shown that year, its headroom, its Medicare Advantage
+    share and its arthritis prevalence. None for a code the data does not have."""
+    rows = states[states["state_code"] == code].sort_values("year")
+    if rows.empty:
+        return None
+    national = national_adoption(states).set_index("year")["pct"]
+    by_year = rows[
+        [
+            "year",
+            "n_visible_providers",
+            "n_zilretta_providers",
+            "adoption_rate",
+            "ci_low",
+            "ci_high",
+            "headroom",
+        ]
+    ].copy()
+    for column in ("adoption_rate", "ci_low", "ci_high"):
+        by_year[column.replace("adoption_rate", "adoption") + "_pct"] = 100 * by_year[column]
+    by_year["national_pct"] = by_year["year"].map(national)
+    last = rows.iloc[-1] if year is None else rows[rows["year"] == year].iloc[0]
+    shown = states[(states["year"] == last["year"]) & (states["reported"] == 1)]
+    rank = int((shown["adoption_rate"] > last["adoption_rate"]).sum()) + 1
+    adoption = 100 * float(last["adoption_rate"])
+    reference = float(national[last["year"]])
+    return {
+        "name": str(last["state_name"]),
+        "code": code,
+        "year": int(last["year"]),
+        "by_year": by_year.reset_index(drop=True),
+        "adoption_pct": adoption,
+        "national_pct": reference,
+        "gap_pp": adoption - reference,
+        "providers": int(last["n_visible_providers"]),
+        "zilretta_providers": int(last["n_zilretta_providers"]),
+        "headroom": None if pd.isna(last["headroom"]) else float(last["headroom"]),
+        "rank": rank,
+        "of": int(len(shown)),
+        "ma_pct": None
+        if pd.isna(last["ma_participation_rate"])
+        else 100 * float(last["ma_participation_rate"]),
+        "arthritis_pct": None
+        if pd.isna(last["arthritis_prevalence_pct"])
+        else float(last["arthritis_prevalence_pct"]),
+        "small": int(last["n_visible_providers"]) < SMALL_PROVIDERS,
+    }
+
+
+def state_sentence(d: dict) -> str:
+    """A state in one plain sentence: its rate against the national rate and its rank."""
+    side = "below" if d["gap_pp"] < 0 else "above"
+    return (
+        f"{d['name']}: {d['adoption_pct']:.2f}% of {d['providers']:,} visible Medicare providers "
+        f"billed Zilretta in {d['year']}, {abs(d['gap_pp']):.2f} points {side} the national "
+        f"{d['national_pct']:.2f}%; {d['rank']} of {d['of']} states by rate."
+    )
+
+
 def rank_stability(states: pd.DataFrame, first: int = 2022, last: int = 2024) -> float:
     """The rank correlation of the states' adoption between two years (1 means they keep their
     order); the project's own gate for using the state ranking was 0.7."""

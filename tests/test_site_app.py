@@ -894,3 +894,103 @@ def test_an_address_with_a_value_the_data_does_not_have_opens_unfiltered():
     assert not at.exception
     assert at.session_state["flt"] == flt()
     assert not at.get("page_link")  # no valid source: no back link
+
+
+# ---------------------- clicks inside charts and tables
+
+
+def _click(group_field_values):
+    """What Streamlit hands the page after a click in a chart (the selection called pick)."""
+    return {"selection": {"pick": [group_field_values]}}
+
+
+def _landed(at, who):
+    """The page is Segment detail for the group named, reached by a click."""
+    assert not at.exception
+    text = " ".join(m.value for m in at.markdown)
+    assert f"<b>{who}</b>" in text and "Share in Jul 2025" in text
+    return text
+
+
+def test_a_click_on_a_segments_bar_opens_that_group_with_the_filters_kept():
+    at = run_page("Segments", flt=flt(period="3Y"), seg_bars_0=_click({"group": "RHEUMATOLOGY"}))
+    _landed(at, "Rheumatology")
+    assert dict(at.session_state["flt"]) == flt(specialty="RHEUMATOLOGY", period="3Y")
+    assert at.session_state["from"] == ("Segments", "Segment detail")
+
+
+def test_a_click_on_an_age_bar_opens_that_age_band():
+    at = run_page("Segments", seg_by="age_band", seg_bars_0=_click({"group": "65 TO 74"}))
+    _landed(at, "Ages 65 to 74")
+    assert at.session_state["flt"]["age"] == "65 TO 74"
+    assert at.session_state["flt"]["specialty"] is None
+
+
+def test_a_click_on_a_grid_cell_opens_that_specialty_and_age_band():
+    at = run_page(
+        "Segments",
+        seg_grid_0=_click({"row": "RHEUMATOLOGY", "column": "65 TO 74"}),
+    )
+    text = _landed(at, "Ages 65 to 74")
+    assert "Rheumatology</a>" in text  # the path to the group names the specialty too
+    assert at.session_state["flt"]["specialty"] == "RHEUMATOLOGY"
+    assert at.session_state["flt"]["age"] == "65 TO 74"
+
+
+def test_the_filter_bar_shows_the_group_a_click_opened():
+    at = run_page("Segments", seg_bars_0=_click({"group": "RHEUMATOLOGY"}))
+    assert at.session_state["w_specialty"] == "RHEUMATOLOGY"
+    assert any(s.value == "RHEUMATOLOGY" for s in at.selectbox)
+
+
+def test_an_odd_click_does_not_move_the_page():
+    for odd in (
+        {"selection": {}},
+        {"selection": {"pick": []}},
+        {"selection": {"pick": [{"x": 1}]}},
+    ):
+        at = run_page("Segments", seg_bars_0=odd)
+        assert not at.exception and "from" not in at.session_state
+        assert at.session_state["flt"]["specialty"] is None
+
+
+def test_a_click_on_the_forecasts_specialty_bar_opens_that_specialty():
+    at = run_page("Forecasts", fc_spec_0=_click({"specialty": "ORTHOPEDIC SURGERY"}))
+    _landed(at, "Orthopedic Surgery")
+    assert at.session_state["from"] == ("Forecasts", "Segment detail")
+
+
+def test_a_click_on_a_row_of_the_forecast_or_alert_table_opens_that_segment():
+    for table in ("fc_table_0", "fc_alerts_0"):
+        at = run_page("Forecasts", **{table: {"selection": {"rows": [0], "columns": []}}})
+        assert not at.exception, table
+        assert at.session_state["from"] == ("Forecasts", "Segment detail"), table
+        chosen = at.session_state["flt"]
+        assert chosen["specialty"] and chosen["age"] and chosen["gender"], table
+        assert "Share in Jul 2025" in " ".join(m.value for m in at.markdown), table
+
+
+def test_the_page_a_click_leaves_offers_a_way_back():
+    at = run_page("Segments", seg_bars_0=_click({"group": "RHEUMATOLOGY"}))
+    assert [b.proto.label for b in at.get("page_link")] == ["Back to Segments"]
+
+
+def test_a_click_on_a_state_tile_opens_that_states_panel_and_close_clears_it():
+    at = run_page("Context", ctx_map_0=_click({"state_code": "TX"}))
+    assert not at.exception and at.session_state["ctx_state"] == "TX"
+    text = " ".join([m.value for m in at.markdown] + [t.value for t in at.text])
+    assert "Texas" in text and "of the 51 states" not in text
+    assert at.get("vega_lite_chart")
+    shown = " ".join(c.value for c in at.caption)
+    assert "Original Medicare billing, not IQVIA" in shown
+    close = [b for b in at.button if b.key == "ctx_state_close"]
+    assert close
+    close[0].click().run()
+    assert at.session_state["ctx_state"] is None
+    assert not [b for b in at.button if b.key == "ctx_state_close"]
+
+
+def test_a_state_code_the_data_does_not_have_shows_no_panel():
+    at = run_page("Context", ctx_map_0=_click({"state_code": "ZZ"}))
+    assert not at.exception
+    assert not [b for b in at.button if b.key == "ctx_state_close"]
