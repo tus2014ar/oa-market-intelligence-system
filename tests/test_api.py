@@ -31,6 +31,7 @@ V1 = [
     "/v1/model-results",
     "/v1/findings",
 ]
+LIVE = ["/v1/models", "/v1/predict/segments", "/v1/predict/segment", "/v1/predict/alert"]
 FORBIDDEN = ("patient", "npi", "provider_id", "person_id", "claim")
 
 
@@ -54,6 +55,23 @@ def keyed_client(snap):
     app = create_app(snapshot=snap, api_keys=["secret-one", "secret-two"], rate_per_minute=1000)
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture(scope="module")
+def segment_params(snap):
+    """A segment the live endpoints know, with a stored alert score: the biggest in the batch."""
+    pred = snap.pred
+    one = pred[(pred["level"] == "segment") & (pred["horizon"] == 1) & pred["alert_score"].notna()]
+    row = one.sort_values("origin_visits", ascending=False).iloc[0]
+    return {
+        "specialty": row["specialty_name"],
+        "age_band": row["age_band"],
+        "gender": row["gender"],
+    }
+
+
+def live_params(path, segment_params):
+    return segment_params if path.endswith(("/segment", "/alert")) else {}
 
 
 def _tool(snap, name, **arguments):
@@ -81,8 +99,8 @@ def test_every_endpoint_is_in_the_interactive_documentation_with_its_errors(open
     spec = open_client.get("/openapi.json").json()
     assert spec["info"]["version"] == VERSION and "OA and RA" in spec["info"]["title"]
     assert "Read these before quoting a number" in spec["info"]["description"]
-    assert set(spec["paths"]) == {"/health", *V1}
-    for path in V1:
+    assert set(spec["paths"]) == {"/health", *V1, *LIVE}
+    for path in [*V1, *LIVE]:
         operation = spec["paths"][path]["get"]
         assert operation["summary"] and operation["description"] and operation["tags"], path
         schema = operation["responses"]["200"]["content"]["application/json"]["schema"]
@@ -187,9 +205,10 @@ def _field_names(value):
             yield from _field_names(inner)
 
 
-def test_only_aggregates_are_served_and_lists_are_capped(open_client):
-    for path in V1:
-        names = list(_field_names(open_client.get(path).json()))
+def test_only_aggregates_are_served_and_lists_are_capped(open_client, segment_params):
+    for path in [*V1, *LIVE]:
+        response = open_client.get(path, params=live_params(path, segment_params))
+        names = list(_field_names(response.json()))
         assert names, path
         for name in names:
             assert not any(word in name.lower() for word in FORBIDDEN), (path, name)
@@ -229,19 +248,24 @@ def test_a_range_with_no_months_in_it_is_a_404_not_an_empty_success(open_client)
 # ------------------------------------------------------------------ keys and rate limits
 
 
-def test_with_keys_configured_every_v1_endpoint_needs_one_of_them(keyed_client):
-    for path in V1:
-        response = keyed_client.get(path)
+def test_with_keys_configured_every_v1_endpoint_needs_one_of_them(keyed_client, segment_params):
+    for path in [*V1, *LIVE]:
+        params = live_params(path, segment_params)
+        response = keyed_client.get(path, params=params)
         assert response.status_code == 401, path
         assert response.headers["www-authenticate"] == "ApiKey"
-        assert keyed_client.get(path, headers={"X-API-Key": "wrong"}).status_code == 401
-        assert keyed_client.get(path, headers={"X-API-Key": "secret-one"}).status_code == 200
-        assert keyed_client.get(path, headers={"X-API-Key": "secret-two"}).status_code == 200
+        wrong = keyed_client.get(path, params=params, headers={"X-API-Key": "wrong"})
+        assert wrong.status_code == 401
+        for key in ("secret-one", "secret-two"):
+            ok = keyed_client.get(path, params=params, headers={"X-API-Key": key})
+            assert ok.status_code == 200, path
 
 
-def test_the_key_is_never_echoed_back_in_any_response(keyed_client):
-    for path in ("/health", *V1):
-        response = keyed_client.get(path, headers={"X-API-Key": "secret-one"})
+def test_the_key_is_never_echoed_back_in_any_response(keyed_client, segment_params):
+    for path in ("/health", *V1, *LIVE):
+        response = keyed_client.get(
+            path, params=live_params(path, segment_params), headers={"X-API-Key": "secret-one"}
+        )
         assert "secret-one" not in response.text, path
         assert "secret-one" not in json.dumps(dict(response.headers)), path
     wrong = keyed_client.get("/v1/status", headers={"X-API-Key": "secret-wrong"})
@@ -283,6 +307,143 @@ def test_keys_and_the_rate_come_from_the_environment(snap, monkeypatch):
     monkeypatch.delenv("API_KEYS")
     with TestClient(create_app(snapshot=snap)) as client:
         assert client.get("/health").json()["auth"] == "open"
+
+
+# ------------------------------------------------------------------ live predictions (DL-117)
+
+
+def test_the_saved_models_are_listed_with_what_they_were_fitted_on(open_client):
+    body = open_client.get("/v1/models").json()
+    assert body["count"] == len(body["models"]) == 4
+    by_id = {m["model_id"]: m for m in body["models"]}
+    assert list(by_id) == ["alert:1", "segment:1", "segment:3", "segment:6"]
+    assert by_id["segment:1"]["model"] == by_id["segment:3"]["model"] == "logistic"
+    assert by_id["segment:6"]["model"] == "last_month" and by_id["segment:6"]["n_parameters"] == 0
+    for model in by_id.values():
+        assert len(model["artifact_sha256"]) == 64 and model["trained_on_rows"] > 0
+        assert model["run_month_id"] == 202507
+    assert by_id["segment:1"]["known_bias_pct"] > 0  # the forecasts ran high in testing
+
+
+def test_the_segments_the_live_endpoints_know_are_those_with_a_stored_forecast(open_client, snap):
+    body = open_client.get("/v1/predict/segments").json()
+    pred = snap.pred
+    stored = pred[(pred["level"] == "segment") & (pred["horizon"] == 1)]
+    assert body["count"] == len(body["segments"]) == len(stored)
+    keys = {(s["specialty"], s["age_band"], s["gender"]) for s in body["segments"]}
+    both = zip(stored["specialty_name"], stored["age_band"], stored["gender"], strict=True)
+    assert keys == set(both)
+
+
+def test_every_segment_and_horizon_is_predicted_live_to_the_stored_forecast(open_client, snap):
+    pred = snap.pred
+    segment = pred[pred["level"] == "segment"]
+    assert len(segment) > 100
+    for r in segment.itertuples():
+        body = open_client.get(
+            "/v1/predict/segment",
+            params={
+                "specialty": r.specialty_name,
+                "age_band": r.age_band,
+                "gender": r.gender,
+                "horizon": int(r.horizon),
+            },
+        ).json()
+        assert body["matches_stored"] is True, (r.specialty_name, r.age_band, r.gender, r.horizon)
+        assert body["forecast_pct"] == pytest.approx(100 * r.point_share, abs=1e-3)
+        assert body["target_month_id"] == r.target_month_id and body["model"] == r.model
+
+
+def test_every_alert_is_scored_live_to_the_stored_score_and_flag(open_client, snap):
+    pred = snap.pred
+    one = pred[(pred["level"] == "segment") & (pred["horizon"] == 1)]
+    scored = one[one["alert_score"].notna()]
+    assert len(scored) > 10
+    for r in scored.itertuples():
+        body = open_client.get(
+            "/v1/predict/alert",
+            params={"specialty": r.specialty_name, "age_band": r.age_band, "gender": r.gender},
+        ).json()
+        assert body["eligible"] is True and body["matches_stored"] is True
+        assert body["alert_score"] == pytest.approx(r.alert_score, abs=1e-6)
+        assert body["flagged"] == bool(r.alert_flag)
+    unscored = one[one["alert_score"].isna()].iloc[0]
+    body = open_client.get(
+        "/v1/predict/alert",
+        params={
+            "specialty": unscored["specialty_name"],
+            "age_band": unscored["age_band"],
+            "gender": unscored["gender"],
+        },
+    ).json()
+    assert body["eligible"] is False and body["reason"] and body["alert_score"] is None
+    assert body["matches_stored"] is None
+
+
+def test_a_live_forecast_carries_its_limits_and_compares_with_last_month(
+    open_client, segment_params
+):
+    body = open_client.get("/v1/predict/segment", params={**segment_params, "horizon": 3}).json()
+    assert body["horizon"] == 3 and body["model"] == "logistic"
+    change = body["forecast_pct"] - body["last_month_pct"]
+    assert body["change_pp"] == pytest.approx(change, abs=2e-4)
+    assert body["known_bias_pct"] > 0 and "optimistic" in body["note"]
+    six = open_client.get("/v1/predict/segment", params={**segment_params, "horizon": 6}).json()
+    assert six["model"] == "last_month" and six["forecast_pct"] == six["last_month_pct"]
+    default = open_client.get("/v1/predict/segment", params=segment_params).json()
+    assert default["horizon"] == 1  # one month when none is asked for
+    alert = open_client.get("/v1/predict/alert", params=segment_params).json()
+    assert "supporting flag" in alert["note"]
+
+
+def test_names_are_matched_without_regard_to_case(open_client, segment_params):
+    lower = {k: v.lower() for k, v in segment_params.items()}
+    a = open_client.get("/v1/predict/segment", params=segment_params).json()
+    b = open_client.get("/v1/predict/segment", params=lower).json()
+    assert a == b
+
+
+def test_an_unknown_segment_is_a_404_and_an_unserved_horizon_a_422(open_client, segment_params):
+    missing = open_client.get(
+        "/v1/predict/segment", params={**segment_params, "specialty": "NOT A SPECIALTY"}
+    )
+    assert missing.status_code == 404 and "No segment" in missing.json()["detail"]
+    unknown = open_client.get("/v1/predict/alert", params={**segment_params, "gender": "UNKNOWN"})
+    assert unknown.status_code == 404
+    two = open_client.get("/v1/predict/segment", params={**segment_params, "horizon": 2})
+    assert two.status_code == 422 and "served: [1, 3, 6]" in two.json()["detail"]
+
+
+@pytest.mark.parametrize(
+    "params",
+    [{"horizon": 0}, {"horizon": 13}, {"horizon": "soon"}, {"specialty": "x" * 200}],
+)
+def test_a_live_request_the_api_cannot_use_is_a_422(open_client, segment_params, params):
+    response = open_client.get("/v1/predict/segment", params={**segment_params, **params})
+    assert response.status_code == 422 and response.json()["detail"]
+
+
+def test_the_segment_is_required_for_a_live_forecast(open_client):
+    assert open_client.get("/v1/predict/segment").status_code == 422
+    assert open_client.get("/v1/predict/alert").status_code == 422
+
+
+def test_with_no_saved_models_the_live_endpoints_say_503_and_the_rest_still_work(snap):
+    with TestClient(create_app(snapshot=snap, api_keys=[], live_predictions=False)) as client:
+        for path in ("/v1/models", "/v1/predict/segments"):
+            response = client.get(path)
+            assert response.status_code == 503 and "no saved models" in response.json()["detail"]
+        params = {"specialty": "RHEUMATOLOGY", "age_band": "65 TO 74", "gender": "FEMALE"}
+        assert client.get("/v1/predict/segment", params=params).status_code == 503
+        assert client.get("/v1/status").status_code == 200
+
+
+def test_a_warehouse_without_the_saved_model_tables_gives_empty_frames_not_an_error(tmp_path):
+    from sqlalchemy import create_engine
+
+    engine = create_engine(f"sqlite:///{(tmp_path / 'empty.db').as_posix()}")
+    artifacts, inputs = data.saved_models(engine)
+    assert artifacts.empty and inputs.empty
 
 
 # ------------------------------------------------------------------ logs, browsers, start-up

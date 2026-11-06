@@ -1,6 +1,6 @@
-# The API (DL-116)
+# The API (DL-116, DL-117)
 
-A read-only HTTP API over the published warehouse. It serves the same figures as the website's pages and the AI Question Box, because every endpoint wraps the same tested lookups (`serving/qa_tools.py`), which are built from the same functions as the pages. It reads aggregates only, opens the database read-only, and fits nothing: the monthly models stay batch jobs and the API serves their stored output.
+A read-only HTTP API over the published warehouse. It serves the same figures as the website's pages and the AI Question Box, because every endpoint wraps the same tested lookups (`serving/qa_tools.py`), which are built from the same functions as the pages. It reads aggregates only, opens the database read-only, and fits nothing. The monthly job still fits the models and stores their forecasts; since DL-117 it also stores the fitted models as readable numbers, and the API applies those numbers when you ask (`/v1/predict/*`), so a prediction made live must equal the stored forecast, and each response says whether it does.
 
 **Status: built and tested; not deployed.** It runs locally and in Docker. A cloud deployment (AWS) is planned and not done.
 
@@ -34,12 +34,32 @@ Then open http://localhost:8000/docs for the interactive documentation (every en
 | `/v1/forecasts/alerts` | The 1-month decline-alert list: a supporting flag, never a reason to act alone. |
 | `/v1/model-results` | How each forecast scored against a simple rule, and what to use each for. |
 | `/v1/findings` | The 17 findings with evidence and impact; optional `keyword`. |
+| `/v1/models` | The saved models: which task and horizon, logistic regression or a rule, the month and rows it was fitted on, the number of parameters, a fingerprint of the saved numbers and the bias recorded in testing. |
+| `/v1/predict/segments` | The segments the live endpoints can predict for (a specialty, an age band and a gender). |
+| `/v1/predict/segment` | Runs the adopted model for one segment now: `specialty`, `age_band`, `gender` and `horizon` (1, 3 or 6; default 1). Returns the forecast in percent, last month's value for comparison, the change in points, the visits behind it, a `small` flag under 100 visits, the known bias, the stored batch forecast and `matches_stored`. |
+| `/v1/predict/alert` | Runs the 1-month decline alert for one segment now: the score, the cut-off, whether it is flagged, or why the segment is not scored (under 100 visits, or no share last month). Compares with the stored score. |
 
 Example, with a key:
 
 ```bash
 curl -H "X-API-Key: choose-a-key" "http://localhost:8000/v1/share/monthly?start_month_id=202501"
 ```
+
+A live prediction (names are matched without regard to case):
+
+```bash
+curl -H "X-API-Key: choose-a-key" "http://localhost:8000/v1/predict/segment?specialty=RHEUMATOLOGY&age_band=65%20TO%2074&gender=FEMALE&horizon=3"
+```
+
+## Live predictions (DL-117)
+
+**What runs.** The models adopted in DL-79: the segment logistic regression at 1 and 3 months, the rule "same as last month" at 6 months, and the 1-month decline-alert logistic regression. The national forecast is a rule and stays a stored forecast (`/v1/forecasts/national`).
+
+**How.** The monthly job saves each fitted logistic regression in the warehouse file as the numbers that define it (`model_artifacts`: imputing medians, scaling, specialty categories, coefficients, intercept, plus a SHA-256 fingerprint) and the inputs of every segment at the last month (`pred_inputs`). Numbers rather than a pickled object, so they can be read and compared, need no scikit-learn in the API image (NumPy only) and cannot break when a library changes. They are in the same file as `pred_batch`, so a forecast, its model and its inputs always come from the same run. Before a model is saved the job applies the saved numbers to the rows it scored and stops if they differ from the fitted model by more than 1e-9.
+
+**What it proves.** On the published warehouse every segment at every horizon, and every alert score and flag, is predicted live and equals the stored value (worst difference about 5e-7, the rounding of the stored shares); the tests run all of them.
+
+**What it is not.** Not a what-if tool: it predicts for the segments and the month in the data, with the inputs the job saved, and a segment it has no row for is `404`, not a guess. A horizon with no saved model (2, 4, 5 and so on) is `422` and lists the horizons served. The caveats of the batch forecasts apply unchanged: the segment forecasts ran high in testing (`known_bias_pct`), the alert is a supporting flag (about half its flags were real declines), and small segments are noisy. If the warehouse has no saved models the live endpoints answer `503` and the others keep working.
 
 ## Access and limits
 
@@ -51,10 +71,10 @@ curl -H "X-API-Key: choose-a-key" "http://localhost:8000/v1/share/monthly?start_
 
 ## What it is not
 
-- Not a model server. The forecasts are the monthly batch job's stored output (`pred_batch`); there is no score-on-demand endpoint.
+- Not a training service. Models are fitted only by the monthly job; the API applies the saved ones and cannot change them.
 - Not a source of patient-level, provider-level or payer data: none exists in it, and a test checks that no field name suggests it.
 - Not an explanation of why a share moves. Read the `limits` in `/v1/status` before quoting a number.
 
 ## Tests
 
-`tests/test_api.py` (26 tests, run on the committed warehouse; CI job `api`, in an environment with only `api/requirements.txt`): every endpoint returns what the lookup returns and the headline figures equal the website's; ranges and groupings; the caveats travel with the data; only aggregates are served (field names checked) and lists are capped; every bad value is a clean `422` and an empty range a `404`; keys (each of two works, wrong and missing are `401`, the key is never echoed, a wrong key does not use up a rate); the rate (per client, `/health` never counted, from the environment); the interactive documentation describes every endpoint with its typed response and its `401`, `422` and `429`; one JSON log line per request with no key; CORS reads but does not write; and the service loads the warehouse itself when given no snapshot.
+`tests/test_api.py` (40 tests, run on the committed warehouse; CI job `api`, in an environment with only `api/requirements.txt`): every endpoint returns what the lookup returns and the headline figures equal the website's; ranges and groupings; the caveats travel with the data; only aggregates are served (field names checked) and lists are capped; every bad value is a clean `422` and an empty range a `404`; keys (each of two works, wrong and missing are `401`, the key is never echoed, a wrong key does not use up a rate); the rate (per client, `/health` never counted, from the environment); the interactive documentation describes every endpoint with its typed response and its `401`, `422` and `429`; one JSON log line per request with no key; CORS reads but does not write; and the service loads the warehouse itself when given no snapshot. The live endpoints add: the model list, the segment list, every segment at every horizon and every alert predicted live and equal to the stored value, the caveats on a prediction, case-insensitive names, `404` for an unknown segment, `422` for an unserved or out-of-range horizon, keys and docs applying to the new paths, and `503` when no models are saved. The saved-model code has its own tests: `tests/test_predictor.py` (the arithmetic on small models worked out by hand; no scikit-learn) and `tests/test_model_artifacts.py` (the saved numbers reproduce the batch forecasts, are checked against the fitted model, and are identical on a rerun).

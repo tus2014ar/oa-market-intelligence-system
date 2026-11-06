@@ -205,3 +205,79 @@ class Problem(BaseModel):
     """The body of an error response."""
 
     detail: str
+
+
+class ModelInfo(Row):
+    model_id: str = Field(description="For example 'segment:1' or 'alert:1'.")
+    task: Literal["segment", "alert"]
+    horizon: int
+    model: str = Field(description="'logistic', or a rule such as 'last_month'.")
+    model_version: str
+    run_month_id: int = Field(description="The last month of data the model was fitted on.")
+    trained_on_rows: int
+    data_version: str
+    library: str = Field(description="What fitted it; 'none (a rule)' for a rule.")
+    n_parameters: int
+    artifact_sha256: str = Field(description="A fingerprint of the saved numbers.")
+    known_bias_pct: float | None = Field(
+        default=None, description="How far its forecasts sat above what happened in testing."
+    )
+
+
+class Models(BaseModel):
+    count: int
+    models: list[ModelInfo]
+    note: str
+
+
+class SegmentKey(BaseModel):
+    specialty: str
+    age_band: str
+    gender: str
+
+
+class SegmentList(BaseModel):
+    count: int
+    segments: list[SegmentKey]
+    note: str
+
+
+class SegmentPrediction(Row):
+    specialty: str
+    age_band: str
+    gender: str
+    horizon: int
+    target_month_id: int
+    target_month: str
+    model: str
+    model_version: str
+    forecast_pct: float = Field(description="The model's forecast of the share, in percent.")
+    last_month_pct: float = Field(description="The 'same as last month' value, for comparison.")
+    change_pp: float
+    origin_visits: int
+    small: bool = Field(description="True for a segment under 100 visits last month: noisy.")
+    known_bias_pct: float | None = None
+    stored_forecast_pct: float | None = Field(
+        default=None, description="The batch job's stored forecast for the same segment."
+    )
+    matches_stored: bool | None = Field(
+        default=None, description="Whether the live forecast equals the stored one."
+    )
+    note: str
+
+
+class AlertPrediction(Row):
+    specialty: str
+    age_band: str
+    gender: str
+    model: str
+    model_version: str
+    origin_visits: int
+    eligible: bool = Field(description="False when the segment is too small or has no share.")
+    reason: str | None = None
+    alert_score: float | None = None
+    threshold: float | None = None
+    flagged: bool | None = None
+    stored_alert_score: float | None = None
+    matches_stored: bool | None = None
+    note: str

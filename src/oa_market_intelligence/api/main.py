@@ -26,11 +26,13 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Annotated, Any, Literal
 
+import pandas as pd
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from oa_market_intelligence.api import schemas
 from oa_market_intelligence.serving import data, guard, qa_tools
+from oa_market_intelligence.serving.predictor import Predictor
 
 VERSION = "1.0.0"
 DEFAULT_RATE_PER_MINUTE = 60
@@ -47,6 +49,8 @@ It serves the same figures as the website's pages.
 - The national forecast is "same as last month": no model beat that simple rule.
 - Segment forecasts run high in testing; the decline alert is a 1-month supporting flag only.
 - Only aggregates are served. No patient-level or provider-level rows exist in this API.
+- `/v1/predict/*` runs the saved models for a segment when you ask. The result must equal the
+  monthly job's stored forecast, and each response says whether it does. It is not a what-if tool.
 """
 
 TAGS = [
@@ -54,6 +58,10 @@ TAGS = [
     {"name": "data", "description": "The market series, segments and headline numbers."},
     {"name": "forecasts", "description": "The stored forecasts and the decline alert."},
     {"name": "models", "description": "How the models scored, and what to use each for."},
+    {
+        "name": "predictions",
+        "description": "Live predictions: the saved models are run when you ask (see /v1/models).",
+    },
     {"name": "findings", "description": "The numbered findings with evidence and impact."},
 ]
 ERRORS: dict[int | str, dict[str, Any]] = {
@@ -105,6 +113,45 @@ def _log_to_stdout() -> None:
     log.setLevel(logging.INFO)
 
 
+SEGMENT_NOTE = (
+    "Segment forecasts ran high in testing (see known_bias_pct): read this as optimistic, and as a "
+    "lead to investigate, not proof. At 6 months the model is 'same as last month'. Small "
+    "segments are noisy."
+)
+ALERT_NOTE = (
+    "A 1-month supporting flag only. About half of the flags were real declines in testing, and "
+    "much of that is a segment returning to its usual level: use it to decide where to look."
+)
+
+
+def _stored(request: Request, specialty: str, age_band: str, gender: str, horizon: int):
+    """The batch job's row for the same segment and horizon, or None."""
+    pred = request.app.state.snapshot.pred
+    rows = pred[(pred["level"] == "segment") & (pred["horizon"] == horizon)]
+    mask = (
+        (rows["specialty_name"].str.upper() == specialty.upper())
+        & (rows["age_band"].str.upper() == age_band.upper())
+        & (rows["gender"].str.upper() == gender.upper())
+    )
+    return rows[mask].iloc[0] if mask.any() else None
+
+
+def predictor_of(request: Request) -> Predictor:
+    """The live predictor, or a clean 503 when this warehouse has no saved models."""
+    predictor = request.app.state.predictor
+    if predictor is None:
+        raise HTTPException(
+            status_code=503, detail="Live predictions are not available: no saved models."
+        )
+    return predictor
+
+
+def _not_found(error: LookupError) -> HTTPException:
+    message = str(error)
+    code = 404 if message.startswith("No segment") else 422
+    return HTTPException(status_code=code, detail=message)
+
+
 def _keys_from_environment() -> list[str]:
     return [k.strip() for k in os.environ.get("API_KEYS", "").split(",") if k.strip()]
 
@@ -113,17 +160,24 @@ def create_app(
     snapshot: qa_tools.Snapshot | None = None,
     api_keys: list[str] | None = None,
     rate_per_minute: int | None = None,
+    predictor: Predictor | None = None,
+    live_predictions: bool = True,
 ) -> FastAPI:
-    """The app. Tests pass a snapshot and keys; the service loads the published warehouse."""
+    """The app. Tests pass a snapshot, keys and a predictor; the service loads the published
+    warehouse. `live_predictions=False` serves no saved models: /v1/predict says 503."""
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        if getattr(app.state, "snapshot", None) is None:
-            engine = data.open_engine()
-            try:
+        engine = data.open_engine()
+        try:
+            if getattr(app.state, "snapshot", None) is None:
                 app.state.snapshot = qa_tools.load_snapshot(engine)
-            finally:
-                engine.dispose()
+            if live_predictions and app.state.predictor is None:
+                artifacts, inputs = data.saved_models(engine)
+                if not artifacts.empty and not inputs.empty:
+                    app.state.predictor = Predictor(artifacts, inputs)
+        finally:
+            engine.dispose()
         yield
 
     app = FastAPI(
@@ -135,6 +189,7 @@ def create_app(
     )
     _log_to_stdout()
     app.state.snapshot = snapshot
+    app.state.predictor = predictor if live_predictions else None
     app.state.keys = list(api_keys) if api_keys is not None else _keys_from_environment()
     per_minute = rate_per_minute or int(
         os.environ.get("API_RATE_PER_MINUTE", DEFAULT_RATE_PER_MINUTE)
@@ -298,6 +353,91 @@ def create_app(
     ) -> dict:
         """The numbered findings with their evidence and business impact."""
         return lookup(request, "get_findings", {"keyword": keyword} if keyword else {})
+
+    @app.get(
+        "/v1/models",
+        response_model=schemas.Models,
+        tags=["predictions"],
+        dependencies=protected,
+        responses=ERRORS,
+    )
+    def models(request: Request) -> dict:
+        """The saved models: what each is, what it was fitted on and a fingerprint of it."""
+        listed = predictor_of(request).models()
+        return {
+            "count": len(listed),
+            "models": listed,
+            "note": "The numbers behind each logistic model are in the warehouse (table "
+            "model_artifacts). How each scored in testing is at /v1/model-results.",
+        }
+
+    @app.get(
+        "/v1/predict/segments",
+        response_model=schemas.SegmentList,
+        tags=["predictions"],
+        dependencies=protected,
+        responses=ERRORS,
+    )
+    def predict_segments(request: Request) -> dict:
+        """The segments the live endpoints can predict for (a specialty, an age band, a gender)."""
+        listed = predictor_of(request).segments()
+        return {
+            "count": len(listed),
+            "segments": listed,
+            "note": "The segments with a model input at the last month of data.",
+        }
+
+    @app.get(
+        "/v1/predict/segment",
+        response_model=schemas.SegmentPrediction,
+        tags=["predictions"],
+        dependencies=protected,
+        responses={**ERRORS, 404: {"model": schemas.Problem, "description": "No such segment."}},
+    )
+    def predict_segment(
+        request: Request,
+        specialty: Annotated[str, Query(max_length=80, description="For example 'RHEUMATOLOGY'.")],
+        age_band: Annotated[str, Query(max_length=40, description="For example '65 TO 74'.")],
+        gender: Annotated[str, Query(max_length=20, description="'FEMALE' or 'MALE'.")],
+        horizon: Annotated[int, Query(ge=1, le=12, description="Months ahead: 1, 3 or 6.")] = 1,
+    ) -> dict:
+        """Run the adopted model for one segment now, and compare with the stored forecast."""
+        try:
+            out = predictor_of(request).segment(specialty, age_band, gender, horizon)
+        except LookupError as error:
+            raise _not_found(error) from error
+        stored = _stored(request, out["specialty"], out["age_band"], out["gender"], horizon)
+        if stored is not None:
+            out["stored_forecast_pct"] = round(100 * float(stored["point_share"]), 4)
+            out["matches_stored"] = abs(out["forecast_pct"] - out["stored_forecast_pct"]) < 1e-3
+        return {**out, "note": SEGMENT_NOTE}
+
+    @app.get(
+        "/v1/predict/alert",
+        response_model=schemas.AlertPrediction,
+        tags=["predictions"],
+        dependencies=protected,
+        responses={**ERRORS, 404: {"model": schemas.Problem, "description": "No such segment."}},
+    )
+    def predict_alert(
+        request: Request,
+        specialty: Annotated[str, Query(max_length=80)],
+        age_band: Annotated[str, Query(max_length=40)],
+        gender: Annotated[str, Query(max_length=20)],
+    ) -> dict:
+        """Run the 1-month decline alert for one segment now, and compare with the stored score."""
+        try:
+            out = predictor_of(request).alert(specialty, age_band, gender)
+        except LookupError as error:
+            raise _not_found(error) from error
+        stored = _stored(request, out["specialty"], out["age_band"], out["gender"], 1)
+        if stored is not None and out["eligible"] and not pd.isna(stored["alert_score"]):
+            out["stored_alert_score"] = round(float(stored["alert_score"]), 6)
+            out["matches_stored"] = bool(
+                abs(out["alert_score"] - out["stored_alert_score"]) < 1e-6
+                and out["flagged"] == bool(stored["alert_flag"])
+            )
+        return {**out, "note": ALERT_NOTE}
 
     return app
 

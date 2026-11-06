@@ -26,7 +26,7 @@ STAGES = [
 ]
 EXPECTED = set(TABLES) | {
     "feat_segment_month", "feat_monthly", "model_scores", "backtest_batch", "pred_batch",
-    "bronze_ingest_files", "dq_report",
+    "bronze_ingest_files", "dq_report", "model_artifacts", "pred_inputs",
 }
 
 pytestmark = pytest.mark.skipif(not DEFAULT_DB.exists(), reason="no published warehouse")
@@ -89,3 +89,28 @@ def test_the_predictions_follow_the_adoption_map(con):
             assert used[int(horizon)] == {model}, (level, horizon)
     flagged = pred[pred["alert_flag"].notna()]
     assert set(flagged["horizon"]) == {int(h) for h in serving["alert"]}
+
+
+def test_the_saved_models_belong_to_the_forecasts_and_reproduce_them(con):
+    """DL-117: the models behind the forecasts are in the same file, from the same run, and
+    applying their saved numbers gives the stored forecasts."""
+    from oa_market_intelligence.serving.predictor import Predictor
+
+    pred = _table(con, "pred_batch")
+    artifacts, inputs = _table(con, "model_artifacts"), _table(con, "pred_inputs")
+    assert set(artifacts["model_id"]) == {"segment:1", "segment:3", "segment:6", "alert:1"}
+    months = set(pred["run_month_id"])
+    assert set(artifacts["run_month_id"]) == set(inputs["run_month_id"]) == months
+    assert set(artifacts["data_version"]) == set(pred["data_version"])  # one run, one version
+    for row in artifacts.itertuples():
+        assert len(row.artifact_sha256) == 64
+        if row.model == "logistic":
+            assert json.loads(row.parameters)["coef"]
+    segment = pred[pred["level"] == "segment"]
+    assert len(inputs) == (segment["horizon"] == 1).sum()  # a row for every forecast segment
+    predictor = Predictor(artifacts, inputs)
+    worst = 0.0
+    for r in segment.itertuples():
+        live = predictor.segment(r.specialty_name, r.age_band, r.gender, int(r.horizon))
+        worst = max(worst, abs(live["forecast_pct"] / 100 - r.point_share))
+    assert worst < 1e-6
