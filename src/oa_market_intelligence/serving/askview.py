@@ -1,6 +1,6 @@
-"""The Ask Claude page, as tested functions and wording (DL-109): the example questions, what the
-box would look up for each, the eleven tools in plain words, the page behind each source, and the
-plain account of what it can see and what has been tested.
+"""The AI Question Box page, as tested functions and wording (DL-109): the example questions,
+what the box would look up for each, the eleven tools in plain words, the page behind each
+source, and the plain account of what it can see and what has been tested.
 
 Nothing here calls a model. `lookup_preview` runs the same read-only tools the box gives Claude, so
 a person can see the data a question would be answered from even where no key is configured; it

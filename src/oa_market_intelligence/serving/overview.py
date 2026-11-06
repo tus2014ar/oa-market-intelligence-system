@@ -20,7 +20,7 @@ PAGES = (
     ("Findings", "views/findings.py", ":material/lightbulb:", "findings"),
     ("Context", "views/context.py", ":material/public:", "context"),
     ("Market map", "views/market_map.py", ":material/hub:", "market-map"),
-    ("Ask Claude", "views/ask_claude.py", ":material/chat:", "ask-claude"),
+    ("AI Question Box", "views/ai_question_box.py", ":material/chat:", "ai-question-box"),
 )  # (title, script, icon, address): the navigation is built from this list
 TAB_NAMES = tuple(title for title, *_ in PAGES)
 TAB_GUIDE = (
@@ -45,7 +45,10 @@ TAB_GUIDE = (
     ("Findings", "What did the analyses find, and what does each mean for a decision?"),
     ("Context", "How do company sales, Medicare billing and events compare with the visits?"),
     ("Market map", "How do the products, makers, specialties and events connect?"),
-    ("Ask Claude", "Ask a question in plain words (off until a key is configured for the site)."),
+    (
+        "AI Question Box",
+        "Ask a question in plain words (off until a key is configured for the site).",
+    ),
 )
 
 

@@ -1,4 +1,4 @@
-"""The Ask Claude page (DL-88, moved here in DL-104): a conversation that answers from read-only
+"""The AI Question Box page (DL-88, moved here in DL-104, renamed in DL-110): a conversation that answers from read-only
 tools. It works only where an API key is configured, and then behind an optional access code, a
 per-visitor limit and a daily token budget. Nothing about its behaviour changed when the site
 moved to separate pages; it is still off without a key and still tested only with a scripted client.
@@ -69,7 +69,7 @@ def _show_answer(message: dict, snapshot, index: int) -> None:
                         type="tertiary",
                         icon=":material/open_in_new:",
                     ):
-                        common.go(title, "Ask Claude")
+                        common.go(title, "AI Question Box")
     if message.get("unchecked"):
         st.caption(
             "Check these figures: " + ", ".join(message["unchecked"]) + " (not found in the "
