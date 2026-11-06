@@ -14,7 +14,8 @@ NAVY, TEAL, GREEN, RED, GREY = "#1B2A41", "#0F8B8D", "#1E9E5A", "#C8553D", "#7A8
 
 CSS = f"""<style>
 .oa-kpi {{background:{NAVY};color:#fff;border-radius:14px;padding:16px 20px;min-height:152px}}
-@media (max-width:640px) {{.oa-kpi {{min-height:0}}}}
+@media (max-width:640px) {{.oa-kpi, .oa-kpi.tall {{min-height:0}}}}
+.oa-kpi.tall {{min-height:260px}}
 .oa-kpi .l {{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;opacity:.78}}
 .oa-kpi .v {{font-size:2rem;font-weight:700;line-height:1.2;margin:.15rem 0}}
 .oa-kpi .c {{font-size:.8rem;opacity:.82;line-height:1.35}}
@@ -47,6 +48,16 @@ CSS = f"""<style>
 .oa-pill2.pass {{background:rgba(30,158,90,.18);color:{GREEN}}}
 .oa-test-res {{font-size:.88rem;font-variant-numeric:tabular-nums;margin-top:.15rem}}
 .oa-test-plain {{font-size:.84rem;opacity:.8;margin-top:.1rem}}
+.oa-kpi .v.t {{font-size:1.1rem;line-height:1.3;margin:.3rem 0 .4rem}}
+.oa-find {{padding:.8rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
+.oa-find-head {{display:flex;gap:.7rem;align-items:center}}
+.oa-find-id {{flex:none;width:1.7rem;height:1.7rem;border-radius:50%;background:{TEAL};
+  color:#fff;text-align:center;line-height:1.7rem;font-size:.8rem;font-weight:700}}
+.oa-find-title {{font-weight:700}}
+.oa-find-impact {{font-size:.9rem;margin:.4rem 0 .25rem 2.4rem}}
+.oa-find details {{margin-left:2.4rem;font-size:.85rem}}
+.oa-find summary {{cursor:pointer;opacity:.75}}
+.oa-find details div {{margin-top:.3rem;opacity:.9}}
 .oa-stand {{display:flex;justify-content:space-between;align-items:baseline;
   padding:.4rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-stand .k {{font-size:.88rem;opacity:.8}} .oa-stand .x {{font-weight:700;font-size:1.05rem}}
@@ -127,6 +138,27 @@ def test_rows(rows: list[tuple[str, str, str, bool, str, str]]) -> str:
             f'<div class="oa-test-plain">{escape(plain)}</div></div>'
         )
     return "".join(out)
+
+
+def text_card(label: str, title: str, caption: str = "") -> str:
+    """A navy card whose main line is a sentence (a finding's title) rather than a number."""
+    return (
+        f'<div class="oa-kpi tall"><div class="l">{escape(label)}</div>'
+        f'<div class="v t">{escape(title)}</div><div class="c">{escape(caption)}</div></div>'
+    )
+
+
+def finding_card(finding_id: int, title: str, impact: str, evidence: str, source: str) -> str:
+    """One finding: its number and title, what it means, and the evidence folded away under a
+    heading that names the source."""
+    return (
+        '<div class="oa-find"><div class="oa-find-head">'
+        f'<span class="oa-find-id">{int(finding_id)}</span>'
+        f'<span class="oa-find-title">{escape(title)}</span></div>'
+        f'<div class="oa-find-impact"><b>What it means:</b> {escape(impact)}</div>'
+        f"<details><summary>Evidence · {escape(source)}</summary>"
+        f"<div>{escape(evidence)}</div></details></div>"
+    )
 
 
 def stand_rows(rows: list[tuple[str, str]]) -> str:

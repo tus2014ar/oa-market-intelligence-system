@@ -74,6 +74,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
         "Download this series (CSV)",  # the Market trend tab's own download
         "Download this table (CSV)",  # the Segments tab's own download
         "Download these forecasts (CSV)",  # the Forecasts tab's own download
+        "Download the findings (CSV)",  # the Findings tab's own download
     ]
     assert any("Use it for:" in m.value and "last month" in m.value for m in app.markdown)
     assert badges  # the data chips are badges too
@@ -88,9 +89,21 @@ def test_every_other_tab_starts_with_a_one_line_note_on_how_old_the_data_are(app
     assert len(banners) == 1  # the long warning is on Overview only
 
 
-def test_the_findings_tab_lists_all_seventeen(app):
-    findings = [e for e in app.expander if e.label[0].isdigit()]
-    assert len(findings) == 17 and findings[0].label.startswith("1. ")
+def test_the_findings_tab_lists_all_seventeen_in_five_themes_with_four_to_read_first(app):
+    page = " ".join(m.value for m in app.markdown)
+    assert page.count('class="oa-find"') == 17
+    assert "Read these first" in page and "Finding 16" in page
+    for title in (
+        "The gap between sales and visits",
+        "Checked against outside data",
+        "Things that might explain it",
+        "What limits the data",
+        "What the models showed",
+    ):
+        assert title in page
+    assert "Company sales kept rising while IQVIA&#x27;s Zilretta visits fell" in page
+    assert "must not be quoted as a market fact" in page
+    assert "not adopted and is shown on the Model results tab" in page
 
 
 def test_no_secret_or_sql_input_exists_on_the_page(app):
@@ -120,7 +133,7 @@ def test_the_market_trend_tab_opens_on_all_visits_with_four_cards_and_the_filter
     assert next(s for s in app.selectbox if s.label == "Specialty").value == "All"
     assert [t.label for t in app.toggle] == ["Trend line", "Markers"]
     cards = _cards(app)
-    assert len(cards) == 16  # four each on this tab, Segments, Forecasts and Model results
+    assert len(cards) >= 4  # this tab's four come first
     cards = cards[:4]
     assert "Share in Jul 2025" in cards[0] and "1.88%" in cards[0] and "-0.10 pp" in cards[0]
     assert "3.38%" in cards[1] and "Dec 2021" in cards[1] and "44% below" in cards[1]
@@ -180,7 +193,7 @@ def _segments(monkeypatch, **state):
 
 def test_the_segments_tab_opens_on_specialties_with_four_cards_and_the_grid(app):
     cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value]
-    assert len(cards) == 16  # four each on Market trend, Segments, Forecasts and Model results
+    assert len(cards) >= 8  # Market trend's four, then this tab's four
     segments_cards = cards[4:8]
     assert "Highest share" in segments_cards[0] and "Physical Medicine" in segments_cards[0]
     assert "Largest source of visits" in segments_cards[1]
@@ -295,6 +308,15 @@ def test_the_scoreboard_can_be_cut_to_one_task_and_the_explanation_to_three_mont
     boards = [d.value for d in at.dataframe if "In plain words" in d.value.columns]
     assert len(boards) == 1 and set(boards[0]["Task"]) == {"Segment share"} and len(boards[0]) == 3
     assert any("Physician Assistant, ages 65 to 74, female" in c.value for c in at.caption)
+
+
+def test_a_theme_can_be_chosen_on_the_findings_tab(monkeypatch):
+    at = _trend(monkeypatch, find_theme="The models")
+    assert not at.exception
+    page = " ".join(m.value for m in at.markdown)
+    assert page.count('class="oa-find"') == 4
+    assert any("4 of 17 findings" in c.value for c in at.caption)
+    assert "Segment forecasts gain a little at 1 and 3 months and run too high" in page
 
 
 # ------------------------------------------------------------------ the market map

@@ -16,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+import findings_tab  # noqa: E402  (app/findings_tab.py, the Findings tab)
 import forecasts_tab  # noqa: E402  (app/forecasts_tab.py, the Forecasts tab)
 import market_trend  # noqa: E402  (app/market_trend.py, the Market trend tab)
 import model_results_tab  # noqa: E402  (app/model_results_tab.py, Model results)
@@ -410,13 +411,7 @@ with tabs[5]:
 
 # ------------------------------------------------------------------ findings
 with tabs[6]:
-    data_chip()
-    st.write("What the analyses found, with the evidence and what it means for decisions.")
-    for _, row in views.findings_frame(FINDINGS).iterrows():
-        with st.expander(f"{row['id']}. {row['finding']}"):
-            st.write(f"**Evidence:** {row['evidence']}")
-            st.write(f"**Business impact:** {row['impact']}")
-            st.caption(row["source"])
+    findings_tab.render(FINDINGS, data_chip)
 
 # ------------------------------------------------------------------ market map
 with tabs[7]:
