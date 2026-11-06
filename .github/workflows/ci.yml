@@ -168,6 +168,19 @@ jobs:
           docker logs api | tail -5
           docker rm -f api
 
+      - name: Build the Lambda image and call it as Lambda does
+        run: |
+          docker build -f Dockerfile.lambda -t oa-api-lambda .
+          docker run -d --name lambda --read-only --tmpfs /tmp -p 9000:8080 -e API_KEYS=ci-key oa-api-lambda
+          event() { printf '{"version":"2.0","routeKey":"$default","rawPath":"%s","rawQueryString":"","headers":{"x-api-key":"%s"},"requestContext":{"http":{"method":"GET","path":"%s","sourceIp":"203.0.113.9"}},"isBase64Encoded":false}' "$1" "$2" "$1"; }
+          call() { curl -fs -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d "$(event "$1" "$2")"; }
+          for i in $(seq 1 30); do call /health "" | grep -q '"statusCode": 200' && break; sleep 2; done
+          call /health "" | grep -q '"statusCode": 200'
+          call /v1/models "" | grep -q '"statusCode": 401'
+          call /v1/models ci-key | grep -q 'segment:1'
+          docker logs lambda | tail -5
+          docker rm -f lambda
+
       - name: Run the website image and check its health
         run: |
           docker run -d --name site -p 8501:8501 oa-site

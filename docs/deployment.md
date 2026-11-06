@@ -12,7 +12,7 @@
 | **The AI Question Box** | the host's secrets hold the Anthropic key; Claude runs at Anthropic | the only paid part, capped by you |
 | **Your own domain** (optional) | a Cloudflare redirect to the app's address | free |
 
-The rule for the project: **no credit card anywhere except Anthropic.** Every cloud account that takes a card has no hard spending cap, so none is used.
+The original rule was **no credit card anywhere except Anthropic**, because most cloud accounts that take a card have no hard spending cap. On 6 Nov 2026 you chose to add AWS, on its **Free plan** (opened 6 Nov 2026; the welcome email says it ends on 6 May 2027 or when the credits are used, and that no charges apply within the free-plan limits unless you upgrade). The site and the Streamlit host are unchanged. See "The AWS version" below.
 
 ## Decisions
 
@@ -73,6 +73,44 @@ Steps 1 to 4 are yours: I never create accounts or enter credentials.
 5. **Switching it off again:** delete `ANTHROPIC_API_KEY` from the secrets.
 
 Each visitor can ask 8 questions an hour and the whole site 200 an hour; questions are capped at 500 characters and nothing is saved from them. If strangers use up the day's budget too early, add an `ACCESS_CODE`.
+
+## The AWS version (DL-118)
+
+**Status: built and tested on a machine; not deployed.** Nothing runs on AWS until the steps below are done. The Streamlit site stays where it is and does not use this. When the steps are done, update this paragraph with the date and the address.
+
+**What it is.** The API (`docs/api.md`) as an AWS Lambda container function with a public function URL. The URL needs no AWS sign-in; the API's own `X-API-Key` check protects it. The files: `Dockerfile.lambda` (the image), `src/oa_market_intelligence/api/lambda_handler.py` (the Mangum adapter), `infra/aws/bootstrap.yml` (image repository and the GitHub deploy role), `infra/aws/api.yml` (the function, its URL and its logs) and `.github/workflows/deploy-aws.yml` (a manual workflow, main branch only).
+
+**What has been checked.** The image was built and called on a machine exactly as Lambda calls it (the Lambda runtime emulator, a read-only filesystem, function-URL events): health, the model list, a live prediction equal to the stored forecast, an alert, `401` for a missing or wrong key, `404`, `405` and the docs all answered correctly, and the logs hold no key. Both templates pass `cfn-lint`. Ten tests (`tests/test_aws_infra.py`) pin down the safety properties; CI builds and calls the Lambda image too. **Not checked:** the templates have not been run in an AWS account, the workflow has not run, and the free-plan terms for the image repository and function URLs were not read from AWS's own pages.
+
+**Safety design.** No access key exists anywhere: GitHub signs in with a short-lived token (OIDC) and the role accepts it only from the `main` branch of this repository. The role can push to one repository and update one function, nothing else (no IAM, no CloudFormation). The function runs as a role that can only write its own logs. The API key is typed by you into a hidden CloudFormation parameter and is stored on the function; it is not in the repository, the image or the workflow. Images are scanned on push, tags cannot be overwritten, and only the last 3 images are kept. Logs expire after 14 days. The workflow runs only when you start it.
+
+**Set-up, once** (sign in as `tushar-admin`, region `us-east-1`; the repository's files are on your computer):
+
+1. **The base stack.** In the console, open **CloudFormation**, choose **Create stack**, **With new resources**, **Upload a template file**, and pick `infra/aws/bootstrap.yml`. Name it `oa-market-api-bootstrap`, keep the defaults, and on the last page tick the box that says CloudFormation might create IAM resources with custom names. Submit. When the status is `CREATE_COMPLETE`, open **Outputs** and copy `DeployRoleArn`.
+2. **Two GitHub variables** (not secrets): in the repository, **Settings**, **Secrets and variables**, **Actions**, **Variables**, add `AWS_REGION` = `us-east-1` and `AWS_DEPLOY_ROLE_ARN` = the role ARN.
+3. **Push the first image.** Merge the branch to `main` first (the workflow and the role both require `main`). Then **Actions**, **deploy-aws**, **Run workflow**, branch `main`. It builds the image and pushes it; the run summary prints the image address and says the function does not exist yet.
+4. **The function stack.** Back in CloudFormation, **Create stack**, upload `infra/aws/api.yml`, name it `oa-market-api`. Paste the image address as `ImageUri`. For `ApiKeys`, type a long random value of your own (at least 16 characters; save it in your password manager) and do not paste it anywhere else. Leave the rest, tick the IAM acknowledgement and submit. Under **Outputs**, `ApiUrl` is the public address.
+5. **Check it.** Open `ApiUrl` + `health` in a browser (it answers without a key), then `ApiUrl` + `docs`. A request to `/v1/models` without the key must say `401`; with the header `X-API-Key: <your key>` it must list four models.
+6. **Account limits.** In **Lambda**, **Dashboard**, read the account's concurrent-execution limit. If it is above 10, you may set `ReservedConcurrency` on the stack to cap how many copies run at once; if it is 10 or less, leave it at 0 (AWS does not allow a reservation then).
+
+**Updating later.** Merge to `main`, then run **deploy-aws** again: it pushes a new image under the new commit's SHA, switches the function to it and checks `/health` through the URL. Do not change the `ImageUri` of the function stack to an older image by mistake.
+
+**Taking it down.** Delete the stack `oa-market-api` first, then empty the image repository (images, not the repository) and delete `oa-market-api-bootstrap`. The free plan ends on 6 May 2027 or when the credits are used, so the live AWS address is temporary unless you move to a paid plan; the site, the docs and the screenshots do not depend on it.
+
+**Limits to know.** The rate limit counts requests in memory for each running copy, so on Lambda it is per copy and approximate. The cost protection is the budget alert, the optional concurrency limit and the free plan's own ceiling, not that counter. A function that has been idle starts slowly (a few seconds) because each cold start loads the warehouse. The image is built for x86_64 and is not pinned to a base-image digest.
+
+**Try the Lambda image on your machine** (Docker running):
+
+```bash
+docker build -f Dockerfile.lambda -t oa-api-lambda .
+docker run --rm --read-only --tmpfs /tmp -p 9000:8080 -e API_KEYS=choose-a-key oa-api-lambda
+```
+
+then send it a function-URL event, for example (this prints `"statusCode": 200`):
+
+```bash
+curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"version":"2.0","routeKey":"$default","rawPath":"/health","rawQueryString":"","headers":{},"requestContext":{"http":{"method":"GET","path":"/health","sourceIp":"203.0.113.9"}},"isBase64Encoded":false}'
+```
 
 ## What this does not do
 

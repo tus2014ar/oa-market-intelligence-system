@@ -167,7 +167,7 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its eight stages (including the monthly scoring job and monitoring), the public-data modes, the run record with versions, the monthly schedule and the CI gates |
 | [`docs/site.md`](docs/site.md) | The website: its seven tabs, where each number comes from, how to run it locally and how it is tested (live) |
 | [`docs/api.md`](docs/api.md) | The API: read-only data endpoints and live predictions from the saved models, API keys and rate limits, errors, and how it is tested |
-| [`docs/docker.md`](docs/docker.md) | The three Docker images (pipeline, website, API), the one-command stack and what CI checks |
+| [`docs/docker.md`](docs/docker.md) | The Docker images (pipeline, website, API, and the API for AWS Lambda), the one-command stack and what CI checks |
 | [`docs/runbook.md`](docs/runbook.md) | The monthly run: what a normal month looks like, what to do when each stage fails, going back to the last good database, forecast drift and tracing a number to its data and code |
 | [`docs/environment.md`](docs/environment.md) | The supported Python, the pinned packages, installing the project and the Docker image, and the environment behind the stored modelling results |
 | [`docs/modelling_plan.md`](docs/modelling_plan.md) | The modelling plan: three tasks, horizons, baselines and models, the evaluation and promotion rules, the leakage timeline and tests, fixed before any model ran (with the T3 amendment and the implementation choices) |

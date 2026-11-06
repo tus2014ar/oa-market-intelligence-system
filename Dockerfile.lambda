@@ -1,0 +1,25 @@
+# The API as an AWS Lambda container image (DL-118): the same app as Dockerfile.api, run by Lambda
+# through the Mangum adapter and reached through a function URL. The image holds the code and the
+# published warehouse (read-only); keys and limits are set on the function, never in the image.
+#
+#   docker build -f Dockerfile.lambda -t oa-api-lambda .
+#   docker run --rm -p 9000:8080 -e API_KEYS=choose-a-key oa-api-lambda
+#
+# and call it as Lambda would: see docs/deployment.md ("Try the Lambda image on your machine").
+# Built for x86_64 (the default of the Lambda base image).
+FROM public.ecr.aws/lambda/python:3.12
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONPATH=/var/task/src
+
+# Packages first, so this layer is rebuilt only when the requirements change.
+COPY api/requirements.txt api/requirements-lambda.txt api/
+RUN pip install -r api/requirements-lambda.txt
+
+COPY src ./src
+COPY data/reference ./data/reference
+COPY data/published ./data/published
+
+CMD ["oa_market_intelligence.api.lambda_handler.handler"]

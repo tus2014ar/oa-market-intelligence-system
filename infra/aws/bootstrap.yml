@@ -1,0 +1,94 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  One-time set-up for the OA/RA market API on AWS (DL-118): a private image repository, and a role
+  that GitHub Actions can assume with no stored keys (OIDC) to push an image and update the one
+  function. It creates no function and holds no secrets.
+
+Parameters:
+  GitHubRepository:
+    Type: String
+    Default: tus2014ar/oa-market-intelligence-system
+    Description: The GitHub repository allowed to deploy, as owner/name.
+  RepositoryName:
+    Type: String
+    Default: oa-market-api
+  FunctionName:
+    Type: String
+    Default: oa-market-api
+    Description: The function the role may update (created by api.yml).
+
+Resources:
+  ImageRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref RepositoryName
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {"rules":[{"rulePriority":1,"description":"Keep the last 3 images",
+          "selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},
+          "action":{"type":"expire"}}]}
+
+  GitHubProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+
+  DeployRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: oa-market-api-deploy
+      Description: Assumed by GitHub Actions on the main branch of one repository to deploy the API.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubRepository}:ref:refs/heads/main
+      Policies:
+        - PolicyName: push-image-and-update-the-function
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: LoginToTheRegistry
+                Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Sid: PushToThisRepositoryOnly
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:CompleteLayerUpload
+                  - ecr:DescribeImages
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:UploadLayerPart
+                Resource: !GetAtt ImageRepository.Arn
+              - Sid: UpdateThisFunctionOnly
+                Effect: Allow
+                Action:
+                  - lambda:GetFunction
+                  - lambda:GetFunctionConfiguration
+                  - lambda:GetFunctionUrlConfig
+                  - lambda:UpdateFunctionCode
+                Resource: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${FunctionName}
+
+Outputs:
+  RepositoryUri:
+    Description: Where the image is pushed.
+    Value: !GetAtt ImageRepository.RepositoryUri
+  DeployRoleArn:
+    Description: Save this as the GitHub repository variable AWS_DEPLOY_ROLE_ARN (not a secret).
+    Value: !GetAtt DeployRole.Arn

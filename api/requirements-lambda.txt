@@ -1,0 +1,4 @@
+# What the API's Lambda image installs (Dockerfile.lambda): the API's packages plus the adapter that
+# lets Lambda call the app. Mangum 0.19 or later reads function-URL (payload version 2) requests.
+-r requirements.txt
+mangum>=0.19

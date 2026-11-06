@@ -1,6 +1,6 @@
 # Docker (DL-116)
 
-Three images, one per kind of work. None of them holds a secret: keys and limits are passed when a container starts.
+Four images, one per kind of work (the fourth, `Dockerfile.lambda`, is the API for AWS Lambda: see [`deployment.md`](deployment.md), "The AWS version"). None of them holds a secret: keys and limits are passed when a container starts.
 
 | Image | File | What it runs | Port |
 |---|---|---|---|
@@ -52,3 +52,7 @@ It builds all three images and runs them: the pipeline image's commands; the API
 - This makes the project reproducible on any machine with Docker and gives CI a real check of every way it runs.
 - The live website does **not** run from these images: it runs on Streamlit Community Cloud from the source. Running the images in the cloud (AWS) is planned and not done, and nothing here says it is deployed.
 - Not done yet: scanning the images for known vulnerabilities, pushing them to a registry, and pinning the base image by digest.
+
+## The Lambda image (DL-118)
+
+`Dockerfile.lambda` builds the same API on AWS's Lambda base image (`public.ecr.aws/lambda/python:3.12`) with the Mangum adapter, and runs `oa_market_intelligence.api.lambda_handler.handler`. Checked on a machine through the runtime emulator with a read-only filesystem; CI (`docker-build`) builds it and calls it with a function-URL event (health, `401` without a key, the model list with one). The image is about 1.1 GB uncompressed. It is not pushed anywhere or scanned yet except by the registry's scan on push once deployed; the base image is not pinned by digest.
