@@ -133,6 +133,7 @@ def render(D: dict, data_chip, flt: dict) -> None:
             "one prescription moves a small group's share a lot. Click a bar to open that group. Change compares the last 12 "
             "months with the 12 before."
         )
+        common.explain("seg_bars")
     with right.container(border=True, height="stretch"):
         st.markdown("**How concentrated are the visits?**")
         st.caption(f"Zilretta's visits across {name} groups")
@@ -180,6 +181,7 @@ def render(D: dict, data_chip, flt: dict) -> None:
             f"cell has under {segments.MIN_CELL_VISITS} visits, too few to show a rate. Click a "
             "cell to open that specialty and age band."
         )
+        common.explain("seg_grid")
 
     # ---- groups over time
     st.markdown(f"##### {segments.GROUPS[by]} over time")
@@ -201,6 +203,7 @@ def render(D: dict, data_chip, flt: dict) -> None:
                 "Share by calendar year; the first and last years are part years (August 2019 to "
                 "July 2025). Every year uses all months of the series, whatever the period above."
             )
+            common.explain("seg_time")
         else:
             st.write("Pick at least one group to draw.")
 

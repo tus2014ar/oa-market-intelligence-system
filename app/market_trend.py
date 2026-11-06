@@ -133,6 +133,7 @@ def render(D: dict, data_chip, flt: dict) -> None:
             "the turn in March 2022 and the start of the 2024 dip. Shaded: the March to July 2024 "
             "data-capture dip, which hit all three classes."
         )
+        common.explain("trend_chart")
     with right.container(border=True, height="stretch"):
         st.markdown("**Where the share stands**")
         st.caption(who)

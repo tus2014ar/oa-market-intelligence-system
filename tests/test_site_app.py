@@ -994,3 +994,64 @@ def test_a_state_code_the_data_does_not_have_shows_no_panel():
     at = run_page("Context", ctx_map_0=_click({"state_code": "ZZ"}))
     assert not at.exception
     assert not [b for b in at.button if b.key == "ctx_state_close"]
+
+
+# ---------------------- the plain-words layer
+
+
+def test_every_page_opens_with_its_plain_words_paragraph_and_ends_with_its_terms(page):
+    import html
+
+    from oa_market_intelligence.serving import plainwords
+
+    for title in overview.TAB_NAMES:
+        at = page(title)
+        text = " ".join(m.value for m in at.markdown)
+        assert (
+            "In plain words" in text and html.escape(plainwords.PAGE_SUMMARY[title][:40]) in text
+        ), title
+        labels = [e.proto.label for e in at.expander]
+        assert labels[-1] == "Words used on this page", title
+        for term, _ in plainwords.terms_for(title):
+            assert term in text, (title, term)  # the list is drawn, closed, in the page
+
+
+def test_a_pages_paragraph_comes_before_its_filter_bar_and_its_terms_after_the_page(page):
+    at = page("Segments")
+    markdown = [m.value for m in at.markdown]
+    where = [i for i, m in enumerate(markdown) if "In plain words" in m]
+    terms = [i for i, m in enumerate(markdown) if 'class="oa-gloss"' in m]
+    assert where and terms and where[0] < 5 and terms[0] > len(markdown) - 4
+
+
+def test_the_charts_have_a_what_does_this_mean_button_where_a_chart_is_drawn(page):
+    counts = {title: len(page(title).get("popover")) for title in overview.TAB_NAMES}
+    assert counts == {
+        "Overview": 1,
+        "Market trend": 1,
+        "Segments": 3,
+        "Segment detail": 0,  # nothing chosen yet: no chart
+        "Forecasts": 4,
+        "Model results": 3,
+        "Data status": 0,
+        "Findings": 0,
+        "Context": 2,
+        "Market map": 1,
+        "Ask Claude": 0,
+    }
+
+
+def test_the_button_text_is_the_chart_note_with_its_caveat(page):
+    from oa_market_intelligence.serving import plainwords
+
+    text = " ".join(m.value for m in page("Overview").markdown)
+    note = plainwords.EXPLAIN["overview_fan"]
+    assert f"**How to read it.** {note['read']}" in text
+    assert f"**What it does not tell you.** {note['not']}" in text
+
+
+def test_the_segment_detail_chart_and_the_state_panel_each_add_a_button():
+    detail = run_page("Segment detail", flt=flt(specialty="ORTHOPEDIC SURGERY"))
+    assert len(detail.get("popover")) == 1
+    context_page = run_page("Context", ctx_state="TX")
+    assert len(context_page.get("popover")) == 3

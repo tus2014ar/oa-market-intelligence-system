@@ -25,7 +25,9 @@ from oa_market_intelligence.serving import (  # noqa: E402
     data,
     links,
     overview,
+    plainwords,
     qa_tools,
+    style,
     trend,
     views,
 )
@@ -243,6 +245,31 @@ def go(target: str, source: str, **chosen) -> None:
     st.session_state["nav"] = st.session_state.get("nav", 0) + 1
     st.session_state["sync_bar"] = True  # the filter bar takes the new values when it is next drawn
     st.switch_page(SCRIPTS[target])
+
+
+def plain_words(page_title: str) -> None:
+    """The page's "In plain words" paragraph, under the title."""
+    text = plainwords.summary_for(page_title)
+    if text:
+        st.markdown(style.plain_box(text), unsafe_allow_html=True)
+
+
+def explain(key: str) -> None:
+    """A "What does this mean?" button under a chart: how to read it and what it does not tell you."""
+    note = plainwords.note_for(key)
+    if note is None:
+        return
+    with st.popover("What does this mean?", icon=":material/help:"):
+        st.markdown(f"**How to read it.** {note['read']}")
+        st.markdown(f"**What it does not tell you.** {note['not']}")
+
+
+def terms(page_title: str) -> None:
+    """The words a page uses, with plain meanings, closed at the foot of the page."""
+    entries = plainwords.terms_for(page_title)
+    if entries:
+        with st.expander("Words used on this page"):
+            st.markdown(style.glossary_rows(entries), unsafe_allow_html=True)
 
 
 def back_link(page_title: str) -> None:

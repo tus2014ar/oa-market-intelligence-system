@@ -6,6 +6,7 @@ downloads. A thin page over `serving.views`, `serving.overview`, `serving.foreca
 
 from __future__ import annotations
 
+import common
 import streamlit as st
 
 from oa_market_intelligence.serving import charts, forecasts, links, overview, style, views
@@ -77,6 +78,7 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
             "90% ranges (orange). The forecast is last month's value: no model beat that simple "
             "rule."
         )
+        common.explain("overview_fan")
 
     st.markdown("##### What to use, and what not to trust")
     for col, row in zip(st.columns(3), views.use_and_dont(adoption), strict=True):

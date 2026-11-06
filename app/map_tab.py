@@ -76,4 +76,5 @@ def render(D: dict, graph, data_chip) -> None:
         "the March to July 2024 dip is unverified. Events before the data begins (August 2019) "
         "are in the table only."
     )
+    common.explain("map_events")
     st.dataframe(market_map.event_table(GRAPH), hide_index=True)
