@@ -15,7 +15,7 @@ import streamlit as st
 
 from oa_market_intelligence.serving import overview, style
 
-st.set_page_config(page_title="OA and RA Market Intelligence", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Osteoarthritis and Rheumatoid Arthritis Market Share Forecasting Pipeline", page_icon="📈", layout="wide")
 st.markdown(style.CSS, unsafe_allow_html=True)  # the look, added once for every page
 
 pages = [
@@ -25,7 +25,7 @@ pages = [
 page = st.navigation(pages, position="sidebar")
 common.init_from_url(page.title)  # a link carries what was clicked in the address
 
-st.title("OA and RA Market Intelligence")
+st.title("Osteoarthritis and Rheumatoid Arthritis Market Share Forecasting Pipeline")
 st.caption(
     "Zilretta's share of visits against generic steroid injections and NSAIDs, from IQVIA NMTA "
     "visit counts (aggregated; no patient-level data). Built for an OA and RA injectable brand manager."
