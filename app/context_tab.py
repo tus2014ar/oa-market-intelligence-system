@@ -169,7 +169,6 @@ def _states(ctx) -> None:
 def render(ctx: dict, findings_items: list[dict], data_chip) -> None:
     """Draw the tab from the public-data subset `ctx` (company, states, events, verdicts) and the
     stored findings."""
-    st.markdown(style.CSS, unsafe_allow_html=True)
     data_chip()
     years = context.annual(ctx["company"])
     head = context.headline(years)

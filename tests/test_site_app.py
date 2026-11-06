@@ -16,7 +16,7 @@ import streamlit as st  # noqa: E402
 from streamlit.proto.TextInput_pb2 import TextInput as TextInputProto  # noqa: E402
 from streamlit.testing.v1 import AppTest  # noqa: E402
 
-from oa_market_intelligence.serving import data  # noqa: E402
+from oa_market_intelligence.serving import data, overview  # noqa: E402
 
 APP = str(Path(__file__).resolve().parent.parent / "app" / "streamlit_app.py")
 pytestmark = pytest.mark.skipif(not data.DB_PATH.exists(), reason="no published warehouse")
@@ -46,12 +46,20 @@ def test_the_page_runs_without_an_error_and_has_every_tab(app):
     ]
 
 
+def _card(app, label):
+    """The first navy card with this label (the Overview's come before the other tabs')."""
+    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value]
+    return next(c for c in cards if f'<div class="l">{label}</div>' in c)
+
+
 def test_the_headline_numbers_are_the_warehouses(app):
-    metrics = {m.label: m.value for m in app.metric}
-    assert metrics["Share in Jul 2025"] == "1.88%"
-    assert metrics["Peak (Dec 2021)"] == "3.38%" and metrics["Change since the peak"] == "-44%"
-    assert metrics["Months of data"] == "72" and metrics["Latest month"] == "Jul 2025"
-    assert metrics["Data freshness"] in ("Stale", "Fresh")
+    assert 'class="v">1.88%' in _card(app, "Share in Jul 2025")
+    assert 'class="v">3.38%' in _card(app, "Peak (Dec 2021)")
+    assert 'class="v">-44%' in _card(app, "Change since the peak")
+    assert 'class="v">72<' in _card(app, "Months of data")
+    assert 'class="v">Jul 2025<' in _card(app, "Latest month")
+    assert any(f'class="v">{w}<' in _card(app, "Data freshness") for w in ("Stale", "Fresh"))
+    assert 'class="v">Ok<' in _card(app, "Last publish run")
 
 
 def test_the_caveats_are_on_the_page(app):
@@ -112,6 +120,26 @@ def test_no_secret_or_sql_input_exists_on_the_page(app):
     assert not app.text_input and not app.text_area  # no free-text box in this phase
 
 
+def test_the_tab_row_is_the_list_the_overviews_guide_is_built_from(app):
+    assert [t.label for t in app.tabs] == list(overview.TAB_NAMES)
+
+
+def test_the_overview_has_small_lines_on_two_cards_a_guide_and_the_unverified_decline_note(app):
+    page = " ".join(m.value for m in app.markdown)
+    assert page.count('class="oa-spark"') == 2  # the share and the change since the peak
+    assert page.count('class="oa-guide"') == 9 and "What each tab answers" in page
+    assert "the size of the visits decline is unverified: see the Context tab" in page
+    assert "Company sales kept rising while these visits fell" in page
+
+
+def test_the_data_status_tab_has_its_run_cards_versions_stages_and_extracts(app):
+    page = " ".join(m.value for m in app.markdown)
+    assert "Versions of this run" in page and "Earlier forecasts" in page
+    assert "Stages of the last run" in page and "Input extracts" in page
+    assert any("warehouse" in set(d.value["stage"]) for d in app.dataframe if "stage" in d.value)
+    assert any("SHA-256" in c.value for c in app.caption)
+
+
 # ------------------------------------------------------------------ the market trend tab
 
 
@@ -126,7 +154,8 @@ def _trend(monkeypatch, **state):
 
 
 def _cards(at):
-    return [m.value for m in at.markdown if 'class="oa-kpi"' in m.value]
+    """The navy cards after the Overview's four, so Market trend's come first."""
+    return [m.value for m in at.markdown if 'class="oa-kpi"' in m.value][4:]
 
 
 def test_the_market_trend_tab_opens_on_all_visits_with_four_cards_and_the_filter_bar(app):
@@ -194,7 +223,7 @@ def _segments(monkeypatch, **state):
 
 
 def test_the_segments_tab_opens_on_specialties_with_four_cards_and_the_grid(app):
-    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value]
+    cards = _cards(app)
     assert len(cards) >= 8  # Market trend's four, then this tab's four
     segments_cards = cards[4:8]
     assert "Highest share" in segments_cards[0] and "Physical Medicine" in segments_cards[0]
@@ -236,7 +265,7 @@ def test_grouping_by_age_or_gender_and_changing_the_period_all_run(monkeypatch):
 
 
 def test_the_forecasts_tab_opens_with_the_three_national_forecasts_and_the_range_held(app):
-    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value][8:12]
+    cards = _cards(app)[8:12]
     assert len(cards) == 4
     assert "In 1 month (Aug 2025)" in cards[0] and "1.88%" in cards[0]
     assert "1.58% to 2.15% (90%)" in cards[0] and "same as last month" in cards[0]
@@ -278,7 +307,7 @@ def test_each_horizon_and_a_chosen_specialty_changes_the_forecasts_tab(monkeypat
 
 
 def test_the_model_results_tab_opens_with_four_headlines_and_marks_round_2_provisional(app):
-    cards = [m.value for m in app.markdown if 'class="oa-kpi"' in m.value][12:16]
+    cards = _cards(app)[12:16]
     assert len(cards) == 4
     assert "No model wins" in cards[0] and "+0.4% / +0.2%" in cards[1]
     assert "1 of 3" in cards[2] and "3 of 7" in cards[3] and "none adopted" in cards[3]

@@ -12,7 +12,6 @@ from oa_market_intelligence.serving import findings, style
 
 def render(items: list[dict], data_chip) -> None:
     """Draw the tab from the stored findings (a list of dicts from `data.findings()`)."""
-    st.markdown(style.CSS, unsafe_allow_html=True)
     data_chip()
 
     st.markdown("##### Read these first")

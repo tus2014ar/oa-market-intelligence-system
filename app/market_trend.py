@@ -71,7 +71,6 @@ def _share(value: float | None) -> str:
 
 def render(D: dict, data_chip) -> None:
     """Draw the tab from the loaded tables `D` (needs `seg`, `monthly` and `pred`)."""
-    st.markdown(style.CSS, unsafe_allow_html=True)
     data_chip()
     seg, national, pred = D["seg"], D["monthly"], D["pred"]
     specialty, age, gender, period = _filters(seg)

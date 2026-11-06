@@ -1,0 +1,108 @@
+"""The Overview (DL-103): four cards with their own small lines, the share so far with the national
+forecast, what to use and what not to trust, what to read first, what each tab answers and the two
+downloads. A thin page over `serving.views`, `serving.overview`, `serving.forecasts`,
+`serving.style` and `serving.charts`, which hold (and test) the logic and the wording.
+"""
+
+from __future__ import annotations
+
+import streamlit as st
+
+from oa_market_intelligence.serving import charts, forecasts, overview, style, views
+
+
+def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
+    """Draw the Overview from the loaded tables `D`, the run status, the headline numbers and the
+    adoption map."""
+    if status["banner"]:
+        st.warning(status["banner"])
+    low, high = head["next_month_range90"]
+    cards = st.columns(4)
+    cards[0].markdown(
+        style.kpi_card(
+            f"Share in {head['latest_month']}",
+            views.pct(head["latest_share"]),
+            "The line is the last 36 months.",
+            spark=views.share_series(D["monthly"]),
+        ),
+        unsafe_allow_html=True,
+    )
+    cards[1].markdown(
+        style.kpi_card(
+            f"Peak ({head['peak_month']})",
+            views.pct(head["peak_share"]),
+            "The highest month in the series.",
+        ),
+        unsafe_allow_html=True,
+    )
+    cards[2].markdown(
+        style.kpi_card(
+            "Change since the peak",
+            f"{100 * head['change_since_peak']:.0f}%",
+            f"From {head['peak_month']} to {head['latest_month']}.",
+            spark=views.since_peak_series(D["monthly"]),
+            area=True,
+        ),
+        unsafe_allow_html=True,
+    )
+    cards[3].markdown(
+        style.kpi_card(
+            f"Forecast for {head['next_month']}",
+            views.pct(head["next_month_forecast"]),
+            f"Likely {views.pct(low)} to {views.pct(high)} (90%). It held about 9 months in 10 "
+            "at 1 month ahead in testing.",
+        ),
+        unsafe_allow_html=True,
+    )
+
+    with st.container(border=True):
+        st.markdown("**Share so far, and the national forecast**")
+        st.altair_chart(
+            charts.national_fan_chart(forecasts.fan(D["monthly"], D["pred"])), width="stretch"
+        )
+        st.caption(
+            "Share so far (blue) and the national forecast at 1, 3 and 6 months with its 80% and "
+            "90% ranges (orange). The forecast is last month's value: no model beat that simple "
+            "rule."
+        )
+
+    st.markdown("##### What to use, and what not to trust")
+    for col, row in zip(st.columns(3), views.use_and_dont(adoption), strict=True):
+        with col.container(border=True, height="stretch"):
+            st.badge(row["status"], color=row["color"])
+            st.markdown(f"**{row['what']}**")
+            st.write(f"**Use it for:** {row['use']}")
+            st.write(f"**Do not:** {row['dont']}")
+
+    st.markdown("##### Read this first")
+    with st.container(border=True):
+        st.markdown(
+            "- The numbers describe **visits in IQVIA's panel**, not company sales, and they do "
+            "not explain *why* the share moves.\n"
+            f"- {views.bias_sentence(D['pred'])}\n"
+            "- Everything here was tested under rules written before any model ran; where "
+            "nothing beat a simple rule, the site says so.\n"
+            "- Payer, regional and prescription-volume data are not part of this analysis.\n"
+            "- Company sales kept rising while these visits fell, and the size of the visits "
+            "decline is unverified: see the Context tab before quoting it."
+        )
+
+    st.markdown("##### What each tab answers")
+    with st.container(border=True):
+        st.markdown(style.guide_rows(overview.guide()), unsafe_allow_html=True)
+
+    left, right = st.columns(2)
+    left.download_button(
+        "Download the monthly share (CSV)",
+        views.monthly_csv(D["monthly"]),
+        "zilretta_monthly_share.csv",
+        "text/csv",
+        width="stretch",
+    )
+    right.download_button(
+        "Download the forecast (CSV)",
+        views.forecast_csv(D["pred"]),
+        "zilretta_forecast.csv",
+        "text/csv",
+        width="stretch",
+    )

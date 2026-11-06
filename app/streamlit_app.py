@@ -21,8 +21,10 @@ import findings_tab  # noqa: E402  (app/findings_tab.py, the Findings tab)
 import forecasts_tab  # noqa: E402  (app/forecasts_tab.py, the Forecasts tab)
 import market_trend  # noqa: E402  (app/market_trend.py, the Market trend tab)
 import model_results_tab  # noqa: E402  (app/model_results_tab.py, Model results)
+import overview_tab  # noqa: E402  (app/overview_tab.py, the Overview)
 import pandas as pd  # noqa: E402
 import segments_tab  # noqa: E402  (app/segments_tab.py, the Segments tab)
+import status_tab  # noqa: E402  (app/status_tab.py, the Data status tab)
 import streamlit as st  # noqa: E402
 
 from oa_market_intelligence import knowledge_graph  # noqa: E402
@@ -31,8 +33,10 @@ from oa_market_intelligence.serving import (  # noqa: E402
     data,
     guard,
     market_map,
+    overview,
     qa,
     qa_tools,
+    style,
     views,
 )
 
@@ -186,12 +190,15 @@ def ask_box() -> None:
     )
     pending = st.session_state.pop("pending", None)
     if not chat and not pending:
-        for audience, questions in EXAMPLE_QUESTIONS.items():
-            st.write(f"**{audience}**")
-            for question in questions:
-                if st.button(question, key=f"ex-{question}"):
-                    st.session_state["pending"] = question
-                    st.rerun()
+        for col, (audience, questions) in zip(
+            st.columns(len(EXAMPLE_QUESTIONS)), EXAMPLE_QUESTIONS.items(), strict=True
+        ):
+            with col.container(border=True, height="stretch"):
+                st.write(f"**{audience}**")
+                for question in questions:
+                    if st.button(question, key=f"ex-{question}", width="stretch"):
+                        st.session_state["pending"] = question
+                        st.rerun()
     for message in chat:
         with st.chat_message(message["role"]):
             if message["role"] == "assistant":
@@ -298,89 +305,12 @@ def dark_page() -> bool:
         return False
 
 
-tabs = st.tabs(
-    [
-        "Overview",
-        "Market trend",
-        "Segments",
-        "Forecasts",
-        "Model results",
-        "Data status",
-        "Findings",
-        "Context",
-        "Market map",
-        "Ask Claude",
-    ]
-)
+st.markdown(style.CSS, unsafe_allow_html=True)  # the look, added once for every tab
+tabs = st.tabs(list(overview.TAB_NAMES))
 
 # ------------------------------------------------------------------ overview
 with tabs[0]:
-    if STATUS["banner"]:
-        st.warning(STATUS["banner"])
-    c = st.columns(4)
-    low, high = HEAD["next_month_range90"]
-    c[0].metric(
-        f"Share in {HEAD['latest_month']}",
-        views.pct(HEAD["latest_share"]),
-        border=True,
-        chart_data=views.share_series(D["monthly"]),
-        chart_type="line",
-        help="The line is the last 36 months.",
-    )
-    c[1].metric(f"Peak ({HEAD['peak_month']})", views.pct(HEAD["peak_share"]), border=True)
-    c[2].metric(
-        "Change since the peak",
-        f"{100 * HEAD['change_since_peak']:.0f}%",
-        border=True,
-        chart_data=views.since_peak_series(D["monthly"]),
-        chart_type="area",
-        help="The area is the share from the peak month to the latest month.",
-    )
-    c[3].metric(
-        f"Forecast for {HEAD['next_month']}",
-        views.pct(HEAD["next_month_forecast"]),
-        delta=f"likely {views.pct(low)} to {views.pct(high)}",
-        delta_color="off",
-        delta_arrow="off",
-        border=True,
-        help="The 90% range: it held in about 9 months in 10 at 1 month ahead in testing.",
-    )
-    st.altair_chart(charts.forecast_chart(D["monthly"], D["pred"]), width="stretch")
-    st.caption(
-        "Share so far (blue) and the national forecast with its 90% range (orange). The "
-        "forecast is last month's value: no model beat that simple rule."
-    )
-    st.subheader("What to use, and what not to trust")
-    for col, row in zip(st.columns(3), views.use_and_dont(ADOPTION), strict=True):
-        with col.container(border=True, height=310):
-            st.badge(row["status"], color=row["color"])
-            st.markdown(f"**{row['what']}**")
-            st.write(f"**Use it for:** {row['use']}")
-            st.write(f"**Do not:** {row['dont']}")
-    st.subheader("Read this first")
-    st.markdown(
-        "- The numbers describe **visits in IQVIA's panel**, not company sales, and they do not explain "
-        "*why* the share moves.\n"
-        f"- {views.bias_sentence(D['pred'])}\n"
-        "- Everything here was tested under rules written before any model ran; where nothing beat a "
-        "simple rule, the site says so.\n"
-        "- Payer, regional and prescription-volume data are not part of this analysis."
-    )
-    left, right = st.columns(2)
-    left.download_button(
-        "Download the monthly share (CSV)",
-        views.monthly_csv(D["monthly"]),
-        "zilretta_monthly_share.csv",
-        "text/csv",
-        width="stretch",
-    )
-    right.download_button(
-        "Download the forecast (CSV)",
-        views.forecast_csv(D["pred"]),
-        "zilretta_forecast.csv",
-        "text/csv",
-        width="stretch",
-    )
+    overview_tab.render(D, STATUS, HEAD, ADOPTION)
 
 # ------------------------------------------------------------------ market trend
 with tabs[1]:
@@ -400,28 +330,7 @@ with tabs[4]:
 
 # ------------------------------------------------------------------ data status
 with tabs[5]:
-    data_chip()
-    c = st.columns(4)
-    c[0].metric("Last publish run", STATUS["run_status"])
-    c[1].metric("Months of data", STATUS["months"])
-    c[2].metric(
-        "Latest month",
-        views.month_label(STATUS["last_month_id"]) if STATUS["last_month_id"] else "n/a",
-    )
-    c[3].metric(
-        "Data freshness",
-        (STATUS["freshness"] or "n/a").title(),
-        help=f"Stale if the latest month is more than {STATUS['max_age_days']} days old",
-    )
-    st.write(f"**Earlier forecasts:** {STATUS['drift_text']}")
-    st.write(
-        "**Versions of this run:** "
-        + ", ".join(f"{k} `{v}`" for k, v in STATUS["versions"].items())
-    )
-    st.subheader("Stages of the last run")
-    st.dataframe(views.stages_frame(D["run"]), hide_index=True)
-    st.subheader("Input extracts")
-    st.dataframe(views.extracts_frame(D["run"]), hide_index=True)
+    status_tab.render(D["run"], STATUS, data_chip)
 
 # ------------------------------------------------------------------ findings
 with tabs[6]:
@@ -441,26 +350,30 @@ with tabs[8]:
         "to zoom."
     )
     st.caption(market_map.NOTE)
-    left, right = st.columns([3, 2])
-    view_key = left.radio("What to show", list(market_map.VIEWS), format_func=market_map.VIEWS.get)
-    top = right.slider(
-        "How many manufacturers and specialties",
-        market_map.MIN_TOP,
-        market_map.MAX_TOP,
-        8,
-        disabled=view_key == "events",
-    )
-    show_events = right.checkbox(
-        "Show the events that name Zilretta or its maker",
-        value=True,
-        disabled=view_key != "competitive_set",
-    )
-    moving = right.checkbox("Let the points drift and spread out", value=False)
+    with st.container(border=True):
+        left, right = st.columns([3, 2])
+        view_key = left.radio("What to show", list(market_map.VIEWS), format_func=market_map.VIEWS.get)
+        top = right.slider(
+            "How many manufacturers and specialties",
+            market_map.MIN_TOP,
+            market_map.MAX_TOP,
+            8,
+            disabled=view_key == "events",
+        )
+        show_events = right.checkbox(
+            "Show the events that name Zilretta or its maker",
+            value=True,
+            disabled=view_key != "competitive_set",
+        )
+        moving = right.checkbox("Let the points drift and spread out", value=False)
     view = market_map.view_graph(GRAPH, view_key, top, show_events)
-    try:
-        st.iframe(market_map.to_html(view, 620, moving, dark_page()), height=700)
-    except ImportError:
-        st.info("The interactive map needs the pyvis package. The details and events below work.")
+    with st.container(border=True):
+        try:
+            st.iframe(market_map.to_html(view, 620, moving, dark_page()), height=700)
+        except ImportError:
+            st.info(
+                "The interactive map needs the pyvis package. The details and events below work."
+            )
 
     labels = {n["id"]: f"{n['label']} ({market_map.TYPE_NAMES[n['type']]})" for n in view["nodes"]}
     ids = list(labels)
@@ -495,8 +408,9 @@ with tabs[8]:
 # ------------------------------------------------------------------ ask claude
 with tabs[9]:
     data_chip()
-    st.write(
-        "Ask a question about the market trend, the segments, the forecasts or how the models "
-        "scored. The answer comes from the same tables as the other tabs."
-    )
+    with st.container(border=True):
+        st.write(
+            "Ask a question about the market trend, the segments, the forecasts or how the models "
+            "scored. The answer comes from the same tables as the other tabs."
+        )
     ask_box()

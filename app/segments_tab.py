@@ -53,7 +53,6 @@ def _card(label: str, found: tuple[str, float] | None, caption: str, *, as_chang
 
 def render(D: dict, data_chip) -> None:
     """Draw the tab from the loaded tables `D` (needs `seg`)."""
-    st.markdown(style.CSS, unsafe_allow_html=True)
     data_chip()
     seg = D["seg"]
     by, period, show = _filters()

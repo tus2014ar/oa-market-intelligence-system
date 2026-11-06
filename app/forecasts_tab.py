@@ -36,7 +36,6 @@ def _filters(view) -> tuple[int, str | None]:
 
 def render(D: dict, adoption: dict, data_chip) -> None:
     """Draw the tab from the loaded tables `D` (needs `monthly`, `pred`, `scores` and `seg`)."""
-    st.markdown(style.CSS, unsafe_allow_html=True)
     data_chip()
     pred, scores, seg = D["pred"], D["scores"], D["seg"]
     horizon, specialty = _filters(forecasts.segment_view(pred, seg, 1))
