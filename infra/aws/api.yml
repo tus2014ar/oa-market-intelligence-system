@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  The OA/RA market API as a Lambda container function with a public function URL (DL-118). The URL
+  needs no AWS sign-in; the API's own X-API-Key check protects it. Create it after bootstrap.yml
+  and after the first image has been pushed.
+
+Parameters:
+  ImageUri:
+    Type: String
+    Description: The image to run, from the deploy workflow's summary (repository URI with a tag).
+  ApiKeys:
+    Type: String
+    NoEcho: true
+    MinLength: 16
+    Description: >-
+      One or more API keys, comma-separated (at least 16 characters). Type it here yourself; it is
+      stored on the function and appears nowhere in this repository.
+  RatePerMinute:
+    Type: Number
+    Default: 60
+    MinValue: 1
+    Description: Requests a minute for each client, counted by each running copy.
+  ReservedConcurrency:
+    Type: Number
+    Default: 0
+    MinValue: 0
+    Description: >-
+      The most copies that may run at once; 0 sets no limit. A new account may be allowed none
+      (it must keep 10 unreserved), in which case leave it at 0.
+  FunctionName:
+    Type: String
+    Default: oa-market-api
+
+Conditions:
+  LimitConcurrency: !Not [!Equals [!Ref ReservedConcurrency, 0]]
+
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionName}
+      RetentionInDays: 14
+
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: What the function runs as. It may write its own logs and nothing else.
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  Function:
+    Type: AWS::Lambda::Function
+    DependsOn: LogGroup
+    Properties:
+      FunctionName: !Ref FunctionName
+      PackageType: Image
+      Code:
+        ImageUri: !Ref ImageUri
+      Architectures:
+        - x86_64
+      MemorySize: 1024
+      Timeout: 30
+      Role: !GetAtt ExecutionRole.Arn
+      ReservedConcurrentExecutions: !If [LimitConcurrency, !Ref ReservedConcurrency, !Ref "AWS::NoValue"]
+      Environment:
+        Variables:
+          API_KEYS: !Ref ApiKeys
+          API_RATE_PER_MINUTE: !Ref RatePerMinute
+
+  FunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt Function.Arn
+      AuthType: NONE
+
+  AllowUrlCalls:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Function
+      Action: lambda:InvokeFunctionUrl
+      Principal: "*"
+      FunctionUrlAuthType: NONE
+
+  AllowInvokeThroughTheUrl:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Function
+      Action: lambda:InvokeFunction
+      Principal: "*"
+      InvokedViaFunctionUrl: true
+
+Outputs:
+  ApiUrl:
+    Description: The public address of the API (add /health, /docs or /v1/...).
+    Value: !GetAtt FunctionUrl.FunctionUrl

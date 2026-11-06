@@ -1,0 +1,86 @@
+# Deploys the API to AWS Lambda (DL-118). Manual only: nothing deploys unless someone starts it
+# from the Actions tab, and only from the main branch (the AWS role refuses any other branch).
+#
+# It signs in to AWS with GitHub's OIDC token (no stored keys), builds the Lambda image, pushes it
+# to the private repository under the commit's SHA, and, when the function already exists,
+# switches it to that image and checks /health through its public URL. If the function does not
+# exist yet, it stops after the push and prints the image to give infra/aws/api.yml.
+#
+# One-time set-up: docs/deployment.md ("The AWS version"). Needs two repository variables (not
+# secrets): AWS_REGION and AWS_DEPLOY_ROLE_ARN.
+name: deploy-aws
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-aws
+  cancel-in-progress: false
+
+env:
+  FUNCTION_NAME: oa-market-api
+  REPOSITORY_NAME: oa-market-api
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sign in to AWS with the OIDC token
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Sign in to the image repository
+        id: registry
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push the Lambda image
+        id: image
+        run: |
+          IMAGE="${{ steps.registry.outputs.registry }}/${REPOSITORY_NAME}:${GITHUB_SHA}"
+          docker build -f Dockerfile.lambda -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "uri=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Switch the function to the new image and check it
+        id: function
+        run: |
+          if ! aws lambda get-function --function-name "$FUNCTION_NAME" >/dev/null 2>&1; then
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "The function does not exist yet: image pushed, nothing deployed."
+            exit 0
+          fi
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+          aws lambda update-function-code --function-name "$FUNCTION_NAME" \
+            --image-uri "${{ steps.image.outputs.uri }}" >/dev/null
+          aws lambda wait function-updated-v2 --function-name "$FUNCTION_NAME"
+          URL="$(aws lambda get-function-url-config --function-name "$FUNCTION_NAME" \
+            --query FunctionUrl --output text)"
+          for i in $(seq 1 10); do
+            curl -fsS "${URL}health" && break
+            sleep 5
+          done
+          curl -fsS "${URL}health" | grep -q '"status":"ok"'
+
+      - name: Say what happened
+        run: |
+          {
+            echo "### Deploy to AWS Lambda"
+            echo ""
+            echo "Image: \`${{ steps.image.outputs.uri }}\`"
+            if [ "${{ steps.function.outputs.exists }}" = "true" ]; then
+              echo ""
+              echo "The function now runs this image and \`/health\` answered through its URL."
+            else
+              echo ""
+              echo "The function does not exist yet. Create it with infra/aws/api.yml and give it this image."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
