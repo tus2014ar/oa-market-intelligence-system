@@ -24,11 +24,12 @@ VIEWS = {
     "who_uses_it": "Which specialties each group's visits come from",
     "events": "The event timeline and who each event names",
 }
-# the dataviz reference palette's categorical slots, each type also has its own shape
+# the first three are the reference site's blue, orange and green (DL-112); each type also has its
+# own shape
 COLORS = {
-    "product": "#2a78d6",
-    "group": "#eb6834",
-    "manufacturer": "#1baf7a",
+    "product": "#0d47a1",
+    "group": "#ffa726",
+    "manufacturer": "#2e7d32",
     "specialty": "#e87ba4",
     "event": "#6250d6",
     "unverified_event": "#9a9a94",

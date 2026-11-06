@@ -149,7 +149,7 @@ def render(ctx, data_chip, flt: dict) -> None:
             st.markdown(style.callout(detail.range_sentence(who, picked)), unsafe_allow_html=True)
         st.caption(
             "Zilretta's visits as a share of the visits of Zilretta, generic steroid injections "
-            "and NSAID/OTC together: this group (teal) and every group (grey, dashed). Drag "
+            "and NSAID/OTC together: this group (blue) and every group (grey, dashed). Drag "
             "across the chart to compare the two over a range of months."
         )
         common.explain("detail_compare")

@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-111)
+# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-112)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -11,7 +11,7 @@ streamlit run app/streamlit_app.py
 
 | Page | Content | Source |
 |---|---|---|
-| Overview | four navy cards, two with their own small line (the latest share with the last 36 months, the peak, the change since it with the run down from the peak, and the next-month forecast with its likely range); the share so far with the national forecast at 1, 3 and 6 months and its 80% and 90% ranges; three cards saying what to use each forecast for and what not to trust, each with a status (green, amber, red) and a label; the caveats, including that the size of the visits decline is unverified; **what each tab answers**; two downloads (the monthly share and the forecast, as CSV) | `gold_visit_share_monthly`, `pred_batch`, `data/reference/serving_models.json` |
+| Overview | four blue cards, two with their own small line (the latest share with the last 36 months, the peak, the change since it with the run down from the peak, and the next-month forecast with its likely range); the share so far with the national forecast at 1, 3 and 6 months and its 80% and 90% ranges; three cards saying what to use each forecast for and what not to trust, each with a status (green, amber, red) and a label; the caveats, including that the size of the visits decline is unverified; **what each tab answers**; two downloads (the monthly share and the forecast, as CSV) | `gold_visit_share_monthly`, `pred_batch`, `data/reference/serving_models.json` |
 | Market trend | a filter bar (specialty, age band, gender, period); four cards (latest share against a year earlier, the peak, Zilretta's visits in the period, the direction per year); the share by month or quarter with a straight-line guide, the peak, the turn and the March to July 2024 data-capture dip marked; a panel on where the share stands, with the next-month national forecast when nothing is filtered; two cards (where it is moving by specialty or age band, and the three classes); who Zilretta's visits come from by specialty, age band and gender; a year-by-year table and a CSV of the chosen series | `gold_segment_adoption` and the dimensions, `gold_visit_share_monthly`, `pred_batch` |
 | Segments | a filter bar (group by specialty, age band or gender; period; show share, visits or change); four cards (the highest share, the largest source of visits, the biggest rise and fall); the ranked groups as bars with small groups faded; how concentrated Zilretta's visits are; a specialty-by-age grid of the share; the chosen groups' share by year; the table and a CSV | `gold_segment_adoption` and the dimensions |
 | Segment detail | one group on its own, reached by clicking a group anywhere on the site or by choosing it in the filter bar: a path to it (All visits, a specialty, an age band, a gender) whose parts go back up a level; four cards (its share against the whole market's, its visits, the change over the year, its rank among its neighbours); a sentence; its share beside the whole market's over time; its stored forecast at 1, 3 and 6 months, weighted over its scored segments, with its alert count; its neighbours ranked, each a link; links to the same group on Market trend, Forecasts and Segments. With nothing chosen it offers the biggest specialties, age bands and genders to click | `gold_segment_adoption`, `gold_visit_share_monthly`, `pred_batch` |
@@ -96,7 +96,7 @@ The knowledge graph ([knowledge_graph.md](knowledge_graph.md)) as a picture, bec
 ## The redesign, tab by tab (DL-90)
 The site is being reworked one tab at a time, so each change can be looked at and corrected before the next. Done so far:
 
-- **The look (every tab).** A project theme in `.streamlit/config.toml`: teal as the accent, navy text and a navy dark mode. Streamlit follows the visitor's light or dark setting and uses the matching colours; the charts take their text and grid colours from the page (the first version fixed them to a grey that was hard to read in dark mode), and the Market map is drawn in light or dark colours to match.
+- **The look (every tab).** A project theme in `.streamlit/config.toml` and the shared CSS in `serving/style.py`. It was teal and navy with a dark mode until DL-112; it now takes its colours and type from the labour-market reference site (see "The reference site's colours and type" below) and is light only.
 - **The data-age note.** The long yellow warning is on Overview only. Every other tab starts with a one-line badge, for example "Data to Jul 2025 · 454 days old, no newer extract" (orange when stale, green when fresh), so the first screen of each tab is not taken up by it.
 - **Overview.** As in the table above. The three status cards come from `views.use_and_dont`, which now also returns a status and a colour for each forecast (national: "Rely on it as a baseline", green; segment: "Use with care", orange; alert: "A supporting flag only", red); the words carry the meaning as well as the colour. The sparklines and the two CSV files are built by tested functions in `views` (`share_series`, `since_peak_series`, `monthly_csv`, `forecast_csv`).
 - **Market trend (DL-97).** Laid out like a labour-market snapshot page: a filter bar over everything, four headline cards, one main chart beside a "where it stands" panel, then "explore further" cards and a profile row. The logic is `serving/trend.py` (filters, windows, quarters, the headline numbers, the movers, the profile, the markers and the sentence; tested by hand on a 24-month table), the look is `serving/style.py` (one CSS block and HTML builders that escape what they are given) and the chart is `charts.market_trend_chart`; `app/market_trend.py` only lays it out. Choices: the straight line is drawn and labelled a guide, never a forecast; the peak is taken over the whole series among months with at least 100 visits, whatever the period; "change" columns always compare the last 12 months with the 12 before, whatever the period; groups under 1,000 visits are left out of the movers; a group with a median under 300 visits a month gets a warning that its share jumps by chance; the three-class split exists only for the whole market, so a filtered view shows how the group compares instead; the filter applies to this tab only for now.
@@ -159,6 +159,26 @@ A bar, a cell, a tile or a table row is also a click target. The chart carries a
 
 ## A chat box first (DL-111)
 The AI Question Box is a chat box: you type any question, in your own words, in the box at the bottom of the page and get an answer. The example questions are an optional extra, folded under "Not sure what to ask? Some example questions (optional)" and shown only until the first question is asked. Without a key the chat box is still drawn but switched off (greyed, with a placeholder that says so), and the preview of what an example question would look up is folded under "What it would look up for an example question". Nothing about the tools, prompt, limits or number check changed. Without a key, a typed question cannot be answered: only a model can write an answer.
+
+## The reference site's colours and type (DL-112)
+The colours and type were read from the reference page itself (its computed styles), not from memory:
+
+| | Reference site | Used here |
+|---|---|---|
+| Font | the system stack (`-apple-system`, Segoe UI, Roboto, Helvetica, Arial) | the same, for all text; icons keep their own font |
+| Blue | `#0d47a1` for cards, buttons, the active page, the main chart line | the same: the cards, links, bars, the main series, the heat map, the theme's accent |
+| Orange | `#ffa726` for the trend line | the same: forecast bars and the straight-line guide |
+| Green | `#2e7d32` for a rise | the same |
+| Greys | headings `#353639`, secondary text `#616468`, hints `#8b8e94` and `#a3a6ad`, borders `#e8ebf0` | the same, for headings, text, captions, comparison lines and panel borders |
+| Headings | page title 32px bold; section headings 18px bold; small headings 14px bold | the same |
+| Cards | blue, 10px corners, 20px by 24px padding; label 12px bold capitals; number 32px bold | the same |
+| Panels | white, 12px corners, a light border | the same (through the theme's border and radius) |
+| Navigation | white, with a pale-blue active page | the same, still on the right |
+
+- **Inferred, not seen:** the red for a fall (`#c62828`, from the same Material family as the green and blue; the page showed no fall).
+- **Light only.** The reference has no dark mode, and the blue does not read on a dark background, so the dark theme was removed.
+- **Not copied:** the panel shadow (Streamlit gives the theme no shadow setting), and the lightest grey (`#8b8e94`) for the long captions, which are `#616468` so the caveats stay readable.
+- **Words follow the colours:** captions and notes that named a colour now say blue, orange and red.
 
 ## The question box, brought up to the site's standard (DL-109)
 The page is named **AI Question Box** (DL-110; it was "Ask Claude" until then). Its address is `ai-question-box`, its view file `app/views/ai_question_box.py` and the back link reads "Back to AI Question Box". Inside the box, the model is still called Claude, because that is what answers.
