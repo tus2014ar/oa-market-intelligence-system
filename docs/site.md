@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-110)
+# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-111)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -156,6 +156,9 @@ A bar, a cell, a tile or a table row is also a click target. The chart carries a
 - **The filter bar follows.** `common.go` no longer sets the filter bar's widgets (Streamlit forbids it once they are drawn, which a click in a chart is); it marks them to take the new values when the bar is next drawn.
 - **A click that is not understood does nothing.** No click, a click with the wrong fields or an empty selection never moves the page.
 - **The state panel is Medicare billing, not IQVIA**, and says so. It does not say why a state's rate is what it is.
+
+## A chat box first (DL-111)
+The AI Question Box is a chat box: you type any question, in your own words, in the box at the bottom of the page and get an answer. The example questions are an optional extra, folded under "Not sure what to ask? Some example questions (optional)" and shown only until the first question is asked. Without a key the chat box is still drawn but switched off (greyed, with a placeholder that says so), and the preview of what an example question would look up is folded under "What it would look up for an example question". Nothing about the tools, prompt, limits or number check changed. Without a key, a typed question cannot be answered: only a model can write an answer.
 
 ## The question box, brought up to the site's standard (DL-109)
 The page is named **AI Question Box** (DL-110; it was "Ask Claude" until then). Its address is `ai-question-box`, its view file `app/views/ai_question_box.py` and the back link reads "Back to AI Question Box". Inside the box, the model is still called Claude, because that is what answers.

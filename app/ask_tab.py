@@ -84,8 +84,7 @@ def _show_answer(message: dict, snapshot, index: int) -> None:
 def _preview(snapshot) -> None:
     """With no key there is no answer to show, but the data an answer would be written from can
     be: pick an example question and see the lookups it needs and what each returns."""
-    with st.container(border=True):
-        st.markdown("**What it would look up**")
+    with st.expander("What it would look up for an example question"):
         st.write(
             "Pick an example question to see the read-only data Claude would be given to answer "
             "it. This is the same data as the pages. Writing the answer needs a model, which is "
@@ -118,6 +117,7 @@ def ask_box(snapshot) -> None:
     api_key = _secret("ANTHROPIC_API_KEY")
     if not api_key:
         st.info("The question box is not switched on for this copy of the site (no API key).")
+        st.chat_input("Type a question here once the box is switched on", disabled=True)
         _preview(snapshot)
         return
     gate = guard.AccessGate(_secret("ACCESS_CODE"))
@@ -137,15 +137,16 @@ def ask_box(snapshot) -> None:
     )
     pending = st.session_state.pop("pending", None)
     if not chat and not pending:
-        for col, (audience, questions) in zip(
-            st.columns(len(EXAMPLE_QUESTIONS)), EXAMPLE_QUESTIONS.items(), strict=True
-        ):
-            with col.container(border=True, height="stretch"):
-                st.write(f"**{audience}**")
-                for question in questions:
-                    if st.button(question, key=f"ex-{question}", width="stretch"):
-                        st.session_state["pending"] = question
-                        st.rerun()
+        with st.expander("Not sure what to ask? Some example questions (optional)"):
+            for col, (audience, questions) in zip(
+                st.columns(len(EXAMPLE_QUESTIONS)), EXAMPLE_QUESTIONS.items(), strict=True
+            ):
+                with col:
+                    st.write(f"**{audience}**")
+                    for question in questions:
+                        if st.button(question, key=f"ex-{question}", width="stretch"):
+                            st.session_state["pending"] = question
+                            st.rerun()
     for index, message in enumerate(chat):
         with st.chat_message(message["role"]):
             if message["role"] == "assistant":
@@ -162,7 +163,11 @@ def ask_box(snapshot) -> None:
         st.session_state["chat"] = []
         st.rerun()
 
-    typed = st.chat_input("Ask about the market, the forecasts or the data", max_chars=500)
+    typed = st.chat_input(
+        "Type your question here, in your own words (for example: how has the share changed "
+        "since its peak?)",
+        max_chars=500,
+    )
     question = typed or pending
     if not question:
         return
@@ -231,8 +236,9 @@ def render(snapshot, data_chip) -> None:
     data_chip()
     with st.container(border=True):
         st.write(
-            "Ask a question about the market trend, the segments, the forecasts or how the models "
-            "scored. The answer comes from the same tables as the other pages."
+            "Type any question in the box at the bottom of the page, in your own words: about the "
+            "market trend, the segments, the forecasts, how the models scored or what the "
+            "findings mean. The answer is built from the same tables as the other pages."
         )
     common.explain("ask_answer")
     _how_it_works()
