@@ -200,6 +200,7 @@ def _fitter_logistic(config: dict, extra: tuple[str, ...]) -> Callable:
              ("clf", LogisticRegression(max_iter=2000, **config))]
         )
         model.fit(design_frame(train, extra), y)
+        fit.model = model  # kept so the fitted model can be saved as numbers (DL-117)
         return lambda test: model.predict_proba(design_frame(test, extra))[:, 1]
 
     return fit

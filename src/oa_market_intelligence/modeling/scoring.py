@@ -38,6 +38,14 @@ from oa_market_intelligence.modeling.alerts import (
     TunedAlertModel,
     add_alert_label,
 )
+from oa_market_intelligence.modeling.artifacts import (
+    ARTIFACT_TABLE,
+    INPUT_TABLE,
+    alert_parameters,
+    build_tables,
+    segment_parameters,
+)
+from oa_market_intelligence.modeling.design import calendar_columns
 from oa_market_intelligence.modeling.horizons import (
     HORIZONS,
     month_id_from_index,
@@ -180,16 +188,10 @@ def _national(monthly: pd.DataFrame, serving: dict, origin: int) -> list[dict]:
     return rows
 
 
-def _calendar(frame: pd.DataFrame, target: int) -> pd.DataFrame:
-    """The calendar columns follow the month being predicted (known in advance)."""
-    out = frame.copy()
-    month = target % 100
-    out["month_sin"] = np.sin(2 * np.pi * month / 12)
-    out["month_cos"] = np.cos(2 * np.pi * month / 12)
-    return out
+_calendar = calendar_columns  # kept under its old name: tests and the explain module import it
 
 
-def _segment(train, now, outcomes, serving, origin, extra, bias) -> pd.DataFrame:
+def _segment(train, now, outcomes, serving, origin, extra, bias, collect=None) -> pd.DataFrame:
     frames = []
     for horizon in HORIZONS:
         name = serving.get("segment", {}).get(str(horizon))
@@ -198,17 +200,27 @@ def _segment(train, now, outcomes, serving, origin, extra, bias) -> pd.DataFrame
         target = int(month_id_from_index(month_index(origin) + horizon))
         paired = pair_rows(train, outcomes, horizon)
         test = _calendar(now, target)
+        parameters = None
         if name in BASELINES:
             p = BASELINES[name](paired, test)
         else:
-            p = TunedPredictor(name, extra_columns=extra)(paired, test)
+            tuned = TunedPredictor(name, extra_columns=extra)
+            p = tuned(paired, test)
+            if collect is not None and name == "logistic":
+                parameters = segment_parameters(tuned, name, paired, test, extra, p)
+        version = _version(name, horizon, origin, len(paired),
+                           round(float(paired["y_share"].sum()), 8))
+        if collect is not None:
+            collect.setdefault("segment", {})[horizon] = {
+                "model": name, "model_version": version, "parameters": parameters,
+                "trained_on_rows": len(paired), "known_bias": bias.get(("T2", horizon, name)),
+            }
         frames.append(pd.DataFrame({
             "run_month_id": origin, "target_month_id": target, "horizon": horizon,
             "level": "segment", "specialty_name": test["specialty_name"].to_numpy(),
             "age_band": test["age_band"].to_numpy(), "gender": test["gender"].to_numpy(),
             "model": name,
-            "model_version": _version(name, horizon, origin, len(paired),
-                                      round(float(paired["y_share"].sum()), 8)),
+            "model_version": version,
             "point_share": np.asarray(p, float),
             "origin_visits": np.expm1(test["seg_log_visits_lag1"].to_numpy(float)).round(),
             "known_bias": bias.get(("T2", horizon, name)),
@@ -216,7 +228,7 @@ def _segment(train, now, outcomes, serving, origin, extra, bias) -> pd.DataFrame
     return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
-def _alerts(train, now, outcomes, serving, origin, extra) -> pd.DataFrame:
+def _alerts(train, now, outcomes, serving, origin, extra, collect=None) -> pd.DataFrame:
     """The 1-month decline alert for every segment that qualifies (a positive share and enough
     visits at the origin); the cut-off is chosen from earlier origins only."""
     name = serving.get("alert", {}).get("1")
@@ -226,7 +238,18 @@ def _alerts(train, now, outcomes, serving, origin, extra) -> pd.DataFrame:
     visits = np.expm1(now["seg_log_visits_lag1"].to_numpy(float)).round()
     eligible = (now["seg_share_lag1"].to_numpy(float) > 0) & (visits >= MIN_ORIGIN_VISITS)
     test = _calendar(now[eligible], int(month_id_from_index(month_index(origin) + 1)))
-    scores, threshold = TunedAlertModel(name, 1, extra_columns=extra)(labelled, test)
+    alert_model = TunedAlertModel(name, 1, extra_columns=extra)
+    scores, threshold = alert_model(labelled, test)
+    if collect is not None and name == "logistic":
+        collect["alert"] = {
+            "model": name,
+            "model_version": _version("alert", name, origin, len(labelled),
+                                      round(float(labelled["y_alert"].sum()), 8)),
+            "parameters": alert_parameters(
+                alert_model, labelled, test, extra, scores, threshold, MIN_ORIGIN_VISITS
+            ),
+            "trained_on_rows": len(labelled), "known_bias": None,
+        }
     return pd.DataFrame({
         "specialty_name": test["specialty_name"].to_numpy(),
         "age_band": test["age_band"].to_numpy(),
@@ -244,11 +267,14 @@ def score_batch(
     origin: int | None = None,
     scores: pd.DataFrame | None = None,
     include_alert: bool = True,
+    collect: dict | None = None,
 ) -> pd.DataFrame:
     """The predictions of the adopted models from data through `origin` (default: the last month).
 
     `seg` is the segment Gold table (`load_segment_gold` output), `monthly` the monthly Gold table,
-    `scores` the stored `model_scores` (to validate the map and to look up the known bias)."""
+    `scores` the stored `model_scores` (to validate the map and to look up the known bias). When
+    `collect` is a dict it is filled with what is needed to save the fitted models (DL-117): the
+    saved numbers of each logistic model, the segments' inputs at the origin and the origin."""
     validate_serving_map(serving, scores)
     last = int(seg["month_id"].max())
     origin = last if origin is None else int(origin)
@@ -260,6 +286,8 @@ def score_batch(
     outcomes = outcome_table(seg_cut)
     train, now = origin_features(seg, monthly, origin, specialty_groups=groups)
     extra = columns_for(("G4",), target="T2")
+    if collect is not None:
+        collect.update({"origin": origin, "extra": tuple(extra), "inputs": now})
     bias = {}
     if scores is not None:
         main = scores[(scores["scenario"] == "main") & scores["bias_vs_actual"].notna()]
@@ -268,9 +296,9 @@ def score_batch(
         }
 
     parts = [pd.DataFrame(_national(monthly, serving, origin))]
-    segment = _segment(train, now, outcomes, serving, origin, extra, bias)
+    segment = _segment(train, now, outcomes, serving, origin, extra, bias, collect)
     if include_alert and not segment.empty:
-        alerts = _alerts(train, now, outcomes, serving, origin, extra)
+        alerts = _alerts(train, now, outcomes, serving, origin, extra, collect)
         if not alerts.empty:
             keys = ["specialty_name", "age_band", "gender"]
             one = segment["horizon"] == 1
@@ -298,12 +326,20 @@ def write_predictions(engine: Engine, serving_path: Path | str = SERVING_JSON) -
     with engine.connect() as conn:
         monthly = pd.read_sql("SELECT * FROM gold_visit_share_monthly ORDER BY month_id", conn)
         scores = pd.read_sql("SELECT * FROM model_scores", conn)
-    predictions = score_batch(load_segment_gold(engine), monthly, serving, scores=scores)
+    collect: dict = {}
+    predictions = score_batch(
+        load_segment_gold(engine), monthly, serving, scores=scores, collect=collect
+    )
     predictions["data_version"] = data_version(engine)
+    artifacts, inputs = build_tables(collect, str(predictions["data_version"].iloc[0]))
     with engine.begin() as conn:
         predictions.to_sql(PRED_TABLE, conn, if_exists="replace", index=False)
+        artifacts.to_sql(ARTIFACT_TABLE, conn, if_exists="replace", index=False)
+        inputs.to_sql(INPUT_TABLE, conn, if_exists="replace", index=False)
     return {
         PRED_TABLE: len(predictions),
+        ARTIFACT_TABLE: len(artifacts),
+        INPUT_TABLE: len(inputs),
         "national": int((predictions["level"] == "national").sum()),
         "segment": int((predictions["level"] == "segment").sum()),
         "alert_flags": int(predictions["alert_flag"].fillna(0).sum()),

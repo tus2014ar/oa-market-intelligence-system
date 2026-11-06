@@ -106,6 +106,19 @@ def predictions(engine: Engine) -> pd.DataFrame:
     return _read(engine, "SELECT * FROM pred_batch")
 
 
+def saved_models(engine: Engine) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """The saved models (`model_artifacts`) and the segments' inputs at the last month
+    (`pred_inputs`) that the API's live predictions use; two empty frames for a warehouse written
+    before they existed."""
+    try:
+        return (
+            _read(engine, "SELECT * FROM model_artifacts"),
+            _read(engine, "SELECT * FROM pred_inputs"),
+        )
+    except Exception:  # noqa: BLE001 - an older warehouse has no such tables: no live predictions
+        return pd.DataFrame(), pd.DataFrame()
+
+
 def model_scores(engine: Engine) -> pd.DataFrame:
     return _read(engine, "SELECT * FROM model_scores")
 

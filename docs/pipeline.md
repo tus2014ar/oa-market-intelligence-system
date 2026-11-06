@@ -18,7 +18,7 @@ oa-publish --public-data full       # local only: reload and re-export the publi
 | 3 | `coverage_check` | the staged database must not have fewer months than the published one | the run stops |
 | 4 | `feature_tables` | writes `feat_segment_month` and `feat_monthly` | the run stops |
 | 5 | `model_tables` | writes `model_scores` and `backtest_batch` from the stored results | the run stops |
-| 6 | `scoring` | the monthly scoring job: the adopted models (`data/reference/serving_models.json`, DL-79) are refitted on all the data and the next 1, 3 and 6 months are written to `pred_batch`; the map is checked against the stored `model_scores` first | the run stops |
+| 6 | `scoring` | the monthly scoring job: the adopted models (`data/reference/serving_models.json`, DL-79) are refitted on all the data and the next 1, 3 and 6 months are written to `pred_batch`, and the fitted models are saved as readable numbers in `model_artifacts` with their inputs in `pred_inputs` (DL-117); the map is checked against the stored `model_scores` first, and the saved numbers against the fitted models | the run stops |
 | 7 | `monitoring` | data freshness (is the latest month more than 100 days old?) and forecast drift (the previous run's predictions against the months that have arrived since, against the tested bias and error); reported, never stops the run | reports `status: error` and continues |
 | 8 | `swap` | replaces the published database with an atomic rename | the old database stays |
 

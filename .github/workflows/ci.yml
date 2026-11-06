@@ -134,7 +134,7 @@ jobs:
         run: pip install -r api/requirements.txt pytest httpx filelock
 
       - name: API tests
-        run: pytest tests/test_api.py -q
+        run: pytest tests/test_api.py tests/test_predictor.py -q
 
   # Builds the three images (no push) and runs them, so a broken Dockerfile, pin file or start-up
   # fails here: the pipeline image, the website and the API, each checked as it would run.

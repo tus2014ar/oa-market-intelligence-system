@@ -390,5 +390,16 @@ Results and reading: [`modelling_results.md`](modelling_results.md). `model_scor
 |---|---|---|---|
 | `pred_batch` | one row per level (national or segment), horizon and, for segments, specialty x age band x gender | 342 | `run_month_id`, `target_month_id`, `horizon`, `level`, `specialty_name`, `age_band`, `gender` (segment rows), `model`, `model_version` (a short fingerprint of the model, horizon, origin and training data), `point_share` (a fraction), `lo80_share`, `hi80_share`, `lo90_share`, `hi90_share` (national rows), `origin_visits` (segment rows: category visits at the origin), `alert_score` and `alert_flag` (1-month segment rows with a positive share and at least 100 visits), `known_bias` (the forecast's recorded bias, from `model_scores`; empty for a baseline), `data_version` (a short hash of the input extracts' SHA-256: the same on every row of a run, and recorded in the run log) |
 
+### Saved models and their inputs (DL-117)
+
+The same stage also saves the fitted models and the inputs the API needs to run them (`modeling/artifacts.py`). Both are replaced on every run, in the same transaction as `pred_batch`.
+
+| Table | Grain | Rows | Contents |
+|---|---|---|---|
+| `model_artifacts` | one row per served model: `segment:1`, `segment:3`, `segment:6`, `alert:1` | 4 | `model_id`, `task` (segment or alert), `horizon`, `model` (`logistic`, or a rule such as `last_month`), `model_version` (the same fingerprint as in `pred_batch`), `run_month_id`, `trained_on_rows`, `data_version`, `library` (the scikit-learn version, or "none (a rule)"), `known_bias`, `artifact_sha256` (SHA-256 of the canonical parameters) and `parameters` (JSON: the numeric columns, imputing medians, scaling mean and scale, specialty categories, coefficients, intercept, the chosen setting; for the alert also `threshold` and `min_origin_visits`; `{}` for a rule) |
+| `pred_inputs` | one row per segment with a forecast, at the last month of data | 113 | `run_month_id`, the segment (`specialty_name`, `age_band`, `gender`, `specialty_grouped`) and the model inputs at that month (visits and share lags, the specialty and market priors, age and gender codes). No outcome is stored. |
+
+The saved numbers are checked before they are written: applied to the rows the job scored, they must give the fitted model's probabilities to within 1e-9, or the run stops.
+
 Show `known_bias` beside every segment forecast: the segment forecasts ran 5.5% (1 month) and 10.9% (3 months) too high in testing. The alert is a supporting flag, not a prediction of loss (about half its alerts were not real declines). The job reproduces the stored batch demonstration (`backtest_batch`) at the December 2022 cut-off exactly (tested).
 
