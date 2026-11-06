@@ -119,11 +119,7 @@ def national_fan_chart(frames: dict[str, pd.DataFrame]) -> alt.Chart:
     axis = alt.Axis(format="%b %Y", tickCount=5, labelOverlap=True)
     x = alt.X("month:T", title=None, axis=axis)
     y = alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False))
-    line = (
-        alt.Chart(history)
-        .mark_line(color=SERIES, strokeWidth=3)
-        .encode(x=x, y=y)
-    )
+    line = alt.Chart(history).mark_line(color=SERIES, strokeWidth=3).encode(x=x, y=y)
     dots = (
         alt.Chart(history)
         .mark_circle(color=SERIES, size=30, opacity=0)
@@ -177,9 +173,7 @@ def specialty_forecast_chart(spec: pd.DataFrame, horizon: int) -> alt.Chart:
     """Each specialty's forecast (a bar) next to its share in the latest month (a dark tick),
     largest specialties first. `spec` comes from `forecasts.specialty_view`."""
     order = list(spec["label"])
-    y = alt.Y(
-        "label:N", sort=order, title=None, axis=alt.Axis(labelLimit=260, labelOverlap=False)
-    )
+    y = alt.Y("label:N", sort=order, title=None, axis=alt.Axis(labelLimit=260, labelOverlap=False))
     tip = [
         alt.Tooltip("label:N", title="Specialty"),
         alt.Tooltip("forecast_pct:Q", title=f"Forecast, {horizon} mo (%)", format=".2f"),
@@ -250,16 +244,12 @@ def state_tile_map(view: pd.DataFrame) -> alt.Chart:
     tiles = base.mark_rect(cornerRadius=4).encode(
         color=alt.Color(
             "pct:Q",
-            scale=alt.Scale(
-                domain=[0, cap], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]
-            ),
+            scale=alt.Scale(domain=[0, cap], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]),
             legend=alt.Legend(title=f"Adoption (%), darkest at {cap:g}%+", orient="bottom"),
         ),
         opacity=alt.Opacity(
             "size:N",
-            scale=alt.Scale(
-                domain=[MANY, FEW], range=[1.0, 0.5]
-            ),
+            scale=alt.Scale(domain=[MANY, FEW], range=[1.0, 0.5]),
             legend=alt.Legend(title=None, orient="bottom"),
         ),
         tooltip=tip,
@@ -269,6 +259,33 @@ def state_tile_map(view: pd.DataFrame) -> alt.Chart:
         color=alt.condition("datum.pct > 2", alt.value("white"), alt.value("#1B2A41")),
     )
     return _style((tiles + labels).properties(height=alt.Step(30), width=alt.Step(30)))
+
+
+def compare_chart(frame: pd.DataFrame, group_label: str) -> alt.Chart:
+    """One group's monthly share beside the whole market's, so the gap between them is the picture.
+    `frame` comes from `detail.compare_series`; the group is teal and the market grey and dashed."""
+    long = frame.melt(
+        id_vars=["month", "label", "category"],
+        value_vars=["group_pct", "market_pct"],
+        var_name="series",
+        value_name="share_pct",
+    )
+    long["series"] = long["series"].map({"group_pct": group_label, "market_pct": "All visits"})
+    colours = alt.Scale(domain=[group_label, "All visits"], range=[SERIES, "#7A8794"])
+    base = alt.Chart(long).encode(
+        x=alt.X("month:T", title=None, axis=DATE_AXIS),
+        y=alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False)),
+        color=alt.Color("series:N", scale=colours, legend=alt.Legend(title=None, orient="bottom")),
+    )
+    tip = [
+        alt.Tooltip("series:N", title="Series"),
+        alt.Tooltip("label:N", title="Month"),
+        alt.Tooltip("share_pct:Q", title="Share (%)", format=".2f"),
+    ]
+    dash = alt.condition(alt.datum.series == "All visits", alt.value([6, 5]), alt.value([1, 0]))
+    line = base.mark_line(strokeWidth=3).encode(strokeDash=dash)
+    points = base.mark_circle(size=40).encode(tooltip=tip)
+    return _style((line + points).properties(height=HEIGHT))
 
 
 def group_chart(table: pd.DataFrame, show: str = "share") -> alt.Chart:

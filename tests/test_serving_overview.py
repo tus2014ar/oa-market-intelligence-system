@@ -21,7 +21,7 @@ STATUS = {
 
 
 def test_the_tab_row_is_ten_distinct_names_starting_with_the_overview():
-    assert len(overview.TAB_NAMES) == 10 and len(set(overview.TAB_NAMES)) == 10
+    assert len(overview.TAB_NAMES) == 11 and len(set(overview.TAB_NAMES)) == 11
     assert overview.TAB_NAMES[0] == "Overview" and overview.TAB_NAMES[-1] == "Ask Claude"
 
 
@@ -44,6 +44,12 @@ def test_the_guide_html_escapes_and_has_one_row_per_tab():
 
 
 # ------------------------------------------------------------------ the run cards
+
+
+def test_the_segment_detail_page_sits_after_the_segments_and_is_in_the_guide():
+    names = list(overview.TAB_NAMES)
+    assert names.index("Segment detail") == names.index("Segments") + 1
+    assert "Segment detail" in dict(overview.guide())
 
 
 def test_the_four_run_cards_by_hand():
@@ -118,8 +124,8 @@ def test_each_page_has_a_script_in_views_an_icon_and_its_own_lowercase_address()
     scripts = [script for _, script, *_ in overview.PAGES]
     icons = [icon for _, _, icon, _ in overview.PAGES]
     addresses = [slug for *_, slug in overview.PAGES]
-    assert titles == list(overview.TAB_NAMES) and len(set(scripts)) == len(scripts) == 10
+    assert titles == list(overview.TAB_NAMES) and len(set(scripts)) == len(scripts) == 11
     assert all(s.startswith("views/") and s.endswith(".py") for s in scripts)
     assert all(i.startswith(":material/") and i.endswith(":") for i in icons)
-    assert len(set(addresses)) == 10 and all(a == a.lower() and " " not in a for a in addresses)
+    assert len(set(addresses)) == 11 and all(a == a.lower() and " " not in a for a in addresses)
     assert dict((t, s) for t, s, *_ in overview.PAGES)["Overview"] == "views/overview.py"

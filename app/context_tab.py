@@ -9,7 +9,12 @@ from __future__ import annotations
 
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, context, style
+from oa_market_intelligence.serving import charts, context, links, style
+
+
+def _here(heading: str) -> str:
+    """A link to a section further down this page."""
+    return "#" + links.anchor_id(heading)
 
 
 def _cards(years, head, national) -> None:
@@ -23,6 +28,7 @@ def _cards(years, head, national) -> None:
             f"Zilretta net sales, all payers. {head['year']} against the previous year: "
             f"{head['sales_change_pct']:+.1f}%.",
             delta=head["sales_vs_base_pct"],
+            href=_here("Company sales against IQVIA visits"),
         ),
         unsafe_allow_html=True,
     )
@@ -33,6 +39,7 @@ def _cards(years, head, national) -> None:
             f"Zilretta visits in IQVIA's sample. {head['year']} against the previous year: "
             f"{head['visits_change_pct']:+.1f}%.",
             delta=head["visits_vs_base_pct"],
+            href=_here("Company sales against IQVIA visits"),
         ),
         unsafe_allow_html=True,
     )
@@ -41,6 +48,7 @@ def _cards(years, head, national) -> None:
             f"Medicare providers billing it, {int(last['year'])}",
             f"{last['pct']:.2f}%",
             f"Of visible Medicare providers. Peak {peak['pct']:.2f}% in {int(peak['year'])}.",
+            href=_here("Medicare adoption by state"),
         ),
         unsafe_allow_html=True,
     )
@@ -49,6 +57,7 @@ def _cards(years, head, national) -> None:
             "Tested explanations for the gap",
             "None",
             "Four checks; one holds on direction only. None accounts for the size.",
+            href=_here("What was tested to explain the gap"),
         ),
         unsafe_allow_html=True,
     )

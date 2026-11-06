@@ -21,7 +21,14 @@ if str(ROOT / "src") not in sys.path:
 import streamlit as st  # noqa: E402
 
 from oa_market_intelligence import knowledge_graph  # noqa: E402
-from oa_market_intelligence.serving import data, qa_tools, trend, views  # noqa: E402
+from oa_market_intelligence.serving import (  # noqa: E402
+    data,
+    links,
+    overview,
+    qa_tools,
+    trend,
+    views,
+)
 
 ALL = "All"
 DEFAULTS = {"specialty": None, "age": None, "gender": None, "period": "All"}
@@ -30,6 +37,7 @@ PERIODS = ["1Y", "3Y", "5Y", "All"]
 FILTERED_PAGES = {
     "Market trend": ("specialty", "age", "gender", "period"),
     "Segments": ("specialty", "age", "gender", "period"),
+    "Segment detail": ("specialty", "age", "gender", "period"),
     "Forecasts": ("specialty", "age", "gender"),
 }
 NAMES = {"specialty": "specialty", "age": "age band", "gender": "gender", "period": "period"}
@@ -189,3 +197,63 @@ def filter_bar(page: str) -> None:
         gender=None if gender == ALL else gender,
         period=period or "All",
     )
+
+
+# ------------------------------------------------------------------ addresses and back links
+
+SCRIPTS = {title: script for title, script, _, _ in overview.PAGES}
+
+
+def init_from_url(page_title: str) -> None:
+    """On the first run of a session, read the filters and the page the click came from out of the
+    address (a link carries what was clicked). A value the data does not have is dropped, so a bad
+    or edited address opens the page unfiltered. Later runs keep the session's own filters."""
+    if "flt" in st.session_state:
+        return
+    seg = context().D["seg"]
+    valid = {
+        "specialty": set(seg["specialty"].unique()),
+        "age": set(seg["age_band"].unique()),
+        "gender": set(seg["gender"].unique()),
+    }
+    params = {key: st.query_params.get(key) for key in (*DEFAULTS, "from")}
+    filters, source = links.parse(params, valid)
+    st.session_state["flt"] = filters
+    if source:
+        st.session_state["from"] = (source, page_title)  # came from `source`, to this page
+
+
+def sync_url(page_title: str) -> None:
+    """Write the filters now chosen (and where you came from) into the address, so the page can be
+    shared or reloaded as it is."""
+    came = st.session_state.get("from")
+    source = came[0] if came and came[1] == page_title else None
+    st.query_params.from_dict(links.to_params(filters(), source))
+
+
+def go(target: str, source: str, **chosen) -> None:
+    """Move to another page inside the app (from a button or a chart click) with the filters set,
+    remembering the page it came from for the back link."""
+    st.session_state["flt"] = {**DEFAULTS, **{k: v for k, v in chosen.items() if v}}
+    st.session_state["from"] = (source, target)
+    for key, saved in (("w_specialty", "specialty"), ("w_age", "age"), ("w_gender", "gender")):
+        st.session_state[key] = st.session_state["flt"][saved] or ALL
+    st.session_state["w_period"] = st.session_state["flt"]["period"]
+    st.switch_page(SCRIPTS[target])
+
+
+def back_link(page_title: str) -> None:
+    """A "back to ..." link, shown only on the page a link brought you to."""
+    came = st.session_state.get("from")
+    if came and came[1] == page_title and came[0] in SCRIPTS and came[0] != page_title:
+        st.page_link(SCRIPTS[came[0]], label=f"Back to {came[0]}", icon=":material/arrow_back:")
+
+
+def detail_href(column: str, group: str | None, flt: dict, source: str) -> str | None:
+    """The address of the Segment detail page for a group (a specialty, an age band or a gender, by
+    its raw key), keeping the filters now chosen for the other two and the period. None for no group."""
+    if group is None:
+        return None
+    chosen = {"specialty": flt.get("specialty"), "age": flt.get("age"), "gender": flt.get("gender")}
+    chosen[{"specialty": "specialty", "age_band": "age", "gender": "gender"}[column]] = group
+    return links.href("Segment detail", period=flt.get("period"), source=source, **chosen)

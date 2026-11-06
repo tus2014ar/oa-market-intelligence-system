@@ -6,10 +6,12 @@ visits come from and a year-by-year table. A thin page over `serving.trend`, `se
 
 from __future__ import annotations
 
+import common
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, style, trend, views
+from oa_market_intelligence.serving import charts, links, style, trend, views
 
+FROM = "Market trend"
 DIMENSIONS = (("specialty", "specialty"), ("age_band", "age band"), ("gender", "gender"))
 
 
@@ -50,6 +52,14 @@ def render(D: dict, data_chip, flt: dict) -> None:
             f"A year earlier: {_share(k['year_ago_share'])}",
             delta=gap,
             pill=style.signed(gap) if gap is not None else "",
+            href=links.href(
+                "Segment detail",
+                specialty=specialty,
+                age=age,
+                gender=gender,
+                period=period,
+                source=FROM,
+            ),
         ),
         unsafe_allow_html=True,
     )
@@ -210,6 +220,10 @@ def render(D: dict, data_chip, flt: dict) -> None:
                             for r in table.head(5).itertuples()
                         ],
                         (name.capitalize(), "Share", "Change"),
+                        [
+                            common.detail_href(column, r.group, flt, FROM)
+                            for r in table.head(5).itertuples()
+                        ],
                     ),
                     unsafe_allow_html=True,
                 )
@@ -280,7 +294,11 @@ def render(D: dict, data_chip, flt: dict) -> None:
                 continue
             st.markdown(
                 style.bar_rows(
-                    [(r.label, r.pct, f"{r.pct:.0f}%") for r in comp.itertuples()], scale_to=100
+                    [(r.label, r.pct, f"{r.pct:.0f}%") for r in comp.itertuples()],
+                    scale_to=100,
+                    links=[
+                        common.detail_href(column, r.group, flt, FROM) for r in comp.itertuples()
+                    ],
                 ),
                 unsafe_allow_html=True,
             )

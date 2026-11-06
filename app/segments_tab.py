@@ -6,6 +6,7 @@ download. A thin page over `serving.segments`, `serving.style` and `serving.char
 
 from __future__ import annotations
 
+import common
 import streamlit as st
 
 from oa_market_intelligence.serving import charts, segments, style, trend
@@ -37,12 +38,24 @@ def _controls() -> tuple[str, str]:
     return by or "specialty", show or "share"
 
 
-def _card(label: str, found: tuple[str, float] | None, caption: str, *, as_change: bool) -> str:
+FROM = "Segments"
+
+
+def _card(
+    label: str,
+    found: tuple[str, float] | None,
+    caption: str,
+    *,
+    as_change: bool,
+    href: str | None = None,
+) -> str:
     if found is None:
         return style.kpi_card(label, "n/a", caption)
     name, value = found
     text = style.signed(value) if as_change else f"{value:.2f}%"
-    return style.kpi_card(label, text, f"{name} · {caption}", delta=value if as_change else None)
+    return style.kpi_card(
+        label, text, f"{name} · {caption}", delta=value if as_change else None, href=href
+    )
 
 
 def render(D: dict, data_chip, flt: dict) -> None:
@@ -57,6 +70,10 @@ def render(D: dict, data_chip, flt: dict) -> None:
     table = segments.group_table(seg, by, period, calendar=calendar)
     notes = segments.extremes(table)
     conc = segments.concentration(table)
+    keys = segments.extreme_keys(table)
+
+    def open_(group):
+        return common.detail_href(by, group, flt, FROM)
 
     # ---- headline cards
     cards = st.columns(4)
@@ -66,22 +83,31 @@ def render(D: dict, data_chip, flt: dict) -> None:
             notes["highest"],
             f"Among {name} groups with {segments.SMALL_VISITS:,}+ visits",
             as_change=False,
+            href=open_(keys["highest"]),
         ),
         unsafe_allow_html=True,
     )
     top = None if conc["top"] is None else (conc["top"], conc["top_pct"])
     cards[1].markdown(
         _card(
-            "Largest source of visits", top, "of Zilretta's visits come from it", as_change=False
+            "Largest source of visits",
+            top,
+            "of Zilretta's visits come from it",
+            as_change=False,
+            href=open_(conc["top_group"]) if "top_group" in conc else None,
         ),
         unsafe_allow_html=True,
     )
     window = "last 12 months against the 12 before"
     cards[2].markdown(
-        _card("Biggest rise", notes["rising"], window, as_change=True), unsafe_allow_html=True
+        _card("Biggest rise", notes["rising"], window, as_change=True, href=open_(keys["rising"])),
+        unsafe_allow_html=True,
     )
     cards[3].markdown(
-        _card("Biggest fall", notes["falling"], window, as_change=True), unsafe_allow_html=True
+        _card(
+            "Biggest fall", notes["falling"], window, as_change=True, href=open_(keys["falling"])
+        ),
+        unsafe_allow_html=True,
     )
 
     # ---- ranked bars and concentration

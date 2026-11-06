@@ -78,6 +78,7 @@ def concentration(table: pd.DataFrame) -> dict:
     return {
         "n_groups": int(len(table)),
         "top": by_visits["label"].iloc[0],
+        "top_group": by_visits["group"].iloc[0],
         "top_pct": float(pct.iloc[0]),
         "top3_pct": float(pct.head(3).sum()),
         "n_for_80": min(n_for, int(len(table))),
@@ -107,6 +108,22 @@ def extremes(table: pd.DataFrame) -> dict:
             out["rising"] = (up["label"], float(up["delta_pp"]))
         if down["delta_pp"] < 0:
             out["falling"] = (down["label"], float(down["delta_pp"]))
+    return out
+
+
+def extreme_keys(table: pd.DataFrame) -> dict:
+    """The raw group keys (not the readable names) of the same four groups `extremes` names, so a
+    card can link to the group. None where `extremes` names none."""
+    out: dict = {"highest": None, "lowest": None, "rising": None, "falling": None}
+    if table.empty:
+        return out
+    sized = _sized(table)
+    out["highest"], out["lowest"] = sized.iloc[0]["group"], sized.iloc[-1]["group"]
+    moved = sized.dropna(subset=["delta_pp"])
+    if len(moved):
+        up, down = moved.loc[moved["delta_pp"].idxmax()], moved.loc[moved["delta_pp"].idxmin()]
+        out["rising"] = up["group"] if up["delta_pp"] > 0 else None
+        out["falling"] = down["group"] if down["delta_pp"] < 0 else None
     return out
 
 

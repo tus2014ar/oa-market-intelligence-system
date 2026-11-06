@@ -8,7 +8,15 @@ from __future__ import annotations
 
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, forecasts, overview, style, views
+from oa_market_intelligence.serving import charts, forecasts, links, overview, style, views
+
+FROM = "Overview"
+# each "what to use" card links to the part of Forecasts that shows it
+SEE = {
+    "National share forecast": ("See the national forecast", None),
+    "Segment forecast": ("See the segment forecasts", "Segment forecasts"),
+    "Decline alert": ("See the alert list", "Decline alert, 1 month ahead"),
+}
 
 
 def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
@@ -24,6 +32,7 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
             views.pct(head["latest_share"]),
             "The line is the last 36 months.",
             spark=views.share_series(D["monthly"]),
+            href=links.href("Market trend", source=FROM),
         ),
         unsafe_allow_html=True,
     )
@@ -32,6 +41,7 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
             f"Peak ({head['peak_month']})",
             views.pct(head["peak_share"]),
             "The highest month in the series.",
+            href=links.href("Market trend", source=FROM),
         ),
         unsafe_allow_html=True,
     )
@@ -42,6 +52,7 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
             f"From {head['peak_month']} to {head['latest_month']}.",
             spark=views.since_peak_series(D["monthly"]),
             area=True,
+            href=links.href("Market trend", source=FROM),
         ),
         unsafe_allow_html=True,
     )
@@ -51,6 +62,7 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
             views.pct(head["next_month_forecast"]),
             f"Likely {views.pct(low)} to {views.pct(high)} (90%). It held about 9 months in 10 "
             "at 1 month ahead in testing.",
+            href=links.href("Forecasts", source=FROM),
         ),
         unsafe_allow_html=True,
     )
@@ -73,6 +85,8 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
             st.markdown(f"**{row['what']}**")
             st.write(f"**Use it for:** {row['use']}")
             st.write(f"**Do not:** {row['dont']}")
+            address = links.href("Forecasts", source=FROM, section=SEE[row["what"]][1])
+            st.markdown(style.link_line(SEE[row["what"]][0], address), unsafe_allow_html=True)
 
     st.markdown("##### Read this first")
     with st.container(border=True):
@@ -89,7 +103,9 @@ def render(D: dict, status: dict, head: dict, adoption: dict) -> None:
 
     st.markdown("##### What each page answers")
     with st.container(border=True):
-        st.markdown(style.guide_rows(overview.guide()), unsafe_allow_html=True)
+        pages = overview.guide()
+        addresses = [links.href(title, source=FROM) for title, _ in pages]
+        st.markdown(style.guide_rows(pages, addresses), unsafe_allow_html=True)
 
     left, right = st.columns(2)
     left.download_button(
