@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, forecasts, style, views
+from oa_market_intelligence.serving import charts, forecasts, links, style, views
 
 HORIZON_LABELS = {1: "1 month", 3: "3 months", 6: "6 months"}
 
@@ -93,6 +93,13 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
         st.caption(
             views.coverage_sentence(scores)
             + " The months forecast here have already passed: no newer extract has arrived."
+        )
+        st.markdown(
+            style.link_line(
+                "How the models were tested",
+                links.href("Model results", source="Forecasts", section="How the models scored"),
+            ),
+            unsafe_allow_html=True,
         )
 
     # ---- segment forecasts
@@ -222,6 +229,13 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             "About half of the alerts were real declines in testing, and a one-line rule (this "
             "segment just spiked) does almost as well, so treat the list as a starting point for "
             "a look, never as a reason to act on its own. The alert is a 1-month flag only."
+        )
+        st.markdown(
+            style.link_line(
+                "How reliable the alert is, on Model results",
+                links.href("Model results", source="Forecasts", section="How the models scored"),
+            ),
+            unsafe_allow_html=True,
         )
     st.caption(
         "Forecasts are the monthly job's stored output, not fitted while the page loads. They "

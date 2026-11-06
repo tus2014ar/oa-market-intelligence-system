@@ -216,12 +216,12 @@ def composition(sel: pd.DataFrame, by: str, top: int = 5) -> pd.DataFrame:
     z = z[z > 0].sort_values(ascending=False)
     total = float(z.sum())
     if total == 0:
-        return pd.DataFrame(columns=["label", "visits", "pct"])
+        return pd.DataFrame(columns=["label", "visits", "group", "pct"])
     head, rest = z.head(top), z.iloc[top:]
-    rows = [(pretty(name), float(v)) for name, v in head.items()]
+    rows = [(pretty(name), float(v), name) for name, v in head.items()]
     if len(rest):
-        rows.append(("Other", float(rest.sum())))
-    out = pd.DataFrame(rows, columns=["label", "visits"])
+        rows.append(("Other", float(rest.sum()), None))
+    out = pd.DataFrame(rows, columns=["label", "visits", "group"])
     out["pct"] = 100 * out["visits"] / total
     return out
 

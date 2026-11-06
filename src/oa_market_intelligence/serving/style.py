@@ -88,6 +88,19 @@ CSS = f"""<style>
 .oa-tl-src {{margin-top:.2rem;font-size:.78rem;opacity:.65}}
 .oa-tl-flag {{color:{RED};opacity:1;font-weight:600}}
 .oa-spark {{display:block;margin-top:.55rem}}
+a.oa-link {{display:block;text-decoration:none !important;color:inherit !important}}
+a.oa-link:hover .oa-kpi {{transform:translateY(-3px);box-shadow:0 10px 24px rgba(27,42,65,.28)}}
+.oa-kpi {{position:relative;margin-bottom:.6rem}}
+.oa-go {{position:absolute;top:10px;right:14px;opacity:.65;font-size:1rem;
+  transition:opacity .2s ease,transform .2s ease}}
+a.oa-link:hover .oa-go {{opacity:1;transform:translate(2px,-2px)}}
+a.oa-rowlink:hover {{background:rgba(15,139,141,.09);border-radius:8px}}
+a.oa-link.oa-crumb {{display:inline;color:{TEAL} !important;text-decoration:none !important}}
+a.oa-crumb:hover {{text-decoration:underline !important}}
+a.oa-see {{color:{TEAL} !important;font-weight:600;font-size:.85rem;
+  text-decoration:none !important}}
+a.oa-see:hover {{text-decoration:underline !important}}
+.oa-find-see {{margin:.3rem 0 0 2.4rem}}
 .oa-guide {{display:grid;grid-template-columns:minmax(96px,1fr) 4fr;gap:.8rem;padding:.4rem 0;
   border-bottom:1px solid rgba(127,127,127,.18);font-size:.9rem}}
 .oa-guide-tab {{font-weight:700;color:{TEAL}}}
@@ -96,6 +109,16 @@ CSS = f"""<style>
   padding:.4rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-stand .k {{font-size:.88rem;opacity:.8}} .oa-stand .x {{font-weight:700;font-size:1.05rem}}
 </style>"""
+
+
+def link(href: str | None, inner: str, cls: str = "") -> str:
+    """`inner` wrapped in a link to `href` that opens in the same tab (a page address or a
+    `#section` on this page), or `inner` unchanged without an address. The address is escaped."""
+    if not href:
+        return inner
+    return (
+        f'<a class="{("oa-link " + cls).strip()}" href="{escape(href)}" target="_self">{inner}</a>'
+    )
 
 
 def tone(delta: float | None, flat: float = 0.005) -> str:
@@ -146,48 +169,63 @@ def kpi_card(
     pill: str = "",
     spark: list[float] | None = None,
     area: bool = False,
+    href: str | None = None,
 ) -> str:
     """A navy card: a small label, one big number, an optional change pill, a caption and an
-    optional sparkline."""
+    optional sparkline. With `href` the whole card is a link and shows a small arrow."""
     chip = f'<span class="oa-pill {tone(delta)}">{escape(pill)}</span>' if pill else ""
     line = sparkline(spark, area=area) if spark else ""
-    return (
-        f'<div class="oa-kpi"><div class="l">{escape(label)}</div>'
+    arrow = '<span class="oa-go" aria-hidden="true">↗</span>' if href else ""
+    card = (
+        f'<div class="oa-kpi">{arrow}<div class="l">{escape(label)}</div>'
         f'<div class="v">{escape(value)}{chip}</div><div class="c">{escape(caption)}</div>'
         f"{line}</div>"
     )
+    return link(href, card)
 
 
-def bar_rows(rows: list[tuple[str, float, str]], scale_to: float | None = None) -> str:
+def bar_rows(
+    rows: list[tuple[str, float, str]],
+    scale_to: float | None = None,
+    links: list[str | None] | None = None,
+) -> str:
     """Horizontal bars: (label, value, text shown at the right). The bar widths are relative to
-    `scale_to` (or the largest value), so a long list stays comparable."""
+    `scale_to` (or the largest value), so a long list stays comparable. `links` gives each row an
+    address (None for a row that goes nowhere)."""
     top = scale_to or max((v for _, v, _ in rows), default=0.0) or 1.0
     out = []
-    for label, value, text in rows:
+    for i, (label, value, text) in enumerate(rows):
         width = max(0.0, min(100.0, 100 * value / top))
-        out.append(
+        row = (
             f'<div class="oa-row"><span>{escape(label)}</span>'
             f'<span class="oa-val">{escape(text)}</span>'
             '<span class="oa-track">'
             f'<span class="oa-fill" style="width:{width:.1f}%"></span></span></div>'
         )
+        out.append(link(links[i] if links else None, row, "oa-rowlink"))
     return "".join(out)
 
 
-def rank_rows(rows: list[tuple[str, str, float | None, str]], headers: tuple[str, str, str]) -> str:
+def rank_rows(
+    rows: list[tuple[str, str, float | None, str]],
+    headers: tuple[str, str, str],
+    links: list[str | None] | None = None,
+) -> str:
     """A ranked list: (name, a number, a change, the change as text), with a header row. The change
-    is coloured by its sign and always shows the sign as text."""
+    is coloured by its sign and always shows the sign as text. `links` gives each row an address
+    (None for a row that goes nowhere)."""
     out = [
         f'<div class="oa-rank head"><span>{escape(headers[0])}</span>'
         f'<span class="n">{escape(headers[1])}</span>'
         f'<span class="n">{escape(headers[2])}</span></div>'
     ]
-    for name, number, delta, text in rows:
-        out.append(
+    for i, (name, number, delta, text) in enumerate(rows):
+        row = (
             f'<div class="oa-rank"><span>{escape(name)}</span>'
             f'<span class="n">{escape(number)}</span>'
             f'<span class="n oa-{tone(delta)}">{escape(text)}</span></div>'
         )
+        out.append(link(links[i] if links else None, row, "oa-rowlink"))
     return "".join(out)
 
 
@@ -219,16 +257,24 @@ def text_card(label: str, title: str, caption: str = "") -> str:
     )
 
 
-def finding_card(finding_id: int, title: str, impact: str, evidence: str, source: str) -> str:
+def finding_card(
+    finding_id: int,
+    title: str,
+    impact: str,
+    evidence: str,
+    source: str,
+    see: tuple[str, str] | None = None,
+) -> str:
     """One finding: its number and title, what it means, and the evidence folded away under a
-    heading that names the source."""
+    heading that names the source. `see` is (label, address) of the page that shows the evidence."""
+    more = f'<div class="oa-find-see">{link_line(see[0], see[1])}</div>' if see else ""
     return (
         '<div class="oa-find"><div class="oa-find-head">'
         f'<span class="oa-find-id">{int(finding_id)}</span>'
         f'<span class="oa-find-title">{escape(title)}</span></div>'
         f'<div class="oa-find-impact"><b>What it means:</b> {escape(impact)}</div>'
         f"<details><summary>Evidence · {escape(source)}</summary>"
-        f"<div>{escape(evidence)}</div></details></div>"
+        f"<div>{escape(evidence)}</div></details>{more}</div>"
     )
 
 
@@ -249,13 +295,23 @@ def timeline_rows(rows: list[dict]) -> str:
     return "".join(out)
 
 
-def guide_rows(rows: list[tuple[str, str]]) -> str:
-    """A two-column guide: a tab's name on the left, the question it answers on the right."""
+def guide_rows(rows: list[tuple[str, str]], links: list[str | None] | None = None) -> str:
+    """A two-column guide: a page's name on the left, the question it answers on the right. `links`
+    gives each row the address of its page."""
     return "".join(
-        f'<div class="oa-guide"><span class="oa-guide-tab">{escape(tab)}</span>'
-        f"<span>{escape(question)}</span></div>"
-        for tab, question in rows
+        link(
+            links[i] if links else None,
+            f'<div class="oa-guide"><span class="oa-guide-tab">{escape(tab)}</span>'
+            f"<span>{escape(question)}</span></div>",
+            "oa-rowlink",
+        )
+        for i, (tab, question) in enumerate(rows)
     )
+
+
+def link_line(label: str, href: str) -> str:
+    """A small teal link with an arrow, for the end of a card or a section."""
+    return f'<a class="oa-see" href="{escape(href)}" target="_self">{escape(label)} →</a>'
 
 
 def stand_rows(rows: list[tuple[str, str]]) -> str:

@@ -13,6 +13,7 @@ PAGES = (
     ("Overview", "views/overview.py", ":material/home:", "overview"),
     ("Market trend", "views/market_trend.py", ":material/show_chart:", "market-trend"),
     ("Segments", "views/segments.py", ":material/pie_chart:", "segments"),
+    ("Segment detail", "views/segment_detail.py", ":material/zoom_in:", "segment-detail"),
     ("Forecasts", "views/forecasts.py", ":material/query_stats:", "forecasts"),
     ("Model results", "views/model_results.py", ":material/analytics:", "model-results"),
     ("Data status", "views/data_status.py", ":material/fact_check:", "data-status"),
@@ -28,6 +29,10 @@ TAB_GUIDE = (
         "How has Zilretta's share of visits moved, for any specialty, age band or gender?",
     ),
     ("Segments", "Which groups use it most, and where is the share rising or falling?"),
+    (
+        "Segment detail",
+        "What does one group look like on its own, against the market and its neighbours?",
+    ),
     (
         "Forecasts",
         "What is the forecast, how far can it be trusted, and which segments are flagged?",

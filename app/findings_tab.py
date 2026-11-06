@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import streamlit as st
 
-from oa_market_intelligence.serving import findings, style
+from oa_market_intelligence.serving import findings, links, style
 
 
 def render(items: list[dict], data_chip) -> None:
@@ -46,7 +46,12 @@ def render(items: list[dict], data_chip) -> None:
             st.markdown(
                 "".join(
                     style.finding_card(
-                        x["id"], x["finding"], x["impact"], x["evidence"], x["source"]
+                        x["id"],
+                        x["finding"],
+                        x["impact"],
+                        x["evidence"],
+                        x["source"],
+                        links.finding_link(x["id"]),
                     )
                     for x in group
                 ),

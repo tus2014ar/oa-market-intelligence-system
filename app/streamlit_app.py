@@ -23,6 +23,7 @@ pages = [
     for title, script, icon, slug in overview.PAGES
 ]
 page = st.navigation(pages, position="sidebar")
+common.init_from_url(page.title)  # a link carries what was clicked in the address
 
 st.title("OA and RA Market Intelligence")
 st.caption(
@@ -31,4 +32,6 @@ st.caption(
 )
 if page.title in common.FILTERED_PAGES:
     common.filter_bar(page.title)
+    common.sync_url(page.title)  # the address always shows the filters, so it can be shared
+common.back_link(page.title)
 page.run()

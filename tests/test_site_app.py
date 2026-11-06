@@ -82,11 +82,11 @@ def _text(at):
 # ------------------------------------------------------------------ the pages and the navigation
 
 
-def test_the_navigation_is_ten_pages_each_a_real_file_with_its_own_address():
+def test_the_navigation_is_eleven_pages_each_a_real_file_with_its_own_address():
     assert [title for title, *_ in overview.PAGES] == list(overview.TAB_NAMES)
     assert all((APP_DIR / script).is_file() for script in SCRIPTS.values())
     addresses = [slug for *_, slug in overview.PAGES]
-    assert len(set(addresses)) == 10 and all(a == a.lower() and " " not in a for a in addresses)
+    assert len(set(addresses)) == 11 and all(a == a.lower() and " " not in a for a in addresses)
     assert all(icon.startswith(":material/") for _, _, icon, _ in overview.PAGES)
 
 
@@ -112,7 +112,10 @@ def test_every_page_but_the_overview_starts_with_a_note_on_how_old_the_data_are(
 # ------------------------------------------------------------------ the shared filter bar
 
 
-@pytest.mark.parametrize("title", ["Market trend", "Segments", "Forecasts"])
+FILTERED = ["Market trend", "Segments", "Segment detail", "Forecasts"]
+
+
+@pytest.mark.parametrize("title", FILTERED)
 def test_the_filter_bar_is_on_the_three_pages_that_use_it(page, title):
     at = page(title)
     assert {"Specialty", "Age band", "Gender"} <= {s.label for s in at.selectbox}
@@ -121,9 +124,7 @@ def test_the_filter_bar_is_on_the_three_pages_that_use_it(page, title):
     assert any("This page follows the" in c.value for c in at.caption)
 
 
-@pytest.mark.parametrize(
-    "title", [t for t in overview.TAB_NAMES if t not in ("Market trend", "Segments", "Forecasts")]
-)
+@pytest.mark.parametrize("title", [t for t in overview.TAB_NAMES if t not in FILTERED])
 def test_the_other_pages_have_no_filter_bar(page, title):
     at = page(title)
     assert not {"Specialty", "Age band", "Gender"} & {s.label for s in at.selectbox}
@@ -147,7 +148,7 @@ def test_each_page_says_which_filters_it_follows_and_the_forecasts_ignore_the_pe
 def test_a_filter_chosen_on_one_page_follows_you_to_the_others_and_back(monkeypatch):
     at = run_page("Market trend", flt=flt(specialty="RHEUMATOLOGY"))
     assert next(s for s in at.selectbox if s.label == "Specialty").value == "RHEUMATOLOGY"
-    for title in ("Segments", "Forecasts"):
+    for title in ("Segments", "Segment detail", "Forecasts"):
         at.switch_page(SCRIPTS[title]).run()
         assert next(s for s in at.selectbox if s.label == "Specialty").value == "RHEUMATOLOGY", (
             title
@@ -204,7 +205,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
 def test_the_overview_has_small_lines_on_two_cards_a_guide_and_the_unverified_decline_note(page):
     text = " ".join(m.value for m in page("Overview").markdown)
     assert text.count('class="oa-spark"') == 2  # the share and the change since the peak
-    assert text.count('class="oa-guide"') == 9 and "What each page answers" in text
+    assert text.count('class="oa-guide"') == 10 and "What each page answers" in text
     assert "the size of the visits decline is unverified: see the Context page" in text
     assert "Company sales kept rising while these visits fell" in text
 
@@ -717,3 +718,179 @@ def test_the_key_never_appears_on_the_page(monkeypatch):
         [m.value for m in at.markdown] + [c.value for c in at.caption] + [i.value for i in at.info]
     )
     assert "sk-test-secret" not in text and "code-xyz" not in text
+
+
+# ---------------------- links, deep links and the Segment detail page
+
+
+def _hrefs(at):
+    """Every address in the page's HTML, in order."""
+    import html
+    import re
+
+    found = re.findall(r'href="([^"]+)"', " ".join(m.value for m in at.markdown))
+    return [html.unescape(address) for address in found]  # the page shows &amp; for &
+
+
+def test_the_overviews_cards_and_guide_each_link_to_the_page_behind_them(page):
+    at = page("Overview")
+    cards = _cards(at)
+    assert [("href=" in c) for c in cards] == [True, True, True, True]
+    assert cards[0].count('href="market-trend?from=overview"') == 1
+    assert 'href="forecasts?from=overview"' in cards[3]
+    hrefs = _hrefs(at)
+    for slug in ("market-trend", "segments", "segment-detail", "forecasts", "model-results"):
+        assert any(h.startswith(slug) for h in hrefs), slug
+    assert any(h.startswith("forecasts?from=overview#decline-alert-1-month-ahead") for h in hrefs)
+    assert any(h.startswith("forecasts?from=overview#segment-forecasts") for h in hrefs)
+
+
+def test_every_link_on_every_page_points_at_a_real_page(page):
+    slugs = {slug for *_, slug in overview.PAGES}
+    for title in overview.TAB_NAMES:
+        for address in _hrefs(page(title)):
+            if address.startswith("#"):
+                continue
+            path = address.split("?")[0].split("#")[0]
+            assert path in slugs or path == "./", (title, address)
+
+
+def test_every_finding_section_a_link_names_is_a_heading_on_its_page(page):
+    from oa_market_intelligence.serving import links
+
+    for finding_id, target in links.FINDING_LINKS.items():
+        if target is None or target[1] is None:
+            continue
+        title, section = target
+        headings = [m.value for m in page(title).markdown]
+        assert f"##### {section}" in headings, (finding_id, title, section)
+
+
+def test_the_findings_page_links_fifteen_findings_to_their_evidence_and_two_to_none(page):
+    text = " ".join(m.value for m in page("Findings").markdown)
+    assert text.count('class="oa-find-see"') == 15
+    assert "See it on Forecasts →" in text and "See it on Context →" in text
+    assert "See it on Model results →" in text and "See it on Data status →" in text
+
+
+def test_the_segments_cards_link_to_the_group_they_name(page):
+    cards = _cards(page("Segments"))
+    import html
+
+    assert (
+        "segment-detail?specialty=PHYSICAL%20MEDICINE%20%26%20REHAB&from=segments"
+        in html.unescape(cards[0])
+    )
+    assert "segment-detail?specialty=ORTHOPEDIC%20SURGERY&from=segments" in html.unescape(cards[1])
+    by_age = _cards(run_page("Segments", seg_by="age_band"))
+    assert all("segment-detail?age=" in c for c in by_age if "href=" in c)
+
+
+def test_a_card_keeps_the_filters_when_it_links_to_a_group():
+    at = run_page("Segments", seg_by="age_band", flt=flt(specialty="RHEUMATOLOGY", period="3Y"))
+    cards = [c for c in _cards(at) if "segment-detail" in c]
+    assert cards and all("specialty=RHEUMATOLOGY" in c and "period=3Y" in c for c in cards)
+
+
+def test_the_market_trend_rows_bars_and_card_link_to_the_segment_detail(page):
+    at = page("Market trend")
+    hrefs = [h for h in _hrefs(at) if h.startswith("segment-detail")]
+    assert len([h for h in hrefs if "from=market-trend" in h]) >= 12  # 5 rows, 3 bars of 6, card
+    assert any("specialty=" in h for h in hrefs) and any("age=" in h for h in hrefs)
+    assert any("gender=" in h for h in hrefs)
+    filtered = run_page("Market trend", flt=flt(specialty="RHEUMATOLOGY"))
+    card = _cards(filtered)[0]
+    import html
+
+    assert "segment-detail?specialty=RHEUMATOLOGY&from=market-trend" in html.unescape(card)
+
+
+def test_the_model_results_headlines_and_the_context_cards_land_on_their_subject(page):
+    model = _cards(page("Model results"))
+    assert 'href="forecasts?from=model-results"' in model[0]
+    assert "forecasts?from=model-results#segment-forecasts" in model[1]
+    assert "forecasts?from=model-results#decline-alert-1-month-ahead" in model[2]
+    assert 'href="#round-2-improvements-tried-after-round-1"' in model[3]
+    context_cards = _cards(page("Context"))
+    assert 'href="#company-sales-against-iqvia-visits"' in context_cards[0]
+    assert 'href="#company-sales-against-iqvia-visits"' in context_cards[1]
+    assert 'href="#medicare-adoption-by-state"' in context_cards[2]
+    assert 'href="#what-was-tested-to-explain-the-gap"' in context_cards[3]
+
+
+def test_the_forecasts_page_points_to_how_the_models_were_tested(page):
+    hrefs = _hrefs(page("Forecasts"))
+    assert hrefs.count("model-results?from=forecasts#how-the-models-scored") == 2
+
+
+def test_the_segment_detail_page_with_nothing_chosen_offers_the_biggest_groups_to_click(page):
+    at = page("Segment detail")
+    text = " ".join(m.value for m in at.markdown)
+    assert "Pick a group below" in text
+    assert text.count("By specialty") == 1 and text.count("By age band") == 1
+    hrefs = [h for h in _hrefs(at) if h.startswith("segment-detail?")]
+    assert len(hrefs) >= 15 and all("from=segment-detail" in h for h in hrefs)
+    assert not _cards(at)  # nothing to summarise yet
+
+
+def test_the_segment_detail_page_for_a_specialty_has_its_numbers_its_neighbours_and_its_way_on():
+    at = run_page("Segment detail", flt=flt(specialty="ORTHOPEDIC SURGERY"))
+    assert not at.exception
+    cards = _cards(at)
+    assert len(cards) == 4
+    assert "Share in Jul 2025" in cards[0] and "1.44%" in cards[0] and "-0.44 pp" in cards[0]
+    assert "The whole market: 1.88%" in cards[0]
+    assert "Zilretta visits, all months" in cards[1]
+    assert "-0.53 pp" in cards[2] and " of 22" in cards[3]
+    assert "Rank among specialties" in cards[3]
+    text = " ".join([m.value for m in at.markdown] + [c.value for c in at.caption])
+    assert "oa-crumb" in text and "<b>Orthopedic Surgery</b>" in text
+    assert "This group against all visits" in text and "Forecast for this group" in text
+    assert "Next to its neighbours, by specialty" in text and "▶ Orthopedic Surgery" in text
+    assert "Its trend on Market trend →" in text and "Its forecast on Forecasts →" in text
+    assert "0.44 points below the whole market&#x27;s 1.88%" in text or (
+        "0.44 points below the whole market's 1.88%" in text
+    )
+    assert at.get("vega_lite_chart")
+
+
+def test_a_narrow_group_compares_across_its_neighbours_in_the_most_specific_part():
+    at = run_page(
+        "Segment detail", flt=flt(specialty="ORTHOPEDIC SURGERY", age="65 TO 74", gender="FEMALE")
+    )
+    assert not at.exception
+    text = " ".join(m.value for m in at.markdown)
+    assert "Next to its neighbours, by gender" in text
+    assert "Ages 65 to 74" in text and "<b>Female</b>" in text
+    assert "Orthopedic Surgery</a>" in text  # a crumb back up to the specialty
+
+
+def test_a_group_with_no_visits_or_no_forecast_opens_without_an_error():
+    at = run_page("Segment detail", flt=flt(specialty="ONCOLOGY", age="00 TO 02", gender="MALE"))
+    assert not at.exception
+
+
+def test_a_link_from_another_page_opens_the_page_already_filtered_with_a_way_back():
+    at = AppTest.from_file(APP, default_timeout=120)
+    at.query_params["specialty"] = "RHEUMATOLOGY"
+    at.query_params["period"] = "3Y"
+    at.query_params["from"] = "segments"
+    at.run()
+    assert not at.exception
+    assert at.session_state["flt"] == flt(specialty="RHEUMATOLOGY", period="3Y")
+    back = at.get("page_link")
+    assert [b.proto.label for b in back] == ["Back to Segments"]
+    at.switch_page(SCRIPTS["Segments"]).run()
+    assert next(s for s in at.selectbox if s.label == "Specialty").value == "RHEUMATOLOGY"
+    assert dict(at.query_params) == {"specialty": "RHEUMATOLOGY", "period": "3Y"}
+
+
+def test_an_address_with_a_value_the_data_does_not_have_opens_unfiltered():
+    at = AppTest.from_file(APP, default_timeout=120)
+    at.query_params["specialty"] = "NOT A SPECIALTY"
+    at.query_params["period"] = "99Y"
+    at.query_params["from"] = "nowhere"
+    at.run()
+    assert not at.exception
+    assert at.session_state["flt"] == flt()
+    assert not at.get("page_link")  # no valid source: no back link

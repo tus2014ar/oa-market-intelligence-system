@@ -8,9 +8,19 @@ from __future__ import annotations
 
 import streamlit as st
 
-from oa_market_intelligence.serving import results, style, views
+from oa_market_intelligence.serving import links, results, style, views
 
 SHAP_HORIZONS = {1: "1 month", 3: "3 months"}
+FROM = "Model results"
+# each headline card goes to where its subject is shown
+CARD_LINKS = {
+    "National share": lambda: links.href("Forecasts", source=FROM),
+    "Segment share": lambda: links.href("Forecasts", source=FROM, section="Segment forecasts"),
+    "Decline alert": lambda: links.href(
+        "Forecasts", source=FROM, section="Decline alert, 1 month ahead"
+    ),
+    "Round 2": lambda: "#" + links.anchor_id("Round 2: improvements tried after round 1"),
+}
 
 
 def _scoreboard(board) -> None:
@@ -194,7 +204,9 @@ def render(D: dict, adoption: dict, posthoc: dict, extras: dict, data_chip) -> N
     for col, (label, value, caption) in zip(
         cards, results.headline_cards(board, bias, alert, round2), strict=True
     ):
-        col.markdown(style.kpi_card(label, value, caption), unsafe_allow_html=True)
+        col.markdown(
+            style.kpi_card(label, value, caption, href=CARD_LINKS[label]()), unsafe_allow_html=True
+        )
 
     st.markdown("##### How the models scored")
     _scoreboard(board)
