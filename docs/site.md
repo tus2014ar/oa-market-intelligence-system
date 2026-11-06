@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-105)
+# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-106)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -140,6 +140,22 @@ Cards, rows and bars that stand for something are links to the page that shows i
 
 - **Back link.** A page reached by a link shows "Back to <page>", in the app (no reload), above its content. It is shown only on the page the link brought you to, so it does not follow you around.
 - **A click on a card or row reloads the page** (about 2 to 3 seconds), because it is a plain link; the filters travel in the address so nothing is lost. Buttons and the filter bar stay in the app and are instant.
-- **Not done yet.** Clicking a bar or a tile inside a chart (the Segments bars and grid, the Medicare map) and the other detail pages (competitors, state, price and promotion) are the next pieces; so are the plain-words explanations and the more interactive charts.
+- **Not done yet.** The other detail pages (competitors, state, price and promotion) are the next pieces; so are the plain-words explanations and the more interactive charts.
+## Clicks inside charts and tables (DL-106)
+A bar, a cell, a tile or a table row is also a click target. The chart carries a click selection (`charts._pick`, named `pick`), the page reads which point was clicked (`links.picked`, `common.clicked`) and either moves you or opens a panel. Clicks in a chart or table run inside the app, so they do not reload the page.
+
+| Where | Click | Result |
+|---|---|---|
+| Segments | a bar | Segment detail for that group, other filters kept |
+| Segments | a cell of the grid | Segment detail for that specialty and age band |
+| Forecasts | a bar of the specialty chart | Segment detail for that specialty |
+| Forecasts | a row of the segment table or of the alert table | Segment detail for that exact segment |
+| Context | a tile of the Medicare map | a panel under the map for that state: its rate by year with the 95% range beside the national rate, its providers, rank, room to the national rate, Medicare Advantage share and arthritis prevalence; "Close" removes it |
+
+- **No repeat clicks.** A chart remembers its last click, so the chart keys change every time the app moves you (`common.nav_key`) and when the state panel is closed. Without that, coming back to a page, or closing the panel, would act on the old click again.
+- **The filter bar follows.** `common.go` no longer sets the filter bar's widgets (Streamlit forbids it once they are drawn, which a click in a chart is); it marks them to take the new values when the bar is next drawn.
+- **A click that is not understood does nothing.** No click, a click with the wrong fields or an empty selection never moves the page.
+- **The state panel is Medicare billing, not IQVIA**, and says so. It does not say why a state's rate is what it is.
+
 - **Tests.** `tests/test_serving_links.py` (addresses and quoting, reading them back and dropping bad values, the findings' targets, links in the HTML builders and their escaping), `tests/test_serving_detail.py` (the path, the neighbours, the change over the year, the forecast and the sentence by hand, and the real warehouse) and, in `tests/test_site_app.py`, that every link on every page points at a real page, that every section a link names is a heading on its page, that a link from another page opens the page filtered with a way back and that a bad address opens unfiltered.
 

@@ -325,3 +325,63 @@ def test_the_state_map_has_a_tile_and_a_label_for_each_state():
 
     spec = charts.state_tile_map(context.state_year(_states(), 2024)).to_dict()
     assert [layer["mark"]["type"] for layer in spec["layer"]] == ["rect", "text"]
+
+
+# ------------------------------------------------------------------ one state on its own
+
+
+def _states_with_extras():
+    return _states().assign(ma_participation_rate=0.5, arthritis_prevalence_pct=24.5)
+
+
+def test_a_click_on_a_tile_is_read_from_the_state_it_names():
+    pytest.importorskip("altair")
+    from oa_market_intelligence.serving import charts
+
+    spec = charts.state_tile_map(context.state_year(_states(), 2024)).to_dict()
+    picks = spec["params"]  # a layered chart keeps its selections at the top
+    assert [p["select"]["fields"] for p in picks] == [["state_code"]]
+
+
+def test_one_state_by_hand_has_its_years_its_rank_and_its_gap_to_the_national_rate():
+    d = context.state_detail(_states_with_extras(), "AL")
+    assert d["name"] == "Alabama" and d["year"] == 2024 and d["of"] == 3
+    assert list(d["by_year"]["year"]) == [2022, 2024]
+    assert d["by_year"]["adoption_pct"].tolist() == pytest.approx([2.0, 2.1])
+    assert d["adoption_pct"] == pytest.approx(2.1) and d["providers"] == 400
+    assert d["rank"] == 2  # Arkansas is above it
+    assert d["gap_pp"] == pytest.approx(d["adoption_pct"] - d["national_pct"])
+    assert d["headroom"] == pytest.approx(400 * (0.025 - 0.021))
+    assert d["ma_pct"] == pytest.approx(50.0) and d["arthritis_pct"] == pytest.approx(24.5)
+    assert not d["small"] and context.state_detail(_states_with_extras(), "AK")["small"]
+
+
+def test_an_earlier_year_can_be_asked_for_and_an_unknown_state_gives_nothing():
+    d = context.state_detail(_states_with_extras(), "AR", year=2022)
+    assert d["year"] == 2022 and d["adoption_pct"] == pytest.approx(3.0) and d["rank"] == 1
+    assert context.state_detail(_states_with_extras(), "ZZ") is None
+
+
+def test_the_state_sentence_says_which_side_of_the_national_rate_it_is_on():
+    below = context.state_sentence(context.state_detail(_states_with_extras(), "AK"))
+    above = context.state_sentence(context.state_detail(_states_with_extras(), "AR"))
+    assert "Alaska" in below and "below the national" in below and "3 of 3" in below
+    assert "above the national" in above and "1 of 3" in above
+
+
+def test_the_state_trend_chart_has_a_band_a_line_and_the_national_line():
+    pytest.importorskip("altair")
+    from oa_market_intelligence.serving import charts
+
+    d = context.state_detail(_states_with_extras(), "AL")
+    spec = charts.state_trend_chart(d["by_year"], d["name"]).to_dict()
+    assert _marks(spec)[0] == "area" and "line" in _marks(spec)
+
+
+def test_the_real_subset_has_every_state_with_a_detail(subset):
+    codes = subset["states"]["state_code"].unique()
+    assert len(codes) == 51
+    for code in codes:
+        d = context.state_detail(subset["states"], code)
+        assert d is not None and d["of"] >= 40 and 1 <= d["rank"] <= d["of"]
+        assert len(d["by_year"]) >= 2

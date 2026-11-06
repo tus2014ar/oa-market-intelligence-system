@@ -7,6 +7,7 @@ company's filings; the tab sets sources side by side and says nothing about caus
 
 from __future__ import annotations
 
+import common
 import streamlit as st
 
 from oa_market_intelligence.serving import charts, context, links, style
@@ -121,6 +122,51 @@ def _checks(ctx) -> None:
         )
 
 
+def _clear_state() -> None:
+    st.session_state["ctx_state"] = None
+    st.session_state["nav"] = st.session_state.get("nav", 0) + 1  # the map forgets the tile clicked
+
+
+def _state_panel(states) -> None:
+    """The state clicked on the map: its rate by year beside the national rate, and its figures."""
+    code = st.session_state.get("ctx_state")
+    detail = context.state_detail(states, code) if code else None
+    if detail is None:
+        return
+    with st.container(border=True):
+        top = st.columns([4, 1])
+        top[0].markdown(f"**{detail['name']}**")
+        top[1].button("Close", key="ctx_state_close", on_click=_clear_state, width="stretch")
+        st.write(context.state_sentence(detail))
+        left, right = st.columns([2.1, 1])
+        with left:
+            st.altair_chart(
+                charts.state_trend_chart(detail["by_year"], detail["name"]), width="stretch"
+            )
+        with right:
+            rows = [
+                (f"Visible providers, {detail['year']}", f"{detail['providers']:,}"),
+                ("Billed Zilretta", f"{detail['zilretta_providers']:,}"),
+                ("Rank by rate", f"{detail['rank']} of {detail['of']}"),
+            ]
+            if detail["headroom"] is not None:
+                rows.append(
+                    ("Room to the national rate", f"{max(detail['headroom'], 0):.0f} providers")
+                )
+            if detail["ma_pct"] is not None:
+                rows.append(("Medicare Advantage share", f"{detail['ma_pct']:.0f}%"))
+            if detail["arthritis_pct"] is not None:
+                rows.append(("Arthritis prevalence", f"{detail['arthritis_pct']:.1f}%"))
+            st.markdown(style.stand_rows(rows), unsafe_allow_html=True)
+        st.caption(
+            "Original Medicare billing, not IQVIA. The band is the 95% interval of the state's "
+            "rate; it is wide where few providers are visible"
+            + (" (this state has under 100)." if detail["small"] else ".")
+            + " Room is the providers who would need to bill for the state to reach the national "
+            "rate. Nothing here says why a state's rate is what it is."
+        )
+
+
 def _states(ctx) -> None:
     states = ctx["states"]
     national = context.national_adoption(states)
@@ -133,7 +179,15 @@ def _states(ctx) -> None:
         view = context.state_year(states, year)
         left, right = st.columns([2.1, 1])
         with left:
-            st.altair_chart(charts.state_tile_map(view), width="content")
+            event = st.altair_chart(
+                charts.state_tile_map(view),
+                width="content",
+                on_select="rerun",
+                key=common.nav_key("ctx_map"),
+            )
+            hit = common.clicked(event, ["state_code"])
+            if hit:
+                st.session_state["ctx_state"] = hit["state_code"]
         with right:
             rate = float(national.loc[national["year"] == year, "pct"].iloc[0])
             rho = context.rank_stability(states)
@@ -171,8 +225,10 @@ def _states(ctx) -> None:
             "state with under 100 visible providers, so its rate has a wide interval. Room is "
             "the providers who would need to bill for the state to reach the national rate. The "
             "states keep much the same order from 2022 to 2024 (rank correlation "
-            f"{context.rank_stability(states):.2f}), which passes the project's own test (0.7) for using the order."
+            f"{context.rank_stability(states):.2f}), which passes the project's own test (0.7) for using the order. Click a state to see it "
+            "on its own."
         )
+        _state_panel(states)
 
 
 def render(ctx: dict, findings_items: list[dict], data_chip) -> None:

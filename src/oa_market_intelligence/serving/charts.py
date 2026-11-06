@@ -111,6 +111,12 @@ def market_trend_chart(
     return _style(alt.layer(*layers).properties(height=HEIGHT + 60))
 
 
+def _pick(*fields: str) -> alt.Parameter:
+    """A click selection called "pick" on the given data fields: the page reads which point was
+    clicked (see `links.picked`) and takes you to it."""
+    return alt.selection_point(name="pick", fields=list(fields), on="click")
+
+
 def national_fan_chart(frames: dict[str, pd.DataFrame]) -> alt.Chart:
     """The national share so far and the forecast at each horizon: a dotted line from the latest
     month to each forecast, a thick bar for the 80% range, a thin one for the 90% range and a
@@ -183,7 +189,8 @@ def specialty_forecast_chart(spec: pd.DataFrame, horizon: int) -> alt.Chart:
     ]
     bars = (
         alt.Chart(spec)
-        .mark_bar(color=PROJECTED, opacity=0.75, cornerRadiusEnd=3)
+        .mark_bar(color=PROJECTED, opacity=0.75, cornerRadiusEnd=3, cursor="pointer")
+        .add_params(_pick("specialty"))
         .encode(y=y, x=alt.X("forecast_pct:Q", title="Share of visits (%)"), tooltip=tip)
     )
     ticks = (
@@ -241,24 +248,63 @@ def state_tile_map(view: pd.DataFrame) -> alt.Chart:
         alt.Tooltip("n_zilretta_providers:Q", title="Providers billing Zilretta"),
         alt.Tooltip("n_visible_providers:Q", title="Visible providers"),
     ]
-    tiles = base.mark_rect(cornerRadius=4).encode(
-        color=alt.Color(
-            "pct:Q",
-            scale=alt.Scale(domain=[0, cap], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]),
-            legend=alt.Legend(title=f"Adoption (%), darkest at {cap:g}%+", orient="bottom"),
-        ),
-        opacity=alt.Opacity(
-            "size:N",
-            scale=alt.Scale(domain=[MANY, FEW], range=[1.0, 0.5]),
-            legend=alt.Legend(title=None, orient="bottom"),
-        ),
-        tooltip=tip,
+    tiles = (
+        base.mark_rect(cornerRadius=4, cursor="pointer")
+        .add_params(_pick("state_code"))
+        .encode(
+            color=alt.Color(
+                "pct:Q",
+                scale=alt.Scale(domain=[0, cap], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]),
+                legend=alt.Legend(title=f"Adoption (%), darkest at {cap:g}%+", orient="bottom"),
+            ),
+            opacity=alt.Opacity(
+                "size:N",
+                scale=alt.Scale(domain=[MANY, FEW], range=[1.0, 0.5]),
+                legend=alt.Legend(title=None, orient="bottom"),
+            ),
+            tooltip=tip,
+        )
     )
     labels = base.mark_text(fontSize=11, fontWeight="bold").encode(
         text="state_code:N",
         color=alt.condition("datum.pct > 2", alt.value("white"), alt.value("#1B2A41")),
     )
     return _style((tiles + labels).properties(height=alt.Step(30), width=alt.Step(30)))
+
+
+def state_trend_chart(by_year: pd.DataFrame, name: str) -> alt.Chart:
+    """One state's Medicare adoption by year: its rate and interval (teal, with a band) beside the
+    national rate (grey, dashed). `by_year` comes from `context.state_detail`."""
+    long = by_year.melt(
+        id_vars=["year", "ci_low_pct", "ci_high_pct"],
+        value_vars=["adoption_pct", "national_pct"],
+        var_name="series",
+        value_name="pct",
+    )
+    long["series"] = long["series"].map({"adoption_pct": name, "national_pct": "National"})
+    colours = alt.Scale(domain=[name, "National"], range=[SERIES, "#7A8794"])
+    x = alt.X("year:O", title=None, axis=alt.Axis(labelAngle=0))
+    band = (
+        alt.Chart(by_year)
+        .mark_area(color=SERIES, opacity=0.15)
+        .encode(
+            x=x, y=alt.Y("ci_low_pct:Q", title="Providers billing Zilretta (%)"), y2="ci_high_pct:Q"
+        )
+    )
+    base = alt.Chart(long).encode(
+        x=x,
+        y=alt.Y("pct:Q", title="Providers billing Zilretta (%)"),
+        color=alt.Color("series:N", scale=colours, legend=alt.Legend(title=None, orient="bottom")),
+    )
+    dash = alt.condition(alt.datum.series == "National", alt.value([6, 5]), alt.value([1, 0]))
+    tip = [
+        alt.Tooltip("series:N", title="Series"),
+        alt.Tooltip("year:O", title="Year"),
+        alt.Tooltip("pct:Q", title="Adoption (%)", format=".2f"),
+    ]
+    line = base.mark_line(strokeWidth=3).encode(strokeDash=dash)
+    points = base.mark_circle(size=50).encode(tooltip=tip)
+    return _style((band + line + points).properties(height=HEIGHT - 40))
 
 
 def compare_chart(frame: pd.DataFrame, group_label: str) -> alt.Chart:
@@ -311,7 +357,8 @@ def group_chart(table: pd.DataFrame, show: str = "share") -> alt.Chart:
     )
     return _style(
         alt.Chart(frame)
-        .mark_bar(cornerRadiusEnd=3)
+        .mark_bar(cornerRadiusEnd=3, cursor="pointer")
+        .add_params(_pick("group"))
         .encode(
             y=alt.Y(
                 "label:N", sort="-x", title=None, axis=alt.Axis(labelLimit=260, labelOverlap=False)
@@ -362,7 +409,8 @@ def share_grid(cells: pd.DataFrame) -> alt.Chart:
     empty = base.transform_filter("!datum.shown").mark_rect(color="#7A879433").encode(tooltip=tip)
     filled = (
         base.transform_filter("datum.shown")
-        .mark_rect()
+        .mark_rect(cursor="pointer")
+        .add_params(_pick("row", "column"))
         .encode(
             color=alt.Color(
                 "share_pct:Q",

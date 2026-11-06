@@ -6,6 +6,7 @@ logic, the wording and the drawing.
 
 from __future__ import annotations
 
+import common
 import streamlit as st
 
 from oa_market_intelligence.serving import charts, forecasts, links, style, views
@@ -117,9 +118,15 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
         if spec.empty:
             st.write("No specialty in this selection has enough visits to chart.")
         else:
-            st.altair_chart(
-                charts.specialty_forecast_chart(spec.head(14), horizon), width="stretch"
+            event = st.altair_chart(
+                charts.specialty_forecast_chart(spec.head(14), horizon),
+                width="stretch",
+                on_select="rerun",
+                key=common.nav_key("fc_spec"),
             )
+            hit = common.clicked(event, ["specialty"])
+            if hit:
+                common.go_detail("specialty", hit["specialty"], flt, "Forecasts")
         left_out = spec.attrs.get("left_out", 0)
         st.caption(
             "Orange bar: the forecast. Dark tick: the share in the latest month. Specialties "
@@ -131,7 +138,8 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
                 else ""
             )
             + ". Part of any forecast change is a segment falling back toward its usual level, "
-            "so read the forecast as a baseline, not as a prediction for one segment."
+            "so read the forecast as a baseline, not as a prediction for one segment. Click a "
+            "bar to open that specialty."
         )
     with st.container(border=True):
         shown = view
@@ -139,7 +147,7 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             f"**Segments{' in this selection' if (specialty or age or gender) else ''}"
             f" ({len(shown)})**"
         )
-        st.dataframe(
+        event = st.dataframe(
             shown[
                 [
                     "specialty_label",
@@ -164,6 +172,9 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
                 }
             ),
             hide_index=True,
+            on_select="rerun",
+            selection_mode="single-row",
+            key=common.nav_key("fc_table"),
             column_config={
                 "Latest month (%)": st.column_config.NumberColumn(format="%.2f"),
                 f"Forecast, {horizon} mo (%)": st.column_config.NumberColumn(format="%.2f"),
@@ -171,9 +182,20 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
                 "Visits in latest month": st.column_config.NumberColumn(format="%d"),
             },
         )
+        row = common.clicked_row(event)
+        if row is not None:  # a click on a row opens that segment
+            picked = shown.iloc[row]
+            common.go(
+                "Segment detail",
+                "Forecasts",
+                specialty=picked["specialty"],
+                age=picked["age_band"],
+                gender=picked["gender"],
+                period=flt["period"],
+            )
         st.caption(
             f"Segments under {forecasts.MIN_ALERT_VISITS} visits in the latest month are marked "
-            "small: one prescription moves their share a lot."
+            "small: one prescription moves their share a lot. Click a row to open that segment."
         )
         st.download_button(
             "Download these forecasts (CSV)",
@@ -205,7 +227,7 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
         if flagged.empty:
             st.write("No segment is flagged.")
         else:
-            st.dataframe(
+            event = st.dataframe(
                 flagged[
                     ["specialty_label", "age_label", "gender_label", "alert_score", "origin_visits"]
                 ].rename(
@@ -218,6 +240,9 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
                     }
                 ),
                 hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key=common.nav_key("fc_alerts"),
                 column_config={
                     "Visits in latest month": st.column_config.NumberColumn(format="%d"),
                     "Alert score": st.column_config.ProgressColumn(
@@ -225,10 +250,22 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
                     ),
                 },
             )
+        row = common.clicked_row(event)
+        if row is not None:  # a click on a row opens that segment
+            picked = flagged.iloc[row]
+            common.go(
+                "Segment detail",
+                "Forecasts",
+                specialty=picked["specialty"],
+                age=picked["age_band"],
+                gender=picked["gender"],
+                period=flt["period"],
+            )
         st.caption(
             "About half of the alerts were real declines in testing, and a one-line rule (this "
             "segment just spiked) does almost as well, so treat the list as a starting point for "
-            "a look, never as a reason to act on its own. The alert is a 1-month flag only."
+            "a look, never as a reason to act on its own. The alert is a 1-month flag only. Click a "
+            "row to open that segment."
         )
         st.markdown(
             style.link_line(

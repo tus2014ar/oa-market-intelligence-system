@@ -146,13 +146,17 @@ def filter_bar(page: str) -> None:
     uses = FILTERED_PAGES[page]
     seg = context().D["seg"]
     saved = st.session_state.setdefault("flt", dict(DEFAULTS))
+    moved = st.session_state.pop("sync_bar", False)  # set by `go`, which cannot set a drawn widget
     for key, value in (
         ("w_specialty", saved["specialty"] or ALL),
         ("w_age", saved["age"] or ALL),
         ("w_gender", saved["gender"] or ALL),
         ("w_period", saved["period"]),
     ):
-        st.session_state.setdefault(key, value)
+        if moved:
+            st.session_state[key] = value
+        else:
+            st.session_state.setdefault(key, value)
     with st.container(border=True, key="filter_bar"):
         cols = st.columns([2.3, 1.4, 1.3, 2.0, 0.9])
         by_visits = seg.groupby("specialty")["category"].sum().sort_values(ascending=False)
@@ -236,9 +240,8 @@ def go(target: str, source: str, **chosen) -> None:
     remembering the page it came from for the back link."""
     st.session_state["flt"] = {**DEFAULTS, **{k: v for k, v in chosen.items() if v}}
     st.session_state["from"] = (source, target)
-    for key, saved in (("w_specialty", "specialty"), ("w_age", "age"), ("w_gender", "gender")):
-        st.session_state[key] = st.session_state["flt"][saved] or ALL
-    st.session_state["w_period"] = st.session_state["flt"]["period"]
+    st.session_state["nav"] = st.session_state.get("nav", 0) + 1
+    st.session_state["sync_bar"] = True  # the filter bar takes the new values when it is next drawn
     st.switch_page(SCRIPTS[target])
 
 
@@ -247,6 +250,36 @@ def back_link(page_title: str) -> None:
     came = st.session_state.get("from")
     if came and came[1] == page_title and came[0] in SCRIPTS and came[0] != page_title:
         st.page_link(SCRIPTS[came[0]], label=f"Back to {came[0]}", icon=":material/arrow_back:")
+
+
+def nav_key(base: str) -> str:
+    """A chart's key, changed every time the app moves you to another page, so a click made on a
+    chart is never found still selected when you come back (it would move you again)."""
+    return f"{base}_{st.session_state.get('nav', 0)}"
+
+
+def clicked(event: object, fields: list[str]) -> dict | None:
+    """What was clicked in a chart: the values of `fields` of the point chosen, or None. Accepts the
+    event Streamlit returns and the plain dict a test presets."""
+    selection = dict(event).get("selection") if event is not None else None
+    return links.picked(selection, "pick", fields)
+
+
+def clicked_row(event: object) -> int | None:
+    """The position of the row clicked in a table (a selection of one row), or None."""
+    selection = dict(event).get("selection") if event is not None else None
+    rows = selection.get("rows") if hasattr(selection, "get") else None
+    return int(rows[0]) if rows else None
+
+
+def go_detail(column: str, group: str, flt: dict, source: str, **extra) -> None:
+    """Move to the Segment detail page for a group (a specialty, an age band or a gender, by its raw
+    key), keeping the other filters and the period, as a card's link would. `extra` adds more parts
+    (for the grid, a specialty and an age band at once)."""
+    chosen = {"specialty": flt.get("specialty"), "age": flt.get("age"), "gender": flt.get("gender")}
+    chosen[{"specialty": "specialty", "age_band": "age", "gender": "gender"}[column]] = group
+    chosen.update(extra)
+    go("Segment detail", source, period=flt.get("period"), **chosen)
 
 
 def detail_href(column: str, group: str | None, flt: dict, source: str) -> str | None:
