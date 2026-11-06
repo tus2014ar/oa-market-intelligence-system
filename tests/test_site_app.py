@@ -558,13 +558,13 @@ def test_looking_closer_at_another_thing_shows_its_own_connections():
 
 
 def _box(monkeypatch, **env):
-    """The Ask Claude page with the given secrets in the environment and a fresh set of limits."""
+    """The AI Question Box page with the given secrets in the environment and fresh limits."""
     for name in KEYS:
         monkeypatch.delenv(name, raising=False)
     for name, value in env.items():
         monkeypatch.setenv(name, value)
     st.cache_resource.clear()
-    return run_page("Ask Claude")
+    return run_page("AI Question Box")
 
 
 def _stub_claude(monkeypatch, answer="Share was 1.88% in Jul 2025.", tokens=(100, 20), **extra):
@@ -1037,7 +1037,7 @@ def test_the_charts_have_a_what_does_this_mean_button_where_a_chart_is_drawn(pag
         "Findings": 0,
         "Context": 2,
         "Market map": 1,
-        "Ask Claude": 1,
+        "AI Question Box": 1,
     }
 
 
@@ -1161,7 +1161,7 @@ def test_the_groups_over_time_picker_and_the_shap_switch_still_work():
     assert not model.exception
 
 
-# ---------------------- the Ask Claude page, brought up to the site's standard
+# ---------------------- the AI Question Box page, brought up to the site's standard
 
 
 def test_without_a_key_the_page_shows_what_the_box_would_look_up(monkeypatch):
@@ -1218,9 +1218,9 @@ def test_an_answers_sources_open_the_page_behind_them_and_the_chat_is_kept(monke
     assert any(c.value.startswith("Sources: Forecasts page") for c in at.caption)
     next(b for b in at.button if b.label == "Open Forecasts").click().run()
     assert not at.exception
-    assert at.session_state["from"] == ("Ask Claude", "Forecasts")
+    assert at.session_state["from"] == ("AI Question Box", "Forecasts")
     assert len(at.session_state["chat"]) == 2  # the conversation survives the move
-    assert [b.proto.label for b in at.get("page_link")] == ["Back to Ask Claude"]
+    assert [b.proto.label for b in at.get("page_link")] == ["Back to AI Question Box"]
 
 
 def test_an_answer_with_no_page_behind_its_source_has_no_open_button(monkeypatch):

@@ -1,6 +1,7 @@
-"""Tests for the Ask Claude page's logic and wording (serving/askview.py): the example questions,
-what each would look up (run on the committed warehouse), the eleven tools in plain words, the page
-behind each source, and the plain account of what the box can and cannot do. No model is called."""
+"""Tests for the AI Question Box page's logic and wording (serving/askview.py): the example
+questions, what each would look up (run on the committed warehouse), the eleven tools in plain
+words, the page behind each source, and the plain account of what the box can and cannot do. No
+model is called."""
 
 import json
 

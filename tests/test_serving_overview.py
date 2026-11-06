@@ -22,7 +22,7 @@ STATUS = {
 
 def test_the_tab_row_is_ten_distinct_names_starting_with_the_overview():
     assert len(overview.TAB_NAMES) == 11 and len(set(overview.TAB_NAMES)) == 11
-    assert overview.TAB_NAMES[0] == "Overview" and overview.TAB_NAMES[-1] == "Ask Claude"
+    assert overview.TAB_NAMES[0] == "Overview" and overview.TAB_NAMES[-1] == "AI Question Box"
 
 
 def test_the_guide_covers_every_tab_but_the_overview_in_the_order_of_the_row():
@@ -33,7 +33,7 @@ def test_the_guide_covers_every_tab_but_the_overview_in_the_order_of_the_row():
 
 
 def test_the_guide_does_not_promise_a_live_question_box():
-    ask = dict(overview.guide())["Ask Claude"]
+    ask = dict(overview.guide())["AI Question Box"]
     assert "off until a key is configured" in ask
 
 

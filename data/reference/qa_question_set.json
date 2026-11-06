@@ -1,5 +1,5 @@
 {
-  "description": "The question set for the Ask Claude tab (DL-88). Each in-scope question lists the tool calls a good answer would make and facts those calls must return (checked offline in CI on the committed data). Each question also lists words a good answer includes or avoids; these are checked on real answers by `oa-ask-check`, which needs an API key and is run by the owner. The word checks are a rough screen, not a grade of quality: read the answers too.",
+  "description": "The question set for the AI Question Box page (DL-88). Each in-scope question lists the tool calls a good answer would make and facts those calls must return (checked offline in CI on the committed data). Each question also lists words a good answer includes or avoids; these are checked on real answers by `oa-ask-check`, which needs an API key and is run by the owner. The word checks are a rough screen, not a grade of quality: read the answers too.",
   "questions": [
     {
       "id": "q01", "kind": "in_scope", "category": "trend", "audience": "brand manager",

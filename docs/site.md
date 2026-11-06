@@ -1,4 +1,4 @@
-# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-109)
+# The site (DL-85, DL-86, DL-88, DL-89, DL-90, DL-97 to DL-110)
 
 A Streamlit page over the published warehouse. It is built and tested; **it is not deployed** (the hosting steps are phase 4 of the serving layer). The Claude question box (phase 3, DL-86) is built and tested with a scripted client; it has not been run against the real Claude API, which needs your key.
 
@@ -21,7 +21,7 @@ streamlit run app/streamlit_app.py
 | Findings | four cards to read first (findings 1, 2, 14 and 16); the 17 findings in five themes (the gap between sales and visits, outside checks, possible causes, what limits the data, what the models showed), each with what it means up front and the evidence folded away under its source; a theme filter and a CSV; a pointer from the models theme to round 2 on the Model results tab | `data/reference/findings.json` (equal to the README table, tested) |
 | Context | four cards (net sales and IQVIA visits in 2024 against 2021, Medicare providers billing Zilretta, tested explanations for the gap); the company's quarterly net sales beside IQVIA's Zilretta visits, each indexed to the 2021 average, with the change from the year before and the project's own caution that the size of the decline is not a market fact; the four checks of why the two part ways (population, setting, value per visit, concentration) with their stored verdicts; Medicare adoption by state as a tile map by year, with the states furthest below the national rate and the rank stability; the dated events, oldest first, with any not verified against their source flagged | `data/published/external_subset.db` (the committed public-data subset: company filings, CMS Medicare billing, the stored verdicts), `data/reference/findings.json` |
 | Market map | the knowledge graph as three views you can explore (Zilretta and the groups it is compared with; which specialties each group's visits come from; the event timeline), a closer look at any point with its sources, and the events drawn against the share | `serving/market_map.py`, `data/reference/knowledge_graph.json` |
-| Ask Claude | a conversation (its example questions in one card for each audience) that answers from eleven read-only tools (the tables above and the knowledge graph), with sources, charts on request and a check on the figures; off unless an API key is configured | `serving/qa.py`, `serving/qa_tools.py`, `serving/guard.py`, `serving/charts.py`, `serving/answer_check.py` |
+| AI Question Box | a conversation (its example questions in one card for each audience) that answers from eleven read-only tools (the tables above and the knowledge graph), with sources, charts on request and a check on the figures; off unless an API key is configured | `serving/qa.py`, `serving/qa_tools.py`, `serving/guard.py`, `serving/charts.py`, `serving/answer_check.py` |
 
 A banner under the title says when the latest month of data is stale, which it is while there is one static extract (the data end in July 2025).
 
@@ -55,7 +55,7 @@ A banner under the title says when the latest month of data is stale, which it i
   streamlit run app/streamlit_app.py
   ```
 
-  Then open the Ask Claude tab. Check each answer against the tab it came from; the example questions on the tab are a good first set.
+  Then open the AI Question Box page. Check each answer against the tab it came from; the example questions on the tab are a good first set.
 - **Tests.** `tests/test_serving_qa_tools.py` (the tools on the real warehouse), `tests/test_serving_qa.py` (the loop with a scripted client: tool round trip, unknown tool, round limit, token totals, API failure with no key text, injection text kept out of the system prompt, history, streaming, sources, charts, figures to check, follow-ups, caching marks), `tests/test_serving_answer_check.py`, `tests/test_serving_charts.py`, `tests/test_serving_qa_check.py`, `tests/test_serving_guard.py` (gate and limits) and the question-box tests in `tests/test_site_app.py` (off without a key, access code, examples, a streamed answer with its sources and follow-ups, history and clearing, a chart and figures to check, empty and over-long questions, the daily budget, the hourly limit, a failed answer, the key never on the page).
 
 ## The conversation (DL-88)
@@ -158,6 +158,8 @@ A bar, a cell, a tile or a table row is also a click target. The chart carries a
 - **The state panel is Medicare billing, not IQVIA**, and says so. It does not say why a state's rate is what it is.
 
 ## The question box, brought up to the site's standard (DL-109)
+The page is named **AI Question Box** (DL-110; it was "Ask Claude" until then). Its address is `ai-question-box`, its view file `app/views/ai_question_box.py` and the back link reads "Back to AI Question Box". Inside the box, the model is still called Claude, because that is what answers.
+
 The box's behaviour, tools, limits and prompt are unchanged. What changed is the page around it, in `serving/askview.py` (tested; no model is called) and `app/ask_tab.py`:
 
 - **What it would look up.** Where no key is configured the page used to show one line. It now also lets you pick any of the eight example questions and shows the lookups that question needs (the same read-only tools Claude is given, run on the same snapshot) and, folded, the data each returns, with the page that shows the same thing. It shows the data an answer would be written from, never an answer: only a model can write one, and the page says so.

@@ -160,7 +160,7 @@ PAGE_SUMMARY: dict[str, str] = {
         "How products, makers, specialties and events connect. Pick one to see what it is linked "
         "to. A link means the two appear together in the data, not that one causes the other."
     ),
-    "Ask Claude": (
+    "AI Question Box": (
         "Type a question in plain words and get an answer built from the site's own tables, with "
         "the figures to check. It is off until a key is configured for the site."
     ),
@@ -217,7 +217,7 @@ PAGE_TERMS: dict[str, tuple[str, ...]] = {
         "Not verified",
     ),
     "Market map": ("Visits", "Not verified"),
-    "Ask Claude": ("Share of visits", "IQVIA data"),
+    "AI Question Box": ("Share of visits", "IQVIA data"),
 }
 
 # a short note for a chart or table: how to read it, and what it does not tell you
