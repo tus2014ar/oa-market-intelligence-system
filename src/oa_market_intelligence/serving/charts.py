@@ -21,6 +21,7 @@ PROJECTED = "#eb6834"
 SERIES = "#0F8B8D"  # the site's teal, for the tab-level series
 TREND_GUIDE = "#E8A33D"  # amber: the straight-line guide and the data-capture dip
 FALL = "#C8553D"  # rust: a fall
+DATE_AXIS = alt.Axis(format="%b %Y", tickCount=6, labelOverlap=True)
 GRID_CAP = 8  # the grid's colour scale stops here, so a few extreme cells do not wash out the rest
 CATEGORICAL = [
     "#0F8B8D",
@@ -197,6 +198,77 @@ def specialty_forecast_chart(spec: pd.DataFrame, horizon: int) -> alt.Chart:
         .encode(y=y, x="last_pct:Q", tooltip=tip)
     )
     return _style((bars + ticks).properties(height=alt.Step(BAR_STEP)))
+
+
+def company_visits_chart(indexed: pd.DataFrame) -> alt.Chart:
+    """The company's quarterly net sales and IQVIA's Zilretta visits, each as a percentage of its
+    own average quarter in the base year (100), so the two can share one axis. `indexed` comes from
+    `context.indexed_quarters`."""
+    colours = alt.Scale(
+        domain=["Company net sales", "IQVIA Zilretta visits"], range=[TREND_GUIDE, SERIES]
+    )
+    base = alt.Chart(indexed).encode(
+        x=alt.X("date:T", title=None, axis=DATE_AXIS),
+        y=alt.Y("index:Q", title="Average quarter of 2021 = 100", scale=alt.Scale(zero=False)),
+        color=alt.Color("series:N", scale=colours, legend=alt.Legend(title=None, orient="bottom")),
+    )
+    tip = [
+        alt.Tooltip("series:N", title="Series"),
+        alt.Tooltip("quarter_id:N", title="Quarter"),
+        alt.Tooltip("index:Q", title="Index (2021 = 100)", format=".0f"),
+        alt.Tooltip("value:Q", title="Value", format=","),
+    ]
+    rule = alt.Chart(pd.DataFrame({"y": [100]})).mark_rule(color="#7A8794", strokeDash=[3, 4])
+    line = base.mark_line(strokeWidth=3) + base.mark_circle(size=50).encode(tooltip=tip)
+    return _style((rule.encode(y="y:Q") + line).properties(height=HEIGHT))
+
+
+def state_tile_map(view: pd.DataFrame) -> alt.Chart:
+    """The states as a tile map (one equal square each, laid out roughly as the country), coloured
+    by the share of visible Medicare providers who billed Zilretta. A state with few providers is
+    drawn paler, because its rate has a wide interval. `view` comes from `context.state_year`."""
+    from oa_market_intelligence.serving import context
+
+    cap = context.GRID_CAP
+    MANY, FEW = "100 or more providers", "Fewer than 100 providers (wide interval)"
+    data = view.assign(
+        pct=view["adoption_pct"],
+        size=view["small"].map({True: FEW, False: MANY}),
+    )
+    base = alt.Chart(data).encode(
+        x=alt.X("col:O", axis=None, scale=alt.Scale(domain=list(range(12)), paddingInner=0.08)),
+        y=alt.Y("row:O", axis=None, scale=alt.Scale(domain=list(range(8)), paddingInner=0.08)),
+    )
+    tip = [
+        alt.Tooltip("state_name:N", title="State"),
+        alt.Tooltip("adoption_pct:Q", title="Adoption (%)", format=".2f"),
+        alt.Tooltip("ci_low_pct:Q", title="Interval low (%)", format=".2f"),
+        alt.Tooltip("ci_high_pct:Q", title="Interval high (%)", format=".2f"),
+        alt.Tooltip("n_zilretta_providers:Q", title="Providers billing Zilretta"),
+        alt.Tooltip("n_visible_providers:Q", title="Visible providers"),
+    ]
+    tiles = base.mark_rect(cornerRadius=4).encode(
+        color=alt.Color(
+            "pct:Q",
+            scale=alt.Scale(
+                domain=[0, cap], clamp=True, range=["#E3F1F1", SERIES, "#0B4F50"]
+            ),
+            legend=alt.Legend(title=f"Adoption (%), darkest at {cap:g}%+", orient="bottom"),
+        ),
+        opacity=alt.Opacity(
+            "size:N",
+            scale=alt.Scale(
+                domain=[MANY, FEW], range=[1.0, 0.5]
+            ),
+            legend=alt.Legend(title=None, orient="bottom"),
+        ),
+        tooltip=tip,
+    )
+    labels = base.mark_text(fontSize=11, fontWeight="bold").encode(
+        text="state_code:N",
+        color=alt.condition("datum.pct > 2", alt.value("white"), alt.value("#1B2A41")),
+    )
+    return _style((tiles + labels).properties(height=alt.Step(30), width=alt.Step(30)))
 
 
 def group_chart(table: pd.DataFrame, show: str = "share") -> alt.Chart:

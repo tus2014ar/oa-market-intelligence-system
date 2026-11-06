@@ -58,6 +58,12 @@ CSS = f"""<style>
 .oa-find details {{margin-left:2.4rem;font-size:.85rem}}
 .oa-find summary {{cursor:pointer;opacity:.75}}
 .oa-find details div {{margin-top:.3rem;opacity:.9}}
+.oa-tl {{padding:.7rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
+.oa-tl-when {{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}}
+.oa-tl-date {{font-weight:700;font-variant-numeric:tabular-nums}}
+.oa-tl-what {{margin-top:.25rem;font-size:.92rem}}
+.oa-tl-src {{margin-top:.2rem;font-size:.78rem;opacity:.65}}
+.oa-tl-flag {{color:{RED};opacity:1;font-weight:600}}
 .oa-stand {{display:flex;justify-content:space-between;align-items:baseline;
   padding:.4rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-stand .k {{font-size:.88rem;opacity:.8}} .oa-stand .x {{font-weight:700;font-size:1.05rem}}
@@ -159,6 +165,23 @@ def finding_card(finding_id: int, title: str, impact: str, evidence: str, source
         f"<details><summary>Evidence · {escape(source)}</summary>"
         f"<div>{escape(evidence)}</div></details></div>"
     )
+
+
+def timeline_rows(rows: list[dict]) -> str:
+    """A dated list of events, oldest first: the date, the type, what happened, the source in small
+    type and a plain note where an event was not verified against its source."""
+    out = []
+    for r in rows:
+        flag = '<span class="oa-tl-flag"> · not verified against its source</span>'
+        note = "" if r["verified"] else flag
+        out.append(
+            '<div class="oa-tl"><div class="oa-tl-when">'
+            f'<span class="oa-tl-date">{escape(r["date"])}</span>'
+            f'<span class="oa-pill2">{escape(r["type"])}</span></div>'
+            f'<div class="oa-tl-what">{escape(r["description"])}</div>'
+            f'<div class="oa-tl-src">Source: {escape(r["source"])}{note}</div></div>'
+        )
+    return "".join(out)
 
 
 def stand_rows(rows: list[tuple[str, str]]) -> str:

@@ -16,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+import context_tab  # noqa: E402  (app/context_tab.py, the Context tab)
 import findings_tab  # noqa: E402  (app/findings_tab.py, the Findings tab)
 import forecasts_tab  # noqa: E402  (app/forecasts_tab.py, the Forecasts tab)
 import market_trend  # noqa: E402  (app/market_trend.py, the Market trend tab)
@@ -62,6 +63,18 @@ def load(db: str, run_log: str) -> dict:
 
 
 D = load(str(DB), str(RUN_LOG))
+
+
+@st.cache_data(show_spinner=False)
+def load_external(db: str) -> dict:
+    engine = data.open_engine(db)
+    try:
+        return data.external_context(engine)
+    finally:
+        engine.dispose()
+
+
+EXTERNAL = load_external(str(os.environ.get("OA_EXTERNAL_DB_PATH", data.EXTERNAL_DB_PATH)))
 ADOPTION, POSTHOC, FINDINGS = data.serving_map(), data.posthoc(), data.findings()
 ROUND2 = {
     "round2": data.round2(),
@@ -294,6 +307,7 @@ tabs = st.tabs(
         "Model results",
         "Data status",
         "Findings",
+        "Context",
         "Market map",
         "Ask Claude",
     ]
@@ -413,8 +427,12 @@ with tabs[5]:
 with tabs[6]:
     findings_tab.render(FINDINGS, data_chip)
 
-# ------------------------------------------------------------------ market map
+# ------------------------------------------------------------------ context
 with tabs[7]:
+    context_tab.render(EXTERNAL, FINDINGS, data_chip)
+
+# ------------------------------------------------------------------ market map
+with tabs[8]:
     data_chip()
     GRAPH = SNAPSHOT.graph
     st.write(
@@ -475,7 +493,7 @@ with tabs[7]:
     st.dataframe(market_map.event_table(GRAPH), hide_index=True)
 
 # ------------------------------------------------------------------ ask claude
-with tabs[8]:
+with tabs[9]:
     data_chip()
     st.write(
         "Ask a question about the market trend, the segments, the forecasts or how the models "
