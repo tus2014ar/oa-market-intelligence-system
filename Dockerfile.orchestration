@@ -1,0 +1,31 @@
+# The orchestrator image (DL-128): the pipeline image plus Dagster and its web UI.
+# Run it through compose (it needs the data folder and a volume for Dagster's run history):
+#
+#   docker compose --profile orchestration up --build orchestrator
+#   open http://localhost:3000   (Jobs -> publish_job -> Launchpad -> Launch run)
+#
+# Python 3.12, the same as the pipeline image and CI. Both requirement files are installed in one
+# resolve so that a clash between Dagster and a pinned package fails the build, not the run.
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    DAGSTER_HOME=/dagster_home
+
+WORKDIR /app
+
+COPY requirements.txt requirements-orchestration.txt ./
+RUN pip install -r requirements.txt -r requirements-orchestration.txt
+
+# pyproject.toml carries [tool.dagster] module_name, which is how `dagster dev` finds the job.
+COPY pyproject.toml README.md ./
+COPY src ./src
+RUN pip install --no-deps -e . && mkdir -p /dagster_home
+
+EXPOSE 3000
+
+# Single process on purpose (dev mode): the web server, the daemon (schedule and sensor) and the
+# run worker share one container. A production deployment would split them; see docs/orchestration.md.
+CMD ["dagster", "dev", "--host", "0.0.0.0", "--port", "3000"]

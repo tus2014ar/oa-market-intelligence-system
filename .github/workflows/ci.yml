@@ -160,6 +160,34 @@ jobs:
           PYTHONPATH=src python -m oa_market_intelligence.tracking build --store "$RUNNER_TEMP/store"
           PYTHONPATH=src python -m oa_market_intelligence.tracking summary --store "$RUNNER_TEMP/store"
 
+  # The orchestrated publish run (DL-128): Dagster is an optional install (requirements-orchestration.txt),
+  # so its tests have their own job; the main job skips them where Dagster is absent. Installed
+  # together with the pinned packages (one resolve), as the orchestrator image does.
+  orchestration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-orchestration.txt
+
+      - name: Install the pinned packages, Dagster and the project
+        run: |
+          pip install -r requirements.txt -r requirements-orchestration.txt pytest filelock
+          pip install --no-deps -e .
+
+      - name: Publish-run and orchestration tests
+        run: pytest tests/test_publish_run.py tests/test_orchestration.py -q
+
+      - name: The job loads as a person would load it
+        run: dagster job list -m oa_market_intelligence.orchestration
+
   # Builds the three images (no push) and runs them, so a broken Dockerfile, pin file or start-up
   # fails here: the pipeline image, the website and the API, each checked as it would run.
   docker-build:

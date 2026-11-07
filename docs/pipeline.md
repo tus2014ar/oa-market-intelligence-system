@@ -38,6 +38,8 @@ Each run appends one line to `data/published/run_log.jsonl`, with a `stages` lis
 
 `.github/workflows/monthly_pipeline.yml` runs `oa-publish --public-data committed` on the 10th of each month (and on demand), commits the published database and run log, and writes the run's stage table to the job summary.
 
+The same nine stages can also be run as a Dagster job (one op per stage, a web UI with the history of runs, an optional schedule and sensor); it drives the same `PublishRun` methods, so the stages, their order and the run record are the same. See [`orchestration.md`](orchestration.md). The GitHub workflow remains the scheduled run of record.
+
 ## The gates (DL-83)
 
 What stops a change, or a monthly run, from putting something wrong in the repository:

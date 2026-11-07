@@ -41,3 +41,22 @@ services:
     volumes:
       - ./data:/app/data
     command: ["oa-publish", "--help"]
+
+  # The orchestrator (DL-128):  docker compose --profile orchestration up --build orchestrator
+  # Dagster's web UI at http://localhost:3000; the schedule and the sensor are off until turned on
+  # there. It runs the same publish as `pipeline` above, with the same data folder.
+  orchestrator:
+    profiles: ["orchestration"]
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestration
+    image: oa-orchestrator
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+      - dagster_home:/dagster_home
+    restart: unless-stopped
+
+volumes:
+  dagster_home:
