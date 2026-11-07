@@ -1,0 +1,5 @@
+# What experiment tracking needs on top of the project (DL-125): MLflow, for `oa-track build` and the
+# tracking tests. Optional: nothing the site, the API or the monthly pipeline runs depends on it.
+# Install it with the project's own packages (pandas) already present:
+#   pip install -r requirements-tracking.txt
+mlflow>=3.0
