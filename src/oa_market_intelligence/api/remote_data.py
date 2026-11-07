@@ -181,7 +181,9 @@ class RemoteData:
         try:
             self._checked_at = self._clock()
             pointer = self._pointer()
-            if pointer["sha256"] == current.sha256:
+            # a pointer always wins over the image's copy (as it does at start-up), even when it
+            # names a file with the same bytes, so the source then reads 's3'
+            if current.origin == "s3" and pointer["sha256"] == current.sha256:
                 return None
             return self._source(pointer)
         except Exception as error:  # noqa: BLE001 - keep what is being served

@@ -198,6 +198,27 @@ def test_when_the_pointer_is_unchanged_the_loader_keeps_serving_what_it_has(worl
     assert loader.due() is False  # the interval starts again
 
 
+def test_a_release_identical_to_the_images_copy_still_moves_the_api_onto_the_release(
+    world, tmp_path
+):
+    """The first release may be the very file in the image: the source must still become s3, so
+    that what the API reports (and what an operator checks) is true to where the data come from."""
+    same = tmp_path / "same.db"
+    same.write_bytes(world.baked.read_bytes())
+    log = make_log(tmp_path / "same.jsonl", [{"status": "ok"}])
+    pointer = dr.build_pointer(same, log, now=NOW)
+    world.s3.objects[pointer["key"]] = same.read_bytes()
+    world.s3.objects["latest.json"] = json.dumps(pointer).encode()
+    loader = world.loader()
+    image = loader.baked()
+    assert image.sha256 == pointer["sha256"]  # the same bytes as the image's copy
+    world.clock.now += 400
+    moved = loader.poll(image)
+    assert moved is not None and moved.origin == "s3" and moved.sha256 == image.sha256
+    world.clock.now += 400
+    assert loader.poll(moved) is None  # and once on the release, an unchanged pointer is a no-op
+
+
 def test_a_new_release_is_verified_and_replaces_the_old_file_in_the_cache(world):
     loader = world.loader()
     current = loader.initial()
