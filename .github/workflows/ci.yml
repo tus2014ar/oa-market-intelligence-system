@@ -134,7 +134,7 @@ jobs:
         run: pip install -r api/requirements.txt pytest httpx filelock
 
       - name: API tests
-        run: pytest tests/test_api.py tests/test_predictor.py tests/test_data_release.py tests/test_remote_data.py tests/test_api_data_release.py -q
+        run: pytest tests/test_api.py tests/test_predictor.py tests/test_data_release.py tests/test_remote_data.py tests/test_api_data_release.py tests/test_api_cache.py tests/test_loadtest.py -q
 
   # Experiment tracking (DL-125): MLflow is an optional install (requirements-tracking.txt), so its
   # tests have their own job; the main job skips them where MLflow is absent. It also builds the

@@ -73,6 +73,10 @@ curl -H "X-API-Key: choose-a-key" "http://localhost:8000/v1/predict/segment?spec
 
 The service's image carries a copy of the published warehouse. With the environment variable `OA_DATA_BUCKET` set (see [`deployment.md`](deployment.md), "The data release"), it also reads a pointer (`latest.json`) in a private S3 bucket when it starts and again at most every `OA_DATA_REFRESH_SECONDS` (default 300), and switches to the warehouse the pointer names, so a new month of data reaches the API with no image rebuild. A file is used only after its size, its SHA-256, its readability, its data version and its month all match the pointer, and a pointer may only name keys of one fixed shape. Anything that goes wrong (no pointer yet, no access, a damaged or half-written file, a release this code cannot load) keeps what the service is already serving; at start-up the image's copy is the fallback. With no bucket set, nothing changes. The status page describes the data it serves using the run record the release carries.
 
+## Performance (DL-127)
+
+Warm, on one laptop with a cache of answers (kept until the service switches to new data, bounded and never holding an error), the API took 193 requests a second from 50 concurrent users with a 95th percentile of 190 ms and no failures; on the live function a warm `/health` answers in about 43 ms from this machine and a cold start takes about 3.3 seconds. Method, budgets, what was and was not measured, and what the limits rest on: [`loadtest.md`](loadtest.md).
+
 ## What it is not
 
 - Not a training service. Models are fitted only by the monthly job; the API applies the saved ones and cannot change them.

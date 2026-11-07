@@ -2,7 +2,7 @@
 
 Every monthly run refits the adopted models. The gate decides whether the refit may replace the models in service. It is the `promotion` stage of the publish run, between `scoring` and `monitoring`, and a failed check stops the run **before the swap**: nothing new is published, the models in service keep serving, and the run log says why.
 
-**Status: built and tested; it ran on the real warehouse (7 Nov 2026) and passed with 11 checks.** The monthly job on GitHub has not yet run it.
+**Status: live.** It ran on the real warehouse locally and then in the Monthly Pipeline on GitHub's machine (7 Nov 2026): **promote, 11 checks, 0 failed**, both months 202507, the whole stage taking 0.04 seconds. The run committed its record and published the release to S3, and the live API stayed current (the deploy that followed found it already serving the repository's data version). Only the no-new-data case (reproducibility) has run for real; the stability checks have not judged a real new month.
 
 ## What it compares
 
