@@ -8,9 +8,11 @@ One run, in this order, each stage recorded in the run log with its status and d
 3. `coverage_check`: the staged database must not have fewer months than the published one
 4. `feature_tables`, `model_tables`, `scoring`: add the feature tables, the model-result tables and
    the monthly predictions (`pred_batch`, from the adopted models) to the staged database
-5. `monitoring`: data freshness and drift of the previous run's predictions (reported, never stops
+5. `promotion`: the promotion gate (DL-126): the refitted models are compared with the ones in
+   service and a failed check stops the run before the swap (a written reason can override it)
+6. `monitoring`: data freshness and drift of the previous run's predictions (reported, never stops
    the run)
-6. `swap`: replace the published database with an atomic rename
+7. `swap`: replace the published database with an atomic rename
 
 Any failure stops the run and leaves the published database exactly as it was. Every run, good or
 bad, appends a line to `run_log.jsonl`; a failed run's line names the stage that failed.
@@ -42,6 +44,7 @@ from oa_market_intelligence.pipeline import (
     DEFAULT_REFERENCE_DIR,
     run_pipeline,
 )
+from oa_market_intelligence.promotion import run_promotion
 from oa_market_intelligence.public_data import rebuild_full, verify_committed
 from oa_market_intelligence.versions import run_versions
 
@@ -128,11 +131,15 @@ def publish(
     model_tables_fn: Callable[..., dict] = write_model_tables,
     scoring_fn: Callable[..., dict] | None = write_predictions,
     monitoring_fn: Callable[..., dict] | None = run_monitoring,
+    promotion_fn: Callable[..., dict] | None = run_promotion,
+    accept_challenger: str | None = None,
 ) -> dict:
     """Run the full rebuild. Returns the run record; never raises for a failed run.
 
     A failure at any stage fails the whole run and leaves the last good database live. The record
-    has a `stages` list (name, status, seconds, detail or error) in the order they ran."""
+    has a `stages` list (name, status, seconds, detail or error) in the order they ran.
+    `accept_challenger` is a written reason that lets a refit the promotion gate refused be
+    published anyway; it is recorded."""
     published_dir = Path(published_dir)
     published_dir.mkdir(parents=True, exist_ok=True)
     published_db = published_dir / DB_NAME
@@ -171,11 +178,20 @@ def publish(
                     _skipped(stages, "scoring")
                 else:
                     scoring_rows = _stage(stages, "scoring", lambda: scoring_fn(engine) or {})
+                previous_db = published_db if published_db.exists() else None
+                if scoring_fn is None or promotion_fn is None:
+                    promotion_rows = {}
+                    _skipped(stages, "promotion")
+                else:
+                    promotion_rows = _stage(
+                        stages,
+                        "promotion",
+                        lambda: promotion_fn(engine, previous_db, accept_challenger) or {},
+                    )
                 if monitoring_fn is None:
                     monitoring_rows = {}
                     _skipped(stages, "monitoring")
                 else:
-                    previous_db = published_db if published_db.exists() else None
                     monitoring_rows = _stage(
                         stages, "monitoring", lambda: monitoring_fn(engine, previous_db) or {}
                     )
@@ -191,6 +207,7 @@ def publish(
             feature_tables=feature_rows,
             model_tables=model_rows,
             scoring=scoring_rows,
+            promotion=promotion_rows,
             monitoring=monitoring_rows,
             versions=run_versions((summary or {}).get("ingest_files", [])),
             public_data=public_rows,
@@ -224,6 +241,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="committed: check the committed public-data subset (default; CI, containers); "
         "full: reload and re-export it from the raw public files (local only)",
     )
+    parser.add_argument(
+        "--accept-challenger", metavar="REASON", default=None,
+        help="publish the refit even if the promotion gate refused it; the reason is recorded "
+        "(a deliberate, written decision, never a default)",
+    )
     return parser.parse_args(argv)
 
 
@@ -235,6 +257,7 @@ def main(argv: list[str] | None = None) -> None:
         reference_dir=args.reference_dir,
         published_dir=args.published_dir,
         public_data_fn=rebuild_full if args.public_data == "full" else verify_committed,
+        accept_challenger=(args.accept_challenger or "").strip() or None,
     )
     print(json.dumps(record, indent=2))
     sys.exit(0 if record["status"] == "ok" else 1)

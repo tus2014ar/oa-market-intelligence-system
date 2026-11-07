@@ -20,6 +20,7 @@ The published database is not touched by a failed run. The run's line in `data/p
 | `coverage_check` | the new warehouse has fewer months than the published one | an extract is missing or truncated: restore it |
 | `feature_tables` / `model_tables` | a code change, or `modelling_results.json` is missing or empty | run the tests; `oa-model --counts-only` shows what the run expects |
 | `scoring` | the adoption map names a model the stored results do not support, or a model could not be fitted | `data/reference/serving_models.json` is validated against `model_scores`; the error names the task and horizon |
+| `promotion` | the promotion gate refused the refit: the error lists each failed check with its number and its limit. The published database is untouched | read [`promotion_gate.md`](promotion_gate.md). A `reproducibility` failure means the code or the libraries changed what the models do although the data did not: find the change. A `stability` failure means the new month moved the forecasts further than they ever have: check the data. If you have reviewed the forecasts and accept them, run again with `oa-publish --accept-challenger "reason"` (on GitHub: Monthly Pipeline, Run workflow, the reason box); the reason is recorded |
 | `monitoring` | rare: monitoring reports its own errors without stopping | look at the error in the record |
 | `swap` | a file-system problem | re-run |
 

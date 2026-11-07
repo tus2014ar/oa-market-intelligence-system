@@ -22,7 +22,7 @@ from oa_market_intelligence.modeling.store import (
 LOG = DEFAULT_DB.parent / "run_log.jsonl"
 STAGES = [
     "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables", "scoring",
-    "monitoring", "swap",
+    "promotion", "monitoring", "swap",
 ]
 EXPECTED = set(TABLES) | {
     "feat_segment_month", "feat_monthly", "model_scores", "backtest_batch", "pred_batch",

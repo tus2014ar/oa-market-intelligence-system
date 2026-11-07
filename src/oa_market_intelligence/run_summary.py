@@ -26,6 +26,14 @@ def summarise(log_path: Path | str = DEFAULT_LOG) -> str:
         out.append(f"Error: `{run['error']}`")
     if run.get("status") == "ok":
         out.append(f"Months: {run.get('n_months')}, latest month: {run.get('last_month_id')}")
+        promotion = run.get("promotion") or {}
+        if promotion:
+            line = f"Promotion gate: {promotion.get('decision')}"
+            if promotion.get("failed"):
+                line += f" (failed: {', '.join(promotion['failed'])})"
+            if promotion.get("override_reason"):
+                line += f"; published on a written reason: {promotion['override_reason']}"
+            out.append(line)
         monitoring = run.get("monitoring") or {}
         if monitoring:
             fresh, drift = monitoring.get("freshness") or {}, monitoring.get("drift") or {}
