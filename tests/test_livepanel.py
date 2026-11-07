@@ -127,7 +127,15 @@ def test_the_result_rows_name_the_forecast_the_change_the_visits_and_the_model()
     )
 
 
+def test_the_setting_detail_says_which_part_cannot_be_read_and_never_a_value():
+    assert lp.setting_detail(True, True, True) == "Address: found. Key: found."
+    assert lp.setting_detail(False, True, False) == "Address: not found. Key: found."
+    assert lp.setting_detail(True, False, True) == "Address: found. Key: not found."
+    assert lp.setting_detail(True, True, False) == "Address: found, no https://. Key: found."
+
+
 def test_the_caveats_and_the_off_message_are_in_plain_words_without_a_secret():
     for text in (lp.LEAD, lp.BIAS_NOTE, lp.SWITCHED_OFF):
         assert "http" not in text and "key" not in text.lower()
     assert "optimistic" in lp.BIAS_NOTE and "same as last month" in lp.BIAS_NOTE
+    assert "https://" in lp.UNUSABLE and "switched off" not in lp.UNUSABLE

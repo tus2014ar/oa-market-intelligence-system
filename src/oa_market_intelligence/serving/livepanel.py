@@ -26,6 +26,21 @@ SWITCHED_OFF = (
     "The live model check is switched off on this copy of the site. The forecasts above are the "
     "monthly job's stored output."
 )
+UNUSABLE = (
+    "The live model service is set up on this site, but its address or key is not usable. The "
+    "address must start with https:// and the key must not be empty. The site owner can fix both "
+    "in the app's settings."
+)
+
+
+def setting_detail(address_found: bool, key_found: bool, address_https: bool) -> str:
+    """Which of the two settings the site can read, as plain words (never a value)."""
+    address = (
+        "not found" if not address_found else ("found" if address_https else "found, no https://")
+    )
+    return f"Address: {address}. Key: {'found' if key_found else 'not found'}."
+
+
 UNAVAILABLE_TAIL = "The forecast shown above is unchanged."
 
 

@@ -1440,3 +1440,38 @@ def test_an_answer_is_shown_only_while_the_choice_is_the_one_it_answered(live):
     at.selectbox(key="live_specialty").select_index(1).run()
     assert "Live forecast, 1 month" not in _everything(at)  # a new choice, no stale answer
     assert not at.exception
+
+
+@pytest.mark.parametrize(
+    ("label", "url", "key"),
+    [
+        ("address-no-key", LIVE_URL, None),
+        ("key-no-address", None, LIVE_KEY),
+        ("http", "http://not-secure.example.com/", LIVE_KEY),
+        ("no-scheme", "abc123example.lambda-url.us-east-1.on.aws", LIVE_KEY),
+        ("blank-key", LIVE_URL, "   "),
+    ],
+)
+def test_a_half_set_or_unusable_setting_is_told_apart_from_switched_off_without_naming_it(
+    live, monkeypatch, label, url, key
+):
+    for name, value in (("LIVE_API_URL", url), ("LIVE_API_KEY", key)):
+        if value is None:
+            monkeypatch.delenv(name, raising=False)
+        else:
+            monkeypatch.setenv(name, value)
+    at = run_page("Forecasts")
+    text = _everything(at)
+    assert "is set up on this site, but its address or key is not usable" in text
+    expected = {
+        "address-no-key": "Address: found. Key: not found.",
+        "key-no-address": "Address: not found. Key: found.",
+        "http": "Address: found, no https://. Key: found.",
+        "no-scheme": "Address: found, no https://. Key: found.",
+        "blank-key": "Address: found. Key: found.",
+    }[label]
+    assert expected in text  # says which one cannot be read, never a value
+    assert "switched off on this copy" not in text
+    assert not [b for b in at.button if b.key == "live_run"]
+    assert LIVE_KEY not in text and "abc123example" not in text and "not-secure" not in text
+    assert not at.exception

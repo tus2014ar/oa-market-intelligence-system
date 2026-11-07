@@ -55,6 +55,17 @@ def _health() -> dict:
     return client.health()
 
 
+def _settings() -> tuple[str, str]:
+    """('off' | 'ready' | 'unusable', a plain note on what can be read). Never a value."""
+    url, key = common.secret("LIVE_API_URL"), common.secret("LIVE_API_KEY")
+    if not url and not key:
+        return "off", ""
+    detail = livepanel.setting_detail(
+        bool(url), bool(key), str(url or "").strip().startswith("https://")
+    )
+    return ("ready" if _client() is not None else "unusable"), detail
+
+
 def _live_version() -> str | None:
     try:
         return str(_health().get("data_version") or "") or None
@@ -94,8 +105,12 @@ def render(view, pred, horizon: int) -> None:
     the shared bar), `pred` the stored predictions."""
     st.markdown("##### Run the model live")
     with st.container(border=True, key="fc_live"):
-        if _client() is None:
+        state, detail = _settings()
+        if state == "off":
             st.caption(livepanel.SWITCHED_OFF)
+            return
+        if state == "unusable":
+            st.caption(f"{livepanel.UNUSABLE} {detail}")
             return
         specialties = livepanel.specialties(view)
         if not specialties:
