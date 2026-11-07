@@ -1,17 +1,33 @@
-# Deploys the API to AWS Lambda (DL-118). Manual only: nothing deploys unless someone starts it
-# from the Actions tab, and only from the main branch (the AWS role refuses any other branch).
+# Deploys the API to AWS Lambda (DL-118, DL-121).
+#
+# Three ways it starts, all only from the main branch (the AWS role refuses any other branch):
+#   1. After the Monthly Pipeline finishes successfully. If the live API already serves the data
+#      version in the repository (nothing new was published), it stops without building anything.
+#   2. By hand (Actions, deploy-aws, Run workflow): builds and deploys this commit.
+#   3. By hand with "rollback_to": switches the function to an image that is already in the
+#      registry (the last 3 are kept), with no build. Use the commit SHA of the earlier deploy.
 #
 # It signs in to AWS with GitHub's OIDC token (no stored keys), builds the Lambda image, pushes it
-# to the private repository under the commit's SHA, and, when the function already exists,
-# switches it to that image and checks /health through its public URL. If the function does not
-# exist yet, it stops after the push and prints the image to give infra/aws/api.yml.
+# under the commit's SHA, and, when the function exists, switches it to that image and then
+# checks /health through its public URL: the API must answer, and (except for a rollback) must
+# serve the data version in the repository. If the function does not exist yet it stops after
+# the push and prints the image to give infra/aws/api.yml.
 #
+# The function's address is a secret-like value: it is masked in the logs and never printed.
 # One-time set-up: docs/deployment.md ("The AWS version"). Needs two repository variables (not
 # secrets): AWS_REGION and AWS_DEPLOY_ROLE_ARN.
 name: deploy-aws
 
 on:
   workflow_dispatch:
+    inputs:
+      rollback_to:
+        description: "Roll back: the full commit SHA of an image already in the registry (leave empty to deploy this commit)"
+        required: false
+        default: ""
+  workflow_run:
+    workflows: ["Monthly Pipeline"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -28,7 +44,10 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'))
     steps:
       - uses: actions/checkout@v4
 
@@ -38,49 +57,109 @@ jobs:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Work out what to do
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          ROLLBACK_TO: ${{ inputs.rollback_to }}
+        run: |
+          if [ -n "$ROLLBACK_TO" ] && ! printf '%s' "$ROLLBACK_TO" | grep -Eq '^[0-9a-f]{40}$'; then
+            echo "rollback_to must be a full 40-character commit SHA"; exit 1
+          fi
+          REPO_VERSION="$(python3 -c "import sqlite3; c = sqlite3.connect('file:data/published/warehouse.db?mode=ro', uri=True); v = [r[0] for r in c.execute('SELECT DISTINCT data_version FROM pred_batch')]; print(v[0] if len(v) == 1 else 'mixed')")"
+          echo "repo_version=$REPO_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Data version in the repository: $REPO_VERSION"
+          URL=""
+          if aws lambda get-function --function-name "$FUNCTION_NAME" >/dev/null 2>&1; then
+            URL="$(aws lambda get-function-url-config --function-name "$FUNCTION_NAME" --query FunctionUrl --output text)"
+            echo "::add-mask::$URL"
+            echo "::add-mask::${URL%/}"
+          fi
+          echo "has_function=$([ -n "$URL" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          SKIP=false
+          if [ "$EVENT" = "workflow_run" ] && [ -n "$URL" ]; then
+            LIVE="$(curl -fsS -m 30 "${URL%/}/health" 2>/dev/null | python3 -c "import sys, json; print(json.load(sys.stdin).get('data_version', 'unknown'))" 2>/dev/null || echo unreachable)"
+            echo "Data version live: $LIVE"
+            if [ "$LIVE" = "$REPO_VERSION" ]; then SKIP=true; fi
+          fi
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+          if [ "$SKIP" = true ]; then echo "The live API already serves this data: nothing to deploy."; fi
+
       - name: Sign in to the image repository
+        if: steps.plan.outputs.skip != 'true'
         id: registry
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push the Lambda image
+      - name: Build and push the Lambda image, or find the image to roll back to
+        if: steps.plan.outputs.skip != 'true'
         id: image
+        env:
+          ROLLBACK_TO: ${{ inputs.rollback_to }}
         run: |
-          IMAGE="${{ steps.registry.outputs.registry }}/${REPOSITORY_NAME}:${GITHUB_SHA}"
-          docker build -f Dockerfile.lambda -t "$IMAGE" .
-          docker push "$IMAGE"
-          echo "uri=$IMAGE" >> "$GITHUB_OUTPUT"
+          REGISTRY="${{ steps.registry.outputs.registry }}"
+          if [ -n "$ROLLBACK_TO" ]; then
+            aws ecr describe-images --repository-name "$REPOSITORY_NAME" \
+              --image-ids imageTag="$ROLLBACK_TO" >/dev/null
+            echo "uri=${REGISTRY}/${REPOSITORY_NAME}:${ROLLBACK_TO}" >> "$GITHUB_OUTPUT"
+            echo "mode=rollback" >> "$GITHUB_OUTPUT"
+          else
+            IMAGE="${REGISTRY}/${REPOSITORY_NAME}:${GITHUB_SHA}"
+            docker build -f Dockerfile.lambda -t "$IMAGE" .
+            docker push "$IMAGE"
+            echo "uri=$IMAGE" >> "$GITHUB_OUTPUT"
+            echo "mode=deploy" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Switch the function to the new image and check it
+      - name: Switch the function to the image and check it serves the right data
+        if: steps.plan.outputs.skip != 'true'
         id: function
+        env:
+          IMAGE_URI: ${{ steps.image.outputs.uri }}
+          MODE: ${{ steps.image.outputs.mode }}
+          REPO_VERSION: ${{ steps.plan.outputs.repo_version }}
         run: |
-          if ! aws lambda get-function --function-name "$FUNCTION_NAME" >/dev/null 2>&1; then
+          if [ "${{ steps.plan.outputs.has_function }}" != "true" ]; then
             echo "exists=false" >> "$GITHUB_OUTPUT"
             echo "The function does not exist yet: image pushed, nothing deployed."
             exit 0
           fi
           echo "exists=true" >> "$GITHUB_OUTPUT"
           aws lambda update-function-code --function-name "$FUNCTION_NAME" \
-            --image-uri "${{ steps.image.outputs.uri }}" >/dev/null
+            --image-uri "$IMAGE_URI" >/dev/null
           aws lambda wait function-updated-v2 --function-name "$FUNCTION_NAME"
           URL="$(aws lambda get-function-url-config --function-name "$FUNCTION_NAME" \
             --query FunctionUrl --output text)"
-          for i in $(seq 1 10); do
-            curl -fsS "${URL}health" && break
+          echo "::add-mask::$URL"
+          echo "::add-mask::${URL%/}"
+          LIVE=""
+          for i in $(seq 1 12); do
+            BODY="$(curl -fsS -m 30 "${URL%/}/health" 2>/dev/null || true)"
+            if printf '%s' "$BODY" | grep -q '"status":"ok"'; then break; fi
             sleep 5
           done
-          curl -fsS "${URL}health" | grep -q '"status":"ok"'
+          printf '%s' "$BODY" | grep -q '"status":"ok"' || { echo "The API did not answer /health"; exit 1; }
+          LIVE="$(printf '%s' "$BODY" | python3 -c "import sys, json; print(json.load(sys.stdin).get('data_version', 'unknown'))")"
+          echo "live=$LIVE" >> "$GITHUB_OUTPUT"
+          echo "Data version live: $LIVE (repository: $REPO_VERSION)"
+          if [ "$MODE" = "deploy" ] && [ "$LIVE" != "$REPO_VERSION" ]; then
+            echo "The live API does not serve the data version in the repository"; exit 1
+          fi
 
       - name: Say what happened
+        if: always()
         run: |
           {
             echo "### Deploy to AWS Lambda"
             echo ""
-            echo "Image: \`${{ steps.image.outputs.uri }}\`"
-            if [ "${{ steps.function.outputs.exists }}" = "true" ]; then
-              echo ""
-              echo "The function now runs this image and \`/health\` answered through its URL."
+            if [ "${{ steps.plan.outputs.skip }}" = "true" ]; then
+              echo "Skipped: the live API already serves data version \`${{ steps.plan.outputs.repo_version }}\`."
             else
+              echo "Image: \`${{ steps.image.outputs.uri }}\` (${{ steps.image.outputs.mode }})"
               echo ""
-              echo "The function does not exist yet. Create it with infra/aws/api.yml and give it this image."
+              if [ "${{ steps.function.outputs.exists }}" = "true" ]; then
+                echo "The function runs this image and \`/health\` answered. Data version live: \`${{ steps.function.outputs.live }}\`; in the repository: \`${{ steps.plan.outputs.repo_version }}\`."
+              else
+                echo "The function does not exist yet. Create it with infra/aws/api.yml and give it this image."
+              fi
             fi
           } >> "$GITHUB_STEP_SUMMARY"

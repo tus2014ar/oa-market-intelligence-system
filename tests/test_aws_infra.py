@@ -15,6 +15,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 INFRA = ROOT / "infra" / "aws"
 WORKFLOW = ROOT / ".github" / "workflows" / "deploy-aws.yml"
+CANARY = ROOT / ".github" / "workflows" / "canary.yml"
 
 
 class _Loader(yaml.SafeLoader):
@@ -142,17 +143,141 @@ def test_the_public_url_has_both_permissions_lambda_requires_and_logs_expire(api
 # ------------------------------------------------------------------ the workflow and the image
 
 
-def test_the_deploy_workflow_is_manual_main_only_and_uses_no_stored_credentials():
+def test_the_deploy_workflow_runs_only_from_main_by_hand_or_after_a_successful_publish():
     workflow = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     triggers = workflow.get("on", workflow.get(True))
-    assert list(triggers) == ["workflow_dispatch"]  # no push, no schedule
+    assert list(triggers) == ["workflow_dispatch", "workflow_run"]  # no push, no schedule
+    assert triggers["workflow_run"] == {"workflows": ["Monthly Pipeline"], "types": ["completed"]}
     assert workflow["permissions"] == {"contents": "read", "id-token": "write"}
-    job = workflow["jobs"]["deploy"]
-    assert job["if"] == "github.ref == 'refs/heads/main'"
+    condition = " ".join(workflow["jobs"]["deploy"]["if"].split())
+    assert condition.startswith("github.ref == 'refs/heads/main' &&")
+    # after a publish only when it succeeded and ran on main
+    assert "github.event.workflow_run.conclusion == 'success'" in condition
+    assert "github.event.workflow_run.head_branch == 'main'" in condition
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "secrets." not in text and "AWS_ACCESS_KEY_ID" not in text
     assert "vars.AWS_DEPLOY_ROLE_ARN" in text and "vars.AWS_REGION" in text
     assert "--provenance" not in text  # a plain image manifest: Lambda rejects an OCI index
+
+
+def test_the_deploy_workflow_skips_when_current_checks_freshness_and_can_roll_back():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    assert "The live API already serves this data" in text  # no rebuild when nothing was published
+    assert "does not serve the data version in the repository" in text  # the freshness gate
+    assert 'MODE" = "deploy"' in text  # a rollback is not held to the repository's data version
+    workflow = yaml.safe_load(text)
+    inputs = (workflow.get("on", workflow.get(True)))["workflow_dispatch"]["inputs"]
+    assert inputs["rollback_to"]["required"] is False
+    assert "[0-9a-f]{40}" in text  # the rollback input is checked before it is used
+    assert "ecr describe-images" in text  # only an image that exists can be rolled back to
+
+
+def test_the_function_address_is_masked_in_every_workflow_log():
+    for path in (WORKFLOW, CANARY):
+        text = path.read_text(encoding="utf-8")
+        assert "::add-mask::" in text, path
+        assert "echo $URL" not in text and 'echo "$URL"' not in text, path  # never printed
+
+
+# ------------------------------------------------------------------ the canary
+
+
+def test_the_canary_runs_daily_checks_health_auth_and_data_and_holds_no_key():
+    workflow = yaml.safe_load(CANARY.read_text(encoding="utf-8"))
+    triggers = workflow.get("on", workflow.get(True))
+    assert set(triggers) == {"schedule", "workflow_dispatch"}
+    assert len(triggers["schedule"]) == 1 and triggers["schedule"][0]["cron"].endswith("* * *")
+    assert workflow["permissions"] == {"contents": "read"}  # it cannot change anything
+    text = CANARY.read_text(encoding="utf-8")
+    assert "secrets.API_URL" in text and "X-API-Key" not in text  # the address only, no key
+    assert '"auth":"api-key"' in text  # fails if the API stops asking for a key
+    assert '"$CODE" = "401"' in text  # and if an unkeyed call is no longer refused
+    assert "a different data version" in text  # and if the live data are not the repository's
+    assert "AWS_" not in text and "id-token" not in text  # it needs no AWS access at all
+
+
+# ------------------------------------------------------------------ monitoring
+
+
+@pytest.fixture(scope="module")
+def monitoring():
+    return template("monitoring.yml")
+
+
+def test_every_alarm_notifies_the_topic_and_a_quiet_function_is_not_an_alarm(monitoring):
+    resources = monitoring["Resources"]
+    alarms = {
+        k: v["Properties"] for k, v in resources.items() if v["Type"] == "AWS::CloudWatch::Alarm"
+    }
+    assert set(alarms) == {
+        "FunctionErrorsAlarm", "ThrottlesAlarm", "ServerErrorsAlarm", "SlowAlarm",
+        "RejectedKeysAlarm",
+    }  # fmt: skip
+    for name, alarm in alarms.items():
+        assert alarm["AlarmActions"] == [{"Ref": "AlertTopic"}], name
+        assert alarm["OKActions"] == [{"Ref": "AlertTopic"}], name  # and say when it clears
+        assert alarm["TreatMissingData"] == "notBreaching", name  # no traffic is not a failure
+    assert (
+        alarms["SlowAlarm"]["ExtendedStatistic"] == "p95"
+        and alarms["SlowAlarm"]["EvaluationPeriods"] == 3
+    )
+
+
+def test_the_alert_email_is_a_parameter_with_no_default_and_the_topic_has_one_subscriber(
+    monitoring,
+):
+    email = monitoring["Parameters"]["AlertEmail"]
+    assert "Default" not in email and "AllowedPattern" in email  # typed by the owner, never stored
+    subscription = monitoring["Resources"]["AlertSubscription"]["Properties"]
+    assert subscription["Protocol"] == "email" and subscription["Endpoint"] == {"Ref": "AlertEmail"}
+    text = (INFRA / "monitoring.yml").read_text(encoding="utf-8")
+    assert not re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", text)  # no address is written in the file
+
+
+def test_the_log_metrics_read_the_apis_json_access_line_and_name_each_outcome(monitoring):
+    filters = {
+        k: v["Properties"] for k, v in monitoring["Resources"].items()
+        if v["Type"] == "AWS::Logs::MetricFilter"
+    }  # fmt: skip
+    patterns = {
+        f["MetricTransformations"][0]["MetricName"]: f["FilterPattern"] for f in filters.values()
+    }
+    assert patterns == {
+        "Requests": "{ $.status > 0 }",
+        "ServerErrors": "{ $.status >= 500 }",
+        "RejectedKeys": "{ $.status = 401 }",
+        "RateLimited": "{ $.status = 429 }",
+    }
+    for f in filters.values():
+        assert f["LogGroupName"] == {
+            "Sub": "/aws/lambda/${FunctionName}"
+        }  # the function's own log group
+        assert f["MetricTransformations"][0]["MetricNamespace"] == "OAMarketApi"
+
+
+def test_the_dashboard_body_is_valid_json_with_four_widgets_on_the_functions_metrics(monitoring):
+    import json
+
+    body = monitoring["Resources"]["Dashboard"]["Properties"]["DashboardBody"]["Sub"]
+    body = body.replace("${AWS::Region}", "us-east-1").replace("${FunctionName}", "oa-market-api")
+    widgets = json.loads(body)["widgets"]
+    assert len(widgets) == 4
+    titles = {w["properties"]["title"] for w in widgets}
+    assert titles == {
+        "Requests",
+        "Run time (ms)",
+        "Crashes and throttles",
+        "Copies running at once",
+    }
+    assert all(w["properties"]["region"] == "us-east-1" for w in widgets)
+
+
+def test_the_monitoring_stack_creates_no_function_and_changes_nothing_in_it(monitoring):
+    types = {r["Type"] for r in monitoring["Resources"].values()}
+    assert types == {
+        "AWS::SNS::Topic", "AWS::SNS::Subscription", "AWS::Logs::MetricFilter",
+        "AWS::CloudWatch::Alarm", "AWS::CloudWatch::Dashboard",
+    }  # fmt: skip
 
 
 def test_the_lambda_image_runs_the_handler_with_no_key_in_it():

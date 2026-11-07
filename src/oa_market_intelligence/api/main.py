@@ -136,6 +136,12 @@ def _stored(request: Request, specialty: str, age_band: str, gender: str, horizo
     return rows[mask].iloc[0] if mask.any() else None
 
 
+def _data_version(snapshot) -> str:
+    """The data version the stored forecasts carry ('unknown' if none, 'mixed' if they differ)."""
+    versions = snapshot.pred["data_version"].dropna().astype(str).unique()
+    return str(versions[0]) if len(versions) == 1 else ("mixed" if len(versions) else "unknown")
+
+
 def predictor_of(request: Request) -> Predictor:
     """The live predictor, or a clean 503 when this warehouse has no saved models."""
     predictor = request.app.state.predictor
@@ -226,6 +232,7 @@ def create_app(
             "version": VERSION,
             "data_through": status["latest_month"],
             "months_of_data": status["months_of_data"],
+            "data_version": _data_version(request.app.state.snapshot),
             "auth": "api-key" if request.app.state.keys else "open",
         }
 

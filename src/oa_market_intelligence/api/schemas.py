@@ -23,6 +23,10 @@ class Health(BaseModel):
     version: str = Field(description="The API version.")
     data_through: str = Field(description="The latest month in the published warehouse.")
     months_of_data: int
+    data_version: str = Field(
+        description="A short hash of the input extracts the data came from: the same value on "
+        "every forecast of one monthly run, so a deploy can check it serves the latest run."
+    )
     auth: Literal["api-key", "open"] = Field(
         description="Whether an X-API-Key header is required on /v1 endpoints."
     )

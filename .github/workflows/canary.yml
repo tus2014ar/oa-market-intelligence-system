@@ -1,0 +1,48 @@
+# A daily check that the live API is up, still protected and serving the latest data (DL-121).
+#
+# It calls /health (no key needed) and /v1/models without a key, and fails, which GitHub emails to
+# the repository's owner, if the API does not answer, no longer asks for a key, or serves a
+# different data version from the one in this repository. It needs one repository secret, API_URL
+# (the function's address); the address is masked in the logs and never printed.
+name: canary
+
+on:
+  schedule:
+    - cron: "17 11 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the live API
+        env:
+          API_URL: ${{ secrets.API_URL }}
+        run: |
+          if [ -z "$API_URL" ]; then
+            echo "The API_URL secret is not set, so nothing is being monitored."; exit 1
+          fi
+          echo "::add-mask::$API_URL"
+          URL="${API_URL%/}"
+          echo "::add-mask::$URL"
+          BODY=""
+          for i in $(seq 1 6); do
+            BODY="$(curl -fsS -m 30 "$URL/health" 2>/dev/null || true)"
+            if printf '%s' "$BODY" | grep -q '"status":"ok"'; then break; fi
+            sleep 10
+          done
+          printf '%s' "$BODY" | grep -q '"status":"ok"' || { echo "FAIL: /health did not answer ok"; exit 1; }
+          printf '%s' "$BODY" | grep -q '"auth":"api-key"' || { echo "FAIL: the API no longer asks for a key"; exit 1; }
+          CODE="$(curl -s -m 30 -o /dev/null -w '%{http_code}' "$URL/v1/models" || true)"
+          [ "$CODE" = "401" ] || { echo "FAIL: /v1/models without a key gave $CODE, not 401"; exit 1; }
+          LIVE="$(printf '%s' "$BODY" | python3 -c "import sys, json; print(json.load(sys.stdin).get('data_version', 'unknown'))")"
+          REPO="$(python3 -c "import sqlite3; c = sqlite3.connect('file:data/published/warehouse.db?mode=ro', uri=True); v = [r[0] for r in c.execute('SELECT DISTINCT data_version FROM pred_batch')]; print(v[0] if len(v) == 1 else 'mixed')")"
+          echo "Data version live: $LIVE; in the repository: $REPO"
+          [ "$LIVE" = "$REPO" ] || { echo "FAIL: the live API serves a different data version"; exit 1; }
+          echo "OK: up, key required, data current."
