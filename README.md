@@ -167,6 +167,7 @@ Two more files, Part D by provider and Medicaid drug utilisation, were downloade
 | [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its nine stages (including the monthly scoring job, the promotion gate and monitoring), the public-data modes, the run record with versions, the monthly schedule and the CI gates |
 | [`docs/site.md`](docs/site.md) | The website: its seven tabs, where each number comes from, how to run it locally and how it is tested (live) |
 | [`docs/api.md`](docs/api.md) | The API: read-only data endpoints and live predictions from the saved models, API keys and rate limits, errors, and how it is tested |
+| [`docs/loadtest.md`](docs/loadtest.md) | The load test (Locust): budgets, results before and after the answer cache, the live function's warm latency and cold start, what was not measured, and what the rate limit and cost limits rest on |
 | [`docs/promotion_gate.md`](docs/promotion_gate.md) | The promotion gate: how a refit is checked against the models in service before it is published (sanity, reproducibility, stability), where each tolerance comes from, and how a written reason overrides it |
 | [`docs/tracking.md`](docs/tracking.md) | Experiment tracking and the model registry in MLflow: every scored method as a run, the models in service as registered models with a champion alias, rebuilt from the published warehouse |
 | [`docs/docker.md`](docs/docker.md) | The Docker images (pipeline, website, API, and the API for AWS Lambda), the one-command stack and what CI checks |

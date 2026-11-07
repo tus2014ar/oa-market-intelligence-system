@@ -1,0 +1,4 @@
+# What the load test needs (DL-127): Locust, to drive loadtest/locustfile.py. Optional: nothing the site,
+# the API or the pipeline runs depends on it. Install it away from the pinned runtime packages:
+#   pip install -r requirements-loadtest.txt
+locust>=2.30

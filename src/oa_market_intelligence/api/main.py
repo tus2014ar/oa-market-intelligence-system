@@ -31,6 +31,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from oa_market_intelligence.api import schemas
+from oa_market_intelligence.api.cache import BoundedCache
 from oa_market_intelligence.api.remote_data import RemoteData, Source
 from oa_market_intelligence.serving import data, guard, qa_tools
 from oa_market_intelligence.serving.predictor import Predictor
@@ -96,13 +97,25 @@ def guarded(request: Request, x_api_key: Annotated[str | None, Header()] = None)
         )
 
 
+def cached(request: Request, key: tuple, compute):
+    """An answer kept until the data change (DL-127): the cache is bounded, hands out copies, never
+    stores an error, and its key includes the generation, which rises whenever the data switch."""
+    state = request.app.state
+    return state.cache.get_or_compute((state.generation, *key), compute)
+
+
 def lookup(request: Request, tool: str, arguments: dict | None = None) -> dict:
     """Run one of the box's read-only lookups; what the data cannot answer becomes a clean error."""
-    out = qa_tools.run_tool(tool, arguments or {}, snapshot=request.app.state.snapshot)
-    if "error" in out:
-        code = 404 if out["error"].startswith("No months") else 422
-        raise HTTPException(status_code=code, detail=out["error"])
-    return out
+    args = arguments or {}
+
+    def compute() -> dict:
+        out = qa_tools.run_tool(tool, args, snapshot=request.app.state.snapshot)
+        if "error" in out:
+            code = 404 if out["error"].startswith("No months") else 422
+            raise HTTPException(status_code=code, detail=out["error"])
+        return out
+
+    return cached(request, ("tool", tool, json.dumps(args, sort_keys=True, default=str)), compute)
 
 
 def _log_to_stdout() -> None:
@@ -175,6 +188,7 @@ def _refresh(app: FastAPI, remote: RemoteData, live_predictions: bool) -> None:
         log.warning("a new release was found but could not be loaded: keeping the current data")
         return
     app.state.snapshot, app.state.predictor, app.state.source = snapshot, predictor, newer
+    app.state.generation += 1
     log.info("now serving data version %s from %s", newer.data_version, newer.origin)
 
 
@@ -246,6 +260,8 @@ def create_app(
     app.state.snapshot = snapshot
     app.state.predictor = predictor if live_predictions else None
     app.state.source = _image_source()
+    app.state.cache = BoundedCache()
+    app.state.generation = 0  # raised when the data switch, so cached answers are never reused
     app.state.keys = list(api_keys) if api_keys is not None else _keys_from_environment()
     per_minute = rate_per_minute or int(
         os.environ.get("API_RATE_PER_MINUTE", DEFAULT_RATE_PER_MINUTE)
@@ -278,16 +294,21 @@ def create_app(
     @app.get("/health", response_model=schemas.Health, tags=["service"])
     def health(request: Request) -> dict:
         """Whether the service is up, how current its data are, and whether it needs a key."""
-        status = qa_tools.run_tool("get_data_status", {}, snapshot=request.app.state.snapshot)
-        return {
-            "status": "ok",
-            "version": VERSION,
-            "data_through": status["latest_month"],
-            "months_of_data": status["months_of_data"],
-            "data_version": _data_version(request.app.state.snapshot),
-            "data_source": request.app.state.source.origin,
-            "auth": "api-key" if request.app.state.keys else "open",
-        }
+
+        def compute() -> dict:
+            state = request.app.state
+            status = qa_tools.run_tool("get_data_status", {}, snapshot=state.snapshot)
+            return {
+                "status": "ok",
+                "version": VERSION,
+                "data_through": status["latest_month"],
+                "months_of_data": status["months_of_data"],
+                "data_version": _data_version(state.snapshot),
+                "data_source": state.source.origin,
+                "auth": "api-key" if state.keys else "open",
+            }
+
+        return cached(request, ("health",), compute)
 
     @app.get(
         "/v1/status",
@@ -423,13 +444,18 @@ def create_app(
     )
     def models(request: Request) -> dict:
         """The saved models: what each is, what it was fitted on and a fingerprint of it."""
-        listed = predictor_of(request).models()
-        return {
-            "count": len(listed),
-            "models": listed,
-            "note": "The numbers behind each logistic model are in the warehouse (table "
-            "model_artifacts). How each scored in testing is at /v1/model-results.",
-        }
+        predictor = predictor_of(request)
+
+        def compute() -> dict:
+            listed = predictor.models()
+            return {
+                "count": len(listed),
+                "models": listed,
+                "note": "The numbers behind each logistic model are in the warehouse (table "
+                "model_artifacts). How each scored in testing is at /v1/model-results.",
+            }
+
+        return cached(request, ("models",), compute)
 
     @app.get(
         "/v1/predict/segments",
@@ -440,12 +466,17 @@ def create_app(
     )
     def predict_segments(request: Request) -> dict:
         """The segments the live endpoints can predict for (a specialty, an age band, a gender)."""
-        listed = predictor_of(request).segments()
-        return {
-            "count": len(listed),
-            "segments": listed,
-            "note": "The segments with a model input at the last month of data.",
-        }
+        predictor = predictor_of(request)
+
+        def compute() -> dict:
+            listed = predictor.segments()
+            return {
+                "count": len(listed),
+                "segments": listed,
+                "note": "The segments with a model input at the last month of data.",
+            }
+
+        return cached(request, ("segments",), compute)
 
     @app.get(
         "/v1/predict/segment",
@@ -462,15 +493,21 @@ def create_app(
         horizon: Annotated[int, Query(ge=1, le=12, description="Months ahead: 1, 3 or 6.")] = 1,
     ) -> dict:
         """Run the adopted model for one segment now, and compare with the stored forecast."""
-        try:
-            out = predictor_of(request).segment(specialty, age_band, gender, horizon)
-        except LookupError as error:
-            raise _not_found(error) from error
-        stored = _stored(request, out["specialty"], out["age_band"], out["gender"], horizon)
-        if stored is not None:
-            out["stored_forecast_pct"] = round(100 * float(stored["point_share"]), 4)
-            out["matches_stored"] = abs(out["forecast_pct"] - out["stored_forecast_pct"]) < 1e-3
-        return {**out, "note": SEGMENT_NOTE}
+        predictor = predictor_of(request)
+
+        def compute() -> dict:
+            try:
+                out = predictor.segment(specialty, age_band, gender, horizon)
+            except LookupError as error:
+                raise _not_found(error) from error
+            stored = _stored(request, out["specialty"], out["age_band"], out["gender"], horizon)
+            if stored is not None:
+                out["stored_forecast_pct"] = round(100 * float(stored["point_share"]), 4)
+                out["matches_stored"] = abs(out["forecast_pct"] - out["stored_forecast_pct"]) < 1e-3
+            return {**out, "note": SEGMENT_NOTE}
+
+        names = (specialty.strip().upper(), age_band.strip().upper(), gender.strip().upper())
+        return cached(request, ("segment", *names, horizon), compute)
 
     @app.get(
         "/v1/predict/alert",
@@ -486,18 +523,24 @@ def create_app(
         gender: Annotated[str, Query(max_length=20)],
     ) -> dict:
         """Run the 1-month decline alert for one segment now, and compare with the stored score."""
-        try:
-            out = predictor_of(request).alert(specialty, age_band, gender)
-        except LookupError as error:
-            raise _not_found(error) from error
-        stored = _stored(request, out["specialty"], out["age_band"], out["gender"], 1)
-        if stored is not None and out["eligible"] and not pd.isna(stored["alert_score"]):
-            out["stored_alert_score"] = round(float(stored["alert_score"]), 6)
-            out["matches_stored"] = bool(
-                abs(out["alert_score"] - out["stored_alert_score"]) < 1e-6
-                and out["flagged"] == bool(stored["alert_flag"])
-            )
-        return {**out, "note": ALERT_NOTE}
+        predictor = predictor_of(request)
+
+        def compute() -> dict:
+            try:
+                out = predictor.alert(specialty, age_band, gender)
+            except LookupError as error:
+                raise _not_found(error) from error
+            stored = _stored(request, out["specialty"], out["age_band"], out["gender"], 1)
+            if stored is not None and out["eligible"] and not pd.isna(stored["alert_score"]):
+                out["stored_alert_score"] = round(float(stored["alert_score"]), 6)
+                out["matches_stored"] = bool(
+                    abs(out["alert_score"] - out["stored_alert_score"]) < 1e-6
+                    and out["flagged"] == bool(stored["alert_flag"])
+                )
+            return {**out, "note": ALERT_NOTE}
+
+        names = (specialty.strip().upper(), age_band.strip().upper(), gender.strip().upper())
+        return cached(request, ("alert", *names), compute)
 
     return app
 
