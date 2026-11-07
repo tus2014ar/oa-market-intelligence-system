@@ -2,7 +2,7 @@
 
 A read-only HTTP API over the published warehouse. It serves the same figures as the website's pages and the AI Question Box, because every endpoint wraps the same tested lookups (`serving/qa_tools.py`), which are built from the same functions as the pages. It reads aggregates only, opens the database read-only, and fits nothing. The monthly job still fits the models and stores their forecasts; since DL-117 it also stores the fitted models as readable numbers, and the API applies those numbers when you ask (`/v1/predict/*`), so a prediction made live must equal the stored forecast, and each response says whether it does.
 
-**Status: built and tested; not deployed.** It runs locally, in Docker and, as a Lambda image, in the Lambda emulator. The AWS deployment (DL-118) is built and tested on a machine but not done: see [`deployment.md`](deployment.md), "The AWS version".
+**Status: live on AWS Lambda since 6 Nov 2026 (DL-118); the address is not published.** It also runs locally, in Docker and, as a Lambda image, in the Lambda emulator. What was checked on the live function, and what was not: [`deployment.md`](deployment.md), "The AWS version". The AWS free plan ends on 6 May 2027 or when its credits run out, so the live API is temporary unless the account is upgraded.
 
 ## Run it
 
