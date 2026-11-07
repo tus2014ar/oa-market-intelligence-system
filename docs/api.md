@@ -24,7 +24,7 @@ Then open http://localhost:8000/docs for the interactive documentation (every en
 
 | Path | Returns |
 |---|---|
-| `/health` | Whether the service is up, the newest month of data, and whether a key is needed. No key required. |
+| `/health` | Whether the service is up, the newest month of data, the data version (a short hash of the input extracts, the same on every forecast of a run) and whether a key is needed. No key required. The deploy workflow and the daily canary compare the data version with the repository's. |
 | `/v1/status` | The headline numbers, how fresh the data are, and the limits of the analysis. |
 | `/v1/share/monthly` | Zilretta's share of visits by month. Optional `start_month_id`, `end_month_id` (YYYYMM). |
 | `/v1/share/yearly` | The same by calendar year; the first and last years are part years. |

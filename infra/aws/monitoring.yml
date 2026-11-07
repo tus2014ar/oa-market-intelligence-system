@@ -1,0 +1,203 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Alarms, an email alert topic and a dashboard for the OA/RA market API (DL-121). Create it after
+  api.yml. It watches the function's own metrics and four counts taken from the API's JSON access
+  log (requests, server errors, rejected keys, rate-limited calls). It changes nothing about the
+  function.
+
+Parameters:
+  FunctionName:
+    Type: String
+    Default: oa-market-api
+  AlertEmail:
+    Type: String
+    AllowedPattern: "[^@\\s]+@[^@\\s]+\\.[^@\\s]+"
+    ConstraintDescription: Enter an email address. AWS sends it a message to confirm.
+    Description: Where alarms are sent. Type your own address; it is not stored in the repository.
+  SlowMilliseconds:
+    Type: Number
+    Default: 10000
+    MinValue: 1000
+    Description: The 95th-percentile run time, in milliseconds, above which the slow alarm fires.
+  RejectedKeysPerFiveMinutes:
+    Type: Number
+    Default: 50
+    MinValue: 1
+    Description: Rejected keys in five minutes that suggest someone is guessing keys.
+
+Resources:
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: OA market API alerts
+
+  AlertSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref AlertTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+
+  RequestsFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionName}
+      FilterPattern: "{ $.status > 0 }"
+      MetricTransformations:
+        - MetricNamespace: OAMarketApi
+          MetricName: Requests
+          MetricValue: "1"
+          Unit: Count
+
+  ServerErrorsFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionName}
+      FilterPattern: "{ $.status >= 500 }"
+      MetricTransformations:
+        - MetricNamespace: OAMarketApi
+          MetricName: ServerErrors
+          MetricValue: "1"
+          Unit: Count
+
+  RejectedKeysFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionName}
+      FilterPattern: "{ $.status = 401 }"
+      MetricTransformations:
+        - MetricNamespace: OAMarketApi
+          MetricName: RejectedKeys
+          MetricValue: "1"
+          Unit: Count
+
+  RateLimitedFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${FunctionName}
+      FilterPattern: "{ $.status = 429 }"
+      MetricTransformations:
+        - MetricNamespace: OAMarketApi
+          MetricName: RateLimited
+          MetricValue: "1"
+          Unit: Count
+
+  FunctionErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${FunctionName}-function-errors
+      AlarmDescription: The function crashed on a request (an unhandled error, not a normal 4xx or 5xx).
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref FunctionName
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      OKActions: [!Ref AlertTopic]
+
+  ThrottlesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${FunctionName}-throttled
+      AlarmDescription: Requests were refused because the function was at its concurrency limit.
+      Namespace: AWS/Lambda
+      MetricName: Throttles
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref FunctionName
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      OKActions: [!Ref AlertTopic]
+
+  ServerErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${FunctionName}-server-errors
+      AlarmDescription: The API answered a request with a 5xx status. Lambda's own error count misses these, because the API catches them.
+      Namespace: OAMarketApi
+      MetricName: ServerErrors
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      OKActions: [!Ref AlertTopic]
+
+  SlowAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${FunctionName}-slow
+      AlarmDescription: Requests are slow (95th-percentile run time over the limit for 15 minutes).
+      Namespace: AWS/Lambda
+      MetricName: Duration
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref FunctionName
+      ExtendedStatistic: p95
+      Period: 300
+      EvaluationPeriods: 3
+      Threshold: !Ref SlowMilliseconds
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      OKActions: [!Ref AlertTopic]
+
+  RejectedKeysAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub ${FunctionName}-rejected-keys
+      AlarmDescription: Many requests with a missing or wrong key in five minutes, which may be someone guessing keys.
+      Namespace: OAMarketApi
+      MetricName: RejectedKeys
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: !Ref RejectedKeysPerFiveMinutes
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+      OKActions: [!Ref AlertTopic]
+
+  Dashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub ${FunctionName}
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {"type": "metric", "x": 0, "y": 0, "width": 12, "height": 6,
+             "properties": {"title": "Requests", "region": "${AWS::Region}", "view": "timeSeries", "stat": "Sum", "period": 300,
+              "metrics": [["OAMarketApi", "Requests"], [".", "ServerErrors"], [".", "RejectedKeys"], [".", "RateLimited"]]}},
+            {"type": "metric", "x": 12, "y": 0, "width": 12, "height": 6,
+             "properties": {"title": "Run time (ms)", "region": "${AWS::Region}", "view": "timeSeries", "period": 300,
+              "metrics": [["AWS/Lambda", "Duration", "FunctionName", "${FunctionName}", {"stat": "p50"}],
+                          ["...", {"stat": "p95"}], ["...", {"stat": "p99"}]]}},
+            {"type": "metric", "x": 0, "y": 6, "width": 12, "height": 6,
+             "properties": {"title": "Crashes and throttles", "region": "${AWS::Region}", "view": "timeSeries", "stat": "Sum", "period": 300,
+              "metrics": [["AWS/Lambda", "Errors", "FunctionName", "${FunctionName}"], [".", "Throttles", ".", "."]]}},
+            {"type": "metric", "x": 12, "y": 6, "width": 12, "height": 6,
+             "properties": {"title": "Copies running at once", "region": "${AWS::Region}", "view": "timeSeries", "stat": "Maximum", "period": 300,
+              "metrics": [["AWS/Lambda", "ConcurrentExecutions", "FunctionName", "${FunctionName}"]]}}
+          ]
+        }
+
+Outputs:
+  AlertTopicArn:
+    Description: The topic alarms publish to. Confirm the email subscription AWS sends you.
+    Value: !Ref AlertTopic
+  DashboardName:
+    Description: Open it under CloudWatch, Dashboards.
+    Value: !Ref Dashboard

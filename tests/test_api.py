@@ -82,14 +82,17 @@ def _tool(snap, name, **arguments):
 
 
 def test_health_needs_no_key_and_says_how_current_the_data_are_and_whether_a_key_is_needed(
-    open_client, keyed_client
+    open_client, keyed_client, snap
 ):
+    expected_version = str(snap.pred["data_version"].iloc[0])
+    assert len(expected_version) == 12 and expected_version != "unknown"  # a real run's hash
     body = open_client.get("/health").json()
     assert body == {
         "status": "ok",
         "version": VERSION,
         "data_through": "Jul 2025",
         "months_of_data": 72,
+        "data_version": expected_version,
         "auth": "open",
     }
     assert keyed_client.get("/health").json()["auth"] == "api-key"  # no key sent, still answers
