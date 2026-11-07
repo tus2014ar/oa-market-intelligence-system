@@ -50,6 +50,11 @@ markers = [
     "e2e: the real extracts through every stage of the publish run, twice (own CI job)",
 ]
 
+[tool.dagster]
+# `dagster dev` / `dagster job execute` find the job here (docs/orchestration.md). Dagster is an
+# optional install (requirements-orchestration.txt); nothing else reads this table.
+module_name = "oa_market_intelligence.orchestration"
+
 [tool.ruff]
 line-length = 100
 src = ["src", "tests"]

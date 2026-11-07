@@ -1,0 +1,7 @@
+# What the orchestrated publish run needs on top of the project (DL-128): Dagster and its web UI.
+# Optional: nothing the site, the API or the GitHub Actions monthly pipeline runs depends on it.
+# Install it with the project's own pinned packages:
+#   pip install -r requirements.txt -r requirements-orchestration.txt
+# (one resolve, so a clash with a pinned package shows up at install time, not at run time).
+dagster>=1.13,<1.14
+dagster-webserver>=1.13,<1.14

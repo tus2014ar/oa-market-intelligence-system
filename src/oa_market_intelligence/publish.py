@@ -23,6 +23,7 @@ bad, appends a line to `run_log.jsonl`; a failed run's line names the stage that
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -107,12 +108,23 @@ def _stage(stages: list[dict], name: str, fn: Callable[[], object], *, keep_deta
     try:
         result = fn()
     except Exception as error:
-        stages.append({"stage": name, "status": "failed",
-                       "seconds": round(time.monotonic() - started, 2),
-                       "error": f"{type(error).__name__}: {error}"})
+        stages.append(
+            {
+                "stage": name,
+                "status": "failed",
+                "seconds": round(time.monotonic() - started, 2),
+                "error": f"{type(error).__name__}: {error}",
+            }
+        )
         raise
-    stages.append({"stage": name, "status": "ok", "seconds": round(time.monotonic() - started, 2),
-                   "detail": result if keep_detail and isinstance(result, dict) else None})
+    stages.append(
+        {
+            "stage": name,
+            "status": "ok",
+            "seconds": round(time.monotonic() - started, 2),
+            "detail": result if keep_detail and isinstance(result, dict) else None,
+        }
+    )
     return result
 
 
@@ -120,115 +132,232 @@ def _skipped(stages: list[dict], name: str) -> None:
     stages.append({"stage": name, "status": "skipped", "seconds": 0.0, "detail": None})
 
 
-def publish(
-    *,
-    raw_dir: Path = DEFAULT_RAW_DIR,
-    reference_dir: Path = DEFAULT_REFERENCE_DIR,
-    published_dir: Path = DEFAULT_PUBLISHED_DIR,
-    run_pipeline_fn: Callable[..., dict] = run_pipeline,
-    public_data_fn: Callable[..., dict] = verify_committed,
-    features_fn: Callable[..., dict] = write_adopted_feature_tables,
-    model_tables_fn: Callable[..., dict] = write_model_tables,
-    scoring_fn: Callable[..., dict] | None = write_predictions,
-    monitoring_fn: Callable[..., dict] | None = run_monitoring,
-    promotion_fn: Callable[..., dict] | None = run_promotion,
-    accept_challenger: str | None = None,
-) -> dict:
+def extracts_fingerprint(raw_dir: Path | str) -> str | None:
+    """A short fingerprint of the extracts (the .xlsx files) directly in a folder: names, sizes and
+    modification times. It changes when an extract is added, replaced or changed, so the
+    orchestrator can ask for a run exactly once per distinct set. None if there are no extracts."""
+    files = sorted(Path(raw_dir).glob("*.xlsx"))
+    if not files:
+        return None
+    parts = [f"{f.name}|{f.stat().st_size}|{f.stat().st_mtime_ns}" for f in files]
+    return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
+
+
+# The stages, in the order they run (DL-128). `publish()` and the Dagster job both walk this list,
+# so the order, the names in the run log and the graph in the orchestrator can never disagree.
+STAGE_ORDER = (
+    "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables", "scoring",
+    "promotion", "monitoring", "swap",
+)  # fmt: skip
+
+
+class PublishRun:
+    """One publish run, one method per stage (DL-128).
+
+    `publish()` calls the stages in order in a plain loop; the Dagster job (`orchestration.py`)
+    calls the very same methods, one per step, so there is one implementation of the pipeline and
+    two ways to drive it. A stage method records itself in `stages` (ok, failed or skipped) and
+    re-raises a failure, so whoever drives the run stops at the first one. `finish()` then writes
+    the run record: status ok only if the swap happened, otherwise the first failed stage's error.
+
+    The staged database lives in a temporary folder inside the published folder and is swapped in
+    only by the last stage; `finish()` removes the folder, so a failed run leaves the last good
+    database exactly as it was."""
+
+    def __init__(
+        self,
+        *,
+        raw_dir: Path = DEFAULT_RAW_DIR,
+        reference_dir: Path = DEFAULT_REFERENCE_DIR,
+        published_dir: Path = DEFAULT_PUBLISHED_DIR,
+        run_pipeline_fn: Callable[..., dict] = run_pipeline,
+        public_data_fn: Callable[..., dict] = verify_committed,
+        features_fn: Callable[..., dict] = write_adopted_feature_tables,
+        model_tables_fn: Callable[..., dict] = write_model_tables,
+        scoring_fn: Callable[..., dict] | None = write_predictions,
+        monitoring_fn: Callable[..., dict] | None = run_monitoring,
+        promotion_fn: Callable[..., dict] | None = run_promotion,
+        accept_challenger: str | None = None,
+    ):
+        self.raw_dir, self.reference_dir = raw_dir, reference_dir
+        self.published_dir = Path(published_dir)
+        self.published_db = self.published_dir / DB_NAME
+        self.run_pipeline_fn, self.public_data_fn = run_pipeline_fn, public_data_fn
+        self.features_fn, self.model_tables_fn = features_fn, model_tables_fn
+        self.scoring_fn, self.monitoring_fn = scoring_fn, monitoring_fn
+        self.promotion_fn, self.accept_challenger = promotion_fn, accept_challenger
+        self.stages: list[dict] = []
+        self.record: dict = {
+            "status": "failed", "started_at": _now(), "error": None, "stages": self.stages,
+        }  # fmt: skip
+        self.results: dict = {}
+        self.summary: dict | None = None
+        self.coverage: dict | None = None
+        self._previous: tuple[int, int | None] | None = None
+        self._staging: tempfile.TemporaryDirectory | None = None
+        self._staged_db: Path | None = None
+        self._engine = None
+        self._finished = False
+
+    # ---- set-up and the stages
+
+    def start(self) -> None:
+        self.published_dir.mkdir(parents=True, exist_ok=True)
+        self._previous = _previous_coverage(self.published_db)
+
+    def public_data(self) -> None:
+        self.results["public_data"] = _stage(self.stages, "public_data", self.public_data_fn)
+
+    def warehouse(self) -> None:
+        self._staging = tempfile.TemporaryDirectory(dir=self.published_dir, prefix=".staging-")
+        self._staged_db = Path(self._staging.name) / DB_NAME
+        self.summary = _stage(
+            self.stages, "warehouse",
+            lambda: self.run_pipeline_fn(
+                raw_dir=self.raw_dir,
+                reference_dir=self.reference_dir,
+                db_path=self._staged_db,
+                previous_db=self.published_db if self.published_db.exists() else None,
+            ),
+            keep_detail=False,
+        )  # fmt: skip
+
+    def coverage_check(self) -> None:
+        def check() -> dict:
+            found = _coverage(self._staged_db)
+            _check(found, self._previous)
+            return {"n_months": found[0], "last_month_id": found[1]}
+
+        self.coverage = _stage(self.stages, "coverage_check", check)
+
+    def _db(self):
+        if self._engine is None:
+            self._engine = create_engine(f"sqlite:///{self._staged_db.as_posix()}")
+        return self._engine
+
+    def _previous_db(self) -> Path | None:
+        return self.published_db if self.published_db.exists() else None
+
+    def feature_tables(self) -> None:
+        self.results["feature_tables"] = _stage(
+            self.stages, "feature_tables", lambda: self.features_fn(self._db()) or {}
+        )
+
+    def model_tables(self) -> None:
+        self.results["model_tables"] = _stage(
+            self.stages, "model_tables", lambda: self.model_tables_fn(self._db()) or {}
+        )
+
+    def scoring(self) -> None:
+        if self.scoring_fn is None:
+            self.results["scoring"] = {}
+            _skipped(self.stages, "scoring")
+        else:
+            self.results["scoring"] = _stage(
+                self.stages, "scoring", lambda: self.scoring_fn(self._db()) or {}
+            )
+
+    def promotion(self) -> None:
+        if self.scoring_fn is None or self.promotion_fn is None:
+            self.results["promotion"] = {}
+            _skipped(self.stages, "promotion")
+        else:
+            previous = self._previous_db()
+            self.results["promotion"] = _stage(
+                self.stages,
+                "promotion",
+                lambda: self.promotion_fn(self._db(), previous, self.accept_challenger) or {},
+            )
+
+    def monitoring(self) -> None:
+        if self.monitoring_fn is None:
+            self.results["monitoring"] = {}
+            _skipped(self.stages, "monitoring")
+        else:
+            previous = self._previous_db()
+            self.results["monitoring"] = _stage(
+                self.stages, "monitoring", lambda: self.monitoring_fn(self._db(), previous) or {}
+            )
+
+    def swap(self) -> None:
+        if self._engine is not None:  # release the staged file before it is renamed
+            self._engine.dispose()
+            self._engine = None
+        _stage(
+            self.stages, "swap", lambda: os.replace(self._staged_db, self.published_db)
+        )  # atomic: readers see the old or the new database, never half
+
+    # ---- the record
+
+    def finish(self, error: BaseException | str | None = None) -> dict:
+        """Write the run record (once) and clean up. A run is ok only if its swap happened."""
+        if self._finished:
+            return self.record
+        self._finished = True
+        if error is None and not self.stages:
+            # no stage ran and nothing went wrong: not a run, so no record. An orchestrator may
+            # set the run object up again after the steps have finished (Dagster does, for its
+            # end-of-run bookkeeping); that must not add an empty "failed" line to the run log.
+            return self.record
+        if self._engine is not None:
+            self._engine.dispose()
+        if self._staging is not None:
+            self._staging.cleanup()
+        swapped = any(s["stage"] == "swap" and s["status"] == "ok" for s in self.stages)
+        failed = next((s for s in self.stages if s["status"] == "failed"), None)
+        if error is not None:
+            message = error if isinstance(error, str) else f"{type(error).__name__}: {error}"
+        elif failed is not None:
+            message = failed.get("error")
+        elif not swapped:
+            message = "the run did not reach the swap"
+        else:
+            message = None
+        if message is None and swapped:
+            summary = self.summary or {}
+            self.record.update(
+                status="ok",
+                n_months=self.coverage["n_months"],
+                feature_tables=self.results.get("feature_tables", {}),
+                model_tables=self.results.get("model_tables", {}),
+                scoring=self.results.get("scoring", {}),
+                promotion=self.results.get("promotion", {}),
+                monitoring=self.results.get("monitoring", {}),
+                versions=run_versions(summary.get("ingest_files", [])),
+                public_data=self.results.get("public_data"),
+                last_month_id=self.coverage["last_month_id"],
+                # a product with no taxonomy entry is loaded as 'unclassified' and does not stop
+                # the run (PROPOSAL 18.10); recording it here makes the gap visible in the run log
+                # the extracts behind this database: file, role, SHA-256, size, rows parsed
+                ingest_files=summary.get("ingest_files", []),
+                quality=summary.get("quality"),
+                unmapped_products=sorted(summary.get("silver", {}).get("unmapped_products", [])),
+            )
+        else:
+            self.record["error"] = message
+        self.record["finished_at"] = _now()
+        with open(self.published_dir / LOG_NAME, "a", encoding="utf-8") as log:
+            log.write(json.dumps(self.record) + "\n")
+        return self.record
+
+
+def publish(**kwargs) -> dict:
     """Run the full rebuild. Returns the run record; never raises for a failed run.
 
     A failure at any stage fails the whole run and leaves the last good database live. The record
     has a `stages` list (name, status, seconds, detail or error) in the order they ran.
     `accept_challenger` is a written reason that lets a refit the promotion gate refused be
-    published anyway; it is recorded."""
-    published_dir = Path(published_dir)
-    published_dir.mkdir(parents=True, exist_ok=True)
-    published_db = published_dir / DB_NAME
-    stages: list[dict] = []
-    record: dict = {"status": "failed", "started_at": _now(), "error": None, "stages": stages}
-
+    published anyway; it is recorded. The arguments are those of `PublishRun`."""
+    run = PublishRun(**kwargs)
+    error = None
     try:
-        previous = _previous_coverage(published_db)
-        public_rows = _stage(stages, "public_data", public_data_fn)
-        with tempfile.TemporaryDirectory(dir=published_dir, prefix=".staging-") as staging:
-            staged_db = Path(staging) / DB_NAME
-            summary = _stage(
-                stages, "warehouse",
-                lambda: run_pipeline_fn(
-                    raw_dir=raw_dir,
-                    reference_dir=reference_dir,
-                    db_path=staged_db,
-                    previous_db=published_db if published_db.exists() else None,
-                ),
-                keep_detail=False,
-            )
-
-            def check_coverage() -> dict:
-                found = _coverage(staged_db)
-                _check(found, previous)
-                return {"n_months": found[0], "last_month_id": found[1]}
-
-            coverage = _stage(stages, "coverage_check", check_coverage)
-
-            engine = create_engine(f"sqlite:///{staged_db.as_posix()}")
-            try:
-                feature_rows = _stage(stages, "feature_tables", lambda: features_fn(engine) or {})
-                model_rows = _stage(stages, "model_tables", lambda: model_tables_fn(engine) or {})
-                if scoring_fn is None:
-                    scoring_rows = {}
-                    _skipped(stages, "scoring")
-                else:
-                    scoring_rows = _stage(stages, "scoring", lambda: scoring_fn(engine) or {})
-                previous_db = published_db if published_db.exists() else None
-                if scoring_fn is None or promotion_fn is None:
-                    promotion_rows = {}
-                    _skipped(stages, "promotion")
-                else:
-                    promotion_rows = _stage(
-                        stages,
-                        "promotion",
-                        lambda: promotion_fn(engine, previous_db, accept_challenger) or {},
-                    )
-                if monitoring_fn is None:
-                    monitoring_rows = {}
-                    _skipped(stages, "monitoring")
-                else:
-                    monitoring_rows = _stage(
-                        stages, "monitoring", lambda: monitoring_fn(engine, previous_db) or {}
-                    )
-            finally:
-                engine.dispose()
-
-            _stage(stages, "swap", lambda: os.replace(staged_db, published_db))  # atomic: readers
-            # see the old or the new database, never half
-
-        record.update(
-            status="ok",
-            n_months=coverage["n_months"],
-            feature_tables=feature_rows,
-            model_tables=model_rows,
-            scoring=scoring_rows,
-            promotion=promotion_rows,
-            monitoring=monitoring_rows,
-            versions=run_versions((summary or {}).get("ingest_files", [])),
-            public_data=public_rows,
-            last_month_id=coverage["last_month_id"],
-            # a product with no taxonomy entry is loaded as 'unclassified' and does not stop the
-            # run (PROPOSAL 18.10); recording it here makes the gap visible in the run log
-            # the extracts behind this database: file, role, SHA-256, size, rows parsed
-            ingest_files=(summary or {}).get("ingest_files", []),
-            quality=(summary or {}).get("quality"),
-            unmapped_products=sorted(
-                (summary or {}).get("silver", {}).get("unmapped_products", [])
-            ),
-        )
-    except Exception as error:  # noqa: BLE001 - the last good database stays live
+        run.start()
+        for name in STAGE_ORDER:
+            getattr(run, name)()
+    except Exception as exc:  # noqa: BLE001 - the last good database stays live
         logger.exception("Publish failed; the previously published database is unchanged.")
-        record["error"] = f"{type(error).__name__}: {error}"
-
-    record["finished_at"] = _now()
-    with open(published_dir / LOG_NAME, "a", encoding="utf-8") as log:
-        log.write(json.dumps(record) + "\n")
-    return record
+        error = exc
+    return run.finish(error)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -237,12 +366,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--reference-dir", type=Path, default=DEFAULT_REFERENCE_DIR)
     parser.add_argument("--published-dir", type=Path, default=DEFAULT_PUBLISHED_DIR)
     parser.add_argument(
-        "--public-data", choices=("committed", "full"), default="committed",
+        "--public-data",
+        choices=("committed", "full"),
+        default="committed",
         help="committed: check the committed public-data subset (default; CI, containers); "
         "full: reload and re-export it from the raw public files (local only)",
     )
     parser.add_argument(
-        "--accept-challenger", metavar="REASON", default=None,
+        "--accept-challenger",
+        metavar="REASON",
+        default=None,
         help="publish the refit even if the promotion gate refused it; the reason is recorded "
         "(a deliberate, written decision, never a default)",
     )
