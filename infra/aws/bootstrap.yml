@@ -5,10 +5,13 @@ Description: >-
   function. It creates no function and holds no secrets.
 
 Parameters:
-  GitHubRepository:
+  GitHubSubjectPrefix:
     Type: String
-    Default: tus2014ar/oa-market-intelligence-system
-    Description: The GitHub repository allowed to deploy, as owner/name.
+    Default: repo:tus2014ar@30377559/oa-market-intelligence-system@1373160617
+    Description: >-
+      How GitHub's sign-in token names this repository: repo:OWNER@OWNER_ID/NAME@REPOSITORY_ID.
+      GitHub builds it from immutable IDs, so a renamed or re-created repository cannot match. Read
+      it with the GitHub API call in docs/deployment.md.
   RepositoryName:
     Type: String
     Default: oa-market-api
@@ -54,7 +57,7 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubRepository}:ref:refs/heads/main
+                token.actions.githubusercontent.com:sub: !Sub ${GitHubSubjectPrefix}:ref:refs/heads/main
       Policies:
         - PolicyName: push-image-and-update-the-function
           PolicyDocument:
