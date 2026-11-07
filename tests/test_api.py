@@ -93,6 +93,7 @@ def test_health_needs_no_key_and_says_how_current_the_data_are_and_whether_a_key
         "data_through": "Jul 2025",
         "months_of_data": 72,
         "data_version": expected_version,
+        "data_source": "image",
         "auth": "open",
     }
     assert keyed_client.get("/health").json()["auth"] == "api-key"  # no key sent, still answers

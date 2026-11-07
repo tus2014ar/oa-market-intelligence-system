@@ -24,7 +24,7 @@ Then open http://localhost:8000/docs for the interactive documentation (every en
 
 | Path | Returns |
 |---|---|
-| `/health` | Whether the service is up, the newest month of data, the data version (a short hash of the input extracts, the same on every forecast of a run) and whether a key is needed. No key required. The deploy workflow and the daily canary compare the data version with the repository's. |
+| `/health` | Whether the service is up, the newest month of data, the data version (a short hash of the input extracts, the same on every forecast of a run) and whether a key is needed. No key required. `data_source` says whether the data came from the service's image or from the current release in the data bucket (DL-124). The deploy workflow and the daily canary compare the data version with the repository's. |
 | `/v1/status` | The headline numbers, how fresh the data are, and the limits of the analysis. |
 | `/v1/share/monthly` | Zilretta's share of visits by month. Optional `start_month_id`, `end_month_id` (YYYYMM). |
 | `/v1/share/yearly` | The same by calendar year; the first and last years are part years. |
@@ -68,6 +68,10 @@ curl -H "X-API-Key: choose-a-key" "http://localhost:8000/v1/predict/segment?spec
 - **Errors.** A value the data cannot answer is `422` with a `detail` that names the problem; a range with no months is `404`. Only `GET` is allowed.
 - **CORS.** A browser page on another origin may read (`GET`); the allowed origins are `*` unless `API_CORS_ORIGINS` (comma-separated) is set.
 - **Logs.** One JSON line per request (`method`, `path`, `status`, `ms`), no key and no query text.
+
+## Where the data come from (DL-124)
+
+The service's image carries a copy of the published warehouse. With the environment variable `OA_DATA_BUCKET` set (see [`deployment.md`](deployment.md), "The data release"), it also reads a pointer (`latest.json`) in a private S3 bucket when it starts and again at most every `OA_DATA_REFRESH_SECONDS` (default 300), and switches to the warehouse the pointer names, so a new month of data reaches the API with no image rebuild. A file is used only after its size, its SHA-256, its readability, its data version and its month all match the pointer, and a pointer may only name keys of one fixed shape. Anything that goes wrong (no pointer yet, no access, a damaged or half-written file, a release this code cannot load) keeps what the service is already serving; at start-up the image's copy is the fallback. With no bucket set, nothing changes. The status page describes the data it serves using the run record the release carries.
 
 ## What it is not
 

@@ -27,6 +27,10 @@ class Health(BaseModel):
         description="A short hash of the input extracts the data came from: the same value on "
         "every forecast of one monthly run, so a deploy can check it serves the latest run."
     )
+    data_source: Literal["image", "s3"] = Field(
+        description="Where the data came from: the copy in the service's image, or the current "
+        "release in the data bucket."
+    )
     auth: Literal["api-key", "open"] = Field(
         description="Whether an X-API-Key header is required on /v1 endpoints."
     )

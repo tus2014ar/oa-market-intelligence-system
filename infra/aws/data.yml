@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  The private data bucket for the OA/RA market API (DL-124): a monthly warehouse release and its
+  pointer, plus a role that the monthly GitHub workflow can assume (no stored keys) to write only
+  there. Create it after bootstrap.yml (it uses the GitHub sign-in link made there), then give the
+  bucket's name to api.yml.
+
+Parameters:
+  GitHubSubjectPrefix:
+    Type: String
+    Default: repo:tus2014ar@30377559/oa-market-intelligence-system@1373160617
+    Description: >-
+      How GitHub's sign-in token names this repository (the same value as in bootstrap.yml).
+
+Resources:
+  DataBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - BucketKeyEnabled: true
+            ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-versions-and-stalled-uploads
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 90
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+
+  DataBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref DataBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: RefuseUnencryptedTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt DataBucket.Arn
+              - !Sub ${DataBucket.Arn}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+  PublishRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: oa-market-data-publish
+      Description: Assumed by the monthly GitHub workflow on main to write one release to the data bucket.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/token.actions.githubusercontent.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: sts.amazonaws.com
+                token.actions.githubusercontent.com:sub: !Sub ${GitHubSubjectPrefix}:ref:refs/heads/main
+      Policies:
+        - PolicyName: write-releases-and-the-pointer-only
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: WriteAndCheckReleasesAndThePointer
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource:
+                  - !Sub ${DataBucket.Arn}/published/*
+                  - !Sub ${DataBucket.Arn}/latest.json
+
+Outputs:
+  BucketName:
+    Description: Save as the GitHub repository variable AWS_DATA_BUCKET, and give it to api.yml as DataBucket.
+    Value: !Ref DataBucket
+  PublishRoleArn:
+    Description: Save as the GitHub repository variable AWS_DATA_ROLE_ARN (not a secret).
+    Value: !GetAtt PublishRole.Arn

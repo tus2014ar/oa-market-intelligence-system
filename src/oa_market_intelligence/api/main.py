@@ -31,6 +31,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from oa_market_intelligence.api import schemas
+from oa_market_intelligence.api.remote_data import RemoteData, Source
 from oa_market_intelligence.serving import data, guard, qa_tools
 from oa_market_intelligence.serving.predictor import Predictor
 
@@ -142,6 +143,41 @@ def _data_version(snapshot) -> str:
     return str(versions[0]) if len(versions) == 1 else ("mixed" if len(versions) else "unknown")
 
 
+def _image_source() -> Source:
+    """The copy of the warehouse in the image (its version is read from the data when needed)."""
+    return Source(data.DB_PATH, "", "image", "")
+
+
+def _load(source: Source, live_predictions: bool):
+    """The snapshot (and the saved models, if wanted) from a warehouse file."""
+    engine = data.open_engine(source.path)
+    try:
+        snapshot = qa_tools.load_snapshot(engine, run=source.run)
+        predictor = None
+        if live_predictions:
+            artifacts, inputs = data.saved_models(engine)
+            if not artifacts.empty and not inputs.empty:
+                predictor = Predictor(artifacts, inputs)
+    finally:
+        engine.dispose()
+    return snapshot, predictor
+
+
+def _refresh(app: FastAPI, remote: RemoteData, live_predictions: bool) -> None:
+    """Switch to a newer verified release, if there is one. Anything that goes wrong leaves the
+    data being served as it is."""
+    newer = remote.poll(app.state.source)
+    if newer is None:
+        return
+    try:
+        snapshot, predictor = _load(newer, live_predictions)
+    except Exception:  # noqa: BLE001 - a file the code cannot use must not replace a working one
+        log.warning("a new release was found but could not be loaded: keeping the current data")
+        return
+    app.state.snapshot, app.state.predictor, app.state.source = snapshot, predictor, newer
+    log.info("now serving data version %s from %s", newer.data_version, newer.origin)
+
+
 def predictor_of(request: Request) -> Predictor:
     """The live predictor, or a clean 503 when this warehouse has no saved models."""
     predictor = request.app.state.predictor
@@ -168,22 +204,35 @@ def create_app(
     rate_per_minute: int | None = None,
     predictor: Predictor | None = None,
     live_predictions: bool = True,
+    remote: RemoteData | None = None,
 ) -> FastAPI:
     """The app. Tests pass a snapshot, keys and a predictor; the service loads the published
-    warehouse. `live_predictions=False` serves no saved models: /v1/predict says 503."""
+    warehouse. `live_predictions=False` serves no saved models: /v1/predict says 503. With
+    `OA_DATA_BUCKET` set (or a `remote` passed) it serves the current release in the data bucket
+    and follows new ones, falling back to the copy in the image (DL-124)."""
+    remote = remote if remote is not None else RemoteData.from_environment()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        engine = data.open_engine()
-        try:
-            if getattr(app.state, "snapshot", None) is None:
-                app.state.snapshot = qa_tools.load_snapshot(engine)
-            if live_predictions and app.state.predictor is None:
+        if getattr(app.state, "snapshot", None) is None:
+            source = remote.initial() if remote else _image_source()
+            try:
+                snapshot, loaded = _load(source, live_predictions)
+            except Exception:  # noqa: BLE001 - a release the code cannot use: the image's copy
+                if remote is None:
+                    raise
+                log.warning("the release could not be loaded: using the image's copy")
+                source = remote.baked()
+                snapshot, loaded = _load(source, live_predictions)
+            app.state.snapshot, app.state.predictor, app.state.source = snapshot, loaded, source
+        elif live_predictions and app.state.predictor is None:
+            engine = data.open_engine()
+            try:
                 artifacts, inputs = data.saved_models(engine)
                 if not artifacts.empty and not inputs.empty:
                     app.state.predictor = Predictor(artifacts, inputs)
-        finally:
-            engine.dispose()
+            finally:
+                engine.dispose()
         yield
 
     app = FastAPI(
@@ -196,6 +245,7 @@ def create_app(
     _log_to_stdout()
     app.state.snapshot = snapshot
     app.state.predictor = predictor if live_predictions else None
+    app.state.source = _image_source()
     app.state.keys = list(api_keys) if api_keys is not None else _keys_from_environment()
     per_minute = rate_per_minute or int(
         os.environ.get("API_RATE_PER_MINUTE", DEFAULT_RATE_PER_MINUTE)
@@ -207,6 +257,8 @@ def create_app(
 
     @app.middleware("http")
     async def access_log(request: Request, call_next):
+        if remote is not None and remote.due():
+            _refresh(request.app, remote, live_predictions)
         started = time.perf_counter()
         response = await call_next(request)
         log.info(
@@ -233,6 +285,7 @@ def create_app(
             "data_through": status["latest_month"],
             "months_of_data": status["months_of_data"],
             "data_version": _data_version(request.app.state.snapshot),
+            "data_source": request.app.state.source.origin,
             "auth": "api-key" if request.app.state.keys else "open",
         }
 

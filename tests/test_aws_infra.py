@@ -120,7 +120,30 @@ def test_the_function_is_a_container_image_with_modest_size_and_a_limited_role(a
     role = api["Resources"]["ExecutionRole"]["Properties"]
     assert len(role["ManagedPolicyArns"]) == 1
     assert role["ManagedPolicyArns"][0]["Sub"].endswith("service-role/AWSLambdaBasicExecutionRole")
-    assert "Policies" not in role  # it may write its own logs and nothing else
+    # it may write its own logs and, only when a data bucket is set, read releases: no more
+    policies = role["Policies"]
+    assert policies["If"][0] == "UseDataBucket" and policies["If"][2] == {"Ref": "AWS::NoValue"}
+    (policy,) = policies["If"][1]
+    (statement,) = policy["PolicyDocument"]["Statement"]
+    assert statement["Effect"] == "Allow" and statement["Action"] == "s3:GetObject"  # read only
+    assert [r["Sub"].split(":::")[1] for r in statement["Resource"]] == [
+        "${DataBucket}/published/*",
+        "${DataBucket}/latest.json",
+    ]  # the releases and the pointer, not the bucket
+
+
+def test_the_data_bucket_setting_is_optional_and_reaches_the_function_only_when_set(api):
+    assert api["Parameters"]["DataBucket"]["Default"] == ""
+    assert api["Conditions"]["UseDataBucket"] == {
+        "Fn::Not": [{"Fn::Equals": [{"Ref": "DataBucket"}, ""]}]
+    } or (api["Conditions"]["UseDataBucket"] == {"Not": [{"Equals": [{"Ref": "DataBucket"}, ""]}]})
+    variables = api["Resources"]["Function"]["Properties"]["Environment"]["Variables"]["If"]
+    assert variables[0] == "UseDataBucket"
+    with_bucket, without = variables[1], variables[2]
+    assert with_bucket["OA_DATA_BUCKET"] == {"Ref": "DataBucket"}
+    assert "OA_DATA_BUCKET" not in without and set(without) < set(
+        with_bucket
+    )  # nothing else differs
 
 
 def test_the_concurrency_limit_is_optional_because_a_new_account_may_not_allow_it(api):
@@ -286,3 +309,101 @@ def test_the_lambda_image_runs_the_handler_with_no_key_in_it():
     assert 'CMD ["oa_market_intelligence.api.lambda_handler.handler"]' in text
     assert "COPY data/published" in text and "API_KEYS" not in text.replace("API_KEYS=choose", "")
     assert "mangum" in (ROOT / "api" / "requirements-lambda.txt").read_text(encoding="utf-8")
+
+
+# ------------------------------------------------------------------ the data bucket (DL-124)
+
+MONTHLY = ROOT / ".github" / "workflows" / "monthly_pipeline.yml"
+
+
+@pytest.fixture(scope="module")
+def bucket():
+    return template("data.yml")
+
+
+def test_the_data_bucket_is_private_encrypted_versioned_and_never_deleted_by_a_stack(bucket):
+    resource = bucket["Resources"]["DataBucket"]
+    assert resource["Type"] == "AWS::S3::Bucket"
+    assert resource["DeletionPolicy"] == "Retain" and resource["UpdateReplacePolicy"] == "Retain"
+    props = resource["Properties"]
+    assert props["PublicAccessBlockConfiguration"] == {
+        "BlockPublicAcls": True, "BlockPublicPolicy": True,
+        "IgnorePublicAcls": True, "RestrictPublicBuckets": True,
+    }  # fmt: skip
+    assert props["VersioningConfiguration"] == {
+        "Status": "Enabled"
+    }  # a rollback is moving a pointer
+    rule = props["BucketEncryption"]["ServerSideEncryptionConfiguration"][0]
+    assert rule["ServerSideEncryptionByDefault"]["SSEAlgorithm"] == "AES256"
+    assert props["OwnershipControls"]["Rules"][0]["ObjectOwnership"] == "BucketOwnerEnforced"
+    lifecycle = props["LifecycleConfiguration"]["Rules"][0]
+    assert lifecycle["NoncurrentVersionExpiration"]["NoncurrentDays"] == 90
+    assert "BucketName" not in props  # no fixed name, so none can collide
+
+
+def test_the_bucket_refuses_any_request_that_is_not_encrypted_in_transit(bucket):
+    policy = bucket["Resources"]["DataBucketPolicy"]["Properties"]["PolicyDocument"]
+    (statement,) = policy["Statement"]
+    assert statement["Effect"] == "Deny" and statement["Action"] == "s3:*"
+    assert statement["Condition"] == {"Bool": {"aws:SecureTransport": "false"}}
+    assert len(statement["Resource"]) == 2  # the bucket and its objects
+
+
+def test_the_publish_role_trusts_only_main_of_this_repository_and_can_only_write_releases(bucket):
+    role = bucket["Resources"]["PublishRole"]["Properties"]
+    (trust,) = role["AssumeRolePolicyDocument"]["Statement"]
+    assert trust["Action"] == "sts:AssumeRoleWithWebIdentity"
+    condition = trust["Condition"]["StringEquals"]
+    assert condition["token.actions.githubusercontent.com:aud"] == "sts.amazonaws.com"
+    subject = condition["token.actions.githubusercontent.com:sub"]["Sub"]
+    assert subject == "${GitHubSubjectPrefix}:ref:refs/heads/main"  # an exact match, no wildcard
+    (policy,) = role["Policies"]
+    (statement,) = policy["PolicyDocument"]["Statement"]
+    assert sorted(statement["Action"]) == ["s3:GetObject", "s3:PutObject"]  # no delete, no list
+    assert [r["Sub"].split("}", 1)[1] for r in statement["Resource"]] == [
+        "/published/*",
+        "/latest.json",
+    ]
+    assert (
+        bucket["Parameters"]["GitHubSubjectPrefix"]["Default"]
+        == (template("bootstrap.yml")["Parameters"]["GitHubSubjectPrefix"]["Default"])
+    )  # the same repository identity as the deploy role
+
+
+def test_the_data_stack_makes_a_bucket_its_policy_and_one_role_and_nothing_else(bucket):
+    types = {r["Type"] for r in bucket["Resources"].values()}
+    assert types == {"AWS::S3::Bucket", "AWS::S3::BucketPolicy", "AWS::IAM::Role"}
+
+
+def test_the_monthly_job_publishes_to_s3_only_when_set_up_with_no_stored_credentials():
+    text = MONTHLY.read_text(encoding="utf-8")
+    workflow = yaml.safe_load(text)
+    assert workflow["permissions"] == {"contents": "write", "id-token": "write"}
+    steps = {s["name"]: s for s in workflow["jobs"]["run-pipeline"]["steps"] if "name" in s}
+    condition = "vars.AWS_DATA_BUCKET != '' && vars.AWS_DATA_ROLE_ARN != ''"
+    for name in (
+        "Prepare the data release (a pointer to this warehouse)",
+        "Sign in to AWS with the OIDC token",
+        "Publish the release to S3, then move the pointer",
+    ):
+        assert steps[name]["if"] == condition, name  # nothing changes until it is configured
+    assert "secrets." not in text and "AWS_ACCESS_KEY_ID" not in text
+    publish = steps["Publish the release to S3, then move the pointer"]["run"]
+    # the file first, its size checked, and the pointer last
+    assert (
+        publish.index("warehouse.db") < publish.index("head-object") < publish.index("latest.json")
+    )
+    assert "exit 1" in publish
+    order = [s.get("name") for s in workflow["jobs"]["run-pipeline"]["steps"]]
+    assert order.index("Commit the published database") < order.index(
+        "Publish the release to S3, then move the pointer"
+    )  # the repository and the bucket are only released after the checks and the commit
+
+
+def test_the_deploy_workflow_waits_for_the_api_to_follow_a_release_before_rebuilding():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    assert "DATA_BUCKET: ${{ vars.AWS_DATA_BUCKET }}" in text
+    assert (
+        'if [ -n "$DATA_BUCKET" ]; then TRIES=9; fi' in text
+    )  # about 8 minutes, only with a bucket
+    assert 'if [ "$i" -lt "$TRIES" ]; then sleep 60; fi' in text
