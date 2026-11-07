@@ -23,7 +23,9 @@ from oa_market_intelligence.serving import data, overview  # noqa: E402
 APP_DIR = Path(__file__).resolve().parent.parent / "app"
 APP = str(APP_DIR / "streamlit_app.py")
 SCRIPTS = {title: script for title, script, *_ in overview.PAGES}
-KEYS = ("ANTHROPIC_API_KEY", "ACCESS_CODE", "DAILY_TOKEN_BUDGET")
+KEYS = (
+    "ANTHROPIC_API_KEY", "ACCESS_CODE", "DAILY_TOKEN_BUDGET", "LIVE_API_URL", "LIVE_API_KEY",
+)  # fmt: skip
 pytestmark = pytest.mark.skipif(not data.DB_PATH.exists(), reason="no published warehouse")
 
 
@@ -1282,3 +1284,159 @@ def test_every_page_carries_the_sites_name_as_its_title(page):
     for title in overview.TAB_NAMES:
         at = page(title)
         assert [t.value for t in at.title] == [SITE_NAME], title
+
+
+# ------------------------------------------------------------------ the live model panel (DL-122)
+
+LIVE_URL = "https://abc123example.lambda-url.us-east-1.on.aws/"
+LIVE_KEY = "live-key-for-the-tests-0123456789"
+
+
+@pytest.fixture()
+def live(monkeypatch):
+    """The panel switched on, with the model service replaced by a stub that answers from the
+    stored forecasts (plus `offset` points), so no network is used. Returns the stub's controls."""
+    import sys
+
+    from oa_market_intelligence.serving import live_client
+
+    if str(APP_DIR) not in sys.path:
+        sys.path.insert(0, str(APP_DIR))
+    import live_panel
+
+    monkeypatch.setenv("LIVE_API_URL", LIVE_URL)
+    monkeypatch.setenv("LIVE_API_KEY", LIVE_KEY)
+    engine = data.open_engine()
+    pred = data.predictions(engine)
+    engine.dispose()
+    state = SimpleNamespace(offset=0.0, fail=None, calls=[])
+
+    def forecast(self, specialty, age_band, gender, horizon):
+        state.calls.append((specialty, age_band, gender, horizon))
+        if state.fail:
+            raise live_client.LiveUnavailable(state.fail)
+        row = pred[
+            (pred["level"] == "segment") & (pred["horizon"] == horizon)
+            & (pred["specialty_name"] == specialty) & (pred["age_band"] == age_band)
+            & (pred["gender"] == gender)
+        ].iloc[0]  # fmt: skip
+        stored = 100 * float(row["point_share"])
+        return {
+            "specialty": specialty, "age_band": age_band, "gender": gender, "horizon": horizon,
+            "target_month_id": int(row["target_month_id"]), "target_month": "Oct 2025",
+            "model": str(row["model"]), "model_version": "stubbed",
+            "forecast_pct": round(stored + state.offset, 4),
+            "last_month_pct": 2.0, "change_pp": round(stored + state.offset - 2.0, 4),
+            "origin_visits": int(row["origin_visits"]), "small": False, "known_bias_pct": 5.5,
+            "stored_forecast_pct": round(stored, 4), "matches_stored": True, "note": "n",
+        }  # fmt: skip
+
+    monkeypatch.setattr(live_client.LiveClient, "forecast", forecast)
+    monkeypatch.setattr(
+        live_client.LiveClient,
+        "health",
+        lambda self: {"status": "ok", "data_version": str(pred["data_version"].iloc[0])},
+    )
+    monkeypatch.setattr(live_panel, "PER_VISITOR_PER_HOUR", 20)
+    for cached in (live_panel._limits, live_panel._forecast, live_panel._health):
+        cached.clear()
+    yield state
+    for cached in (live_panel._limits, live_panel._forecast, live_panel._health):
+        cached.clear()
+
+
+def _run_live(at):
+    at.button(key="live_run").click().run()
+    return at
+
+
+def _everything(at):
+    """All the text the page shows a visitor, including warnings and errors."""
+    return " ".join([_text(at)] + [w.value for w in at.warning] + [e.value for e in at.error])
+
+
+def test_without_a_service_address_and_key_the_panel_is_switched_off_and_the_page_is_unchanged(
+    page,
+):
+    at = page("Forecasts")
+    assert "Run the model live" in _text(at) and "switched off on this copy of the site" in _text(
+        at
+    )
+    assert not [b for b in at.button if b.key == "live_run"]
+    assert not [s for s in at.selectbox if s.key and s.key.startswith("live_")]  # no choice either
+
+
+def test_with_the_service_set_the_panel_offers_three_choices_and_a_button(live):
+    at = run_page("Forecasts")
+    assert not at.exception
+    assert [s.key for s in at.selectbox if s.key and s.key.startswith("live_")] == [
+        "live_specialty", "live_age", "live_gender",
+    ]  # fmt: skip
+    assert at.button(key="live_run").label == "Run the model"
+    assert live.calls == []  # nothing is called until a visitor clicks
+
+
+def test_a_run_calls_the_service_for_the_chosen_segment_and_horizon_and_shows_it_equals_the_page(
+    live,
+):
+    at = _run_live(run_page("Forecasts", fc_horizon=3))
+    assert not at.exception and len(live.calls) == 1
+    assert live.calls[0][3] == 3  # the page's horizon
+    text = _everything(at)
+    assert "Live forecast, 3 months" in text
+    assert "Same as the forecast above" in text
+    assert "Data version on the website" in text and "The service also checked it" in text
+    assert "optimistic" in text  # the caveat comes with every answer
+    assert LIVE_KEY not in text and "abc123example" not in text and "amazonaws" not in text
+
+
+def test_a_live_answer_that_differs_from_the_page_is_flagged_with_the_gap(live):
+    live.offset = 0.5
+    at = _run_live(run_page("Forecasts"))
+    text = _everything(at)
+    assert "Different from the forecast above by 0.5000 points" in text
+    assert "Same as the forecast above" not in text
+
+
+def test_when_the_service_does_not_answer_the_panel_says_so_and_the_page_still_works(live):
+    live.fail = "unreachable"
+    at = _run_live(run_page("Forecasts"))
+    assert not at.exception
+    text = _everything(at)
+    assert "The live model service did not answer. The forecast shown above is unchanged." in text
+    assert "In 1 month (Aug 2025)" in _cards(at)[0]  # the page's own forecasts are untouched
+    assert LIVE_KEY not in text and "abc123example" not in text
+
+
+def test_a_refused_key_is_reported_without_naming_the_key(live):
+    live.fail = "rejected"
+    text = _everything(_run_live(run_page("Forecasts")))
+    assert "key for the live model service was refused" in text and LIVE_KEY not in text
+
+
+def test_each_visitor_may_run_it_only_so_often_and_the_page_says_when_they_are_over(
+    live, monkeypatch
+):
+    import live_panel
+
+    monkeypatch.setattr(live_panel, "PER_VISITOR_PER_HOUR", 2)
+    live_panel._limits.clear()
+    at = run_page("Forecasts")
+    for _ in range(2):
+        _run_live(at)
+        assert "Live forecast, 1 month" in _everything(at)
+    _run_live(at)
+    assert "Too many live runs in the last hour. The forecast shown above is unchanged." in (
+        _everything(at)
+    )
+    assert len(live.calls) <= 2  # the third click never reached the service
+
+
+def test_an_answer_is_shown_only_while_the_choice_is_the_one_it_answered(live):
+    at = _run_live(run_page("Forecasts"))
+    assert "Live forecast, 1 month" in _everything(at)
+    options = at.selectbox(key="live_specialty").options
+    assert len(options) > 1
+    at.selectbox(key="live_specialty").select_index(1).run()
+    assert "Live forecast, 1 month" not in _everything(at)  # a new choice, no stale answer
+    assert not at.exception
