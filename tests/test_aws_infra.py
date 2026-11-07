@@ -60,10 +60,11 @@ def test_the_deploy_role_can_only_be_assumed_from_the_main_branch_of_this_reposi
     condition = statement["Condition"]["StringEquals"]
     assert condition["token.actions.githubusercontent.com:aud"] == "sts.amazonaws.com"
     subject = condition["token.actions.githubusercontent.com:sub"]["Sub"]
-    assert subject == "repo:${GitHubRepository}:ref:refs/heads/main"  # an exact match, no wildcard
-    assert bootstrap["Parameters"]["GitHubRepository"]["Default"] == (
-        "tus2014ar/oa-market-intelligence-system"
-    )
+    assert subject == "${GitHubSubjectPrefix}:ref:refs/heads/main"  # an exact match, no wildcard
+    # GitHub names the repository by immutable IDs (owner@id/name@id), so a renamed or re-created
+    # repository cannot match; the plain name form is refused by GitHub's current tokens
+    prefix = bootstrap["Parameters"]["GitHubSubjectPrefix"]["Default"]
+    assert re.fullmatch(r"repo:tus2014ar@\d+/oa-market-intelligence-system@\d+", prefix)
 
 
 def test_the_deploy_role_can_reach_only_one_repository_and_one_function(bootstrap):
