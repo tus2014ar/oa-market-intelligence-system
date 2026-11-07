@@ -136,6 +136,30 @@ jobs:
       - name: API tests
         run: pytest tests/test_api.py tests/test_predictor.py tests/test_data_release.py tests/test_remote_data.py tests/test_api_data_release.py -q
 
+  # Experiment tracking (DL-125): MLflow is an optional install (requirements-tracking.txt), so its
+  # tests have their own job; the main job skips them where MLflow is absent. It also builds the
+  # real store from the committed warehouse and lists the champions, as a person would.
+  tracking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install MLflow and what the tests need
+        run: pip install pandas sqlalchemy numpy pytest filelock -r requirements-tracking.txt
+
+      - name: Tracking tests
+        run: pytest tests/test_tracking.py -q
+
+      - name: Build the real store and list the champions
+        run: |
+          PYTHONPATH=src python -m oa_market_intelligence.tracking build --store "$RUNNER_TEMP/store"
+          PYTHONPATH=src python -m oa_market_intelligence.tracking summary --store "$RUNNER_TEMP/store"
+
   # Builds the three images (no push) and runs them, so a broken Dockerfile, pin file or start-up
   # fails here: the pipeline image, the website and the API, each checked as it would run.
   docker-build:
