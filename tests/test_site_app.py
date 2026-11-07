@@ -100,11 +100,15 @@ def test_every_page_runs_without_an_error_and_has_no_free_text_box(page, title):
 
 
 def test_every_page_but_the_overview_starts_with_a_note_on_how_old_the_data_are(page):
+    # the age is the one in the last publish run's record (it changes with every publish), so the
+    # test reads it from the committed run log instead of remembering a number
+    age = data.last_run()["monitoring"]["freshness"]["age_days"]
+    assert age > 100  # stale: no newer extract has arrived
     for title in overview.TAB_NAMES[1:]:
         chips = [m.value for m in page(title).markdown if "-badge[Data to " in m.value]
         assert len(chips) == 1, title
         assert chips[0].startswith(":orange-badge[Data to Jul 2025")
-        assert "454 days old, no newer extract" in chips[0]
+        assert f"{age} days old, no newer extract" in chips[0]
     overview_page = page("Overview")
     assert not [m for m in overview_page.markdown if "-badge[Data to " in m.value]
     banners = [w.value for w in overview_page.warning if "No newer extract has arrived" in w.value]
