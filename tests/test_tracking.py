@@ -216,7 +216,27 @@ def test_without_mlflow_the_command_says_how_to_install_it(tmp_path, monkeypatch
 # ------------------------------------------------------------------ a real MLflow store
 
 
-def make_warehouse(tmp_path, *, tamper=False):
+def promotion_log(**changes) -> pd.DataFrame:
+    """A small promotion log: one sanity check, two reproducibility checks, one stability check."""
+    base = {
+        "decision": "promote", "champion_origin": 202507, "challenger_origin": 202507,
+        "champion_data_version": "28b9a7bd3234", "challenger_data_version": "28b9a7bd3234",
+        "override_reason": None,
+    }  # fmt: skip
+    rows = [
+        {"scope": "sanity", "check": "forecasts_finite_and_between_0_and_1", "horizon": None,
+         "value": None, "limit": None, "passed": 1, "detail": "339 rows"},
+        {"scope": "reproducibility", "check": "forecasts_identical", "horizon": None,
+         "value": 2.8e-11, "limit": 1e-6, "passed": 1, "detail": "largest difference"},
+        {"scope": "reproducibility", "check": "alert_flags_identical", "horizon": None,
+         "value": 0.0, "limit": 0.0, "passed": 1, "detail": ""},
+        {"scope": "stability", "check": "weighted_mean_change_pp", "horizon": 1,
+         "value": 0.2, "limit": 0.6, "passed": 1, "detail": "volume-weighted"},
+    ]  # fmt: skip
+    return pd.DataFrame([{**base, **changes, **r} for r in rows])
+
+
+def make_warehouse(tmp_path, *, tamper=False, with_log=True):
     """A small warehouse with the tables tracking reads, and a run log with a code version."""
     db = tmp_path / "warehouse.db"
     scores = scores_frame(
@@ -244,6 +264,8 @@ def make_warehouse(tmp_path, *, tamper=False):
     scores.to_sql("model_scores", con, index=False)
     arts.to_sql("model_artifacts", con, index=False)
     pd.DataFrame({"data_version": ["28b9a7bd3234"]}).to_sql("pred_batch", con, index=False)
+    if with_log:
+        promotion_log().to_sql("promotion_log", con, index=False)
     con.close()
     (tmp_path / "run_log.jsonl").write_text(
         json.dumps({"versions": {"code": "acd52c4b9f"}}) + "\n", encoding="utf-8"
@@ -262,7 +284,8 @@ def client_for(store):
 def test_a_built_store_has_an_experiment_per_task_and_a_run_per_score_row(tmp_path):
     db = make_warehouse(tmp_path)
     result = tr.build_store(db, tmp_path / "store")
-    assert result["runs"] == 7 and result["experiments"] == 4  # three tasks and the registry
+    assert result["runs"] == 7 and result["promotion_runs"] == 1
+    assert result["experiments"] == 5  # three tasks, the registry and the promotion decisions
     assert result["data_version"] == "28b9a7bd3234" and result["code_version"] == "acd52c4b9f"
     client = client_for(tmp_path / "store")
     names = {e.name for e in client.search_experiments()}
@@ -346,8 +369,8 @@ def test_running_the_command_again_replaces_the_store_instead_of_adding_to_it(tm
     store = tmp_path / "store"
     first = run_cli("build", "--db", str(db), "--store", str(store))
     again = run_cli("build", "--db", str(db), "--store", str(store))
-    assert "recorded 7 runs in 4 experiments and 4 models" in first.stdout
-    assert "recorded 7 runs in 4 experiments and 4 models" in again.stdout
+    assert "recorded 7 runs in 5 experiments and 4 models" in first.stdout
+    assert "recorded 7 runs in 5 experiments and 4 models" in again.stdout
     client = client_for(store)
     t2 = next(e for e in client.search_experiments() if e.name == "T2 segment share")
     assert len(client.search_runs([t2.experiment_id], max_results=100)) == 5  # not 10
@@ -396,6 +419,7 @@ def test_the_published_warehouse_builds_a_store_with_every_score_and_the_four_ch
     arts = pd.read_sql("SELECT model_id, artifact_sha256, model_version FROM model_artifacts", con)
     con.close()
     assert result["runs"] == n_scores == 222 and result["data_version"] == "28b9a7bd3234"
+    assert result["promotion_runs"] == 1 and result["experiments"] == 5
     listed = tr.summary(store)
     assert len(listed) == 4
     by_id = {m["tags"]["model_id"]: m["tags"] for m in listed}
@@ -404,3 +428,51 @@ def test_the_published_warehouse_builds_a_store_with_every_score_and_the_four_ch
         assert by_id[row.model_id]["model_version"] == row.model_version
     assert tr.main(["summary", "--store", str(store)]) == 0
     assert capsys.readouterr().out.count("champion v1") == 4
+
+
+# ------------------------------------------------------------------ the promotion decisions
+
+
+def test_a_promotion_log_becomes_one_run_with_every_check_its_limit_and_the_decision():
+    spec = tr.promotion_spec(promotion_log(), data_version="dv", code_version="cv")
+    assert spec.experiment == "Promotion decisions"
+    assert spec.name == "promotion 202507 -> 202507: promote"
+    assert spec.params["decision"] == "promote" and spec.params["challenger_origin"] == "202507"
+    assert spec.metrics["checks_total"] == 4 and spec.metrics["checks_failed"] == 0
+    assert spec.metrics["reproducibility.forecasts_identical"] == 2.8e-11
+    assert spec.metrics["reproducibility.forecasts_identical.limit"] == 1e-6
+    assert spec.metrics["stability.weighted_mean_change_pp.h1"] == 0.2  # a horizon in the name
+    assert spec.metrics["sanity.forecasts_finite_and_between_0_and_1.passed"] == 1.0
+    assert "sanity.forecasts_finite_and_between_0_and_1" not in spec.metrics  # no value to record
+    assert spec.tags["decision"] == "promote" and spec.tags["code_version"] == "cv"
+
+
+def test_a_refused_or_overridden_decision_records_the_failures_and_the_reason():
+    log = promotion_log(decision="override", override_reason="reviewed: library upgrade")
+    log.loc[1, "passed"] = 0
+    spec = tr.promotion_spec(log, data_version="dv", code_version="cv")
+    assert spec.metrics["checks_failed"] == 1
+    assert spec.metrics["reproducibility.forecasts_identical.passed"] == 0.0
+    assert spec.params["override_reason"] == "reviewed: library upgrade"
+    assert spec.name.endswith("override")
+
+
+def test_a_warehouse_with_no_promotion_log_gives_no_promotion_run():
+    assert tr.promotion_spec(pd.DataFrame(), data_version="d", code_version="c") is None
+    assert tr.promotion_spec(None, data_version="d", code_version="c") is None
+
+
+@needs_mlflow
+def test_the_store_shows_the_decision_beside_the_models_and_an_older_warehouse_still_builds(
+    tmp_path,
+):
+    tr.build_store(make_warehouse(tmp_path), tmp_path / "with")
+    client = client_for(tmp_path / "with")
+    gate = next(e for e in client.search_experiments() if e.name == "Promotion decisions")
+    (run,) = client.search_runs([gate.experiment_id])
+    assert run.data.params["decision"] == "promote" and run.data.metrics["checks_failed"] == 0
+    assert run.data.metrics["reproducibility.forecasts_identical"] == pytest.approx(2.8e-11)
+    older = tmp_path / "older"
+    older.mkdir()
+    result = tr.build_store(make_warehouse(older, with_log=False), older / "store")
+    assert result["experiments"] == 4 and result["promotion_runs"] == 0  # no log, no experiment

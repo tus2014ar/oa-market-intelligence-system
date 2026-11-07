@@ -14,7 +14,12 @@ name: Monthly Pipeline
 on:
   schedule:
     - cron: "0 6 10 * *"
-  workflow_dispatch: {}  # manual trigger, so a rebuild can be run on demand
+  workflow_dispatch:  # manual trigger, so a rebuild can be run on demand
+    inputs:
+      accept_challenger_reason:
+        description: "Publish even if the promotion gate refused the refit: the written reason (leave empty for a normal run)"
+        required: false
+        default: ""
 
 permissions:
   contents: write  # to commit the published database
@@ -41,8 +46,17 @@ jobs:
       # One entry point runs every stage in order (public data check, warehouse, feature tables,
       # model-result tables, swap); the committed public-data subset is checked, not rebuilt,
       # because the 24 GB of raw public files exist only on the author's machine.
+      # The promotion gate (DL-126) stops the run before the swap if the refit fails a check. A
+      # manual run with a written reason publishes it anyway, and the reason is recorded.
       - name: Rebuild and publish
-        run: oa-publish --public-data committed
+        env:
+          ACCEPT_REASON: ${{ inputs.accept_challenger_reason }}
+        run: |
+          if [ -n "$ACCEPT_REASON" ]; then
+            oa-publish --public-data committed --accept-challenger "$ACCEPT_REASON"
+          else
+            oa-publish --public-data committed
+          fi
 
       # A published database that is incomplete, or whose results and predictions disagree with
       # each other, is never committed.

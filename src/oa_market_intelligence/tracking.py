@@ -49,6 +49,7 @@ DEFAULT_STORE = REPO_ROOT / "mlflow_store"
 MARKER = ".oa-tracking-store"  # a store is only ever replaced if it carries this file
 CHAMPION = "champion"
 REGISTRY_EXPERIMENT = "Registry: the models in service"
+PROMOTION_EXPERIMENT = "Promotion decisions"
 
 EXPERIMENTS = {
     "T1": "T1 national share",
@@ -154,6 +155,53 @@ def run_specs(scores: pd.DataFrame, *, data_version: str, code_version: str) -> 
     return specs
 
 
+def promotion_spec(log: pd.DataFrame, *, data_version: str, code_version: str) -> RunSpec | None:
+    """The promotion gate's decision for the published warehouse (the `promotion_log` table, DL-126)
+    as one run: every check's value and limit as metrics, the decision and the two months it
+    compared as parameters and tags. None when the warehouse has no log (an older one)."""
+    if log is None or log.empty:
+        return None
+    first = log.iloc[0]
+    metrics = {"checks_total": float(len(log)), "checks_failed": float((log["passed"] == 0).sum())}
+    for row in log.to_dict("records"):
+        name = f"{row['scope']}.{row['check']}"
+        if _number(row.get("horizon")) is not None:
+            name += f".h{int(row['horizon'])}"
+        for suffix, column in (("", "value"), (".limit", "limit")):
+            value = _number(row.get(column))
+            if value is not None:
+                metrics[name + suffix] = value
+        metrics[name + ".passed"] = float(row["passed"])
+    reason = first.get("override_reason")
+    params = {
+        "decision": str(first["decision"]),
+        "champion_origin": _text(first.get("champion_origin")),
+        "challenger_origin": _text(first.get("challenger_origin")),
+        "champion_data_version": _text(first.get("champion_data_version")),
+        "challenger_data_version": _text(first.get("challenger_data_version")),
+    }
+    if isinstance(reason, str) and reason:
+        params["override_reason"] = reason
+    tags = {
+        "decision": str(first["decision"]),
+        "data_version": data_version,
+        "code_version": code_version,
+        "source": "promotion_log in the published warehouse",
+    }
+    span = f"{params['champion_origin']} -> {params['challenger_origin']}"
+    name = f"promotion {span}: {params['decision']}"
+    return RunSpec(PROMOTION_EXPERIMENT, name, params, metrics, tags)
+
+
+def _text(value) -> str:
+    number = _number(value)
+    if number is not None:
+        return str(int(number)) if number == int(number) else str(number)
+    return (
+        "none" if value is None or (isinstance(value, float) and math.isnan(value)) else str(value)
+    )
+
+
 def model_name(task: str, horizon: int) -> str:
     """The registered model's name, for example `oa-segment-share-3m`."""
     if task not in SERVED_TASK:
@@ -235,12 +283,18 @@ def _tracking_uri(store: Path) -> str:
     return f"sqlite:///{(store / 'mlflow.db').as_posix()}"
 
 
-def _read(db_path: Path) -> tuple[pd.DataFrame, pd.DataFrame, str, str]:
+def _read(db_path: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, str, str]:
     con = sqlite3.connect(f"file:{Path(db_path).as_posix()}?mode=ro", uri=True)
     try:
         scores = pd.read_sql("SELECT * FROM model_scores", con)
         artifacts = pd.read_sql("SELECT * FROM model_artifacts", con)
         versions = [r[0] for r in con.execute("SELECT DISTINCT data_version FROM pred_batch")]
+        tables = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        promotion = (
+            pd.read_sql("SELECT * FROM promotion_log", con)
+            if "promotion_log" in tables
+            else pd.DataFrame()
+        )
     except (sqlite3.Error, pd.errors.DatabaseError):
         raise TrackingError(
             "the warehouse lacks model_scores, model_artifacts or pred_batch"
@@ -255,7 +309,7 @@ def _read(db_path: Path) -> tuple[pd.DataFrame, pd.DataFrame, str, str]:
         lines = [ln for ln in log.read_text("utf-8").splitlines() if ln.strip()]
         if lines:
             code = str(json.loads(lines[-1]).get("versions", {}).get("code", "unknown"))
-    return scores, artifacts, str(versions[0]), code
+    return scores, artifacts, promotion, str(versions[0]), code
 
 
 def _prepare_store(store: Path) -> None:
@@ -279,8 +333,11 @@ def build_store(db_path: Path | str = DEFAULT_DB, store: Path | str = DEFAULT_ST
     key = str(store.resolve())
     if key in _built_here:
         raise TrackingError("this store was already built in this process: start a new process")
-    scores, artifacts, data_version, code_version = _read(Path(db_path))
+    scores, artifacts, promotion, data_version, code_version = _read(Path(db_path))
     runs = run_specs(scores, data_version=data_version, code_version=code_version)
+    gate = promotion_spec(promotion, data_version=data_version, code_version=code_version)
+    if gate is not None:
+        runs.append(gate)
     models = model_specs(artifacts)  # checks every SHA-256 before anything is written
     _prepare_store(store)
     _built_here.add(key)
@@ -299,9 +356,13 @@ def _populate(client, store, runs, models, data_version, code_version, Metric, P
         slug = "".join(c if c.isalnum() else "-" for c in name.lower()).strip("-")
         return client.create_experiment(name, artifact_location=(roots / slug).as_uri())
 
-    ids = {name: experiment(name) for name in [*EXPERIMENTS.values(), REGISTRY_EXPERIMENT]}
+    wanted = [*EXPERIMENTS.values(), REGISTRY_EXPERIMENT]
+    if any(spec.experiment == PROMOTION_EXPERIMENT for spec in runs):
+        wanted.append(PROMOTION_EXPERIMENT)
+    ids = {name: experiment(name) for name in wanted}
     evidence: dict[tuple[str, int, str, str], str] = {}
     for spec in runs:
+        scored = spec.experiment != PROMOTION_EXPERIMENT
         run = client.create_run(
             ids[spec.experiment],
             run_name=spec.name,
@@ -314,19 +375,21 @@ def _populate(client, store, runs, models, data_version, code_version, Metric, P
             params=[Param(k, v) for k, v in spec.params.items()],
         )
         client.set_terminated(run.info.run_id)
-        key = (
-            spec.params["task"],
-            int(spec.params["horizon"]),
-            spec.params["method"],
-            spec.params["scenario"],
-        )
-        evidence[key] = run.info.run_id
+        if scored:
+            key = (
+                spec.params["task"],
+                int(spec.params["horizon"]),
+                spec.params["method"],
+                spec.params["scenario"],
+            )
+            evidence[key] = run.info.run_id
 
     for model in models:
         _register(client, ids[REGISTRY_EXPERIMENT], model, evidence, data_version, code_version)
     return {
         "experiments": len(ids),
-        "runs": len(runs),
+        "runs": sum(1 for r in runs if r.experiment != PROMOTION_EXPERIMENT),
+        "promotion_runs": sum(1 for r in runs if r.experiment == PROMOTION_EXPERIMENT),
         "models": [m.name for m in models],
         "data_version": data_version,
         "code_version": code_version,

@@ -235,9 +235,10 @@ def test_the_stages_run_in_order_and_are_recorded_in_the_run_log(tmp_path):
     assert record["status"] == "ok"
     assert _stage_names(record) == [
         "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables",
-        "scoring", "monitoring", "swap",
+        "scoring", "promotion", "monitoring", "swap",
     ]
     assert all(stage["status"] == "ok" for stage in record["stages"])
+    assert record["promotion"]["decision"] == "skipped"  # the fake scoring wrote no predictions
     assert all(stage["seconds"] >= 0 for stage in record["stages"])
     assert record["public_data"] == {"mode": "x"} and record["scoring"] == {"pred_batch": 4}
     assert record["monitoring"] == {"status": "ok", "had_previous": False}  # the first run
@@ -264,6 +265,7 @@ def _boom(*_args, **_kwargs):
         ("feature_tables", {"features_fn": _boom}),
         ("model_tables", {"model_tables_fn": _boom}),
         ("scoring", {"scoring_fn": _boom}),
+        ("promotion", {"scoring_fn": lambda engine: {}, "promotion_fn": _boom}),
         ("monitoring", {"monitoring_fn": _boom}),
     ],
 )

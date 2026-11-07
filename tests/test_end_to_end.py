@@ -24,9 +24,12 @@ pytestmark = pytest.mark.e2e
 
 STAGES = [
     "public_data", "warehouse", "coverage_check", "feature_tables", "model_tables", "scoring",
-    "monitoring", "swap",
+    "promotion", "monitoring", "swap",
 ]
-DOWNSTREAM = ("feat_segment_month", "feat_monthly", "model_scores", "backtest_batch", "pred_batch")
+DOWNSTREAM = (
+    "feat_segment_month", "feat_monthly", "model_scores", "backtest_batch", "pred_batch",
+    "promotion_log",
+)  # fmt: skip
 
 
 @pytest.fixture(scope="module")
