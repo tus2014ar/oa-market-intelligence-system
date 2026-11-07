@@ -2,7 +2,9 @@
 #
 # Three ways it starts, all only from the main branch (the AWS role refuses any other branch):
 #   1. After the Monthly Pipeline finishes successfully. If the live API already serves the data
-#      version in the repository (nothing new was published), it stops without building anything.
+#      version in the repository (nothing new was published, or, with a data bucket, the API has
+#      already picked up the new release), it stops without building anything. With a data bucket
+#      it waits up to about 8 minutes for the API to pick the release up before rebuilding.
 #   2. By hand (Actions, deploy-aws, Run workflow): builds and deploys this commit.
 #   3. By hand with "rollback_to": switches the function to an image that is already in the
 #      registry (the last 3 are kept), with no build. Use the commit SHA of the earlier deploy.
@@ -62,6 +64,7 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           ROLLBACK_TO: ${{ inputs.rollback_to }}
+          DATA_BUCKET: ${{ vars.AWS_DATA_BUCKET }}
         run: |
           if [ -n "$ROLLBACK_TO" ] && ! printf '%s' "$ROLLBACK_TO" | grep -Eq '^[0-9a-f]{40}$'; then
             echo "rollback_to must be a full 40-character commit SHA"; exit 1
@@ -78,9 +81,16 @@ jobs:
           echo "has_function=$([ -n "$URL" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
           SKIP=false
           if [ "$EVENT" = "workflow_run" ] && [ -n "$URL" ]; then
-            LIVE="$(curl -fsS -m 30 "${URL%/}/health" 2>/dev/null | python3 -c "import sys, json; print(json.load(sys.stdin).get('data_version', 'unknown'))" 2>/dev/null || echo unreachable)"
-            echo "Data version live: $LIVE"
-            if [ "$LIVE" = "$REPO_VERSION" ]; then SKIP=true; fi
+            # With a data bucket the API follows the release on its own (within its refresh
+            # interval), so wait for it before rebuilding the image; without one, check once.
+            TRIES=1
+            if [ -n "$DATA_BUCKET" ]; then TRIES=9; fi
+            for i in $(seq 1 "$TRIES"); do
+              LIVE="$(curl -fsS -m 30 "${URL%/}/health" 2>/dev/null | python3 -c "import sys, json; print(json.load(sys.stdin).get('data_version', 'unknown'))" 2>/dev/null || echo unreachable)"
+              echo "Data version live: $LIVE (try $i of $TRIES)"
+              if [ "$LIVE" = "$REPO_VERSION" ]; then SKIP=true; break; fi
+              if [ "$i" -lt "$TRIES" ]; then sleep 60; fi
+            done
           fi
           echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
           if [ "$SKIP" = true ]; then echo "The live API already serves this data: nothing to deploy."; fi

@@ -70,8 +70,10 @@ class Snapshot:
     graph: kg.Graph | None = None
 
 
-def load_snapshot(engine: Engine, run_log=data.RUN_LOG) -> Snapshot:
-    """The snapshot the site builds, for scripts and tests that have only an engine."""
+def load_snapshot(engine: Engine, run_log=data.RUN_LOG, run: dict | None = None) -> Snapshot:
+    """The snapshot the site builds, for scripts and tests that have only an engine. `run` is the
+    run record to describe the data with (the API passes the one a data release carries); None
+    reads the last record of the run log."""
     return Snapshot(
         monthly=data.market_monthly(engine),
         pred=data.predictions(engine),
@@ -79,7 +81,7 @@ def load_snapshot(engine: Engine, run_log=data.RUN_LOG) -> Snapshot:
         by_specialty=data.segments(engine, "specialty"),
         by_age=data.segments(engine, "age_band"),
         by_gender=data.segments(engine, "gender"),
-        run=data.last_run(run_log),
+        run=data.last_run(run_log) if run is None else run,
         adoption=data.serving_map(),
         posthoc=data.posthoc(),
         findings=data.findings(),

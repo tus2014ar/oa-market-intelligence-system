@@ -18,6 +18,7 @@ on:
 
 permissions:
   contents: write  # to commit the published database
+  id-token: write  # to sign in to AWS without stored keys, to publish the release (DL-124)
 
 jobs:
   run-pipeline:
@@ -59,6 +60,35 @@ jobs:
             git commit -m "Publish warehouse $(date -u +%Y-%m-%d)"
             git push
           fi
+
+      # The release for the API (DL-124): the same warehouse in the private data bucket under a
+      # name made from its data version and checksum, then the pointer (latest.json) last, so the
+      # API never sees a pointer to a missing or half-written file. Skipped, and nothing changes,
+      # until the repository variables AWS_DATA_BUCKET and AWS_DATA_ROLE_ARN are set.
+      - name: Prepare the data release (a pointer to this warehouse)
+        if: vars.AWS_DATA_BUCKET != '' && vars.AWS_DATA_ROLE_ARN != ''
+        id: release
+        run: |
+          python -m oa_market_intelligence.data_release prepare             data/published/warehouse.db data/published/run_log.jsonl release >> "$GITHUB_OUTPUT"
+
+      - name: Sign in to AWS with the OIDC token
+        if: vars.AWS_DATA_BUCKET != '' && vars.AWS_DATA_ROLE_ARN != ''
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DATA_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Publish the release to S3, then move the pointer
+        if: vars.AWS_DATA_BUCKET != '' && vars.AWS_DATA_ROLE_ARN != ''
+        env:
+          BUCKET: ${{ vars.AWS_DATA_BUCKET }}
+          KEY: ${{ steps.release.outputs.key }}
+          SIZE: ${{ steps.release.outputs.size }}
+        run: |
+          aws s3 cp data/published/warehouse.db "s3://${BUCKET}/${KEY}" --no-progress
+          ACTUAL="$(aws s3api head-object --bucket "$BUCKET" --key "$KEY" --query ContentLength --output text)"
+          [ "$ACTUAL" = "$SIZE" ] || { echo "The uploaded file is not the size expected"; exit 1; }
+          aws s3 cp release/latest.json "s3://${BUCKET}/latest.json" --no-progress --content-type application/json
 
       - name: Summarise the run
         if: always()

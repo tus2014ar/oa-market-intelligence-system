@@ -138,6 +138,26 @@ The Forecasts page has a panel that asks the AWS API to run the model (`site.md`
 
 Until step 2 is done the live site shows "The live model check is switched off on this copy of the site." The panel calls the API only when a visitor presses the button; the API's own rate limit counts the website as one client (its key).
 
+## The data release (DL-124)
+
+**Status: built and tested; not yet created in the account.** Until the steps below are done, the API serves the copy of the warehouse in its image, as before.
+
+**What it does.** The monthly job (`monthly_pipeline.yml`), after its checks and its commit, uploads the new warehouse to a private S3 bucket under a name made from its data version and checksum, checks the uploaded size, and only then writes a small pointer, `latest.json`, naming it (`data_release.py` builds and checks the pointer). The API (`api/remote_data.py`) reads the pointer at start-up and at most every 5 minutes, downloads the named file, verifies it (size, SHA-256, a readable warehouse with the three tables the API serves from, the data version and month the pointer names) and only then switches. Anything that goes wrong keeps the data being served; at start-up the image's copy is the fallback. `/health` reports `data_source` (`image` or `s3`) and the data version. The deploy workflow, started after a publish, now waits up to about 8 minutes for the API to pick the release up before it rebuilds the image, so a normal month needs no rebuild.
+
+**Safety design.** The bucket is private (all public access blocked), encrypted, versioned (every release is kept; old versions expire after 90 days), refuses requests not sent over TLS, and is never deleted by a stack (`Retain`). The monthly job reaches it through its own role, `oa-market-data-publish`, which GitHub can assume only from `main` of this repository and which can only write and read under `published/` and `latest.json` (no delete, no list). The API's function role may read the same two paths and nothing else, and only when a bucket is set. No access key exists anywhere.
+
+**Set-up, once** (sign in as `tushar-admin`, region `us-east-1`):
+
+1. **The bucket stack.** CloudFormation, **Create stack**, upload `infra/aws/data.yml`, name `oa-market-api-data`, keep the default parameter, tick the IAM acknowledgement, submit. When `CREATE_COMPLETE`, open **Outputs** and note `BucketName` and `PublishRoleArn`.
+2. **Three GitHub variables** (not secrets; Settings, Secrets and variables, Actions, Variables): `AWS_DATA_BUCKET` = the bucket name, `AWS_DATA_ROLE_ARN` = the role ARN. (`AWS_REGION` already exists.) Until both are set, the monthly job skips every S3 step.
+3. **Tell the API about the bucket.** CloudFormation, stack `oa-market-api`, **Update stack**, **Make a direct update**, **Use existing template**, **Next**. On the parameters page leave **ApiKeys** with **Use previous value** ticked, and type the bucket name in **DataBucket**. Submit. This adds a read-only policy and the setting `OA_DATA_BUCKET` to the function.
+4. **Publish the first release.** In the repository, **Actions**, **Monthly Pipeline**, **Run workflow** (this rebuilds the warehouse from the committed extracts; with no new extract the content is unchanged, and the run still uploads it and writes the pointer).
+5. **Check.** After the run, the API's `/health` shows `"data_source": "s3"` (the first request after a quiet spell may take about 10 seconds), with the same data version as the repository. In the bucket you see `latest.json` and `published/<version>-<checksum>/warehouse.db`.
+
+**Rolling back to an earlier release.** The pointer is the only thing to move. In the S3 console open the bucket, then `latest.json`, the **Versions** tab, select the current (top) version and **Delete** it permanently: the previous version of `latest.json` becomes current, and within 5 minutes the API follows it. (The release files themselves are kept.) To go forward again, run the Monthly Pipeline.
+
+**Not verified.** None of this has been created in the account; the loader, the checks and the fallback are tested with a fake S3 and against the real published warehouse, and the real `boto3` in the Lambda image was seen failing safely (no credentials, so the image's copy). Whether S3 is within the account's free-plan terms was read from AWS's pages, not confirmed in the Billing console. An S3 outage or a mistaken pointer cannot take the API down (it keeps what it has), but it could leave the API on older data until fixed; the canary reports a data version that differs from the repository's.
+
 ## What this does not do
 
 - It does not give an uptime guarantee, a staging copy, infrastructure as code, a model registry or automated alerts. Those are listed as optional later work in the decision log (DL-113).
