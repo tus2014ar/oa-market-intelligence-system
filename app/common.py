@@ -102,6 +102,14 @@ def context() -> SimpleNamespace:
     )
 
 
+def secret(name: str, default: str | None = None) -> str | None:
+    """A value from the host's secrets store, or from the environment; never from the repository."""
+    try:
+        return st.secrets[name]
+    except Exception:  # noqa: BLE001 - there is no secrets file when running locally
+        return os.environ.get(name, default)
+
+
 def data_chip() -> None:
     """A one-line note at the top of every page but the Overview: how old the data are."""
     status = context().STATUS

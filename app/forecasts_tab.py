@@ -7,6 +7,7 @@ logic, the wording and the drawing.
 from __future__ import annotations
 
 import common
+import live_panel
 import streamlit as st
 
 from oa_market_intelligence.serving import charts, forecasts, links, style, views
@@ -206,6 +207,9 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             f"zilretta_segment_forecast_{horizon}_months.csv",
             "text/csv",
         )
+
+    # ---- the model run live, through the API
+    live_panel.render(forecasts.segment_view(pred, seg, horizon), pred, horizon)
 
     # ---- the decline alert
     st.markdown("##### Decline alert, 1 month ahead")
