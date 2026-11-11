@@ -4,7 +4,7 @@ A monthly-refreshable analytics foundation that tracks Zilretta's visit share ag
 
 **Status:** data profiling, cleaning, ingestion, the data warehouse, exploratory data analysis (EDA), feature engineering, **modelling and production hardening** are complete and documented. **Next:** the serving layer (website, Claude question box, knowledge graph) and deployment. The headline: price, sales and promotion do not predict monthly share; the national share is best forecast by last month's value; a logistic regression gives a small, optimistic gain for segment share at 1 and 3 months; the decline alert is mostly regression to the mean (DL-76, DL-79); and the monthly refresh is repeatable, checked end to end and traceable to its data and code (DL-80 to DL-84). The website is live on Streamlit Community Cloud (DL-113) and the read-only API with live predictions runs on AWS Lambda (DL-118; its address is not published, and the AWS free plan it runs on ends on 6 May 2027).
 
-Built as a capstone project for **DAAN 888 — Design and Implementation of Analytics System**, Penn State University, School of Graduate Professional Studies (Fall 2026).
+Built as a **portfolio project**.
 
 **Team:** Tushar and Saakshaat Saini
 
@@ -127,7 +127,7 @@ PYTHONPATH=src python -m oa_market_intelligence.modeling.run_modelling --run --n
 
 ## Data
 
-The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this capstone. The Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A maintained product taxonomy (160 products: 145 OA + 15 RA) is in [`data/reference/`](data/reference/).
+The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this project. The Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A maintained product taxonomy (160 products: 145 OA + 15 RA) is in [`data/reference/`](data/reference/).
 
 FDA approval dates come from the free public openFDA Drugs@FDA API; a snapshot is committed so the work is reproducible without the internet.
 

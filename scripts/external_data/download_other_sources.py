@@ -20,7 +20,7 @@ BROWSER = {"User-Agent": "Mozilla/5.0"}
 CONTACT = os.environ.get("SEC_CONTACT_EMAIL")
 if not CONTACT:
     raise SystemExit("Set SEC_CONTACT_EMAIL (the SEC requires a contact in the User-Agent).")
-SEC = {"User-Agent": f"Penn State DAAN888 capstone research {CONTACT}"}
+SEC = {"User-Agent": f"OA Market Intelligence portfolio project research {CONTACT}"}
 
 jobs = []  # (dataset, year, url, dest, headers)
 
