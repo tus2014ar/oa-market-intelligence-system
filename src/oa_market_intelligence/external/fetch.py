@@ -154,7 +154,7 @@ def restore(
         else:
             agent = BROWSER_AGENT
             if kind == "sec":
-                agent = f"Penn State DAAN888 capstone research {sec_contact}"
+                agent = f"OA Market Intelligence portfolio project research {sec_contact}"
             try:
                 size, digest = download(
                     entry["url"], root / name, {"User-Agent": agent}, opener, sleep

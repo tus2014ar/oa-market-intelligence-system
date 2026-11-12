@@ -1,6 +1,6 @@
 # OA & RA Market Intelligence System — Project Proposal
 
-**Course**: DAAN 888 — Design and Implementation of Analytics System
+**Project type**: Portfolio project
 **Program**: School of Graduate Professional Studies, Penn State University
 **Term**: Fall 2026
 **Team**: Tushar, Saakshaat Saini
@@ -54,7 +54,7 @@ Every objective is tied directly to one primary stakeholder — the OA & RA Inje
 
 ### 3.1 Primary Dataset — IQVIA NMTA Patient Visit Extract
 
-The primary dataset is an IQVIA National Medical and Treatment Audit (NMTA) patient visit extract covering August 2019 through July 2025 (6 complete years). This is a commercial dataset provided for this capstone project; the raw extracts are **committed directly in this repository** (`data/raw/`) rather than gitignored, with the course instructor's approval under Penn State's data license.
+The primary dataset is an IQVIA National Medical and Treatment Audit (NMTA) patient visit extract covering August 2019 through July 2025 (6 complete years). This is a commercial dataset provided for this project; the raw extracts are **committed directly in this repository** (`data/raw/`) rather than gitignored, with the course instructor's approval under Penn State's data license.
 
 | Field | Description |
 |-------|-------------|
@@ -228,7 +228,7 @@ A dedicated dashboard panel, part of the public website (§5, §19), displays OA
 
 ### 9.1 Design Principles
 
-The system is designed as a right-sized MLOps pipeline appropriate for a 2-person capstone team, not a scaled-down enterprise platform. Three principles apply consistently across every layer below:
+The system is designed as a right-sized MLOps pipeline appropriate for a 2-person portfolio-project team, not a scaled-down enterprise platform. Three principles apply consistently across every layer below:
 
 1. **Fit over scale.** Every tool choice is justified against this project's actual data volume (tens of thousands of rows per monthly extract) and cadence (monthly batch, not real-time), not against what a large commercial deployment would use.
 2. **Reuse before adopting.** Where an existing piece of infrastructure can do the job (e.g., GitHub Actions already runs CI, §19.1 uses it for pipeline scheduling too; the same DVC remote persists both the database and the model registry, §19.6), a new platform is not introduced just because it's the more common enterprise pattern.
