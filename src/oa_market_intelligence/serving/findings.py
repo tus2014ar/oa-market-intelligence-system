@@ -1,9 +1,10 @@
 """The Findings tab, as tested functions: the findings grouped by theme, the four to read first and
 the CSV (DL-101).
 
-The findings themselves are `data/reference/findings.json` (equal to the README table, tested
-elsewhere); this module only arranges them, and changes no wording. Each of the 17 findings belongs
-to exactly one theme (tested), so none can be dropped from the page by a grouping mistake.
+The findings themselves are `data/reference/findings.json` (equal to the table in
+docs/findings.md, tested elsewhere); this module only arranges them, and changes no
+wording. Each of the 17 findings belongs to exactly one theme (tested), so none can be dropped
+from the page by a grouping mistake.
 """
 
 from __future__ import annotations

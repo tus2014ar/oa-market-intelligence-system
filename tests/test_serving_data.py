@@ -1,5 +1,6 @@
 """Tests for the site's data layer (src/.../serving/data.py) on the committed warehouse: read-only,
-aggregates only, the shapes the page expects, and the findings the site shows equal the README."""
+aggregates only, the shapes the page expects, and the findings the site shows equal
+docs/findings.md."""
 
 import re
 from pathlib import Path
@@ -9,7 +10,7 @@ from sqlalchemy import text
 
 from oa_market_intelligence.serving import data
 
-README = Path(__file__).resolve().parent.parent / "README.md"
+FINDINGS_DOC = Path(__file__).resolve().parent.parent / "docs" / "findings.md"
 pytestmark = pytest.mark.skipif(not data.DB_PATH.exists(), reason="no published warehouse")
 
 
@@ -62,10 +63,10 @@ def test_the_reference_files_and_the_last_run_load():
     assert data.last_run("no/such/log.jsonl") == {}
 
 
-def test_the_findings_the_site_shows_are_the_ones_in_the_readme():
+def test_the_findings_the_site_shows_are_the_ones_in_the_findings_document():
     shown = data.findings()
     table = {}
-    for line in README.read_text("utf-8").splitlines():
+    for line in FINDINGS_DOC.read_text("utf-8").splitlines():
         m = re.match(r"^\| (\d+) \| (.*?) \| (.*?) \| (.*) \|$", line)
         if m:
             table[int(m.group(1))] = tuple(x.replace("**", "").strip() for x in m.groups()[1:])
