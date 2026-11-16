@@ -12,6 +12,8 @@ It is built like a real product: a monthly data pipeline, a prediction API runni
 
 [**Live website**](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app) · [API guide](docs/api.md) · [Architecture](docs/architecture.md) · [All findings](docs/findings.md) · [Decision log](docs/decision_log.md) · [Documentation index](docs/index.md)
 
+![The system on one page: data in, a monthly Docker pipeline with a promotion gate, one warehouse, a live FastAPI API on AWS Lambda, a website and a Claude question box, and what the brand manager gets](docs/images/system_overview.png)
+
 ## The problem
 
 A newer, long-acting injection (Zilretta) competes with decades-old generic steroid injections and pain pills in a very large osteoarthritis market. Its **brand manager** needs to know:
@@ -23,6 +25,10 @@ A newer, long-acting injection (Zilretta) competes with decades-old generic ster
 Most projects answer the first two. This one also answers the third, in every number it shows.
 
 ## What it found (the business impact)
+
+![Six numbers a brand manager can act on, each with its caveat](docs/images/business_impact.png)
+
+The same findings in words:
 
 | What a brand manager can now do | What the data showed |
 |---|---|
@@ -59,21 +65,7 @@ It returns the forecast, last month's value, the change, the visits behind it, a
 
 ## How it works
 
-```mermaid
-flowchart LR
-  A["IQVIA visit data<br/>+ public CMS, CDC, SEC, FDA files"] --> B["Monthly pipeline<br/>9 stages, in Docker"]
-  B --> C[("Warehouse<br/>SQLite, 21 tables")]
-  C --> D["S3 release"]
-  D --> E["FastAPI on AWS Lambda<br/>14 endpoints, live predictions"]
-  C --> F["Streamlit website<br/>11 pages"]
-  E --> F
-  F --> G["Claude question box<br/>knowledge graph"]
-  H["GitHub Actions<br/>tests, deploy, canary"] -.-> B
-  H -.-> E
-  I["CloudWatch<br/>alarms"] -.-> E
-```
-
-Four detailed diagrams, the reasons for each choice and what happens when something fails are in [`docs/architecture.md`](docs/architecture.md).
+The picture at the top shows the whole path. Four detailed diagrams, the reasons for each choice and what happens when something fails are in [`docs/architecture.md`](docs/architecture.md).
 
 **The monthly pipeline** (`oa-publish`) runs nine recorded stages: check the public data, build the warehouse, check it covers every month, build features, store model results, refit the models, **check the refit against the models in service (the promotion gate)**, monitor freshness and drift, then swap the new warehouse in with one atomic rename. If any stage fails, or the gate refuses the refit, the last good data stays live and the run says where it stopped ([`docs/pipeline.md`](docs/pipeline.md)).
 
