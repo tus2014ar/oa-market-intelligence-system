@@ -64,5 +64,5 @@ def render(items: list[dict], data_chip) -> None:
     st.caption(
         "Sources: "
         + "; ".join(f"{n} from {source}" for source, n in counts.items())
-        + ". The findings are the same as the table in the project README."
+        + ". The findings are the same as the table in the project's findings document (docs/findings.md)."
     )

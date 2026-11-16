@@ -1,204 +1,157 @@
-# Osteoarthritis Market Share Forecasting Pipeline 
+# OA Market Intelligence System
 
-A monthly-refreshable analytics foundation that tracks Zilretta's visit share against generic corticosteroid injections and NSAIDs in Osteoarthritis (OA) and Rheumatoid Arthritis (RA), built on real IQVIA National Medical and Treatment Audit (NMTA) patient-visit data and a set of public datasets. Built around one stakeholder, an OA/RA Injectable Brand Manager.
+![CI](https://github.com/tus2014ar/oa-market-intelligence-system/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.12-blue)
+![FastAPI](https://img.shields.io/badge/API-FastAPI-009688)
+![AWS Lambda](https://img.shields.io/badge/deployed-AWS%20Lambda-FF9900)
+![Docker](https://img.shields.io/badge/container-Docker-2496ED)
 
-**Status:** data profiling, cleaning, ingestion, the data warehouse, exploratory data analysis (EDA), feature engineering, **modelling and production hardening** are complete and documented. **Next:** the serving layer (website, Claude question box, knowledge graph) and deployment. The headline: price, sales and promotion do not predict monthly share; the national share is best forecast by last month's value; a logistic regression gives a small, optimistic gain for segment share at 1 and 3 months; the decline alert is mostly regression to the mean (DL-76, DL-79); and the monthly refresh is repeatable, checked end to end and traceable to its data and code (DL-80 to DL-84). The website is live on Streamlit Community Cloud (DL-113) and the read-only API with live predictions runs on AWS Lambda (DL-118; its address is not published, and the AWS free plan it runs on ends on 6 May 2027).
+**An end-to-end ML system that forecasts how often doctors choose a knee-osteoarthritis injection (Zilretta) over its rivals, and says plainly how far to trust each forecast.**
 
-Built as a **portfolio project**.
+It is built like a real product: a monthly data pipeline, a prediction API running on AWS, a website, and a Claude-powered question box, all tested and monitored. Built as a **portfolio project** on real IQVIA visit data.
 
-**Team:** Tushar and Saakshaat Saini
+[**Live website**](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app) · [API guide](docs/api.md) · [Architecture](docs/architecture.md) · [All findings](docs/findings.md) · [Decision log](docs/decision_log.md) · [Documentation index](docs/index.md)
 
 ## The problem
 
-A newer, extended-release branded injectable (Zilretta) is trying to take visit share from decades-old generic corticosteroids and NSAIDs in a high-volume OA market (7.19M+ visits across 6 years in our extract). The system is built around a single stakeholder, an **OA/RA Injectable Brand Manager**, who needs an early signal on competitive share movement before it shows up in a standard quarterly business review.
+A newer, long-acting injection (Zilretta) competes with decades-old generic steroid injections and pain pills in a very large osteoarthritis market. Its **brand manager** needs to know:
 
-## Business impact at a glance
+1. Where is our share of doctor visits heading?
+2. Which patient and doctor groups should we look at first?
+3. **How far can we trust each forecast?**
 
-- **Do not quote the IQVIA decline as a market fact.** Company net sales rose (+5% in 2023, +6% in 2024) while IQVIA Zilretta visits fell (-14%, -36%), and no tested explanation closes the gap, so a target built on the visit decline could be wrong by a large factor until IQVIA confirms panel coverage.
-- **Look at orthopedic surgery and physician assistants first.** They are 64% of the net fall of 11,256 visits; Michigan, Arizona, Florida, Minnesota and Indiana come first for room to grow, on a state ranking that is stable (0.92).
-- **Plan the national number on last month's value.** Three trained models were tested at 1, 3 and 6 months and none beat "same as last month" (error 0.125, 0.180, 0.239 points); price, company sales, promotion and competitor volumes add nothing to monthly share.
-- **Use the segment forecast as a small, optimistic improvement.** A logistic regression beats the baseline by about 0.4% of log-loss at 1 month and 0.2% at 3 months and not at 6, but runs 5% to 18% too high, so the bias is stated beside every forecast.
-- **Treat the decline alert as a 1-month flag, not a prediction.** About half of its alerts are not real declines, and most of its apparent skill is a spiked month falling back, which a post-hoc check added after the results exposed and the project reports in full.
-- **The forecasts are only as fresh as the last extract.** The data end in July 2025, so the monthly run forecasts August 2025, October 2025 and January 2026, and the pipeline's own monitoring reports the data as stale (454 days old at the last run). A new IQVIA extract is the one input that refreshes the warehouse, the forecasts and the check of earlier forecasts in a single run; that path is exercised by tests and the schedule, not yet by a new extract.
-- **The results can be trusted for what they are.** Rules were written before any model ran, leakage tests must catch a deliberately leaky case, a full run is repeated for identical output, and null results are reported as findings.
+Most projects answer the first two. This one also answers the third, in every number it shows.
 
-## The seven stages at a glance
+## What it found (the business impact)
 
-**1. Data profiling.** Profiled the IQVIA NMTA extracts (nested pivot sheets; 72 months, 160 products, 50 specialties, 27 demographic groups, 7.19M+ visits) and 171 public CMS, CDC, SEC and FDA files (about 24 GB), and documented every raw field in a data dictionary ([`docs/data_dictionary.md`](docs/data_dictionary.md)). Profiling surfaced a likely mis-coded `PEDIATRICS` prescriber, miscoded oncology products in the RA extract, and a March to July 2024 volume dip across all three product classes.
-
-**2. Data cleaning and preprocessing.** A Pandera validation gate (schema, ranges, allowed values; no rows rejected on the real extracts), a 160-product taxonomy that maps every product to a treatment class, and 11 dataset-level quality checks against a stored baseline (an error stops the run; unmapped products are listed in the run log). The data problems above are documented and kept in the data, with nothing silently dropped; they are handled downstream by explicit sensitivity checks.
-
-**3. Data ingestion and warehouse modelling.** A re-runnable Bronze → Silver → Gold pipeline. The IQVIA warehouse is a **star schema** (4 dimensions: month, product, specialty, demographics; 2 fact tables; 149K+ fact rows; 2 Gold serving tables) with documented DDL ([`docs/database_schema.md`](docs/database_schema.md)) and Silver and Gold data dictionaries ([`docs/silver_gold_data_dictionary.md`](docs/silver_gold_data_dictionary.md)). The public data is a separate fact constellation (5 dimensions, 10 facts, column-level lineage in [`docs/external_data_lineage.md`](docs/external_data_lineage.md)) with 38 reconciliation checks passing. Every extract is SHA-256 audited, a golden regression test guards the warehouse, an as-of layer records when each outside value could have been known, and an atomic publish never replaces the last good database.
-
-**4. EDA and business findings.** Company net sales rose (+5% in 2023, +6% in 2024) while IQVIA Zilretta visits fell (-14%, -36%), so the size of the decline cannot be quoted as a market fact; orthopedic surgery and physician assistants are 64% of the net fall of 11,256 visits; Medicare billing does not confirm IQVIA's specialty ranking (rank correlation 0.35 against 0.6 needed); and a stable state ranking (0.92) puts Michigan, Arizona, Florida, Minnesota and Indiana first for room to grow. All twelve findings are in the table below.
-
-**5. Feature engineering.** Turned the warehouse into model inputs that cannot see the future, and tested which of them help. Seven candidate groups (recent history, calendar, segment history and pooling, market and specialty context, competitor volumes, outside signals, data-quality flags) were built with leakage tests (rewrite everything from month *t* onward and the features for month *t* must not move; a deliberately leaky feature must be caught), as-of dates for outside data and a documented feature dictionary ([`docs/feature_dictionary.md`](docs/feature_dictionary.md)). The rules, thresholds and groups were written before anything ran ([`docs/feature_engineering_plan.md`](docs/feature_engineering_plan.md)), and the full test, repeated once for byte-identical output, used walk-forward validation (46 test months for segments, 48 national), a paired bootstrap and a stricter pass bar for testing several groups at once. **Result:** only specialty and market context improves segment share, by about 0.06% of log-loss, better in 42 of 46 months and robust to removing COVID and the 2024 dip; none of the seven improves the national forecast, which stays at "same as last month". **Business impact:** price, company sales and promotion do not predict monthly share, competitor volumes are a hypothesis worth one more pre-registered look at longer horizons, and the honest planning baseline is hard to beat, so expectations for the models are set before they are built. The adopted base set and that one group are stored in the warehouse as `feat_segment_month` (8,450 scored segment-months) and `feat_monthly` (69 months), rebuilt by every publish ([`docs/feature_results.md`](docs/feature_results.md), notebook 14).
-
-**6. Modelling.** Asked whether any model beats a simple rule at 1, 3 and 6 months ahead for three tasks: the national share, each segment's share, and an alert for segments about to lose 30% of their share. The rules were written before any model ran ([`docs/modelling_plan.md`](docs/modelling_plan.md)): walk-forward testing (about 46 test months), a paired bootstrap, a stricter pass bar for the longer horizons, leakage tests at model level (rewrite the future and the prediction must not move; a deliberately leaky pairing must be caught), and a full run repeated once for byte-identical output ([`docs/modelling_results.md`](docs/modelling_results.md)). **Result:** nothing beats "same as last month" for the national share at any horizon; a logistic regression beats the segment baseline by about 0.4% of log-loss at 1 month and 0.2% at 3 months and not at 6, but its forecasts run too high (+5% at 1 month, +11% at 3, +18% at 6); the decline alert passes the registered test, but a check added afterwards shows that most of its gain is that a month which spiked falls back, with a reliable gain only at 1 month. **Business impact:** use the last value for the national number, treat the segment forecast as a small and optimistic improvement, and use the alert only as a 1-month supporting flag. The results are stored in the warehouse as `model_scores` (222 rows) and `backtest_batch` (174 rows) by every publish, and each model that serves has a model card ([segment share](docs/model_card_segment_share.md), [national share](docs/model_card_national_share.md), [decline alert](docs/model_card_decline_alert.md); notebook 15).
-
-**7. Production hardening.** Made the work repeatable and safe to run every month. A pinned environment (136 packages, Python 3.12, an installable package with four commands and a Docker image that CI builds); one orchestrated run, `oa-publish`, of eight recorded stages (public-data check, warehouse, coverage check, feature tables, model-result tables, the monthly scoring job, monitoring, atomic swap) in which a failed run names its stage and leaves the last good database untouched; a monthly scoring job that refits the adopted models and writes the next 1, 3 and 6 months to `pred_batch` with the known bias, and reproduces the stored batch demonstration exactly; an end-to-end test that runs the real extracts through every stage twice and requires identical content, plus a check of the published database before the monthly workflow commits it; and monitoring (data freshness, drift of earlier forecasts) with the data, code and environment versions recorded in every run and a runbook ([`docs/pipeline.md`](docs/pipeline.md), [`docs/runbook.md`](docs/runbook.md), [`docs/environment.md`](docs/environment.md)). **Result:** the real publish passes all eight stages in about 75 seconds; about 900 tests run in three CI jobs; monitoring reports the data as stale (454 days) and the drift check as "nothing to compare", because the project has one static extract. **Business impact:** the monthly refresh is the same every time, a failed run cannot replace the last good data, every forecast traces back to its extracts, code and model, and the system says when it is working from old data. Nothing is deployed, and no new extract has arrived, so the monthly refresh is exercised by tests and the schedule, not by new data.
-
-## What is built
-
-| Stage | What exists | Where |
-|---|---|---|
-| **Data profiling** | Raw IQVIA structure, the cleaned warehouse, RA, and a profile of every public file (structure only) | notebooks 01, 02, 03, 10 |
-| **Cleaning and preprocessing** | Pandera validation gate, Silver and Gold builders, a product taxonomy, 11 dataset-level quality checks with a stored baseline | `src/oa_market_intelligence/ingestion/`, `warehouse/`, `quality.py` |
-| **Ingestion** | The four IQVIA extracts parsed and audited (SHA-256, rows parsed, month span), openFDA approval dates, and 171 public files (CMS, CDC, SEC, FDA, price) with a committed download manifest | `ingestion/`, `external/` |
-| **Data warehouse** | IQVIA star schema (4 dimensions, 2 facts, Gold tables) plus a separate public-data database (27 tables, every load reconciled to the raw files) and a committed 6 MB publishable subset | `data/published/warehouse.db`, `data/published/external_subset.db` |
-| **Availability layer** | A recorded rule for when each outside value could have been known, and a point-in-time ("as-of") table built from it | `availability.py`, `mart.py` |
-| **EDA** | The share series, seasonality and persistence, the sparse segment panel, the outside series on their availability dates, a specialty triangulation against Medicare, and a diagnosis of the sales-versus-visits gap | notebooks 11, 12, 13 |
-| **Feature engineering** | Seven candidate groups with leakage and as-of tests, a feature dictionary, a pre-registered test (one group passes at about 0.06%; none helps the national forecast) and two feature tables in the warehouse | `features/`, notebook 14, DL-75 to DL-77 |
-| **Modelling** | A horizon harness with leakage guards, three tasks at 1, 3 and 6 months (national share, segment share, decline alert), a pre-registered run repeated for identical output, a post-hoc check, three model cards and two result tables in the warehouse | `modeling/`, notebook 15, DL-78, DL-79 |
-| **Monthly scoring** | The adopted models refitted on all the data in the publish run, writing the next 1, 3 and 6 months to `pred_batch` with the known bias; checked against the stored results and reproducing the stored batch demonstration exactly | `modeling/scoring.py`, `serving_models.json`, DL-82 |
-| **Model explanation** | An exact SHAP explanation of the adopted segment forecast: it mostly follows each segment's own recent share (about 40% of the movement), then specialty and market context (about 19%); time of year is under 1%. A description of the model, not of what moves the market; reproducible with `oa-explain` and checked by a test | `modeling/explain.py`, `data/reference/shap_summary.json`, `docs/model_explanation.md`, DL-91 |
-| **Production hardening** | A pinned environment and Docker image, one orchestrated nine-stage run (with a promotion gate before the swap) with a per-stage record, an end-to-end test and CI gates, monitoring of data freshness and forecast drift, recorded versions, and a runbook | `publish.py`, `monitoring.py`, `versions.py`, `Dockerfile`, DL-80 to DL-84 |
-| **Website ([live](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app))** | A Streamlit site over the published warehouse: what to use and not to trust, the market trend, segments, forecasts with their bias and range, the model scoreboard and caveats, data status and the 17 findings, and a Market map (the knowledge graph as three explorable views, with the events against the share), and a question box (off unless an API key is set): a conversation that answers from eleven read-only tools over the tables and the knowledge graph, with its sources, charts on request and a check on its figures; a tested `serving/` package and a CI job for the page. The box is tested with a scripted client and a 28-question set; it has not been run against the live Claude API | `app/`, `serving/`, `docs/site.md`, DL-85, DL-86, DL-88, DL-89 |
-| **Knowledge graph** | The facts the project already holds as 311 nodes and 827 edges with eight named relations (made by, in class, in group, compared with, prescribed by, involves, occurred in), each edge naming its source; no causal relation; a test fails when it is stale. Used by the question box and the Market map tab | `knowledge_graph.py`, `data/reference/knowledge_graph.json`, `docs/knowledge_graph.md`, DL-87 |
-| **Safety nets** | A golden regression test of the warehouse, a staged publish (public-data check, warehouse, feature and model tables, atomic swap) with a per-stage run log, restatement checks | `golden.py`, `publish.py`, `public_data.py` |
-
-## Key findings and business impact
-
-Everything below is descriptive or from pre-registered tests (rules written before the analysis or the models ran; none of it is causal). IQVIA covers 72 months (Aug 2019 to Jul 2025), 160 products, 50 specialties and 7.19M+ visits; Zilretta's share of the three-class visit total rose from about 2.0% (2019) to a peak near 3.4% (Dec 2021) and has fallen since.
-
-| # | Finding | Evidence (quantified) | Business impact |
-|---|---|---|---|
-| 1 | **Company sales kept rising while IQVIA's Zilretta visits fell** | Visits -14% (2023) and -36% (2024) against net sales +5% and +6%; net sales per IQVIA visit +94% from 2021 to 2024 | The size of the IQVIA decline must not be quoted as a market fact: a target or forecast built on it could be wrong by a large factor. Ask IQVIA whether panel coverage changed (2024 in particular) before using it |
-| 2 | **No tested explanation accounts for the gap** | Age and payer mix ruled out (IQVIA 65+ visits -34% against Medicare Zilretta patients -1.5%, a 32-point gap against 15 allowed); care setting ruled out (facility share 0.05% to 0.09%); value per visit +10% in Medicare, about a ninth of the +94% | Narrows the search: the remaining causes (panel coverage, company-side adjustments) are untested and need data we do not hold |
-| 3 | **The fall is concentrated** | Orthopedic surgery and physician assistants are 64% of the net fall of 11,256 visits | Where a field or marketing review should look first |
-| 4 | **The IQVIA specialty ranking is not confirmed by Medicare billing** | Rank correlation 0.35 (95% interval 0.18 to 0.44) against 0.6 required; 1 of the top 3 specialties shared | Which specialties look "best" depends on the population (Original Medicare against IQVIA's panel); use both views, do not rely on one |
-| 5 | **Medicare adoption rose then eased, like the visits** | Share of billing injectors using Zilretta 1.08% (2019), 1.78% (2021 peak), 1.47% (2024): about a sixth below peak | Independent, provider-level support that the turn is real in direction, though smaller than IQVIA's fall |
-| 6 | **A stable state list exists** | 2022 vs 2024 state rank correlation 0.92 (51 states); 0.97 without the Medicare Advantage effect; most room to grow in Michigan, Arizona, Florida, Minnesota and Indiana | A defensible shortlist for territory prioritisation |
-| 7 | **Promotion fell before the turn, but nothing links it month by month** | Sharpest 6-month fall in payments -81%, coinciding with the Flexion acquisition (19 Nov 2021); no lag from 0 to 6 months passes the correction (smallest p = 0.11) | Do not attribute the share decline to promotion; the timing is suggestive only |
-| 8 | **The turn is not the end of pass-through status** | The detected break (March 2022) is 11 months after the 31 Mar 2021 end of pass-through | Removes a tempting but unsupported explanation |
-| 9 | **A data-capture dip in Mar to Jul 2024** | Zilretta -47%, corticosteroids -25%, NSAID/OTC -16% over the five months; Zilretta fell about twice as much as the others | Flagged months in every later analysis; results are re-checked without them |
-| 10 | **Price relative to the comparator rose, but not cleanly** | Ratio +11.7%, driven by the comparator's limit falling 14% while Zilretta's fell 4% | Not evidence that Zilretta's price moved the share |
-| 11 | **Zilretta did not dip in 2020 when most hyaluronic injectables did** | Zilretta Medicare patients 36,500 (2019), 53,400 (2021), 47,200 (2024, 12% below peak); Durolane patients 19,700 to 57,100 (almost threefold) | The competitor set is not moving as one; Durolane is the one competitor that stands out |
-| 12 | **The data is thin where it matters for modelling** | 60% of segment-months have fewer than 20 visits and 65% have no Zilretta visit; month-to-month changes have lag-12 autocorrelation +0.27 and lag-1 -0.19; only price and company sales are known for all 72 months | Sets realistic expectations for feature engineering: small effects at best, and "same as last month" will be hard to beat |
-| 13 | **Only one input group improves the segment forecast, and none improves the national one** | Of 7 groups tested, specialty and market context gains +0.06% of log-loss (better in 42 of 46 months, robust to COVID and the 2024 dip); no group beats "same as last month" nationally | Price, company sales and promotion do not predict monthly share, so they should not drive a monthly forecast |
-| 14 | **The national share is best forecast by last month's value** | Ridge and two ETS models at 1, 3 and 6 months: none beats it (error 0.125, 0.180, 0.239 points); the trained models' 90% ranges cover as little as 47% of months | Plan on the last value with its range; a model would add cost and no accuracy |
-| 15 | **Segment forecasts gain a little at 1 and 3 months and run too high** | Logistic regression +0.44% of log-loss (better in 46 of 46 months) and +0.21% (33 of 44), none at 6 months; forecasts +5.5%, +10.9%, +18.2% above actual | A ranking aid and an optimistic estimate: quote the bias beside it and do not plan six months ahead on it |
-| 16 | **The decline alert is mostly regression to the mean** | PR-AUC 0.55 against 0.23 no-skill under the registered baselines, but 0.50 once a baseline with a reversed sign is corrected (post hoc); a reliable gain only at 1 month (+0.049); precision 0.45 to 0.49 | Use it only as a 1-month supporting flag; never act on an alert alone |
-| 17 | **The forecasts are only as fresh as the last extract** | The data end in July 2025; the monitoring stage marks a latest month older than 100 days as stale and reported 454 days at the last run; the next forecasts are for August 2025, October 2025 and January 2026; no month has arrived to check earlier forecasts against | A new IQVIA extract is what refreshes the forecasts and tests how well the earlier ones held; until then treat the forecasts as a method and a baseline, not as a current view |
-
-### Data-quality findings that shaped the cleaning
-- A likely mis-coded `PEDIATRICS` prescriber and miscoded oncology products in the RA extract (RA has about 1,250 visits over 6 years, too sparse to model).
-- The Mar to Jul 2024 volume dip across all three product classes (finding 9).
-- 11 dataset-level quality checks run before every build against a stored baseline; an error stops the run, and a failed run never replaces the last good database.
-
-### Engineering outcomes
-- A re-runnable pipeline from raw Excel to a validated warehouse in about 2.5 minutes; every extract is hashed (SHA-256) per run, and a golden regression test rebuilds the warehouse from the real extracts and compares it with committed values.
-- 171 public files (about 24 GB) from CMS, CDC, SEC and FDA were profiled and loaded into a 27-table database with 38 reconciliation checks passing, restorable from a committed manifest.
-- A recorded "when could this value have been known" rule for 14 sources, so later features cannot use information from the future.
-- About 900 automated tests, run in parallel in CI on every pull request, plus an end-to-end job that runs the real extracts through every stage of the publish run twice and requires identical content, and a check of the published database before the monthly workflow commits it.
-- Modelling that cannot see the future: a horizon harness that raises if a training row's outcome is after the forecast date, model-level "rewrite the future" tests with a deliberately leaky case that must be caught, and a full run of every model repeated once for byte-identical output.
-- Monitoring in every publish run: data freshness and the drift of earlier forecasts against what happened, and a recorded version of the data, code and environment (every prediction row carries its data version), with a runbook for the monthly run.
-- Model results stored in the warehouse (`model_scores`, `backtest_batch`) by every publish, a model card for each model that serves, and the adoption of models into serving recorded as a decision (DL-79).
-
-## Architecture in one picture
-
-| Layer | What lives there |
+| What a brand manager can now do | What the data showed |
 |---|---|
-| **Bronze** | The raw IQVIA Excel extracts in `data/raw/`, untouched, with a per-run record of their hashes |
-| **Silver** | Star schema: 4 dimension tables + 2 fact tables (Place-of-Service is a separate grain, so it gets its own fact table) |
-| **Gold** | `gold_visit_share_monthly` (one row per month) and `gold_segment_adoption` (month x specialty x demographic) |
-| **Mart** | `mart_signal` and `mart_signal_asof`: outside series with the date each value could have been known |
+| **Stop planning on a noisy forecast** | No model beat "same as last month" for the overall share. Its error is 0.125, 0.180 and 0.239 points at 1, 3 and 6 months, so the plan stays simple. |
+| **Know where to look first** | Orthopedic surgery and physician assistants account for 64% of the net fall of 11,256 visits. |
+| **Avoid quoting a number that may be wrong** | Company net sales rose 5% (2023) and 6% (2024) while IQVIA's Zilretta visits fell 14% and 36%. The size of the decline cannot be quoted as a market fact until IQVIA confirms its panel coverage. |
+| **Rank groups, with the bias stated** | The segment model beats "last month" in all 46 test months at 1 month (+0.44% log-loss) but runs 5.5% and 10.9% high at 1 and 3 months. A correction cut that to about 1% and 3% in testing; it stays provisional until new months confirm it. |
+| **Prioritise territories** | A stable state ranking (0.92 rank correlation) puts Michigan, Arizona, Florida, Minnesota and Indiana first for room to grow. |
+| **Get an early warning, not a trigger** | The 1-month decline alert catches about two in three real declines (recall 0.64), but only about half of its alerts are real (precision 0.49). Use it as a flag to look, never to act alone. |
 
-The pipeline writes `data/processed/warehouse.db` (git-ignored). The publish step builds `data/published/warehouse.db` (committed) in a staging file, checks it, and swaps it in atomically, so a failed run never damages the last good database.
+Every forecast on the site and in the API carries its known bias and caveats. The full list of 17 findings is in [`docs/findings.md`](docs/findings.md).
 
-Set up (Python 3.12 is the tested baseline; the packages are pinned, see [`docs/environment.md`](docs/environment.md)):
+## The live system
+
+| Part | Where it runs | What it does |
+|---|---|---|
+| **Website** | Streamlit Community Cloud ([open it](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app)) | 11 pages: what to use and what not to trust, trends, segments, forecasts with their bias, model results. A "Run the model" panel calls the live API. |
+| **Prediction API** | FastAPI in a container on **AWS Lambda** | 14 endpoints, API-key access, rate limits, and live predictions from the saved models. |
+| **Data release** | Versioned **S3** bucket | A new month of data reaches the API with no rebuild. |
+| **Monitoring** | CloudWatch alarms, email alerts, a daily canary check | Errors, slow responses, and a check that the live data matches the repository. |
+| **Delivery** | GitHub Actions | Tests on every change, the monthly pipeline, and AWS deploys with short-lived credentials (no stored keys). |
+| **Question box** | Claude, on the website | Answers in plain English from 11 read-only tools over the tables and a 311-node knowledge graph, with its sources. |
+
+The API's address is not published here because this repository is public and the API is key-protected; the [API guide](docs/api.md) lists every endpoint and the same calls work locally (see "Try it" below). The AWS parts run on AWS's Free plan, which ends on 6 May 2027; after that the website still works and its live-model panel says the service is not answering.
+
+**A live call looks like this** (a key is required):
 
 ```bash
-pip install -r requirements.txt && pip install --no-deps -e .   # then oa-pipeline, oa-publish, oa-model are on the path
-docker build -t oa-market-intelligence .                          # the same environment as a container
+curl -H "X-API-Key: <your-key>" \
+  "https://<function-address>/v1/predict/segment?specialty=PHYSICIAN%20ASSISTANT&age_band=65%20TO%2074&gender=FEMALE&horizon=1"
 ```
 
-The website and a read-only API each have their own container, and `docker compose up --build` starts both (site on 8501, API on 8000 with interactive documentation at `/docs`): see [`docs/docker.md`](docs/docker.md) and [`docs/api.md`](docs/api.md).
+It returns the forecast, last month's value, the change, the visits behind it, and the known bias.
 
-Run:
+## How it works
+
+```mermaid
+flowchart LR
+  A["IQVIA visit data<br/>+ public CMS, CDC, SEC, FDA files"] --> B["Monthly pipeline<br/>9 stages, in Docker"]
+  B --> C[("Warehouse<br/>SQLite, 21 tables")]
+  C --> D["S3 release"]
+  D --> E["FastAPI on AWS Lambda<br/>14 endpoints, live predictions"]
+  C --> F["Streamlit website<br/>11 pages"]
+  E --> F
+  F --> G["Claude question box<br/>knowledge graph"]
+  H["GitHub Actions<br/>tests, deploy, canary"] -.-> B
+  H -.-> E
+  I["CloudWatch<br/>alarms"] -.-> E
+```
+
+Four detailed diagrams, the reasons for each choice and what happens when something fails are in [`docs/architecture.md`](docs/architecture.md).
+
+**The monthly pipeline** (`oa-publish`) runs nine recorded stages: check the public data, build the warehouse, check it covers every month, build features, store model results, refit the models, **check the refit against the models in service (the promotion gate)**, monitor freshness and drift, then swap the new warehouse in with one atomic rename. If any stage fails, or the gate refuses the refit, the last good data stays live and the run says where it stopped ([`docs/pipeline.md`](docs/pipeline.md)).
+
+## Why you can trust it
+
+- **Rules before results.** Features, tests and pass marks were written down before any model ran. A model has to beat a simple rule reliably, or the simple rule serves.
+- **No peeking at the future.** Tests rewrite every value after a forecast date and require the forecast not to move; a deliberate leak must be caught.
+- **Honest testing.** Walk-forward validation (always train on the past, test on the next month, 46 times) with intervals from resampling whole months.
+- **Reproducible.** The same data, code and seed give byte-identical results; every run records the data, code and environment versions.
+- **Tested and gated.** About 1,800 automated tests and seven CI jobs, including an end-to-end run of the real data through every stage twice.
+- **Load-tested.** On a laptop the API handled 193 requests per second at 50 users with a 95th-percentile time of about 190 ms and no failures ([`docs/loadtest.md`](docs/loadtest.md)).
+
+## Tech stack
+
+| Layer | Tools |
+|---|---|
+| Data and warehouse | Python, pandas, Pandera, SQLAlchemy, SQLite (star schema, Bronze/Silver/Gold) |
+| Modelling | scikit-learn, statsmodels, SHAP, MLflow (tracking and model registry) |
+| Serving | FastAPI, NumPy (saved models are plain coefficients), Streamlit, Claude API |
+| Packaging | Docker (pipeline, website, API and an AWS Lambda image) |
+| Cloud | AWS Lambda, S3, ECR, CloudWatch, SNS, CloudFormation |
+| Automation | GitHub Actions (CI, monthly run, keyless OIDC deploys, daily canary), Dagster (optional orchestrator) |
+| Quality | pytest, ruff, Locust (load test) |
+
+## Try it
+
+Python 3.12 is the tested baseline and the packages are pinned ([`docs/environment.md`](docs/environment.md)).
 
 ```bash
-PYTHONPATH=src python -m oa_market_intelligence.pipeline   # build the warehouse (about 2.5 minutes)
-PYTHONPATH=src python -m oa_market_intelligence.publish    # build, check and publish it atomically
-PYTHONPATH=src python -m pytest                            # the test suite (CI runs it in parallel)
-PYTHONPATH=src python -m oa_market_intelligence.modeling.run_modelling --counts-only   # what the modelling run will score (fits nothing)
-PYTHONPATH=src python -m oa_market_intelligence.modeling.run_modelling --run --n-jobs 6   # the full modelling run (about two hours)
+pip install -r requirements.txt && pip install --no-deps -e .   # then oa-publish, oa-model and others are on the path
+docker compose up --build                                        # website on :8501, API on :8000 (docs at /docs)
+```
+
+Run the pieces:
+
+```bash
+PYTHONPATH=src python -m oa_market_intelligence.publish          # rebuild, check and publish the warehouse (about 75 s)
+PYTHONPATH=src python -m pytest                                  # the test suite
+API_KEYS=my-key docker compose up --build api                    # the API alone, with a key
+curl -H "X-API-Key: my-key" http://localhost:8000/v1/forecasts/national
+```
+
+More: the Docker images ([`docs/docker.md`](docs/docker.md)), the monthly run and what to do when a stage fails ([`docs/runbook.md`](docs/runbook.md)), the Dagster orchestrator ([`docs/orchestration.md`](docs/orchestration.md)), the MLflow registry ([`docs/tracking.md`](docs/tracking.md)).
+
+## Honest limits
+
+- **The data end in July 2025.** No newer IQVIA extract exists, so forecasts are for months that have passed. They show the method and a baseline, not a current view, and the system flags its own data as stale.
+- **IQVIA's panel coverage is unconfirmed.** If it changed in 2023 or 2024, every model learned from a series with a break in it.
+- **The gains are small.** The segment forecast beats the simple rule by about 0.4% of log-loss at 1 month and runs high; there is no reliable gain at 6 months.
+- **The bias correction is provisional.** It was chosen after seeing the first results, so it is adopted only if it holds on months after July 2025.
+- **The question box** was checked with a scripted client and a 28-question set; the full evaluation against the live model has not been run.
+- **Not built, on purpose:** Kubernetes, Spark, a feature store, SageMaker, Terraform and a separate staging environment. Nothing in this problem needs them.
+
+## Where to read more
+
+| Topic | Document |
+|---|---|
+| The whole system on one page | [`docs/architecture.md`](docs/architecture.md) |
+| All findings and the public datasets | [`docs/findings.md`](docs/findings.md) |
+| The API and the website | [`docs/api.md`](docs/api.md), [`docs/site.md`](docs/site.md) |
+| Models and how they were judged | [`docs/modelling_results.md`](docs/modelling_results.md), [`docs/promotion_gate.md`](docs/promotion_gate.md), model cards in [`docs/`](docs/) |
+| Every decision and why | [`docs/decision_log.md`](docs/decision_log.md) |
+| Every document and notebook | [`docs/index.md`](docs/index.md) |
+
+## Repository map
+
+```text
+src/oa_market_intelligence/   pipeline, warehouse, features, modelling, API, website logic
+app/                          the Streamlit website
+infra/aws/                    CloudFormation templates (4 stacks)
+.github/workflows/            CI, monthly pipeline, deploy, daily canary
+loadtest/                     the Locust load test
+data/                         raw extracts, reference files, the published warehouse
+docs/  notebooks/  tests/     documentation, executed notebooks, about 1,800 tests
 ```
 
 ## Data
 
-The primary dataset is a real IQVIA NMTA patient-visit extract, provided for this project. The Excel extracts are committed directly in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A maintained product taxonomy (160 products: 145 OA + 15 RA) is in [`data/reference/`](data/reference/).
+The primary dataset is a real IQVIA NMTA patient-visit extract (72 months, 160 products, 7M+ visits), provided for this project. The Excel extracts are committed in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A product taxonomy (160 products) is in [`data/reference/`](data/reference/). FDA approval dates come from the free openFDA API; a snapshot is committed so the work reproduces offline. 171 public CMS, CDC, SEC and FDA files (about 24 GB) add outside context ([`docs/findings.md`](docs/findings.md)).
 
-FDA approval dates come from the free public openFDA Drugs@FDA API; a snapshot is committed so the work is reproducible without the internet.
-
-### Public datasets added to the analysis
-
-171 public files (about 24 GB) were downloaded, profiled and loaded into a separate 27-table database (every load reconciled to the raw files; restorable from the committed manifest, see [`docs/external_data_refresh.md`](docs/external_data_refresh.md); the full 134 MB database is local only). Each dataset was added for a stated reason, in a protocol written before any analysis ran ([`docs/external_data_protocol.md`](docs/external_data_protocol.md)).
-
-| Dataset | Source | Rows loaded | What it added |
-|---|---|---|---|
-| Medicare Part B by provider and service | CMS | about 997K | The specialty ranking test against IQVIA (E1) and provider-level Zilretta adoption by year: 1.08% (2019), 1.78% (2021), 1.47% (2024) |
-| Medicare Part B and Part D by geography | CMS | 8.4K and 12.5K | State adoption and room to grow (stable state ranking, 0.92) and the Zilretta against hyaluronic-injectable comparison (E6) |
-| Medicare Geographic Variation, and Advantage variation | CMS | 1.8K | Original Medicare beneficiary denominators for the 65+ check in the gap diagnosis, and Medicare Advantage share as a state adjustment |
-| NPPES provider registry and NUCC taxonomy | CMS | about 32.5K counts | Provider counts by specialty and state (a snapshot denominator) and the specialty crosswalk |
-| ASP drug prices | CMS | 478 | The Zilretta to triamcinolone price ratio (+11.7%, not a clean test) |
-| Open Payments (promotion) | CMS | 1.9K by month, 2.8K by type | Promotion timing: the sharpest 6-month fall was -81%, before the turn |
-| Company filings | SEC | 45 | Quarterly net sales, which exposed the sales-versus-visits gap (E2b) |
-| Arthritis prevalence (PLACES) | CDC | 3.0K | State arthritis prevalence as context for room to grow |
-| Dated events (FDA, CMS and company documents) and openFDA approval dates | FDA, CMS, SEC | 14 events | The turn checks (end of pass-through status 31 Mar 2021, the Flexion acquisition 19 Nov 2021) and the FDA-event check on the competitive set |
-
-Two more files, Part D by provider and Medicaid drug utilisation, were downloaded and profiled but are not used in any rule or finding.
-
-## Documentation
-
-| Document | Covers |
-|---|---|
-| [`docs/decision_log.md`](docs/decision_log.md) | Every significant decision, why it was made, what was rejected (entries up to DL-79; some describe work kept in the archive tag) |
-| [`docs/PROPOSAL.md`](docs/PROPOSAL.md) | The original project proposal: objectives, architecture, definitions and build decisions |
-| [`docs/data_dictionary.md`](docs/data_dictionary.md), [`database_schema.md`](docs/database_schema.md), [`silver_gold_data_dictionary.md`](docs/silver_gold_data_dictionary.md), [`data_analysis_reference.md`](docs/data_analysis_reference.md) | Raw field structure, the star schema and DDL, every Silver and Gold column, and the dataset audit |
-| [`docs/external_data_protocol.md`](docs/external_data_protocol.md) | The protocol for the public datasets: code sets, specialty crosswalk, pass or fail rules, fixed before any analysis |
-| [`docs/external_data_lineage.md`](docs/external_data_lineage.md) | Every column of the external-data database with its source file, original column and rule |
-| [`docs/external_data_refresh.md`](docs/external_data_refresh.md) | How to restore the raw public files, rebuild and verify the external database |
-| [`docs/external_data_results.md`](docs/external_data_results.md) | Results of the public-data analyses: each pre-registered rule, its verdict, the numbers, the limits |
-| [`docs/feature_engineering_plan.md`](docs/feature_engineering_plan.md) | The feature plan: targets, the base set and seven groups, the time rule, tests and the validation protocol, fixed before anything was built or run |
-| [`docs/feature_dictionary.md`](docs/feature_dictionary.md) | Every model input: definition, source and leakage rule |
-| [`docs/feature_results.md`](docs/feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
-| [`docs/database_schema.md`](docs/database_schema.md) sections 13 and 14 | The two feature tables and the two model-result tables the publish step writes into the warehouse |
-| [`docs/pipeline.md`](docs/pipeline.md) | The orchestrated pipeline: its nine stages (including the monthly scoring job, the promotion gate and monitoring), the public-data modes, the run record with versions, the monthly schedule and the CI gates |
-| [`docs/site.md`](docs/site.md) | The website: its seven tabs, where each number comes from, how to run it locally and how it is tested (live) |
-| [`docs/api.md`](docs/api.md) | The API: read-only data endpoints and live predictions from the saved models, API keys and rate limits, errors, and how it is tested |
-| [`docs/loadtest.md`](docs/loadtest.md) | The load test (Locust): budgets, results before and after the answer cache, the live function's warm latency and cold start, what was not measured, and what the rate limit and cost limits rest on |
-| [`docs/architecture.md`](docs/architecture.md) | The technical architecture on one page: four diagrams (the whole system, the nine-stage monthly build, one request from visitor to forecast, and a change reaching production), the components and why each was chosen, the design decisions and their trade-offs, what happens when something fails, and what was deliberately not built |
-| [`docs/orchestration.md`](docs/orchestration.md) | The monthly publish as a Dagster job: one op per stage over the same code `oa-publish` runs, the run history in a web UI, a schedule and a sensor (both off by default), how to run it locally and in Docker Compose, and what was and was not verified |
-| [`docs/promotion_gate.md`](docs/promotion_gate.md) | The promotion gate: how a refit is checked against the models in service before it is published (sanity, reproducibility, stability), where each tolerance comes from, and how a written reason overrides it |
-| [`docs/tracking.md`](docs/tracking.md) | Experiment tracking and the model registry in MLflow: every scored method as a run, the models in service as registered models with a champion alias, rebuilt from the published warehouse |
-| [`docs/docker.md`](docs/docker.md) | The Docker images (pipeline, website, API, and the API for AWS Lambda), the one-command stack and what CI checks |
-| [`docs/runbook.md`](docs/runbook.md) | The monthly run: what a normal month looks like, what to do when each stage fails, going back to the last good database, forecast drift and tracing a number to its data and code |
-| [`docs/environment.md`](docs/environment.md) | The supported Python, the pinned packages, installing the project and the Docker image, and the environment behind the stored modelling results |
-| [`docs/modelling_plan.md`](docs/modelling_plan.md) | The modelling plan: three tasks, horizons, baselines and models, the evaluation and promotion rules, the leakage timeline and tests, fixed before any model ran (with the T3 amendment and the implementation choices) |
-| [`docs/modelling_results.md`](docs/modelling_results.md) | Results of the modelling run, including the post-hoc check of the decline alert and the limits |
-| [`docs/model_card_segment_share.md`](docs/model_card_segment_share.md), [`model_card_national_share.md`](docs/model_card_national_share.md), [`model_card_decline_alert.md`](docs/model_card_decline_alert.md) | One card for each model that serves: use, inputs, evaluation, calibration, limits |
-
-**Notebooks** (executed end to end; each opens with the question, the answer in one line, and the method in plain words):
-
-| Notebook | Covers |
-|---|---|
-| [`01_eda_raw_data`](notebooks/01_eda_raw_data.ipynb), [`02_eda_cleaned_data`](notebooks/02_eda_cleaned_data.ipynb), [`03_eda_ra_data`](notebooks/03_eda_ra_data.ipynb) | Raw structure, the cleaned warehouse, RA |
-| [`10_external_raw_data_profile`](notebooks/10_external_raw_data_profile.ipynb) | Profile of the raw public files (structure only) |
-| [`11_external_analysis_results`](notebooks/11_external_analysis_results.ipynb), [`12_gap_diagnosis`](notebooks/12_gap_diagnosis.ipynb) | The pre-registered public-data analyses, then the sales-versus-visits gap diagnosis |
-| [`13_eda_unified_data`](notebooks/13_eda_unified_data.ipynb) | Descriptive EDA of the unified data before feature engineering. Runs from committed files only |
-| [`14_feature_groups_test`](notebooks/14_feature_groups_test.ipynb) | The pre-registered test of seven feature groups (DL-75): the stored result read back, effect sizes and the COVID and 2024-dip robustness runs. One group passes (about 0.06% of log-loss); the national forecast does not improve (DL-76). |
-| [`15_modelling_results`](notebooks/15_modelling_results.ipynb) | The modelling run read back: national share, segment share and its upward bias, the decline alert, the post-hoc check, the G5 hypothesis and the batch demonstration (DL-78, DL-79). |
-
-Notebooks 10 to 12 need the local external database and run only on the author's machine; notebook 13 runs from committed files.
-
-## Status
-
-**Phase 1 and 2 (data foundation, design and the pipeline code):** complete. **Profiling, cleaning, ingestion, warehouse and EDA:** complete, including the data layer (availability rules, ingest audit, quality stage, as-of mart, golden regression, public subset). **Feature engineering (DL-75, DL-76):** complete: a written plan with rules fixed first, seven groups built with leakage and as-of tests, one pre-registered run repeated for identical output. Result: specialty and market context improves segment share by about 0.06% of log-loss and is robust to COVID and the 2024 dip; competitor volumes, calendar, history, outside signals and flags add nothing in the main run, and no group improves the national forecast. **Modelling (DL-78, DL-79):** complete: a written plan with rules fixed first (and a decline-alert amendment), a horizon harness with leakage guards, one pre-registered run repeated for identical output, a post-hoc check of the alert, three model cards and two result tables in the warehouse. Result: the national baseline holds; the logistic regression gives a small, upward-biased gain for segment share at 1 and 3 months; the decline alert's gain is mostly regression to the mean. The adoption is decided in DL-79: the national baseline, the segment logistic regression at 1 and 3 months (baseline at 6), and the decline alert as a 1-month flag only. **Production hardening (DL-80 to DL-84):** complete: a pinned environment and image, one orchestrated nine-stage run (with a promotion gate before the swap) with a per-stage record, a monthly scoring job writing `pred_batch`, an end-to-end test and CI gates, monitoring of freshness and drift, recorded versions and a runbook. **Next:** the serving layer (website, Claude question box, knowledge graph) and deployment; nothing is deployed.
-
-The earlier full build (leak-safe features, evaluation harness, models, a Streamlit site with a Claude question box, and a feature and modelling improvement round, DL-71 to DL-74) is kept in the tag `archive/full-project-2026-10-11` and is not part of this branch of the project.
-
-## Tech stack
-
-**In use (`requirements.txt`):** `pandas`, `numpy`, `openpyxl`, `requests`, `pandera`, `sqlalchemy`, `scipy`, `scikit-learn`, `statsmodels`, `matplotlib`, `seaborn`, `jupyter` and its kernel tools, `ruff`, `pytest`. **Infrastructure:** SQLite, GitHub Actions (lint and tests on every pull request; a monthly publish workflow).
-
+**Team:** Tushar and Saakshaat Saini
