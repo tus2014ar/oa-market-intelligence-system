@@ -22,7 +22,7 @@ A newer, long-acting injection (Zilretta) competes with decades-old generic ster
 2. Which patient and doctor groups should we look at first?
 3. **How far can we trust each forecast?**
 
-Most projects answer the first two. This one also answers the third, in every number it shows.
+Our Project answers the more important question(third), in every number it shows.
 
 ## What it found (the business impact)
 
