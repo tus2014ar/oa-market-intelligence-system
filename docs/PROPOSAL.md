@@ -3,14 +3,13 @@
 **Project type**: Portfolio project
 **Program**: School of Graduate Professional Studies, Penn State University
 **Term**: Fall 2026
-**Team**: Tushar, Saakshaat Saini
 **Revision**: Project Proposal, 4 October 2026
 
 ---
 
 ## Executive Summary
 
-The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.31M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a monthly-refreshed gold table, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, and a self-monitoring production loop that retrains monthly. The final deliverable is a public, multi-user website (open signup, access-code gated) where any brand manager can view model predictions and analytics, and ask natural-language questions or request on-demand visualizations against the gold table through Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built database tools (§5, §19) — never raw SQL access. It is deliberately right-sized: real MLOps tooling (MLflow, DVC, Docker, Evidently AI, GitHub Actions scheduled jobs) chosen to fit a monthly-batch, two-person-team system rather than enterprise infrastructure the problem doesn't need. **Status as of 8 October 2026:** Phases 1–2 (data foundation and the ingestion → validation → Silver → Gold pipeline), the exploratory data analysis and Phase 4 (modeling and evaluation, including inference, segment-level and forecast models, monitoring tools and their documentation) are complete; the website and the Claude query layer are built but not yet deployed or connected to the Phase 4 results (see the README's Status section and `docs/phase4_results.md`).
+The OA & RA Market Intelligence System is an end-to-end, production-oriented classification platform that predicts monthly visit-share direction (Up / Down / Flat) between branded specialty injectables and generic pain therapies in Osteoarthritis and Rheumatoid Arthritis, built on real IQVIA NMTA patient-visit data (7.19M+ OA visits across 6 years, of which 5.31M carry a specific product record and form the basis of the visit-share calculation, see §6.1). It is designed around one stakeholder — an Injectable Brand Manager — who needs an early, defensible signal on competitive share movement before it appears in a standard quarterly business review. The system covers the complete ML lifecycle: ingestion, a monthly-refreshed gold table, a knowledge graph for competitive context, a classifier evaluated against a persistence baseline with statistical rigor, and a self-monitoring production loop that retrains monthly. The final deliverable is a public, multi-user website (open signup, access-code gated) where any brand manager can view model predictions and analytics, and ask natural-language questions or request on-demand visualizations against the gold table through Claude, connected via the Model Context Protocol (MCP) to a set of scoped, purpose-built database tools (§5, §19) — never raw SQL access. It is deliberately right-sized: real MLOps tooling (MLflow, DVC, Docker, Evidently AI, GitHub Actions scheduled jobs) chosen to fit a monthly-batch, single-developer system rather than enterprise infrastructure the problem doesn't need. **Status as of 8 October 2026:** Phases 1–2 (data foundation and the ingestion → validation → Silver → Gold pipeline), the exploratory data analysis and Phase 4 (modeling and evaluation, including inference, segment-level and forecast models, monitoring tools and their documentation) are complete; the website and the Claude query layer are built but not yet deployed or connected to the Phase 4 results (see the README's Status section and `docs/phase4_results.md`).
 
 ---
 
@@ -20,7 +19,7 @@ The OA & RA Market Intelligence System is a monthly-refreshable predictive analy
 
 ### 1.1 Core Project Objectives
 
-- **Objective 1 (Core)**: Quantify how visit share among OA treatment categories (branded injectable, generic corticosteroid, NSAID — see §18.1) has shifted over the 6-year available history and identify inflection points tied to FDA approval events. *(Confirmed via openFDA: Zilretta's FDA approval predates our Aug 2019–Jul 2025 data window (approved Oct 6, 2017, NDA208845), so no true launch inflection is observable in this data; the analysis for the branded injectable is a post-launch adoption trend instead — see §18.5.)* For RA, whose competitive structure is fundamentally different (originator biologics vs. biosimilars, not branded-vs-generic small molecules — see §6.2), the equivalent analysis is a visit-volume and originator-vs-biosimilar share trend, not the same three-category formula or a formal inflection-point test.
+- **Objective 1 (Core)**: Quantify how visit share among OA treatment categories (branded injectable, generic corticosteroid, NSAID — see §18.1) has shifted over the 6-year available history and identify inflection points tied to FDA approval events. *(Confirmed via openFDA: Zilretta's FDA approval predates the Aug 2019–Jul 2025 data window (approved Oct 6, 2017, NDA208845), so no true launch inflection is observable in this data; the analysis for the branded injectable is a post-launch adoption trend instead — see §18.5.)* For RA, whose competitive structure is fundamentally different (originator biologics vs. biosimilars, not branded-vs-generic small molecules — see §6.2), the equivalent analysis is a visit-volume and originator-vs-biosimilar share trend, not the same three-category formula or a formal inflection-point test.
 - **Objective 2 (Core)**: Build a classifier that predicts next month's visit-share direction (Up / Down / Flat) for the branded injectable in OA, evaluated against a persistence baseline. RA is explicitly excluded from classification (see §6.2, §10).
 - **Objective 3 (Stretch)**: Classify each specialty/demographic segment as High- or Low-Adoption of the branded injectable, identifying where share is gaining fastest across both disease areas.
 - **Objective 4 (Stretch)**: Build a monitoring layer that compares each month's predicted direction to actual results and automatically flags meaningful misses or accuracy drops.
@@ -76,11 +75,11 @@ Launch dates for the branded injectable (Zilretta) and competitor products are s
 - Geographic region or territory-level breakdown.
 - Visit sequencing (times seen, days since last visit).
 
-These gaps are acknowledged explicitly. **Visit share** is used as our proxy for market share throughout, and all reporting makes this distinction clear.
+These gaps are acknowledged explicitly. **Visit share** is used as the project's proxy for market share throughout, and all reporting makes this distinction clear.
 
 ### 3.4 Data Validation Approach
 
-Each incoming monthly extract is validated before it enters the pipeline, not just cleaned after the fact. Built as `ingestion/validation.py` (`pandera.pandas`, chosen over Great Expectations for being lighter-weight and more Pythonic, a better fit for a 2-person team): one schema per loader, checking exact column names (`strict=True`, so an extra or missing column fails rather than passing silently), the confirmed categorical values for specialty/age band/gender (§18's data-dictionary work — different valid sets for OA vs. RA, so the pivot output is validated per disease area, not against one merged list), Brand/Generic tag, Place-of-Service setting, and ICD-10 scope (M04, M15–M19). A malformed or out-of-spec extract is flagged and halted before it can silently corrupt a monthly model run, rather than being discovered downstream after a bad prediction ships.
+Each incoming monthly extract is validated before it enters the pipeline, not just cleaned after the fact. Built as `ingestion/validation.py` (`pandera.pandas`, chosen over Great Expectations for being lighter-weight and more Pythonic, a better fit for a one-person project): one schema per loader, checking exact column names (`strict=True`, so an extra or missing column fails rather than passing silently), the confirmed categorical values for specialty/age band/gender (§18's data-dictionary work — different valid sets for OA vs. RA, so the pivot output is validated per disease area, not against one merged list), Brand/Generic tag, Place-of-Service setting, and ICD-10 scope (M04, M15–M19). A malformed or out-of-spec extract is flagged and halted before it can silently corrupt a monthly model run, rather than being discovered downstream after a bad prediction ships.
 
 Visit-count validity is stricter than "non-negative": the pivot and Place-of-Service schemas require **positive** integers, since both loaders already drop blank cells (§2.4, §3 of `data_dictionary.md`) — a stored zero there would mean something went wrong upstream, not that zero visits occurred. The reference table schema is the one exception, allowing zero, because a blank ICD cell is deliberately loaded as 0 there (a row's existence is the information, §4). **Not yet implemented**: automated implausible-spike detection. Today's schemas check membership and sign, not magnitude — an extract with a value 1,000× its usual size would still pass if it's a positive integer with a valid category. That is a real gap against this section's original scope, left for when the pipeline has more than one real month to compare against.
 
@@ -124,10 +123,10 @@ The system's natural-language query and on-demand visualization feature is serve
 
 ### 5.1 Rationale
 
-The deciding factors, in order of how the team weighted them:
+The deciding factors, in order of how they were weighted:
 
 - **Reliability and answer quality at multi-user scale**: the deliverable is a public website that "any person" with an access code can query (§17.6), not a single-analyst tool. Claude's reasoning and tool-use reliability materially reduce the risk of a wrong or malformed answer reaching a brand manager, compared to a quantized 7–8B local model.
-- **Engineering effort matched to a two-person team**: standing up reliable local-LLM infrastructure (quantized model serving, tool-calling reliability, uptime) is real, ongoing engineering work; API-based tool-calling is not.
+- **Engineering effort matched to a one-person project**: standing up reliable local-LLM infrastructure (quantized model serving, tool-calling reliability, uptime) is real, ongoing engineering work; API-based tool-calling is not.
 - **Data governance is deliberately not the deciding factor here**: the NMTA dataset is licensed to Penn State for this project, and the course instructor's approval covers sending aggregate Gold-table data (never raw IQVIA rows) to the Claude API. Given that, the local-LLM's primary traditional advantage (data never leaves the premises) is not the binding constraint for this system, so it doesn't outweigh Claude+MCP's advantages on reliability and scale. This is a considered trade-off, not an oversight — see §5.5 for the alternative that was rejected and why.
 - **Cost is a real, actively-managed risk, not an ignored one**: Claude is billed per request, unlike a self-hosted model's fixed compute cost. This is addressed directly through rate limiting and per-user query caps (§19.4), not left as an open risk.
 
@@ -147,11 +146,11 @@ A brand manager can ask for a chart in natural language (e.g., "show me Zilretta
 
 ### 5.4 Use Case 3 — Automated Narrative Reporting
 
-After each monthly model run, Claude drafts a one-page narrative summary of the classifier's output — describing the predicted direction, the key drivers surfaced by SHAP, and any flagged monitoring alerts — using the same scoped tools. This draft is reviewed by the team before delivery to the brand manager, preserving human oversight while reducing reporting time.
+After each monthly model run, Claude drafts a one-page narrative summary of the classifier's output — describing the predicted direction, the key drivers surfaced by SHAP, and any flagged monitoring alerts — using the same scoped tools. This draft is reviewed by the project owner before delivery to the brand manager, preserving human oversight while reducing reporting time.
 
 ### 5.5 Considered and Rejected: Locally-Hosted LLM
 
-A locally deployed open-source model (LLaMA 3 8B or Mistral 7B, quantized 4-bit via llama.cpp, served through Ollama) was the original design in an earlier draft of this proposal, specifically for its data-governance property: proprietary data never leaves the local environment. That property is real and would matter if data confidentiality were the project's binding constraint. It was set aside in favor of Claude+MCP because, once data governance was no longer the deciding factor, local deployment's remaining costs (weaker reasoning and tool-use reliability at multi-user scale, real infrastructure/uptime engineering burden for a two-person team) outweighed its remaining benefit (cost predictability at scale, which matters less at this project's expected query volume than reliability does). This trade-off is documented here deliberately rather than silently dropped, since it was a real design decision with a real alternative, not an obvious default.
+A locally deployed open-source model (LLaMA 3 8B or Mistral 7B, quantized 4-bit via llama.cpp, served through Ollama) was the original design in an earlier draft of this proposal, specifically for its data-governance property: proprietary data never leaves the local environment. That property is real and would matter if data confidentiality were the project's binding constraint. It was set aside in favor of Claude+MCP because, once data governance was no longer the deciding factor, local deployment's remaining costs (weaker reasoning and tool-use reliability at multi-user scale, real infrastructure/uptime engineering burden for a one-person project) outweighed its remaining benefit (cost predictability at scale, which matters less at this project's expected query volume than reliability does). This trade-off is documented here deliberately rather than silently dropped, since it was a real design decision with a real alternative, not an obvious default.
 
 ### 5.6 Implementation Approach
 
@@ -228,7 +227,7 @@ A dedicated dashboard panel, part of the public website (§5, §19), displays OA
 
 ### 9.1 Design Principles
 
-The system is designed as a right-sized MLOps pipeline appropriate for a 2-person portfolio-project team, not a scaled-down enterprise platform. Three principles apply consistently across every layer below:
+The system is designed as a right-sized MLOps pipeline appropriate for a one-person portfolio project, not a scaled-down enterprise platform. Three principles apply consistently across every layer below:
 
 1. **Fit over scale.** Every tool choice is justified against this project's actual data volume (tens of thousands of rows per monthly extract) and cadence (monthly batch, not real-time), not against what a large commercial deployment would use.
 2. **Reuse before adopting.** Where an existing piece of infrastructure can do the job (e.g., GitHub Actions already runs CI, §19.1 uses it for pipeline scheduling too; the same DVC remote persists both the database and the model registry, §19.6), a new platform is not introduced just because it's the more common enterprise pattern.
@@ -370,7 +369,7 @@ Each monthly cycle moves through the diagram above in this order:
 
 ### 9.6 Deliberately Not Used
 
-Kubernetes, Kafka, live A/B testing, Grafana-style real-time dashboards, and a Spark-based orchestration platform (e.g., Databricks) for the monthly pipeline — none of these fit a monthly-batch, 2-person-team system operating on a modest (tens-of-thousands-of-rows-per-month) dataset, and choosing not to over-engineer is itself a deliberate design decision (§19.1).
+Kubernetes, Kafka, live A/B testing, Grafana-style real-time dashboards, and a Spark-based orchestration platform (e.g., Databricks) for the monthly pipeline — none of these fit a monthly-batch, single-developer system operating on a modest (tens-of-thousands-of-rows-per-month) dataset, and choosing not to over-engineer is itself a deliberate design decision (§19.1).
 
 ---
 
@@ -379,7 +378,7 @@ Kubernetes, Kafka, live A/B testing, Grafana-style real-time dashboards, and a S
 The following analytical maturity points are explicitly acknowledged before modeling begins:
 
 - **Wide-to-long reshape required**: Data arrives in pivot-table shape (600+ demographic combination columns). Reshaping to tidy long format is a mandatory first step, not optional.
-- **Visit share as market share proxy**: We have no NPA-style Rx volume or sales ($) data — only patient visit counts. This distinction is made explicit in all reporting.
+- **Visit share as market share proxy**: The project has no NPA-style Rx volume or sales ($) data — only patient visit counts. This distinction is made explicit in all reporting.
 - **Treatment-category taxonomy**: Branded injectable / generic corticosteroid / NSAID groupings are not pre-labeled, and the raw Brand/Generic tag alone is actively misleading here: Kenalog and Depo-Medrol are tagged BRANDED GENERIC/BRAND, the same tags used for Zilretta, yet both have real generic equivalents elsewhere in the data (e.g., Amneal's, Teva's, and Northstar Rx's triamcinolone acetonide) and so belong in the generic-corticosteroid bucket, not as branded peers to Zilretta. The taxonomy is built from the Brand/Generic tag plus manual product-name review and cross-checking for generic equivalents, not the tag alone.
 - **Manufacturer-of-record changes mid-window**: Zilretta's manufacturer changed during the 6-year window (Flexion Therapeutics, later acquired by Pacira BioSciences), splitting its visits across two manufacturer labels in the raw data (11,235 + 123,898 = 135,133 combined). Grouping by (Manufacturer, Product) instead of Product name alone would understate its true share by roughly 8%; Product-name-only grouping is used throughout.
 - **Row-level totals exceed printed Grand Totals — explained, not an error**: the OA Brand/Generic reference file's row-level product total (5,561,131) is ~4.5% above its own printed Grand Total (5,323,282). `Patient Visits` is a distinct count at every level, so a visit involving two products appears in both product rows; rows therefore sum to *at least* the Grand Total, never exactly to it. The same overlap appears in the monthly pivot (product rows 5,544,840 vs. Grand Total 5,308,627) and in RA (1,287 vs. 1,283). This was previously listed as an open item for the instructor/IQVIA contact; inspecting both files shows it is a property of the measure. The consequence to carry forward: product-level visit shares are shares of *product-visits*, not unique visits (§18.1; `data_dictionary.md` §2.1, §4).
@@ -393,7 +392,7 @@ The following analytical maturity points are explicitly acknowledged before mode
 
 ## 11. Repository Structure
 
-The repository is organized so each folder maps directly to a stage in the Technical Architecture (§9). As of Phase 1 (ingestion), `README.md`, `.gitignore`, `docs/PROPOSAL.md`, `docs/data_dictionary.md` (§3.5), and `.dvc/` (versioning config) exist; the rest is the target structure the team builds into over the course of the semester.
+The repository is organized so each folder maps directly to a stage in the Technical Architecture (§9). As of Phase 1 (ingestion), `README.md`, `.gitignore`, `docs/PROPOSAL.md`, `docs/data_dictionary.md` (§3.5), and `.dvc/` (versioning config) exist; the rest is the target structure the project builds into over the course of the semester.
 
 ```
 oa-market-intelligence-system/
@@ -506,9 +505,9 @@ Every stage of a complete pipeline is represented, including two stages most stu
 
 ## 14. Responsible AI & Model Risk
 
-This system informs commercial decisions, not clinical ones, and its outputs are advisory, not autonomous. The move to an open, multi-user website (§17.6, §19.4) makes this section load-bearing rather than aspirational: controls that were reasonable for a team-internal tool are not automatically sufficient once "any person" with an access code can query the system. The following controls follow from that:
+This system informs commercial decisions, not clinical ones, and its outputs are advisory, not autonomous. The move to an open, multi-user website (§17.6, §19.4) makes this section load-bearing rather than aspirational: controls that were reasonable for a internal tool are not automatically sufficient once "any person" with an access code can query the system. The following controls follow from that:
 
-- **Human-in-the-loop for LLM output**: every auto-drafted narrative summary (§5.4) is reviewed by the team before it reaches the Brand Manager. Claude drafts; it does not publish unsupervised.
+- **Human-in-the-loop for LLM output**: every auto-drafted narrative summary (§5.4) is reviewed by the project owner before it reaches the Brand Manager. Claude drafts; it does not publish unsupervised.
 - **Grounded, citable answers only**: numeric and factual answers (§5.2) come exclusively from scoped MCP tool calls against the gold table, never free generation; narrative/methodology answers (§19.3) come from the RAG layer's retrieved passages with citations back to the source document. Neither path lets the model answer from what it "remembers" instead of what a tool returned.
 - **Query-scope enforcement**: the MCP tools and system prompt are scoped to advisory/commercial questions about visit-share and model output only. The system is explicitly designed to decline clinical, diagnostic, or treatment-recommendation questions, since it was never trained or validated for that use, regardless of what a user asks it.
 - **Prompt-injection-resistant tool design**: because this is now a multi-user, open-signup surface, tool inputs and outputs are treated as untrusted by default — tools return structured data rather than executing arbitrary user-supplied query text (no raw SQL tool, §5.6), which removes the main injection vector rather than relying on the model to resist a malicious prompt.
@@ -566,7 +565,7 @@ On every push to `main`, CI runs linting and unit tests (§9). When a retrained 
 
 ### 17.3 Rollback Procedure
 
-If a newly promoted model's live monthly accuracy falls below its backtested expectation for two consecutive months, or a monitoring alert flags a significant miss, the pipeline automatically reverts to the previous `Production`-stage model in the MLflow registry while the team investigates, rather than continuing to serve a degraded model.
+If a newly promoted model's live monthly accuracy falls below its backtested expectation for two consecutive months, or a monitoring alert flags a significant miss, the pipeline automatically reverts to the previous `Production`-stage model in the MLflow registry while the cause is investigated, rather than continuing to serve a degraded model.
 
 ### 17.4 Monitoring & Alerting Channels
 
@@ -574,24 +573,24 @@ Drift and accuracy alerts (Evidently AI, §9) post to a dedicated Slack channel 
 
 ### 17.5 Incident Response
 
-If a monthly pipeline run fails (a malformed extract that fails validation, an ingestion error, etc.), the last successful prediction stays live and visible, the dashboard never goes silently blank, and the team is alerted to investigate before the next cycle runs.
+If a monthly pipeline run fails (a malformed extract that fails validation, an ingestion error, etc.), the last successful prediction stays live and visible, the dashboard never goes silently blank, and the owner is alerted to investigate before the next cycle runs.
 
 ### 17.6 Access Control
 
-The website is **open signup, access-code gated**: any brand manager with a valid access code can create an account and use the dashboard and Claude+MCP Q&A/visualization features (§5, §19.4) — this is a deliberate change from an earlier, team-only access model, made to match the team's stated goal of building a reliable, scalable system for brand managers generally, not a single-user tool. Two boundaries make this safe to open up:
+The website is **open signup, access-code gated**: any brand manager with a valid access code can create an account and use the dashboard and Claude+MCP Q&A/visualization features (§5, §19.4) — this is a deliberate change from an earlier, owner-only access model, made to match the stated goal of building a reliable, scalable system for brand managers generally, not a single-user tool. Two boundaries make this safe to open up:
 
 - **The underlying warehouse and gold table are never directly exposed.** Every user interaction, dashboard render or Claude query, goes through the FastAPI backend and its scoped MCP tools (§5.6, §19.3); no account, including a signed-up user, gets raw database or SQL access.
-- **Access-code issuance and revocation stay with the project team.** Codes are the actual admission control; a compromised or abused code can be revoked without affecting other users, and issuance is tracked so usage can be tied back to an account if abuse or excessive cost is flagged (§19.4).
+- **Access-code issuance and revocation stay with the project owner.** Codes are the actual admission control; a compromised or abused code can be revoked without affecting other users, and issuance is tracked so usage can be tied back to an account if abuse or excessive cost is flagged (§19.4).
 
 ### 17.7 Cost & Resource Considerations
 
-The monthly retrain and pipeline run on standard team hardware and free GitHub Actions runners (§19.1), CPU-only, no GPU required, no recurring compute cost. The one real recurring cost is the Claude API, billed per Q&A/visualization request (§5.6) — this is a deliberate, accepted trade-off (§5.1, §5.5) rather than an oversight, and it is the reason §19.4's rate limiting and per-user query caps exist: they keep that variable cost bounded and predictable rather than open-ended, which is what actually makes the system operable by a small team without a large infrastructure budget.
+The monthly retrain and pipeline run on standard laptop hardware and free GitHub Actions runners (§19.1), CPU-only, no GPU required, no recurring compute cost. The one real recurring cost is the Claude API, billed per Q&A/visualization request (§5.6) — this is a deliberate, accepted trade-off (§5.1, §5.5) rather than an oversight, and it is the reason §19.4's rate limiting and per-user query caps exist: they keep that variable cost bounded and predictable rather than open-ended, which is what actually makes the system operable by one developer without a large infrastructure budget.
 
 ### 17.8 Cloud Infrastructure Footprint
 
 The raw IQVIA extracts are committed to this repository (§3.1) but are not pushed to the DVC remote, and the serving layer is intentionally cloud-based, since the deliverable is a public website (§5, §19):
 
-- **DVC remote storage (S3)** (planned; `.dvc/` is initialized but no remote is configured yet): only processed, aggregate, de-identified tables (§18.7) are to be pushed to a DVC-managed S3 remote for versioned, reproducible access across the team. The raw IQVIA extracts are committed in this repository (§3.1) and are not pushed to the remote.
+- **DVC remote storage (S3)** (planned; `.dvc/` is initialized but no remote is configured yet): only processed, aggregate, de-identified tables (§18.7) are to be pushed to a DVC-managed S3 remote for versioned, reproducible access across machines. The raw IQVIA extracts are committed in this repository (§3.1) and are not pushed to the remote.
 - **CI/CD and pipeline scheduling (GitHub Actions)**: linting and unit tests (§9) run on every push, and the monthly gold-table refresh pipeline (§19.1) runs on a GitHub Actions scheduled workflow — both on GitHub-hosted, cloud-based runners.
 - **AI query layer (Claude API)**: the gold table's aggregate visit-share and prediction data (never raw IQVIA rows, §10) is sent to the Claude API when a user asks a question or requests a visualization (§5, §19.3). This is a deliberate exception to "nothing sensitive leaves the environment": aggregate Gold-table data, not raw IQVIA rows, goes to a third-party API. The course instructor's approval covers this use. It is documented here rather than left implicit.
 - **Website hosting**: the dashboard and Q&A interface (§6.3, §19.4) are deployed to a small cloud instance (e.g., a minimal AWS/GCP/Render instance) so any access-code-holding brand manager can reach it without local infrastructure.
@@ -701,13 +700,13 @@ degenerate finding, but is no longer the default.
 
 **Verified** via openFDA's Drugs@FDA bulk dataset (downloaded directly, not queried live): application **NDA208845**, sponsor **Pacira Pharms Inc**, original approval granted **October 6, 2017**.
 
-This date predates our data window (Aug 2019–Jul 2025) by approximately 22 months. **Consequence**: no true launch inflection is observable for Zilretta in this data, its entire presence in our extract is post-launch. Objective 1's analysis for the branded injectable is therefore a **post-launch adoption trend**, not a before/after launch comparison. There is no fallback candidate: per §10/§18.1, Zilretta is the only branded injectable with no generic equivalent in this dataset (Category A of the OA product taxonomy), so no other product substitutes for a launch-inflection analysis.
+This date predates the data window (Aug 2019–Jul 2025) by approximately 22 months. **Consequence**: no true launch inflection is observable for Zilretta in this data, its entire presence in the extract is post-launch. Objective 1's analysis for the branded injectable is therefore a **post-launch adoption trend**, not a before/after launch comparison. There is no fallback candidate: per §10/§18.1, Zilretta is the only branded injectable with no generic equivalent in this dataset (Category A of the OA product taxonomy), so no other product substitutes for a launch-inflection analysis.
 
 This section previously described a to-be-verified branching decision (if within the window vs. if it predates the window); the branch is now resolved with a checked, real answer rather than an assumption.
 
 ### 18.6 Competitor Product Scope for openFDA Retrieval
 
-FDA approval-date retrieval is bounded to **branded (non-generic) products only** — generics and NSAIDs don't have a single meaningful "launch" event driving inflection the way a new branded product does, and most NSAIDs in this market are multi-manufacturer generics with no clean approval-event narrative. The specific list of branded products to query is drawn from what's **actually present in our own data's Brand/Generic tag field**, enumerated during Week 4 EDA, not an externally guessed list. This keeps the scope grounded in what the data can actually support rather than open-ended.
+FDA approval-date retrieval is bounded to **branded (non-generic) products only** — generics and NSAIDs don't have a single meaningful "launch" event driving inflection the way a new branded product does, and most NSAIDs in this market are multi-manufacturer generics with no clean approval-event narrative. The specific list of branded products to query is drawn from what's **actually present in the data's own Brand/Generic tag field**, enumerated during Week 4 EDA, not an externally guessed list. This keeps the scope grounded in what the data can actually support rather than open-ended.
 
 ### 18.7 Core-Scope Technical Simplifications
 
@@ -741,7 +740,7 @@ Two additions, both deliberately scoped small (full reasoning and detail in `doc
 
 The branded-injectable/generic-corticosteroid/NSAID taxonomy (§10, §18.1) cannot be fully automated: assigning a new, never-before-seen product to the correct treatment category is a product-name-review judgment call, not a rule a script can reliably make — the Kenalog/Depo-Medrol finding (§10) is exactly this kind of call, and it was made by a human, not inferred from the raw tag. Since the monthly pipeline (§19.1) is meant to run unattended, this judgment call is externalized into a small, version-controlled mapping file rather than left as inline logic or, worse, silently guessed at:
 
-- **`data/reference/product_taxonomy.csv`**: one row per (product_name, treatment_category, disease_area), maintained by the team and git-tracked — not gitignored — so changes go through the same branch/PR/CI workflow as code.
+- **`data/reference/product_taxonomy.csv`**: one row per (product_name, treatment_category, disease_area), maintained in the project and git-tracked — not gitignored — so changes go through the same branch/PR/CI workflow as code.
 - **Pipeline behavior on a new product**: at star-schema build time (§9.4, `dim_product`), any product name present in the new monthly extract but absent from this mapping file is assigned `treatment_category = 'unclassified'` and triggers a monitoring alert (§17.4) naming the specific unmapped product. The pipeline does **not** fail the run and does **not** guess a category — it flags the gap for a human to review and add a mapping entry before the next monthly cycle.
 - **`unclassified` vs. `not_applicable` — two different things, only one of which alerts.** All 15 RA products are tagged `not_applicable`, not `unclassified`: RA doesn't use this taxonomy at all (its real competitive structure is originator-vs-biosimilar, §6.2), so they've already been reviewed and correctly excluded, not overlooked. Only `unclassified` — a product nobody has reviewed yet — triggers the monitoring alert above; `not_applicable` is a deliberate, stable classification that shouldn't page anyone every month.
 - **The full product taxonomy already documented in `data_analysis_reference.md` §3 (all 145 OA and 15 RA products) is this file's first snapshot, not a one-off document** — the mapping file is what the pipeline actually reads at runtime; the markdown table stays as the human-readable rationale behind each category assignment.
@@ -756,7 +755,7 @@ Sections 1–18 establish the data, modeling, and MLOps design. This section spe
 
 ### 19.1 Monthly Pipeline & Scheduling
 
-The monthly cycle (ingest → validate → reshape → feature-engineer → predict → refresh gold table) is triggered by a **GitHub Actions scheduled workflow** (`on: schedule`, cron), not a new orchestration platform. This was a real decision, not a default: a Spark-based platform like **Databricks** was considered and rejected, because Databricks is built for distributed, large-scale data processing, and this pipeline runs on a modest dataset (tens of thousands of visit rows per month) on a monthly, not continuous, cadence. Adopting it would mean taking on a new platform to learn, operate, and pay for (its free tier is also time/credit-limited, not a stable long-term free option) to solve a scale problem this project doesn't have — the same reasoning that already ruled out Kubernetes and Kafka (§9). GitHub Actions is free at this usage level, and it's infrastructure the project already runs (§9 CI/CD), so there is zero new platform to adopt. If the team later needs richer retry/observability behavior than a cron-triggered job provides, the documented upgrade path is a lightweight open-source orchestrator (Prefect or Dagster), not a jump straight to enterprise-scale infrastructure.
+The monthly cycle (ingest → validate → reshape → feature-engineer → predict → refresh gold table) is triggered by a **GitHub Actions scheduled workflow** (`on: schedule`, cron), not a new orchestration platform. This was a real decision, not a default: a Spark-based platform like **Databricks** was considered and rejected, because Databricks is built for distributed, large-scale data processing, and this pipeline runs on a modest dataset (tens of thousands of visit rows per month) on a monthly, not continuous, cadence. Adopting it would mean taking on a new platform to learn, operate, and pay for (its free tier is also time/credit-limited, not a stable long-term free option) to solve a scale problem this project doesn't have — the same reasoning that already ruled out Kubernetes and Kafka (§9). GitHub Actions is free at this usage level, and it's infrastructure the project already runs (§9 CI/CD), so there is zero new platform to adopt. If the project later needs richer retry/observability behavior than a cron-triggered job provides, the documented upgrade path is a lightweight open-source orchestrator (Prefect or Dagster), not a jump straight to enterprise-scale infrastructure.
 
 ### 19.2 Gold Table: Schema & Full-Refresh Overwrite
 
@@ -778,7 +777,7 @@ Claude's access to the Gold tables is entirely through a small, fixed set of MCP
 
 Because the website is open signup (any brand manager, gated only by an access code, §17.6) and Claude is billed per request, the backend enforces:
 
-- **Access-code-gated signup**: creating an account requires a valid, team-issued access code; this is the actual admission boundary, not the LLM itself.
+- **Access-code-gated signup**: creating an account requires a valid, owner-issued access code; this is the actual admission boundary, not the LLM itself.
 - **Per-user rate limits and query caps**: a bounded number of Q&A/visualization requests per user per day, enforced in the FastAPI backend before a request ever reaches the Claude API, so a single account (misbehaving or malicious) cannot drive runaway API cost.
 - **Usage tied to accounts, not anonymous**: every query is attributable to the account that made it, so unusual usage can be traced and a specific access code revoked (§17.6) without disrupting other users.
 
@@ -810,4 +809,4 @@ Both get the same fix: both are DVC-tracked, with the actual bytes persisted in 
 | Claude API | Requires internet regardless — Anthropic's service, not self-hosted | Same, unaffected by where the website itself runs |
 | openFDA API | Requires internet, but only during the pipeline run (Bronze-stage), not at serving time | Same |
 
-The only genuinely external dependency in this whole system, even in a fully local setup, is the Claude API call itself — everything the team builds (database, models, MCP tools, website) can run entirely on local machines until there's a real reason to deploy it.
+The only genuinely external dependency in this whole system, even in a fully local setup, is the Claude API call itself — everything the project builds (database, models, MCP tools, website) can run entirely on local machines until there's a real reason to deploy it.

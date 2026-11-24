@@ -106,7 +106,7 @@ Every significant decision on this project, why it was made, what was rejected, 
 
 **PR-02 · The slide deck and presentation script stay out of the repo until the whole project is done.** Decided. Both are currently stale: they carry the old test count (152), the old rolling-average correlation (0.95) and a wrong symbol for the specialty effect (η, not ρ, on slide 33), and predate the modeling results.
 
-**PR-03 · Both team members stay credited in the README and PROPOSAL; Saakshaat Saini helps with documentation.** Decided (your call). Tushar does the code and analysis.
+**PR-03 · The project is presented as a portfolio project, with no team credit line.** Decided (your call, 23 Nov 2026). It replaces the earlier decision to credit two team members: the credit line is removed from the README and PROPOSAL, and "team" wording about the project (a two-person team, team-issued codes) now says one-person project or project owner.
 
 ---
 
