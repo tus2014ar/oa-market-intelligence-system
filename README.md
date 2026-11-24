@@ -145,5 +145,3 @@ docs/  notebooks/  tests/     documentation, executed notebooks, about 1,800 tes
 ## Data
 
 The primary dataset is a real IQVIA NMTA patient-visit extract (72 months, 160 products, 7M+ visits), provided for this project. The Excel extracts are committed in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A product taxonomy (160 products) is in [`data/reference/`](data/reference/). FDA approval dates come from the free openFDA API; a snapshot is committed so the work reproduces offline. 171 public CMS, CDC, SEC and FDA files (about 24 GB) add outside context ([`docs/findings.md`](docs/findings.md)).
-
-**Team:** Tushar and Saakshaat Saini
