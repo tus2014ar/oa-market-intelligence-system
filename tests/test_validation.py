@@ -97,6 +97,23 @@ def test_rejects_an_unrecognized_specialty():
         validate_nmta_visits(_frame(VALID_VISIT_ROW, specialty="NOT A REAL SPECIALTY"))
 
 
+@pytest.mark.parametrize(
+    "specialty", ["COLON & RECTAL SURGERY", "GERIATRIC PSYCHIATRY", "OTOLARYNGOLOGY"]
+)
+def test_the_three_specialties_added_from_the_nov_2026_re_pull_pass_for_oa_only(specialty):
+    validate_nmta_visits(_frame(VALID_VISIT_ROW, specialty=specialty))  # reviewed and allowed
+    with pytest.raises(ExtractValidationError, match="RA nmta visits"):
+        validate_nmta_visits(
+            _frame(
+                VALID_VISIT_ROW,
+                disease_area="RA",
+                specialty=specialty,
+                age_band="40 TO 59",
+                gender="FEMALE",
+            )
+        )
+
+
 def test_rejects_an_oa_only_specialty_submitted_as_ra():
     # RA's 19 specialties are a confirmed subset of OA's 50 (Step 2), so there is no
     # specialty valid for RA but not OA - only this direction is testable for real.

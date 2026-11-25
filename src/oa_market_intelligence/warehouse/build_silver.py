@@ -179,6 +179,16 @@ def _key_map(engine: Engine, table, key_col: str, name_cols: list[str]) -> dict:
     return {tuple(getattr(r, c) for c in name_cols): getattr(r, key_col) for r in rows}
 
 
+def _require_known(found, known, what: str, hint: str) -> None:
+    """Stops with a plain message, not a bare KeyError, when the visits name something that the
+    dimension tables do not hold."""
+    missing = sorted({str(name) for name in found} - {str(name) for name in known})
+    if missing:
+        extra = f" and {len(missing) - 10} more" if len(missing) > 10 else ""
+        shown = ", ".join(missing[:10]) + extra
+        raise ValueError(f"The visits name {len(missing)} {what} that {hint}: {shown}.")
+
+
 def refresh_fact_product_visits(engine: Engine, visits: pd.DataFrame) -> int:
     """Full-refresh-overwrite: replaces every row, since nothing depends on this table's
     own key staying stable across runs (database_schema.md §6).
@@ -195,6 +205,16 @@ def refresh_fact_product_visits(engine: Engine, visits: pd.DataFrame) -> int:
     product_ids = _key_map(engine, dim_product, "product_id", ["product_name"])
     specialty_ids = _key_map(engine, dim_specialty, "specialty_id", ["specialty_name"])
     demographic_ids = _key_map(engine, dim_demographics, "demographic_id", ["age_band", "gender"])
+    _require_known(
+        visits["product"].unique(),
+        product_ids,
+        "product(s)",
+        "the Branded Generic reference table does not list (add them to a refreshed reference "
+        "table)",
+    )
+    _require_known(
+        visits["specialty"].unique(), specialty_ids, "specialty name(s)", "no specialty row holds"
+    )
 
     grouped = visits.groupby(
         ["month", "product", "specialty", "age_band", "gender"], as_index=False
