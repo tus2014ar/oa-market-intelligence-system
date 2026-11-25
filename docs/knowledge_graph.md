@@ -2,7 +2,7 @@
 
 The facts the project already holds, as nodes and named relations, so a question such as "who makes the competing injectables?" or "what happened around the peak?" can be answered with each fact's source beside it. It adds **no analysis**: every node and edge comes from a table or reference file already in the repository.
 
-It is a committed file, `data/reference/knowledge_graph.json` (311 nodes, 827 edges), built by `src/oa_market_intelligence/knowledge_graph.py`. Pure Python; `networkx` is imported only by `Graph.to_networkx()`.
+It is a committed file, `data/reference/knowledge_graph.json` (323 nodes, 858 edges), built by `src/oa_market_intelligence/knowledge_graph.py`. Pure Python; `networkx` is imported only by `Graph.to_networkx()`.
 
 ```bash
 oa-graph                 # or: python -m oa_market_intelligence.knowledge_graph

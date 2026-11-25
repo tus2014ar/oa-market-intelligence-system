@@ -1,6 +1,6 @@
 {
  "built_from": {
-  "last_month_id": 202507,
+  "last_month_id": 202609,
   "months": 72
  },
  "sources": {
@@ -71,6 +71,12 @@
    "brand_generic_tag": "OTHER"
   },
   {
+   "id": "product:ADVIL JR STRENGTH",
+   "type": "product",
+   "label": "ADVIL JR STRENGTH",
+   "brand_generic_tag": "OTHER"
+  },
+  {
    "id": "product:ALEVE",
    "type": "product",
    "label": "ALEVE",
@@ -93,12 +99,6 @@
    "id": "product:APAP X",
    "type": "product",
    "label": "APAP X",
-   "brand_generic_tag": "OTHER"
-  },
-  {
-   "id": "product:APAP/CAF",
-   "type": "product",
-   "label": "APAP/CAF",
    "brand_generic_tag": "OTHER"
   },
   {
@@ -158,6 +158,12 @@
    "brand_generic_tag": "OTHER"
   },
   {
+   "id": "product:AVSOLA",
+   "type": "product",
+   "label": "AVSOLA",
+   "brand_generic_tag": "BRAND"
+  },
+  {
    "id": "product:BAYCADRON",
    "type": "product",
    "label": "BAYCADRON",
@@ -212,10 +218,16 @@
    "brand_generic_tag": "BRANDED GENERIC"
   },
   {
-   "id": "product:BIOFREEZE W/ILEX",
+   "id": "product:BETAMETHASONE DIPR",
    "type": "product",
-   "label": "BIOFREEZE W/ILEX",
-   "brand_generic_tag": "OTHER"
+   "label": "BETAMETHASONE DIPR",
+   "brand_generic_tag": "BRAND"
+  },
+  {
+   "id": "product:BSP 0820",
+   "type": "product",
+   "label": "BSP 0820",
+   "brand_generic_tag": "BRANDED GENERIC"
   },
   {
    "id": "product:BUFFERIN",
@@ -272,6 +284,12 @@
    "label": "CORTEF",
    "brand_generic_tag": "BRAND",
    "first_fda_approval": "1952-12-15"
+  },
+  {
+   "id": "product:CORTISONE ACE",
+   "type": "product",
+   "label": "CORTISONE ACE",
+   "brand_generic_tag": "BRAND"
   },
   {
    "id": "product:DARVOCET-N 100",
@@ -398,6 +416,12 @@
    "brand_generic_tag": "BRANDED GENERIC"
   },
   {
+   "id": "product:DUPIXENT",
+   "type": "product",
+   "label": "DUPIXENT",
+   "brand_generic_tag": "BRAND"
+  },
+  {
    "id": "product:DURACLON",
    "type": "product",
    "label": "DURACLON",
@@ -431,6 +455,12 @@
    "brand_generic_tag": "OTHER"
   },
   {
+   "id": "product:ENBREL",
+   "type": "product",
+   "label": "ENBREL",
+   "brand_generic_tag": "BRAND"
+  },
+  {
    "id": "product:EXCEDRIN ASP/FREE",
    "type": "product",
    "label": "EXCEDRIN ASP/FREE",
@@ -446,12 +476,6 @@
    "id": "product:EXCEDRIN MIGRAINE",
    "type": "product",
    "label": "EXCEDRIN MIGRAINE",
-   "brand_generic_tag": "OTHER"
-  },
-  {
-   "id": "product:EXCEDRIN TEN HDCHE",
-   "type": "product",
-   "label": "EXCEDRIN TEN HDCHE",
    "brand_generic_tag": "OTHER"
   },
   {
@@ -546,6 +570,12 @@
    "brand_generic_tag": "BRAND"
   },
   {
+   "id": "product:IMFINZI",
+   "type": "product",
+   "label": "IMFINZI",
+   "brand_generic_tag": "BRAND"
+  },
+  {
    "id": "product:INFLECTRA",
    "type": "product",
    "label": "INFLECTRA",
@@ -564,6 +594,12 @@
    "label": "KENALOG",
    "brand_generic_tag": "BRANDED GENERIC",
    "first_fda_approval": "1974-01-29"
+  },
+  {
+   "id": "product:KENALOG SPRAY",
+   "type": "product",
+   "label": "KENALOG SPRAY",
+   "brand_generic_tag": "BRANDED GENERIC"
   },
   {
    "id": "product:KETOROLAC TROMETH",
@@ -675,6 +711,12 @@
    "brand_generic_tag": "GENERIC"
   },
   {
+   "id": "product:MORPHINE SULF PFS",
+   "type": "product",
+   "label": "MORPHINE SULF PFS",
+   "brand_generic_tag": "GENERIC"
+  },
+  {
    "id": "product:MOTRIN IB",
    "type": "product",
    "label": "MOTRIN IB",
@@ -716,12 +758,6 @@
    "label": "OFIRMEV",
    "brand_generic_tag": "BRANDED GENERIC",
    "first_fda_approval": "2010-11-02"
-  },
-  {
-   "id": "product:OPDIVO",
-   "type": "product",
-   "label": "OPDIVO",
-   "brand_generic_tag": "BRAND"
   },
   {
    "id": "product:ORENCIA",
@@ -926,6 +962,12 @@
    "brand_generic_tag": "OTHER"
   },
   {
+   "id": "product:TOFIDENCE",
+   "type": "product",
+   "label": "TOFIDENCE",
+   "brand_generic_tag": "BRAND"
+  },
+  {
    "id": "product:TORADOL",
    "type": "product",
    "label": "TORADOL",
@@ -961,6 +1003,12 @@
    "type": "product",
    "label": "TRIAMCINOLONE DIAC",
    "brand_generic_tag": "GENERIC"
+  },
+  {
+   "id": "product:TRILOAN SUIK",
+   "type": "product",
+   "label": "TRILOAN SUIK",
+   "brand_generic_tag": "BRANDED GENERIC"
   },
   {
    "id": "product:TRUXIMA",
@@ -999,12 +1047,6 @@
    "brand_generic_tag": "OTHER"
   },
   {
-   "id": "product:YERVOY",
-   "type": "product",
-   "label": "YERVOY",
-   "brand_generic_tag": "BRAND"
-  },
-  {
    "id": "product:ZILRETTA",
    "type": "product",
    "label": "ZILRETTA",
@@ -1036,6 +1078,11 @@
    "label": "AMERICAN REGENT IN"
   },
   {
+   "id": "manufacturer:AMGEN INC",
+   "type": "manufacturer",
+   "label": "AMGEN INC"
+  },
+  {
    "id": "manufacturer:AMNEAL BIOSCIENCES",
    "type": "manufacturer",
    "label": "AMNEAL BIOSCIENCES"
@@ -1044,16 +1091,6 @@
    "id": "manufacturer:AMNEAL PHARM",
    "type": "manufacturer",
    "label": "AMNEAL PHARM"
-  },
-  {
-   "id": "manufacturer:ARCHIS PHARMA LLC",
-   "type": "manufacturer",
-   "label": "ARCHIS PHARMA LLC"
-  },
-  {
-   "id": "manufacturer:ASSERTIO THERAPEU",
-   "type": "manufacturer",
-   "label": "ASSERTIO THERAPEU"
   },
   {
    "id": "manufacturer:ASTELLAS PHARMA US",
@@ -1101,6 +1138,11 @@
    "label": "CARWIN ASSOCIATES"
   },
   {
+   "id": "manufacturer:COSETTE PHARMA",
+   "type": "manufacturer",
+   "label": "COSETTE PHARMA"
+  },
+  {
    "id": "manufacturer:DR REDDYS LAB",
    "type": "manufacturer",
    "label": "DR REDDYS LAB"
@@ -1114,6 +1156,11 @@
    "id": "manufacturer:EPIC PHARMA",
    "type": "manufacturer",
    "label": "EPIC PHARMA"
+  },
+  {
+   "id": "manufacturer:ESTEVE PHARMA",
+   "type": "manufacturer",
+   "label": "ESTEVE PHARMA"
   },
   {
    "id": "manufacturer:FOUNDATION CONS",
@@ -1256,14 +1303,14 @@
    "label": "PADAGIS LLC"
   },
   {
+   "id": "manufacturer:PAR HEALTH",
+   "type": "manufacturer",
+   "label": "PAR HEALTH"
+  },
+  {
    "id": "manufacturer:PARNELL PHARM",
    "type": "manufacturer",
    "label": "PARNELL PHARM"
-  },
-  {
-   "id": "manufacturer:PERFORMANCE HEALTH",
-   "type": "manufacturer",
-   "label": "PERFORMANCE HEALTH"
   },
   {
    "id": "manufacturer:PFIZER",
@@ -1326,6 +1373,11 @@
    "label": "SANDOZ"
   },
   {
+   "id": "manufacturer:SANOFI",
+   "type": "manufacturer",
+   "label": "SANOFI"
+  },
+  {
    "id": "manufacturer:SILARX PHARM INC",
    "type": "manufacturer",
    "label": "SILARX PHARM INC"
@@ -1334,6 +1386,11 @@
    "id": "manufacturer:STERLING-KNIGHT",
    "type": "manufacturer",
    "label": "STERLING-KNIGHT"
+  },
+  {
+   "id": "manufacturer:STRIDES PHARMA",
+   "type": "manufacturer",
+   "label": "STRIDES PHARMA"
   },
   {
    "id": "manufacturer:SUN PHARMACEUTICAL",
@@ -1346,19 +1403,14 @@
    "label": "TERRAIN PHARMA"
   },
   {
-   "id": "manufacturer:TERSERA THERAPEUT",
-   "type": "manufacturer",
-   "label": "TERSERA THERAPEUT"
-  },
-  {
    "id": "manufacturer:TEVA ONCOLOGY",
    "type": "manufacturer",
    "label": "TEVA ONCOLOGY"
   },
   {
-   "id": "manufacturer:TEVA PARENTERAL ME",
+   "id": "manufacturer:TEVA PHARMACEUTICA",
    "type": "manufacturer",
-   "label": "TEVA PARENTERAL ME"
+   "label": "TEVA PHARMACEUTICA"
   },
   {
    "id": "manufacturer:US COMPOUNDING",
@@ -1471,6 +1523,11 @@
    "label": "CLINICAL NEUROPHYSIOL."
   },
   {
+   "id": "specialty:COLON & RECTAL SURGERY",
+   "type": "specialty",
+   "label": "COLON & RECTAL SURGERY"
+  },
+  {
    "id": "specialty:CRITICAL CARE MEDICINE",
    "type": "specialty",
    "label": "CRITICAL CARE MEDICINE"
@@ -1514,6 +1571,11 @@
    "id": "specialty:GENERAL SURGERY",
    "type": "specialty",
    "label": "GENERAL SURGERY"
+  },
+  {
+   "id": "specialty:GERIATRIC PSYCHIATRY",
+   "type": "specialty",
+   "label": "GERIATRIC PSYCHIATRY"
   },
   {
    "id": "specialty:GERIATRICS",
@@ -1614,6 +1676,11 @@
    "id": "specialty:OTHER SURGERY",
    "type": "specialty",
    "label": "OTHER SURGERY"
+  },
+  {
+   "id": "specialty:OTOLARYNGOLOGY",
+   "type": "specialty",
+   "label": "OTOLARYNGOLOGY"
   },
   {
    "id": "specialty:PAIN MEDICINE",
@@ -1878,6 +1945,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:ADVIL JR STRENGTH",
+   "target": "manufacturer:HALEON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:ALEVE",
    "target": "manufacturer:BAYER CONSUMER CAR",
    "relation": "made_by",
@@ -1898,12 +1971,6 @@
   {
    "source": "product:APAP X",
    "target": "manufacturer:MAGNO HUMPHRIES",
-   "relation": "made_by",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:APAP/CAF",
-   "target": "manufacturer:PRIVATE LABEL",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -1933,7 +2000,7 @@
   },
   {
    "source": "product:ASA/APAP/CAF",
-   "target": "manufacturer:PRIVATE LABEL",
+   "target": "manufacturer:MAJOR PHARM",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -1958,6 +2025,12 @@
   {
    "source": "product:ASPIRIN BUFFERED",
    "target": "manufacturer:PRIVATE LABEL",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:AVSOLA",
+   "target": "manufacturer:AMGEN INC",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2016,8 +2089,14 @@
    "evidence": "dim_product"
   },
   {
-   "source": "product:BIOFREEZE W/ILEX",
-   "target": "manufacturer:PERFORMANCE HEALTH",
+   "source": "product:BETAMETHASONE DIPR",
+   "target": "manufacturer:COSETTE PHARMA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BSP 0820",
+   "target": "manufacturer:OAKLOCK, LLC",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2029,7 +2108,7 @@
   },
   {
    "source": "product:BUPRENORPHINE HCL",
-   "target": "manufacturer:ENDO USA INC.",
+   "target": "manufacturer:PAR HEALTH",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2072,6 +2151,12 @@
   {
    "source": "product:CORTEF",
    "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CORTISONE ACE",
+   "target": "manufacturer:No Manufacturer",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2149,7 +2234,7 @@
   },
   {
    "source": "product:DICLOFENAC POT",
-   "target": "manufacturer:ARCHIS PHARMA LLC",
+   "target": "manufacturer:TEVA PHARMACEUTICA",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2190,6 +2275,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:DUPIXENT",
+   "target": "manufacturer:SANOFI",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:DURACLON",
    "target": "manufacturer:VIATRIS",
    "relation": "made_by",
@@ -2220,6 +2311,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:ENBREL",
+   "target": "manufacturer:AMGEN INC",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:EXCEDRIN ASP/FREE",
    "target": "manufacturer:HALEON",
    "relation": "made_by",
@@ -2233,12 +2330,6 @@
   },
   {
    "source": "product:EXCEDRIN MIGRAINE",
-   "target": "manufacturer:HALEON",
-   "relation": "made_by",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:EXCEDRIN TEN HDCHE",
    "target": "manufacturer:HALEON",
    "relation": "made_by",
    "evidence": "dim_product"
@@ -2281,7 +2372,7 @@
   },
   {
    "source": "product:HYDROCORTISONE",
-   "target": "manufacturer:VIATRIS",
+   "target": "manufacturer:STRIDES PHARMA",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2334,6 +2425,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:IMFINZI",
+   "target": "manufacturer:ASTRAZENECA",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:INFLECTRA",
    "target": "manufacturer:No Manufacturer",
    "relation": "made_by",
@@ -2348,6 +2445,12 @@
   {
    "source": "product:KENALOG",
    "target": "manufacturer:BRISTOL-M SQ US PH",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KENALOG SPRAY",
+   "target": "manufacturer:SUN PHARMACEUTICAL",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2425,7 +2528,7 @@
   },
   {
    "source": "product:METHYLPRED ACE",
-   "target": "manufacturer:TEVA PARENTERAL ME",
+   "target": "manufacturer:AMNEAL BIOSCIENCES",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2456,6 +2559,12 @@
   {
    "source": "product:MORPHINE SULF C-JECT",
    "target": "manufacturer:PFIZER",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:MORPHINE SULF PFS",
+   "target": "manufacturer:HIKMA PHARMACEUT",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2498,12 +2607,6 @@
   {
    "source": "product:OFIRMEV",
    "target": "manufacturer:MALLINCKRODT",
-   "relation": "made_by",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:OPDIVO",
-   "target": "manufacturer:BRISTOL-M SQ US PH",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2587,7 +2690,7 @@
   },
   {
    "source": "product:PRIALT",
-   "target": "manufacturer:TERSERA THERAPEUT",
+   "target": "manufacturer:ESTEVE PHARMA",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2706,6 +2809,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:TOFIDENCE",
+   "target": "manufacturer:ORGANON",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:TORADOL",
    "target": "manufacturer:ROCHE",
    "relation": "made_by",
@@ -2738,6 +2847,12 @@
   {
    "source": "product:TRIAMCINOLONE DIAC",
    "target": "manufacturer:US COMPOUNDING",
+   "relation": "made_by",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRILOAN SUIK",
+   "target": "manufacturer:MEDCHEM",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2778,12 +2893,6 @@
    "evidence": "dim_product"
   },
   {
-   "source": "product:YERVOY",
-   "target": "manufacturer:BRISTOL-M SQ US PH",
-   "relation": "made_by",
-   "evidence": "dim_product"
-  },
-  {
    "source": "product:ZILRETTA",
    "target": "manufacturer:PACIRA PHARM",
    "relation": "made_by",
@@ -2791,7 +2900,7 @@
   },
   {
    "source": "product:ZIPSOR",
-   "target": "manufacturer:ASSERTIO THERAPEU",
+   "target": "manufacturer:COSETTE PHARMA",
    "relation": "made_by",
    "evidence": "dim_product"
   },
@@ -2838,6 +2947,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:ADVIL JR STRENGTH",
+   "target": "drug_class:nsaid_otc",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:ALEVE",
    "target": "drug_class:nsaid_otc",
    "relation": "in_class",
@@ -2857,12 +2972,6 @@
   },
   {
    "source": "product:APAP X",
-   "target": "drug_class:nsaid_otc",
-   "relation": "in_class",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:APAP/CAF",
    "target": "drug_class:nsaid_otc",
    "relation": "in_class",
    "evidence": "dim_product"
@@ -2922,6 +3031,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:AVSOLA",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:BAYCADRON",
    "target": "drug_class:generic_corticosteroid",
    "relation": "in_class",
@@ -2976,8 +3091,14 @@
    "evidence": "dim_product"
   },
   {
-   "source": "product:BIOFREEZE W/ILEX",
-   "target": "drug_class:nsaid_otc",
+   "source": "product:BETAMETHASONE DIPR",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BSP 0820",
+   "target": "drug_class:unclassified",
    "relation": "in_class",
    "evidence": "dim_product"
   },
@@ -3031,6 +3152,12 @@
   },
   {
    "source": "product:CORTEF",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CORTISONE ACE",
    "target": "drug_class:generic_corticosteroid",
    "relation": "in_class",
    "evidence": "dim_product"
@@ -3150,6 +3277,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:DUPIXENT",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:DURACLON",
    "target": "drug_class:opioid_other",
    "relation": "in_class",
@@ -3180,6 +3313,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:ENBREL",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:EXCEDRIN ASP/FREE",
    "target": "drug_class:nsaid_otc",
    "relation": "in_class",
@@ -3193,12 +3332,6 @@
   },
   {
    "source": "product:EXCEDRIN MIGRAINE",
-   "target": "drug_class:nsaid_otc",
-   "relation": "in_class",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:EXCEDRIN TEN HDCHE",
    "target": "drug_class:nsaid_otc",
    "relation": "in_class",
    "evidence": "dim_product"
@@ -3294,6 +3427,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:IMFINZI",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:INFLECTRA",
    "target": "drug_class:not_applicable",
    "relation": "in_class",
@@ -3307,6 +3446,12 @@
   },
   {
    "source": "product:KENALOG",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KENALOG SPRAY",
    "target": "drug_class:generic_corticosteroid",
    "relation": "in_class",
    "evidence": "dim_product"
@@ -3420,6 +3565,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:MORPHINE SULF PFS",
+   "target": "drug_class:opioid_other",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:MOTRIN IB",
    "target": "drug_class:nsaid_otc",
    "relation": "in_class",
@@ -3458,12 +3609,6 @@
   {
    "source": "product:OFIRMEV",
    "target": "drug_class:opioid_other",
-   "relation": "in_class",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:OPDIVO",
-   "target": "drug_class:not_applicable",
    "relation": "in_class",
    "evidence": "dim_product"
   },
@@ -3666,6 +3811,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:TOFIDENCE",
+   "target": "drug_class:not_applicable",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:TORADOL",
    "target": "drug_class:opioid_other",
    "relation": "in_class",
@@ -3697,6 +3848,12 @@
   },
   {
    "source": "product:TRIAMCINOLONE DIAC",
+   "target": "drug_class:generic_corticosteroid",
+   "relation": "in_class",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRILOAN SUIK",
    "target": "drug_class:generic_corticosteroid",
    "relation": "in_class",
    "evidence": "dim_product"
@@ -3734,12 +3891,6 @@
   {
    "source": "product:VAZALORE",
    "target": "drug_class:nsaid_otc",
-   "relation": "in_class",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:YERVOY",
-   "target": "drug_class:not_applicable",
    "relation": "in_class",
    "evidence": "dim_product"
   },
@@ -3798,6 +3949,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:ADVIL JR STRENGTH",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:ALEVE",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
@@ -3817,12 +3974,6 @@
   },
   {
    "source": "product:APAP X",
-   "target": "disease_area:OA",
-   "relation": "in_disease_area",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:APAP/CAF",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
@@ -3882,6 +4033,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:AVSOLA",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:BAYCADRON",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
@@ -3936,7 +4093,13 @@
    "evidence": "dim_product"
   },
   {
-   "source": "product:BIOFREEZE W/ILEX",
+   "source": "product:BETAMETHASONE DIPR",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:BSP 0820",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
@@ -3991,6 +4154,12 @@
   },
   {
    "source": "product:CORTEF",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:CORTISONE ACE",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
@@ -4110,6 +4279,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:DUPIXENT",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:DURACLON",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
@@ -4140,6 +4315,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:ENBREL",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:EXCEDRIN ASP/FREE",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
@@ -4153,12 +4334,6 @@
   },
   {
    "source": "product:EXCEDRIN MIGRAINE",
-   "target": "disease_area:OA",
-   "relation": "in_disease_area",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:EXCEDRIN TEN HDCHE",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
@@ -4254,6 +4429,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:IMFINZI",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:INFLECTRA",
    "target": "disease_area:RA",
    "relation": "in_disease_area",
@@ -4267,6 +4448,12 @@
   },
   {
    "source": "product:KENALOG",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:KENALOG SPRAY",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
@@ -4380,6 +4567,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:MORPHINE SULF PFS",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:MOTRIN IB",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
@@ -4418,12 +4611,6 @@
   {
    "source": "product:OFIRMEV",
    "target": "disease_area:OA",
-   "relation": "in_disease_area",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:OPDIVO",
-   "target": "disease_area:RA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
   },
@@ -4626,6 +4813,12 @@
    "evidence": "dim_product"
   },
   {
+   "source": "product:TOFIDENCE",
+   "target": "disease_area:RA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
    "source": "product:TORADOL",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
@@ -4657,6 +4850,12 @@
   },
   {
    "source": "product:TRIAMCINOLONE DIAC",
+   "target": "disease_area:OA",
+   "relation": "in_disease_area",
+   "evidence": "dim_product"
+  },
+  {
+   "source": "product:TRILOAN SUIK",
    "target": "disease_area:OA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
@@ -4694,12 +4893,6 @@
   {
    "source": "product:VAZALORE",
    "target": "disease_area:OA",
-   "relation": "in_disease_area",
-   "evidence": "dim_product"
-  },
-  {
-   "source": "product:YERVOY",
-   "target": "disease_area:RA",
    "relation": "in_disease_area",
    "evidence": "dim_product"
   },
@@ -4764,6 +4957,13 @@
    "rule": "not Zilretta and not in the corticosteroid category"
   },
   {
+   "source": "product:ADVIL JR STRENGTH",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
    "source": "product:ALEVE",
    "target": "group:other",
    "relation": "in_group",
@@ -4786,13 +4986,6 @@
   },
   {
    "source": "product:APAP X",
-   "target": "group:other",
-   "relation": "in_group",
-   "evidence": "competitor_groups.csv",
-   "rule": "not Zilretta and not in the corticosteroid category"
-  },
-  {
-   "source": "product:APAP/CAF",
    "target": "group:other",
    "relation": "in_group",
    "evidence": "competitor_groups.csv",
@@ -4862,6 +5055,13 @@
    "rule": "not Zilretta and not in the corticosteroid category"
   },
   {
+   "source": "product:AVSOLA",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
    "source": "product:BAYCADRON",
    "target": "group:other_injectable_corticosteroid",
    "relation": "in_group",
@@ -4925,7 +5125,14 @@
    "rule": "other product in the corticosteroid category"
   },
   {
-   "source": "product:BIOFREEZE W/ILEX",
+   "source": "product:BETAMETHASONE DIPR",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:BSP 0820",
    "target": "group:other",
    "relation": "in_group",
    "evidence": "competitor_groups.csv",
@@ -4989,6 +5196,13 @@
   },
   {
    "source": "product:CORTEF",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
+  },
+  {
+   "source": "product:CORTISONE ACE",
    "target": "group:other_injectable_corticosteroid",
    "relation": "in_group",
    "evidence": "competitor_groups.csv",
@@ -5128,6 +5342,13 @@
    "rule": "other product in the corticosteroid category"
   },
   {
+   "source": "product:DUPIXENT",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
    "source": "product:DURACLON",
    "target": "group:other",
    "relation": "in_group",
@@ -5163,6 +5384,13 @@
    "rule": "not Zilretta and not in the corticosteroid category"
   },
   {
+   "source": "product:ENBREL",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
    "source": "product:EXCEDRIN ASP/FREE",
    "target": "group:other",
    "relation": "in_group",
@@ -5178,13 +5406,6 @@
   },
   {
    "source": "product:EXCEDRIN MIGRAINE",
-   "target": "group:other",
-   "relation": "in_group",
-   "evidence": "competitor_groups.csv",
-   "rule": "not Zilretta and not in the corticosteroid category"
-  },
-  {
-   "source": "product:EXCEDRIN TEN HDCHE",
    "target": "group:other",
    "relation": "in_group",
    "evidence": "competitor_groups.csv",
@@ -5296,6 +5517,13 @@
    "rule": "not Zilretta and not in the corticosteroid category"
   },
   {
+   "source": "product:IMFINZI",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
    "source": "product:INFLECTRA",
    "target": "group:other",
    "relation": "in_group",
@@ -5311,6 +5539,13 @@
   },
   {
    "source": "product:KENALOG",
+   "target": "group:triamcinolone_ir",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:KENALOG SPRAY",
    "target": "group:triamcinolone_ir",
    "relation": "in_group",
    "evidence": "competitor_groups.csv",
@@ -5443,6 +5678,13 @@
    "rule": "not Zilretta and not in the corticosteroid category"
   },
   {
+   "source": "product:MORPHINE SULF PFS",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
    "source": "product:MOTRIN IB",
    "target": "group:other",
    "relation": "in_group",
@@ -5486,13 +5728,6 @@
   },
   {
    "source": "product:OFIRMEV",
-   "target": "group:other",
-   "relation": "in_group",
-   "evidence": "competitor_groups.csv",
-   "rule": "not Zilretta and not in the corticosteroid category"
-  },
-  {
-   "source": "product:OPDIVO",
    "target": "group:other",
    "relation": "in_group",
    "evidence": "competitor_groups.csv",
@@ -5730,6 +5965,13 @@
    "rule": "not Zilretta and not in the corticosteroid category"
   },
   {
+   "source": "product:TOFIDENCE",
+   "target": "group:other",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "not Zilretta and not in the corticosteroid category"
+  },
+  {
    "source": "product:TORADOL",
    "target": "group:other",
    "relation": "in_group",
@@ -5770,6 +6012,13 @@
    "relation": "in_group",
    "evidence": "competitor_groups.csv",
    "rule": "corticosteroid whose name is a triamcinolone product"
+  },
+  {
+   "source": "product:TRILOAN SUIK",
+   "target": "group:other_injectable_corticosteroid",
+   "relation": "in_group",
+   "evidence": "competitor_groups.csv",
+   "rule": "other product in the corticosteroid category"
   },
   {
    "source": "product:TRUXIMA",
@@ -5814,13 +6063,6 @@
    "rule": "not Zilretta and not in the corticosteroid category"
   },
   {
-   "source": "product:YERVOY",
-   "target": "group:other",
-   "relation": "in_group",
-   "evidence": "competitor_groups.csv",
-   "rule": "not Zilretta and not in the corticosteroid category"
-  },
-  {
    "source": "product:ZILRETTA",
    "target": "group:zilretta",
    "relation": "in_group",
@@ -5858,36 +6100,36 @@
    "target": "specialty:ADDICTION MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 7,
-   "share_of_group_visits": 1.4e-05
+   "visits": 14,
+   "share_of_group_visits": 2.4e-05
   },
   {
    "source": "group:other",
    "target": "specialty:ALLERGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 139,
-   "share_of_group_visits": 0.000275
+   "visits": 229,
+   "share_of_group_visits": 0.000396
   },
   {
    "source": "group:other",
    "target": "specialty:ANESTHESIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4406,
-   "share_of_group_visits": 0.008706
+   "visits": 3699,
+   "share_of_group_visits": 0.006395
   },
   {
    "source": "group:other",
    "target": "specialty:CARDIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 281,
-   "share_of_group_visits": 0.000555
+   "visits": 288,
+   "share_of_group_visits": 0.000498
   },
   {
    "source": "group:other",
-   "target": "specialty:CLINICAL NEUROPHYSIOL.",
+   "target": "specialty:COLON & RECTAL SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
    "visits": 1,
@@ -5898,232 +6140,248 @@
    "target": "specialty:CRITICAL CARE MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4,
-   "share_of_group_visits": 8e-06
+   "visits": 6,
+   "share_of_group_visits": 1e-05
   },
   {
    "source": "group:other",
    "target": "specialty:DERMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 10,
-   "share_of_group_visits": 2e-05
+   "visits": 13,
+   "share_of_group_visits": 2.2e-05
   },
   {
    "source": "group:other",
    "target": "specialty:EMERGENCY MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1046,
-   "share_of_group_visits": 0.002067
+   "visits": 1233,
+   "share_of_group_visits": 0.002132
   },
   {
    "source": "group:other",
    "target": "specialty:ENDOCRINOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 42,
-   "share_of_group_visits": 8.3e-05
+   "visits": 63,
+   "share_of_group_visits": 0.000109
   },
   {
    "source": "group:other",
    "target": "specialty:FAMILY PRACTICE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 23863,
-   "share_of_group_visits": 0.047153
+   "visits": 24901,
+   "share_of_group_visits": 0.043052
   },
   {
    "source": "group:other",
    "target": "specialty:GASTROENTEROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 42,
-   "share_of_group_visits": 8.3e-05
+   "visits": 30,
+   "share_of_group_visits": 5.2e-05
   },
   {
    "source": "group:other",
    "target": "specialty:GEN PREVENTIVE MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 70,
-   "share_of_group_visits": 0.000138
+   "visits": 96,
+   "share_of_group_visits": 0.000166
   },
   {
    "source": "group:other",
    "target": "specialty:GENERAL PRACTICE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1156,
-   "share_of_group_visits": 0.002284
+   "visits": 1299,
+   "share_of_group_visits": 0.002246
   },
   {
    "source": "group:other",
    "target": "specialty:GENERAL SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 334,
-   "share_of_group_visits": 0.00066
+   "visits": 268,
+   "share_of_group_visits": 0.000463
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:GERIATRIC PSYCHIATRY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 2,
+   "share_of_group_visits": 3e-06
   },
   {
    "source": "group:other",
    "target": "specialty:GERIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1234,
-   "share_of_group_visits": 0.002438
+   "visits": 1300,
+   "share_of_group_visits": 0.002248
   },
   {
    "source": "group:other",
    "target": "specialty:HEMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 10,
-   "share_of_group_visits": 2e-05
+   "visits": 2,
+   "share_of_group_visits": 3e-06
   },
   {
    "source": "group:other",
    "target": "specialty:HOSPICE & PALLIATIVE MED",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 83,
-   "share_of_group_visits": 0.000164
+   "visits": 84,
+   "share_of_group_visits": 0.000145
   },
   {
    "source": "group:other",
    "target": "specialty:INFECTIOUS DISEASE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 223,
-   "share_of_group_visits": 0.000441
+   "visits": 246,
+   "share_of_group_visits": 0.000425
   },
   {
    "source": "group:other",
    "target": "specialty:INTERNAL MED/PEDIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 450,
-   "share_of_group_visits": 0.000889
+   "visits": 410,
+   "share_of_group_visits": 0.000709
   },
   {
    "source": "group:other",
    "target": "specialty:INTERNAL MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 24166,
-   "share_of_group_visits": 0.047752
+   "visits": 24535,
+   "share_of_group_visits": 0.042419
   },
   {
    "source": "group:other",
    "target": "specialty:NEPHROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 838,
-   "share_of_group_visits": 0.001656
+   "visits": 872,
+   "share_of_group_visits": 0.001508
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:NEUROLOGICAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 5,
+   "share_of_group_visits": 9e-06
   },
   {
    "source": "group:other",
    "target": "specialty:NEUROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 170,
-   "share_of_group_visits": 0.000336
+   "visits": 159,
+   "share_of_group_visits": 0.000275
   },
   {
    "source": "group:other",
    "target": "specialty:NUCLEAR MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 3,
-   "share_of_group_visits": 6e-06
+   "visits": 6,
+   "share_of_group_visits": 1e-05
   },
   {
    "source": "group:other",
    "target": "specialty:NURSE PRACTITIONER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 74824,
-   "share_of_group_visits": 0.147852
+   "visits": 91778,
+   "share_of_group_visits": 0.158678
   },
   {
    "source": "group:other",
    "target": "specialty:OBSTETRICS/GYNECOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 48,
-   "share_of_group_visits": 9.5e-05
+   "visits": 38,
+   "share_of_group_visits": 6.6e-05
   },
   {
    "source": "group:other",
    "target": "specialty:OCCUPATIONAL MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 22,
-   "share_of_group_visits": 4.3e-05
+   "visits": 31,
+   "share_of_group_visits": 5.4e-05
   },
   {
    "source": "group:other",
    "target": "specialty:ONCOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 329,
-   "share_of_group_visits": 0.00065
+   "visits": 352,
+   "share_of_group_visits": 0.000609
   },
   {
    "source": "group:other",
    "target": "specialty:ORTHO SURG OF SPINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 414,
-   "share_of_group_visits": 0.000818
+   "visits": 335,
+   "share_of_group_visits": 0.000579
   },
   {
    "source": "group:other",
    "target": "specialty:ORTHOPEDIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 126674,
-   "share_of_group_visits": 0.250307
+   "visits": 130070,
+   "share_of_group_visits": 0.224882
   },
   {
    "source": "group:other",
    "target": "specialty:OSTEOPATHIC MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 30540,
-   "share_of_group_visits": 0.060347
+   "visits": 31809,
+   "share_of_group_visits": 0.054996
   },
   {
    "source": "group:other",
    "target": "specialty:OTHER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1107,
-   "share_of_group_visits": 0.002187
+   "visits": 2605,
+   "share_of_group_visits": 0.004504
   },
   {
    "source": "group:other",
    "target": "specialty:OTHER SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 265,
-   "share_of_group_visits": 0.000524
+   "visits": 514,
+   "share_of_group_visits": 0.000889
   },
   {
    "source": "group:other",
    "target": "specialty:PAIN MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 2250,
-   "share_of_group_visits": 0.004446
+   "visits": 2245,
+   "share_of_group_visits": 0.003881
   },
   {
    "source": "group:other",
    "target": "specialty:PATHOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 5,
-   "share_of_group_visits": 1e-05
+   "visits": 3,
+   "share_of_group_visits": 5e-06
   },
   {
    "source": "group:other",
@@ -6138,128 +6396,136 @@
    "target": "specialty:PEDIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 246,
-   "share_of_group_visits": 0.000486
+   "visits": 391,
+   "share_of_group_visits": 0.000676
   },
   {
    "source": "group:other",
    "target": "specialty:PHYSICAL MEDICINE & REHAB",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4974,
-   "share_of_group_visits": 0.009829
+   "visits": 4679,
+   "share_of_group_visits": 0.00809
   },
   {
    "source": "group:other",
    "target": "specialty:PHYSICIAN ASSISTANT",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 197858,
-   "share_of_group_visits": 0.390967
+   "visits": 246256,
+   "share_of_group_visits": 0.42576
   },
   {
    "source": "group:other",
    "target": "specialty:PLASTIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1,
-   "share_of_group_visits": 2e-06
+   "visits": 2,
+   "share_of_group_visits": 3e-06
   },
   {
    "source": "group:other",
    "target": "specialty:PSYCHIATRY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 41,
-   "share_of_group_visits": 8.1e-05
+   "visits": 36,
+   "share_of_group_visits": 6.2e-05
   },
   {
    "source": "group:other",
    "target": "specialty:PULMONARY CRITICAL CARE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 95,
-   "share_of_group_visits": 0.000188
+   "visits": 99,
+   "share_of_group_visits": 0.000171
   },
   {
    "source": "group:other",
    "target": "specialty:PULMONARY DISEASES",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 184,
-   "share_of_group_visits": 0.000364
+   "visits": 158,
+   "share_of_group_visits": 0.000273
   },
   {
    "source": "group:other",
    "target": "specialty:RADIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1788,
-   "share_of_group_visits": 0.003533
+   "visits": 1028,
+   "share_of_group_visits": 0.001777
   },
   {
    "source": "group:other",
    "target": "specialty:RHEUMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 3473,
-   "share_of_group_visits": 0.006863
+   "visits": 3469,
+   "share_of_group_visits": 0.005998
   },
   {
    "source": "group:other",
    "target": "specialty:SLEEP MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 2,
-   "share_of_group_visits": 4e-06
+   "visits": 5,
+   "share_of_group_visits": 9e-06
   },
   {
    "source": "group:other",
    "target": "specialty:SPORTS MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 2352,
-   "share_of_group_visits": 0.004648
+   "visits": 2723,
+   "share_of_group_visits": 0.004708
   },
   {
    "source": "group:other",
    "target": "specialty:THORACIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 3,
-   "share_of_group_visits": 6e-06
+   "visits": 2,
+   "share_of_group_visits": 3e-06
+  },
+  {
+   "source": "group:other",
+   "target": "specialty:UROLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 2e-06
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:ADDICTION MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 2,
-   "share_of_group_visits": 1e-06
+   "visits": 14,
+   "share_of_group_visits": 6e-06
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:ALLERGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 85,
-   "share_of_group_visits": 3.7e-05
+   "visits": 89,
+   "share_of_group_visits": 3.9e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:ANESTHESIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 29173,
-   "share_of_group_visits": 0.012716
+   "visits": 26326,
+   "share_of_group_visits": 0.01165
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:CARDIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 410,
-   "share_of_group_visits": 0.000179
+   "visits": 349,
+   "share_of_group_visits": 0.000154
   },
   {
    "source": "group:other_injectable_corticosteroid",
@@ -6274,76 +6540,36 @@
    "target": "specialty:DERMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 20,
-   "share_of_group_visits": 9e-06
+   "visits": 14,
+   "share_of_group_visits": 6e-06
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:EMERGENCY MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 831,
-   "share_of_group_visits": 0.000362
+   "visits": 1570,
+   "share_of_group_visits": 0.000695
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:ENDOCRINOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 29,
-   "share_of_group_visits": 1.3e-05
+   "visits": 18,
+   "share_of_group_visits": 8e-06
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:FAMILY PRACTICE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 52272,
-   "share_of_group_visits": 0.022784
+   "visits": 48584,
+   "share_of_group_visits": 0.0215
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:GASTROENTEROLOGY",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 4,
-   "share_of_group_visits": 2e-06
-  },
-  {
-   "source": "group:other_injectable_corticosteroid",
-   "target": "specialty:GEN PREVENTIVE MEDICINE",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 7,
-   "share_of_group_visits": 3e-06
-  },
-  {
-   "source": "group:other_injectable_corticosteroid",
-   "target": "specialty:GENERAL PRACTICE",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 1029,
-   "share_of_group_visits": 0.000449
-  },
-  {
-   "source": "group:other_injectable_corticosteroid",
-   "target": "specialty:GENERAL SURGERY",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 2097,
-   "share_of_group_visits": 0.000914
-  },
-  {
-   "source": "group:other_injectable_corticosteroid",
-   "target": "specialty:GERIATRICS",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 653,
-   "share_of_group_visits": 0.000285
-  },
-  {
-   "source": "group:other_injectable_corticosteroid",
-   "target": "specialty:HEMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
    "visits": 3,
@@ -6351,15 +6577,7 @@
   },
   {
    "source": "group:other_injectable_corticosteroid",
-   "target": "specialty:HOSPICE & PALLIATIVE MED",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 8,
-   "share_of_group_visits": 3e-06
-  },
-  {
-   "source": "group:other_injectable_corticosteroid",
-   "target": "specialty:INFECTIOUS DISEASE",
+   "target": "specialty:GEN PREVENTIVE MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
    "visits": 4,
@@ -6367,19 +6585,67 @@
   },
   {
    "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GENERAL PRACTICE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 917,
+   "share_of_group_visits": 0.000406
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GENERAL SURGERY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1842,
+   "share_of_group_visits": 0.000815
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:GERIATRICS",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 641,
+   "share_of_group_visits": 0.000284
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:HEMATOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 0.0
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:HOSPICE & PALLIATIVE MED",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 0.0
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:INFECTIOUS DISEASE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 6,
+   "share_of_group_visits": 3e-06
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
    "target": "specialty:INTERNAL MED/PEDIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 372,
-   "share_of_group_visits": 0.000162
+   "visits": 363,
+   "share_of_group_visits": 0.000161
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:INTERNAL MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 21286,
-   "share_of_group_visits": 0.009278
+   "visits": 18385,
+   "share_of_group_visits": 0.008136
   },
   {
    "source": "group:other_injectable_corticosteroid",
@@ -6394,7 +6660,7 @@
    "target": "specialty:NEPHROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 51,
+   "visits": 50,
    "share_of_group_visits": 2.2e-05
   },
   {
@@ -6402,104 +6668,112 @@
    "target": "specialty:NEUROLOGICAL SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 37,
-   "share_of_group_visits": 1.6e-05
+   "visits": 29,
+   "share_of_group_visits": 1.3e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:NEUROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 178,
-   "share_of_group_visits": 7.8e-05
+   "visits": 201,
+   "share_of_group_visits": 8.9e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:NUCLEAR MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 22,
-   "share_of_group_visits": 1e-05
+   "visits": 19,
+   "share_of_group_visits": 8e-06
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:NURSE PRACTITIONER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 192755,
-   "share_of_group_visits": 0.084016
+   "visits": 216751,
+   "share_of_group_visits": 0.09592
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:OBSTETRICS/GYNECOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 38,
-   "share_of_group_visits": 1.7e-05
+   "visits": 41,
+   "share_of_group_visits": 1.8e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:OCCUPATIONAL MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 293,
-   "share_of_group_visits": 0.000128
+   "visits": 288,
+   "share_of_group_visits": 0.000127
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:ONCOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 808,
-   "share_of_group_visits": 0.000352
+   "visits": 634,
+   "share_of_group_visits": 0.000281
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:ORTHO SURG OF SPINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 2400,
-   "share_of_group_visits": 0.001046
+   "visits": 2187,
+   "share_of_group_visits": 0.000968
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:ORTHOPEDIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1066381,
-   "share_of_group_visits": 0.464802
+   "visits": 956763,
+   "share_of_group_visits": 0.423401
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:OSTEOPATHIC MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 169602,
-   "share_of_group_visits": 0.073924
+   "visits": 167865,
+   "share_of_group_visits": 0.074286
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:OTHER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4459,
-   "share_of_group_visits": 0.001944
+   "visits": 4242,
+   "share_of_group_visits": 0.001877
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:OTHER SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 3054,
-   "share_of_group_visits": 0.001331
+   "visits": 2038,
+   "share_of_group_visits": 0.000902
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:OTOLARYNGOLOGY",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 1,
+   "share_of_group_visits": 0.0
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:PAIN MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 23904,
-   "share_of_group_visits": 0.010419
+   "visits": 22756,
+   "share_of_group_visits": 0.01007
   },
   {
    "source": "group:other_injectable_corticosteroid",
@@ -6514,95 +6788,103 @@
    "target": "specialty:PEDIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 871,
-   "share_of_group_visits": 0.00038
+   "visits": 1795,
+   "share_of_group_visits": 0.000794
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:PHYSICAL MEDICINE & REHAB",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 44840,
-   "share_of_group_visits": 0.019544
+   "visits": 42196,
+   "share_of_group_visits": 0.018673
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:PHYSICIAN ASSISTANT",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 569439,
-   "share_of_group_visits": 0.248201
+   "visits": 641203,
+   "share_of_group_visits": 0.283754
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:PLASTIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 56,
-   "share_of_group_visits": 2.4e-05
+   "visits": 61,
+   "share_of_group_visits": 2.7e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:PSYCHIATRY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 167,
-   "share_of_group_visits": 7.3e-05
+   "visits": 198,
+   "share_of_group_visits": 8.8e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:PULMONARY CRITICAL CARE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 32,
-   "share_of_group_visits": 1.4e-05
+   "visits": 27,
+   "share_of_group_visits": 1.2e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:PULMONARY DISEASES",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 114,
-   "share_of_group_visits": 5e-05
+   "visits": 92,
+   "share_of_group_visits": 4.1e-05
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:RADIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1208,
-   "share_of_group_visits": 0.000527
+   "visits": 880,
+   "share_of_group_visits": 0.000389
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:RHEUMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 53703,
-   "share_of_group_visits": 0.023407
+   "visits": 43846,
+   "share_of_group_visits": 0.019403
+  },
+  {
+   "source": "group:other_injectable_corticosteroid",
+   "target": "specialty:SLEEP MEDICINE",
+   "relation": "prescribed_by",
+   "evidence": "fact_product_visits",
+   "visits": 4,
+   "share_of_group_visits": 2e-06
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:SPORTS MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 51537,
-   "share_of_group_visits": 0.022463
+   "visits": 56387,
+   "share_of_group_visits": 0.024953
   },
   {
    "source": "group:other_injectable_corticosteroid",
    "target": "specialty:UROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 16,
-   "share_of_group_visits": 7e-06
+   "visits": 13,
+   "share_of_group_visits": 6e-06
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:ADDICTION MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 3,
+   "visits": 2,
    "share_of_group_visits": 1e-06
   },
   {
@@ -6610,79 +6892,79 @@
    "target": "specialty:ALLERGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 100,
-   "share_of_group_visits": 3.8e-05
+   "visits": 442,
+   "share_of_group_visits": 0.000151
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:ANESTHESIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 14363,
-   "share_of_group_visits": 0.005502
+   "visits": 14924,
+   "share_of_group_visits": 0.005092
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:CARDIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 129,
-   "share_of_group_visits": 4.9e-05
+   "visits": 90,
+   "share_of_group_visits": 3.1e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:CRITICAL CARE MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1,
-   "share_of_group_visits": 0.0
+   "visits": 8,
+   "share_of_group_visits": 3e-06
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:DERMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4,
-   "share_of_group_visits": 2e-06
+   "visits": 8,
+   "share_of_group_visits": 3e-06
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:EMERGENCY MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 765,
-   "share_of_group_visits": 0.000293
+   "visits": 1458,
+   "share_of_group_visits": 0.000497
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:ENDOCRINOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 233,
-   "share_of_group_visits": 8.9e-05
+   "visits": 254,
+   "share_of_group_visits": 8.7e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:FAMILY PRACTICE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 93433,
-   "share_of_group_visits": 0.035789
+   "visits": 95330,
+   "share_of_group_visits": 0.032528
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:GASTROENTEROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4,
-   "share_of_group_visits": 2e-06
+   "visits": 13,
+   "share_of_group_visits": 4e-06
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:GEN PREVENTIVE MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 28,
+   "visits": 33,
    "share_of_group_visits": 1.1e-05
   },
   {
@@ -6690,79 +6972,79 @@
    "target": "specialty:GENERAL PRACTICE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 749,
-   "share_of_group_visits": 0.000287
+   "visits": 1024,
+   "share_of_group_visits": 0.000349
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:GENERAL SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 3623,
-   "share_of_group_visits": 0.001388
+   "visits": 3515,
+   "share_of_group_visits": 0.001199
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:GERIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1146,
-   "share_of_group_visits": 0.000439
+   "visits": 1051,
+   "share_of_group_visits": 0.000359
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:HOSPICE & PALLIATIVE MED",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 11,
-   "share_of_group_visits": 4e-06
+   "visits": 15,
+   "share_of_group_visits": 5e-06
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:INFECTIOUS DISEASE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 10,
-   "share_of_group_visits": 4e-06
+   "visits": 18,
+   "share_of_group_visits": 6e-06
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:INTERNAL MED/PEDIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 880,
-   "share_of_group_visits": 0.000337
+   "visits": 723,
+   "share_of_group_visits": 0.000247
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:INTERNAL MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 25629,
-   "share_of_group_visits": 0.009817
+   "visits": 24753,
+   "share_of_group_visits": 0.008446
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:NEPHROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 117,
-   "share_of_group_visits": 4.5e-05
+   "visits": 127,
+   "share_of_group_visits": 4.3e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:NEUROLOGICAL SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 48,
-   "share_of_group_visits": 1.8e-05
+   "visits": 73,
+   "share_of_group_visits": 2.5e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:NEUROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 332,
+   "visits": 372,
    "share_of_group_visits": 0.000127
   },
   {
@@ -6778,111 +7060,111 @@
    "target": "specialty:NURSE PRACTITIONER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 183643,
-   "share_of_group_visits": 0.070344
+   "visits": 238784,
+   "share_of_group_visits": 0.081477
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:OBSTETRICS/GYNECOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 39,
-   "share_of_group_visits": 1.5e-05
+   "visits": 54,
+   "share_of_group_visits": 1.8e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:OCCUPATIONAL MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 78,
-   "share_of_group_visits": 3e-05
+   "visits": 37,
+   "share_of_group_visits": 1.3e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:ONCOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1191,
-   "share_of_group_visits": 0.000456
+   "visits": 1218,
+   "share_of_group_visits": 0.000416
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:ORTHO SURG OF SPINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1493,
-   "share_of_group_visits": 0.000572
+   "visits": 1905,
+   "share_of_group_visits": 0.00065
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:ORTHOPEDIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1097910,
-   "share_of_group_visits": 0.420554
+   "visits": 1151619,
+   "share_of_group_visits": 0.392951
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:OSTEOPATHIC MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 211367,
-   "share_of_group_visits": 0.080964
+   "visits": 225413,
+   "share_of_group_visits": 0.076915
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:OTHER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4467,
-   "share_of_group_visits": 0.001711
+   "visits": 5597,
+   "share_of_group_visits": 0.00191
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:OTHER SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 2628,
-   "share_of_group_visits": 0.001007
+   "visits": 2137,
+   "share_of_group_visits": 0.000729
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:PAIN MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 16801,
-   "share_of_group_visits": 0.006436
+   "visits": 18457,
+   "share_of_group_visits": 0.006298
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:PEDIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 170,
-   "share_of_group_visits": 6.5e-05
+   "visits": 159,
+   "share_of_group_visits": 5.4e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:PHYSICAL MEDICINE & REHAB",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 45867,
-   "share_of_group_visits": 0.017569
+   "visits": 45561,
+   "share_of_group_visits": 0.015546
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:PHYSICIAN ASSISTANT",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 765024,
-   "share_of_group_visits": 0.293042
+   "visits": 951133,
+   "share_of_group_visits": 0.324542
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:PLASTIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 2,
+   "visits": 4,
    "share_of_group_visits": 1e-06
   },
   {
@@ -6890,128 +7172,112 @@
    "target": "specialty:PSYCHIATRY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 74,
-   "share_of_group_visits": 2.8e-05
+   "visits": 58,
+   "share_of_group_visits": 2e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:PULMONARY CRITICAL CARE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 364,
-   "share_of_group_visits": 0.000139
+   "visits": 776,
+   "share_of_group_visits": 0.000265
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:PULMONARY DISEASES",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 42,
-   "share_of_group_visits": 1.6e-05
+   "visits": 41,
+   "share_of_group_visits": 1.4e-05
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:RADIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1031,
-   "share_of_group_visits": 0.000395
+   "visits": 1056,
+   "share_of_group_visits": 0.00036
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:RHEUMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 42953,
-   "share_of_group_visits": 0.016453
+   "visits": 42399,
+   "share_of_group_visits": 0.014467
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:SPORTS MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 93870,
-   "share_of_group_visits": 0.035957
+   "visits": 100040,
+   "share_of_group_visits": 0.034135
   },
   {
    "source": "group:triamcinolone_ir",
    "target": "specialty:UROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 7,
-   "share_of_group_visits": 3e-06
+   "visits": 12,
+   "share_of_group_visits": 4e-06
   },
   {
    "source": "group:zilretta",
    "target": "specialty:ALLERGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 18,
-   "share_of_group_visits": 0.000133
+   "visits": 6,
+   "share_of_group_visits": 4.4e-05
   },
   {
    "source": "group:zilretta",
    "target": "specialty:ANESTHESIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1439,
-   "share_of_group_visits": 0.01065
+   "visits": 1148,
+   "share_of_group_visits": 0.008351
   },
   {
    "source": "group:zilretta",
    "target": "specialty:EMERGENCY MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 120,
-   "share_of_group_visits": 0.000888
+   "visits": 152,
+   "share_of_group_visits": 0.001106
   },
   {
    "source": "group:zilretta",
    "target": "specialty:FAMILY PRACTICE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1009,
-   "share_of_group_visits": 0.007467
+   "visits": 1552,
+   "share_of_group_visits": 0.01129
   },
   {
    "source": "group:zilretta",
    "target": "specialty:GENERAL PRACTICE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 116,
-   "share_of_group_visits": 0.000859
+   "visits": 113,
+   "share_of_group_visits": 0.000822
   },
   {
    "source": "group:zilretta",
    "target": "specialty:GENERAL SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 30,
-   "share_of_group_visits": 0.000222
-  },
-  {
-   "source": "group:zilretta",
-   "target": "specialty:GERIATRICS",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 5,
-   "share_of_group_visits": 3.7e-05
-  },
-  {
-   "source": "group:zilretta",
-   "target": "specialty:INTERNAL MED/PEDIATRICS",
-   "relation": "prescribed_by",
-   "evidence": "fact_product_visits",
-   "visits": 1,
-   "share_of_group_visits": 7e-06
+   "visits": 41,
+   "share_of_group_visits": 0.000298
   },
   {
    "source": "group:zilretta",
    "target": "specialty:INTERNAL MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 311,
-   "share_of_group_visits": 0.002302
+   "visits": 283,
+   "share_of_group_visits": 0.002059
   },
   {
    "source": "group:zilretta",
@@ -7026,112 +7292,112 @@
    "target": "specialty:NEUROLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 21,
-   "share_of_group_visits": 0.000155
+   "visits": 27,
+   "share_of_group_visits": 0.000196
   },
   {
    "source": "group:zilretta",
    "target": "specialty:NURSE PRACTITIONER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 13375,
-   "share_of_group_visits": 0.098987
+   "visits": 16224,
+   "share_of_group_visits": 0.118024
   },
   {
    "source": "group:zilretta",
    "target": "specialty:ORTHO SURG OF SPINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 12,
-   "share_of_group_visits": 8.9e-05
+   "visits": 13,
+   "share_of_group_visits": 9.5e-05
   },
   {
    "source": "group:zilretta",
    "target": "specialty:ORTHOPEDIC SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 50865,
-   "share_of_group_visits": 0.376446
+   "visits": 46887,
+   "share_of_group_visits": 0.341086
   },
   {
    "source": "group:zilretta",
    "target": "specialty:OSTEOPATHIC MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 12018,
-   "share_of_group_visits": 0.088944
+   "visits": 11466,
+   "share_of_group_visits": 0.083411
   },
   {
    "source": "group:zilretta",
    "target": "specialty:OTHER",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 4,
-   "share_of_group_visits": 3e-05
+   "visits": 14,
+   "share_of_group_visits": 0.000102
   },
   {
    "source": "group:zilretta",
    "target": "specialty:OTHER SURGERY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 77,
-   "share_of_group_visits": 0.00057
+   "visits": 50,
+   "share_of_group_visits": 0.000364
   },
   {
    "source": "group:zilretta",
    "target": "specialty:PAIN MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1040,
-   "share_of_group_visits": 0.007697
+   "visits": 1236,
+   "share_of_group_visits": 0.008991
   },
   {
    "source": "group:zilretta",
    "target": "specialty:PEDIATRICS",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 307,
-   "share_of_group_visits": 0.002272
+   "visits": 675,
+   "share_of_group_visits": 0.00491
   },
   {
    "source": "group:zilretta",
    "target": "specialty:PHYSICAL MEDICINE & REHAB",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 5375,
-   "share_of_group_visits": 0.03978
+   "visits": 4960,
+   "share_of_group_visits": 0.036082
   },
   {
    "source": "group:zilretta",
    "target": "specialty:PHYSICIAN ASSISTANT",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 40171,
-   "share_of_group_visits": 0.297301
+   "visits": 44141,
+   "share_of_group_visits": 0.32111
   },
   {
    "source": "group:zilretta",
    "target": "specialty:RADIOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 96,
-   "share_of_group_visits": 0.00071
+   "visits": 20,
+   "share_of_group_visits": 0.000145
   },
   {
    "source": "group:zilretta",
    "target": "specialty:RHEUMATOLOGY",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 1807,
-   "share_of_group_visits": 0.013373
+   "visits": 1525,
+   "share_of_group_visits": 0.011094
   },
   {
    "source": "group:zilretta",
    "target": "specialty:SPORTS MEDICINE",
    "relation": "prescribed_by",
    "evidence": "fact_product_visits",
-   "visits": 6899,
-   "share_of_group_visits": 0.051059
+   "visits": 6928,
+   "share_of_group_visits": 0.050399
   },
   {
    "source": "group:zilretta",

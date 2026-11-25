@@ -103,16 +103,15 @@ def test_every_page_but_the_overview_starts_with_a_note_on_how_old_the_data_are(
     # the age is the one in the last publish run's record (it changes with every publish), so the
     # test reads it from the committed run log instead of remembering a number
     age = data.last_run()["monitoring"]["freshness"]["age_days"]
-    assert age > 100  # stale: no newer extract has arrived
+    assert age == 56  # fresh: the newest month (Sep 2026) is under 100 days old
     for title in overview.TAB_NAMES[1:]:
         chips = [m.value for m in page(title).markdown if "-badge[Data to " in m.value]
         assert len(chips) == 1, title
-        assert chips[0].startswith(":orange-badge[Data to Jul 2025")
-        assert f"{age} days old, no newer extract" in chips[0]
+        assert chips[0].startswith(":green-badge[Data to Sep 2026")
     overview_page = page("Overview")
     assert not [m for m in overview_page.markdown if "-badge[Data to " in m.value]
-    banners = [w.value for w in overview_page.warning if "No newer extract has arrived" in w.value]
-    assert len(banners) == 1  # the long warning is on the Overview only
+    # no stale-data warning while the data are fresh (stale wording: test_serving_views)
+    assert not [w for w in overview_page.warning if "No newer extract has arrived" in w.value]
 
 
 # ------------------------------------------------------------------ the shared filter bar
@@ -178,20 +177,20 @@ def test_the_reset_button_puts_every_filter_back(monkeypatch):
 
 def test_the_headline_numbers_are_the_warehouses(page):
     overview_page, status = page("Overview"), page("Data status")
-    assert 'class="v">1.88%' in _card(overview_page, "Share in Jul 2025")
-    assert 'class="v">3.38%' in _card(overview_page, "Peak (Dec 2021)")
+    assert 'class="v">1.89%' in _card(overview_page, "Share in Sep 2026")
+    assert 'class="v">3.36%' in _card(overview_page, "Peak (Dec 2021)")
     assert 'class="v">-44%' in _card(overview_page, "Change since the peak")
     assert 'class="v">72<' in _card(status, "Months of data")
-    assert 'class="v">Jul 2025<' in _card(status, "Latest month")
-    assert any(f'class="v">{w}<' in _card(status, "Data freshness") for w in ("Stale", "Fresh"))
+    assert 'class="v">Sep 2026<' in _card(status, "Latest month")
+    assert any(f'class="v">{w}<' in _card(status, "Data freshness") for w in ("Fresh",))
     assert 'class="v">Ok<' in _card(status, "Last publish run")
 
 
 def test_the_overview_caveats_are_on_the_page(page):
     at = page("Overview")
     text = " ".join([w.value for w in at.warning] + [m.value for m in at.markdown])
-    assert "No newer extract has arrived" in text
-    assert "run high" in text and "5.5% at 1 month and 10.9% at 3 months" in text
+    assert "No newer extract has arrived" not in text  # the data are fresh
+    assert "run high" in text and "1.6% at 1 month and 3.5% at 3 months" in text
     assert "Payer, regional and prescription-volume data are not part of this analysis" in text
 
 
@@ -246,15 +245,15 @@ def test_the_market_trend_page_opens_on_all_visits_with_four_cards_and_its_contr
     assert [t.label for t in at.toggle] == ["Trend line", "Markers"]
     cards = _cards(at)
     assert len(cards) == 4
-    assert "Share in Jul 2025" in cards[0] and "1.88%" in cards[0] and "-0.10 pp" in cards[0]
-    assert "3.38%" in cards[1] and "Dec 2021" in cards[1] and "44% below" in cards[1]
-    assert "135,119" in cards[2] and "5,434,092" in cards[2]
+    assert "Share in Sep 2026" in cards[0] and "1.89%" in cards[0] and "+0.17 pp" in cards[0]
+    assert "3.36%" in cards[1] and "Dec 2021" in cards[1] and "44% below" in cards[1]
+    assert "137,464" in cards[2] and "5,778,462" in cards[2]
     assert "Trend per year" in cards[3] and "a guide, not a forecast" in cards[3]
     text = " ".join(m.value for m in at.markdown)
-    assert "Where the share stands" in text and "Next month (Aug 2025)" in text
+    assert "Where the share stands" in text and "Next month (Oct 2026)" in text
     assert "Where it is moving, by specialty" in text and "The three classes" in text
     assert [text.count(f"**By {n}**") for n in ("specialty", "age band", "gender")] == [1, 1, 1]
-    assert any("below its peak of 3.38% (Dec 2021)" in m.value for m in at.markdown)
+    assert any("below its peak of 3.36% (Dec 2021)" in m.value for m in at.markdown)
 
 
 def test_the_market_trend_page_keeps_its_caveats(page):
@@ -268,7 +267,7 @@ def test_the_market_trend_page_keeps_its_caveats(page):
 def test_choosing_a_group_filters_every_number_and_flags_a_small_one():
     at = run_page("Market trend", flt=flt(specialty="RHEUMATOLOGY"))
     assert not at.exception
-    assert "Share in Jul 2025" in _cards(at)[0] and "1.88%" not in _cards(at)[0]
+    assert "Share in Sep 2026" in _cards(at)[0] and "1.89%" not in _cards(at)[0]
     text = " ".join(m.value for m in at.markdown)
     assert "Where it is moving, by age band" in text and "How this group compares" in text
     assert "The three classes" not in text  # the class split exists for the whole market only
@@ -289,7 +288,7 @@ def test_a_shorter_period_changes_the_visit_total_but_not_the_peak():
     assert not at.exception
     cards = _cards(at)
     assert "135,119" not in cards[2] and "Last year" in cards[2]
-    assert "3.38%" in cards[1] and "Dec 2021" in cards[1]
+    assert "3.36%" in cards[1] and "Dec 2021" in cards[1]
     quarters = run_page("Market trend", trend_grain="Quarterly")
     assert not quarters.exception and quarters.get("vega_lite_chart")
 
@@ -303,13 +302,13 @@ def test_the_segments_page_opens_on_specialties_with_four_cards_and_the_grid(pag
     assert len(cards) == 4
     assert "Highest share" in cards[0] and "Physical Medicine" in cards[0]
     assert "Largest source of visits" in cards[1] and "Orthopedic Surgery" in cards[1]
-    assert "Biggest rise" in cards[2] and "Family Practice" in cards[2]
-    assert "Biggest fall" in cards[3] and "Sports Medicine" in cards[3]
+    assert "Biggest rise" in cards[2] and "Pain Medicine" in cards[2]
+    assert "Biggest fall" in cards[3] and "Physical Medicine" in cards[3]
     text = " ".join(m.value for m in at.markdown)
     assert "How concentrated are the visits?" in text and "Where the share is highest" in text
     assert "Specialty over time" in text and "Three largest together" in text
     assert any(
-        "among 14 specialty groups with at least 5,000 visits" in m.value for m in at.markdown
+        "among 13 specialty groups with at least 5,000 visits" in m.value for m in at.markdown
     )
 
 
@@ -353,31 +352,31 @@ def test_the_forecasts_page_opens_with_the_three_national_forecasts_and_the_rang
     at = page("Forecasts")
     cards = _cards(at)
     assert len(cards) == 4
-    assert "In 1 month (Aug 2025)" in cards[0] and "1.88%" in cards[0]
-    assert "1.58% to 2.15% (90%)" in cards[0] and "same as last month" in cards[0]
-    assert "In 3 months (Oct 2025)" in cards[1] and "In 6 months (Jan 2026)" in cards[2]
-    assert "Range held at 1 month" in cards[3] and "96%" in cards[3]
+    assert "In 1 month (Oct 2026)" in cards[0] and "1.89%" in cards[0]
+    assert "1.61% to 2.13% (90%)" in cards[0] and "same as last month" in cards[0]
+    assert "In 3 months (Dec 2026)" in cards[1] and "In 6 months (Mar 2027)" in cards[2]
+    assert "Range held at 1 month" in cards[3] and "90%" in cards[3]
     text = " ".join(m.value for m in at.markdown)
     assert "How far to trust it, 1 month ahead" in text and "Segment forecasts" in text
     assert "Decline alert, 1 month ahead" in text
     assert "Flagged as likely to fall 30% or more" in text
-    assert "ran 5.5% too high in testing: read it as optimistic" in text
+    assert "ran 1.6% too high in testing: read it as optimistic" in text
 
 
 def test_the_forecasts_page_keeps_its_caveats(page):
     text = _text(page("Forecasts"))
     assert "no model beat that simple rule at any horizon" in text
-    assert "have already passed: no newer extract has arrived" in text
+    assert "can be checked only when a later extract arrives" in text
     assert "not as a prediction for one segment" in text
     assert "never as a reason to act on its own" in text and "a 1-month flag only" in text
-    assert "Segment forecasts run high: 5.5% at 1 month and 10.9% at 3 months in testing" in text
+    assert "Segment forecasts run high: 1.6% at 1 month and 3.5% at 3 months in testing" in text
 
 
 def test_each_horizon_and_a_chosen_specialty_changes_the_forecasts_page():
     three = run_page("Forecasts", fc_horizon=3)
     assert not three.exception
     text3 = " ".join(m.value for m in three.markdown)
-    assert "ran 10.9% too high in testing" in text3
+    assert "ran 3.5% too high in testing" in text3
     assert "How far to trust it, 3 months ahead" in text3 and "Range held at 3 months" in text3
     six = run_page("Forecasts", fc_horizon=6)
     assert not six.exception
@@ -407,12 +406,12 @@ def test_the_model_results_page_opens_with_four_headlines_and_marks_round_2_prov
     at = page("Model results")
     cards = _cards(at)
     assert len(cards) == 4
-    assert "No model wins" in cards[0] and "+0.4% / +0.2%" in cards[1]
-    assert "1 of 3" in cards[2] and "3 of 7" in cards[3] and "none adopted" in cards[3]
+    assert "No model wins" in cards[0] and "+0.5% / +0.3% / +0.3%" in cards[1]
+    assert "0 of 3" in cards[2] and "5 of 7" in cards[3] and "none adopted" in cards[3]
     text = " ".join(m.value for m in at.markdown)
     assert "Round 2: improvements tried after round 1" in text
     assert "Nothing from round 2 is used by the site yet" in text
-    assert text.count("Passes (provisional)") == 3 and text.count("No pass") == 4
+    assert text.count("Passes (provisional)") == 5 and text.count("No pass") == 2
     for name in ("Bias correction factor", "Rolling 36-month window", "Lasting-decline top 10"):
         assert name in text
     assert "Ranking winners and losers" in text and "+0.38" in text  # the mean-reversion check
@@ -423,7 +422,7 @@ def test_the_model_results_page_opens_with_four_headlines_and_marks_round_2_prov
 def test_the_model_results_page_keeps_its_caveats_and_the_scoreboard(page):
     at = page("Model results")
     text = _text(at)
-    assert "Do the segment forecasts run high?" in text and "+18.2%" in text
+    assert "Do the segment forecasts run high?" in text and "+11.5%" in text
     assert "one-line rule" in text and "reliable only at 1 month" in text
     assert "designed after seeing round 1" in text
     assert "not influence which model was chosen" in text
@@ -477,7 +476,7 @@ def test_the_context_page_sets_sales_beside_visits_and_keeps_the_decline_caveat(
     sales = _card(at, "Net sales, 2024 vs 2021")
     visits = _card(at, "IQVIA visits, 2024 vs 2021")
     assert "+15%" in sales and "6.3%" in sales
-    assert "-41%" in visits and "-35.9%" in visits
+    assert "-40%" in visits and "-35.9%" in visits
     adoption = _card(at, "Medicare providers billing it, 2024")
     assert "1.47%" in adoption and "Peak 1.78% in 2021" in adoption
     assert "None" in _card(at, "Tested explanations for the gap")
@@ -573,7 +572,7 @@ def _box(monkeypatch, **env):
     return run_page("AI Question Box")
 
 
-def _stub_claude(monkeypatch, answer="Share was 1.88% in Jul 2025.", tokens=(100, 20), **extra):
+def _stub_claude(monkeypatch, answer="Share was 1.89% in Sep 2026.", tokens=(100, 20), **extra):
     """Replace the network: a fake Anthropic client and a canned, streamed answer."""
     anthropic = pytest.importorskip("anthropic")
     from oa_market_intelligence.serving import qa
@@ -649,7 +648,7 @@ def test_an_answer_streams_in_with_its_sources_and_follow_ups_and_tokens_are_cha
     assert kwargs["snapshot"].monthly.shape[0] == 72 and kwargs["snapshot"].graph is not None
     assert kwargs["client"].api_key == "sk-test"
     assert [m.name for m in at.chat_message] == ["user", "assistant"]
-    assert any("1.88%" in m.value for m in at.markdown)
+    assert any("1.89%" in m.value for m in at.markdown)
     assert any(c.value.startswith("Sources: Overview page") for c in at.caption)
     assert any("get_data_status" in c.value for c in at.code)
     assert "How reliable are the forecasts?" in _labels(at)
@@ -846,18 +845,18 @@ def test_the_segment_detail_page_for_a_specialty_has_its_numbers_its_neighbours_
     assert not at.exception
     cards = _cards(at)
     assert len(cards) == 4
-    assert "Share in Jul 2025" in cards[0] and "1.44%" in cards[0] and "-0.44 pp" in cards[0]
-    assert "The whole market: 1.88%" in cards[0]
+    assert "Share in Sep 2026" in cards[0] and "1.25%" in cards[0] and "-0.63 pp" in cards[0]
+    assert "The whole market: 1.89%" in cards[0]
     assert "Zilretta visits, all months" in cards[1]
-    assert "-0.53 pp" in cards[2] and " of 22" in cards[3]
+    assert "-0.14 pp" in cards[2] and " of 22" in cards[3]
     assert "Rank among specialties" in cards[3]
     text = " ".join([m.value for m in at.markdown] + [c.value for c in at.caption])
     assert "oa-crumb" in text and "<b>Orthopedic Surgery</b>" in text
     assert "This group against all visits" in text and "Forecast for this group" in text
     assert "Next to its neighbours, by specialty" in text and "▶ Orthopedic Surgery" in text
     assert "Its trend on Market trend →" in text and "Its forecast on Forecasts →" in text
-    assert "0.44 points below the whole market&#x27;s 1.88%" in text or (
-        "0.44 points below the whole market's 1.88%" in text
+    assert "0.63 points below the whole market&#x27;s 1.89%" in text or (
+        "0.63 points below the whole market's 1.89%" in text
     )
     assert at.get("vega_lite_chart")
 
@@ -916,7 +915,7 @@ def _landed(at, who):
     """The page is Segment detail for the group named, reached by a click."""
     assert not at.exception
     text = " ".join(m.value for m in at.markdown)
-    assert f"<b>{who}</b>" in text and "Share in Jul 2025" in text
+    assert f"<b>{who}</b>" in text and "Share in Sep 2026" in text
     return text
 
 
@@ -975,7 +974,7 @@ def test_a_click_on_a_row_of_the_forecast_or_alert_table_opens_that_segment():
         assert at.session_state["from"] == ("Forecasts", "Segment detail"), table
         chosen = at.session_state["flt"]
         assert chosen["specialty"] and chosen["age"] and chosen["gender"], table
-        assert "Share in Jul 2025" in " ".join(m.value for m in at.markdown), table
+        assert "Share in Sep 2026" in " ".join(m.value for m in at.markdown), table
 
 
 def test_the_page_a_click_leaves_offers_a_way_back():
@@ -1327,7 +1326,7 @@ def live(monkeypatch):
         stored = 100 * float(row["point_share"])
         return {
             "specialty": specialty, "age_band": age_band, "gender": gender, "horizon": horizon,
-            "target_month_id": int(row["target_month_id"]), "target_month": "Oct 2025",
+            "target_month_id": int(row["target_month_id"]), "target_month": "Dec 2026",
             "model": str(row["model"]), "model_version": "stubbed",
             "forecast_pct": round(stored + state.offset, 4),
             "last_month_pct": 2.0, "change_pp": round(stored + state.offset - 2.0, 4),
@@ -1408,7 +1407,7 @@ def test_when_the_service_does_not_answer_the_panel_says_so_and_the_page_still_w
     assert not at.exception
     text = _everything(at)
     assert "The live model service did not answer. The forecast shown above is unchanged." in text
-    assert "In 1 month (Aug 2025)" in _cards(at)[0]  # the page's own forecasts are untouched
+    assert "In 1 month (Oct 2026)" in _cards(at)[0]  # the page's own forecasts are untouched
     assert LIVE_KEY not in text and "abc123example" not in text
 
 

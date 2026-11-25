@@ -106,16 +106,16 @@ def test_full_pipeline_end_to_end_through_the_validation_gate(gold_from_validate
         seg = pd.read_sql("SELECT * FROM gold_segment_adoption", conn)
 
     assert counts["dim_month"] == 72
-    assert counts["dim_product"] == 160
-    assert counts["dim_specialty"] == 50
+    assert counts["dim_product"] == 167
+    assert counts["dim_specialty"] == 53
 
-    assert monthly["branded_injectable_visits"].sum() == 135_119
-    assert monthly["visit_share"].min() > 0.017
+    assert monthly["branded_injectable_visits"].sum() == 137_464
+    assert monthly["visit_share"].min() > 0.016
     assert monthly["visit_share"].max() < 0.034
 
-    april_2020 = monthly.set_index("month_id").loc[202004]
-    assert april_2020["office_visits"] == 39_487
-    assert april_2020["telehealth_visits"] == 1_016
+    first_month = monthly.set_index("month_id").loc[202010]  # the first month of the Nov 2026 pull
+    assert first_month["office_visits"] == 87_360
+    assert first_month["telehealth_visits"] == 376
 
     assert len(seg) > 0
     assert (seg["segment_visit_share"] >= 0).all()

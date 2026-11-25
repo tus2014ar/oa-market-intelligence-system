@@ -69,8 +69,8 @@
    "sha256": "782ac18d7383d1cc3073937729a5b3d965354ac4b87cb9130e5b68eb0de11a80"
   },
   "gold_ext_company_vs_visits": {
-   "rows": 20,
-   "sha256": "915b6463bed762a859ba662b3ff4deb276942ec54339500d59335741c2ef4eb0"
+   "rows": 19,
+   "sha256": "5bfcf408e53838479d3b4a9e65df99355d2358c257167abc905d48c61a11b1e6"
   },
   "gold_ext_price_quarterly": {
    "rows": 26,
@@ -78,19 +78,19 @@
   },
   "gold_ext_promotion_monthly": {
    "rows": 84,
-   "sha256": "1573224fb82f22835752c600e9fd6adbbdcfd8f7bdf4842b54567864be211eb6"
+   "sha256": "5fe862c30ce39c92864c70c99eda7a65d9447a7ac06c4516145cda8f83f25fe2"
   },
   "gold_ext_specialty_triangulation": {
    "rows": 66,
-   "sha256": "f87f2e0d2591f7a3d9d1f3866af1618d5801ed68785890c0b640c0672aa2e88f"
+   "sha256": "4e71816dc114ea5e1ed4aa0d70e2d800b3332731466f34b36b5d40c1288bf322"
   },
   "gold_ext_state_adoption": {
    "rows": 306,
    "sha256": "e58fbb986128bca6a4edcda5817a671b7b60122adb65ead08c10785724b12ab7"
   },
   "gold_ext_verdicts": {
-   "rows": 176,
-   "sha256": "ae13a5cfa1691a4d515b908d235c65b26d84128fa49adebfb24f1292f1df6c4e"
+   "rows": 210,
+   "sha256": "9aad4aaf74e3e9dfaafaa58c46d006e4d42bce0097be6315b316de7ef2dbee41"
   }
  }
 }

@@ -283,8 +283,8 @@ EXPLAIN: dict[str, dict[str, str]] = {
             "rule."
         ),
         "not": (
-            "The months forecast here have already passed in real life; the site has no newer "
-            "extract yet."
+            "The forecast months follow the newest month of data; they can be checked only when a "
+            "later extract arrives."
         ),
     },
     "fc_spec": {

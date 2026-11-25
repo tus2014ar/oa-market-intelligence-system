@@ -355,7 +355,12 @@ def _t3_reliable(posthoc: dict | None, horizon: int) -> bool | None:
 
 
 def verdict(
-    task: str, horizon: int, best: pd.Series, serving: pd.Series, posthoc: dict | None
+    task: str,
+    horizon: int,
+    best: pd.Series,
+    serving: pd.Series,
+    posthoc: dict | None,
+    adopted: str | None = None,
 ) -> str:
     if task == "T1":
         return "No model beat the simple rule"
@@ -363,7 +368,14 @@ def verdict(
         if not bool(serving["promoted"]) or serving["kind"] == "baseline":
             return "No model beat the simple rule reliably"
         gain = serving["gain_over_best_baseline"] / best["score"]
-        return f"Small gain over the simple rule: about {pct(gain, 1)} better"
+        text = f"Small gain over the simple rule: about {pct(gain, 1)} better"
+        if adopted is not None and adopted != serving["method"]:
+            # the registered rule chose a model but a recorded decision keeps another in service
+            text += (
+                f"; the rule chose {method_text(serving['method'])}, but "
+                f"\"{method_text(adopted)}\" stays in service (DL-130)"
+            )
+        return text
     reliable = _t3_reliable(posthoc, horizon)
     if reliable is None:
         return "Passes the registered test; read with the caveat below"
@@ -399,7 +411,7 @@ def scoreboard(scores: pd.DataFrame, adoption: dict, posthoc: dict | None = None
                     "chosen_model_score": float(serving["score"]),
                     "adopted": adopted is not None,
                     "adopted_model": method_text(adopted) if adopted else "",
-                    "verdict": verdict(task, horizon, best, serving, posthoc),
+                    "verdict": verdict(task, horizon, best, serving, posthoc, adopted),
                 }
             )
     return pd.DataFrame(rows)

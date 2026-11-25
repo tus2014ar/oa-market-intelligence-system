@@ -47,7 +47,8 @@ It serves the same figures as the website's pages.
 
 **Read these before quoting a number.**
 - These are visits in IQVIA's panel, not company sales, and nothing here says *why* a share moves.
-- The newest month is Jul 2025: the forecast months have already passed (see `/v1/status`).
+- The newest month of data is in `/v1/status`; forecasts look ahead from it and can be checked
+    only when a later extract arrives.
 - The national forecast is "same as last month": no model beat that simple rule.
 - Segment forecasts run high in testing; the decline alert is a 1-month supporting flag only.
 - Only aggregates are served. No patient-level or provider-level rows exist in this API.

@@ -201,9 +201,9 @@ def test_the_real_detail_of_orthopedic_surgery_matches_the_figures_on_the_other_
     finally:
         engine.dispose()
     s = detail.summary(seg, "ORTHOPEDIC SURGERY", None, None, "All", market)
-    assert round(100 * s["latest_share"], 2) == 1.44  # Orthopedic Surgery in Jul 2025
-    assert round(100 * s["market_share"], 2) == 1.88  # the Overview's share
-    assert round(s["gap_to_market_pp"], 2) == -0.44 and round(s["change_12m_pp"], 2) == -0.53
+    assert round(100 * s["latest_share"], 2) == 1.25  # Orthopedic Surgery in Sep 2026
+    assert round(100 * s["market_share"], 2) == 1.89  # the Overview's share
+    assert round(s["gap_to_market_pp"], 2) == -0.63 and round(s["change_12m_pp"], 2) == -0.14
     calendar = sorted(seg["month_id"].unique())
     table = detail.peers(seg, "ORTHOPEDIC SURGERY", None, None, "All", calendar)
     rank, total = detail.rank_of(table)

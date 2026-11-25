@@ -30,7 +30,7 @@ def test_the_engine_is_read_only(engine):
 
 def test_the_market_series_and_the_segments_have_the_expected_shape(engine):
     monthly = data.market_monthly(engine)
-    assert len(monthly) == 72 and monthly["month_id"].iloc[-1] == 202507
+    assert len(monthly) == 72 and monthly["month_id"].iloc[-1] == 202609
     assert monthly["visit_share"].between(0.01, 0.05).all()
     seg = data.segments(engine, "specialty")
     assert {"group", "zilretta_visits", "category_visits", "share"} <= set(seg.columns)
@@ -49,14 +49,14 @@ def test_the_site_reads_aggregates_only(engine):
     for frame in frames:
         assert not forbidden & {c.lower() for c in frame.columns}
     pred = data.predictions(engine)
-    assert len(pred) == 342 and set(pred["level"]) == {"national", "segment"}
+    assert len(pred) == 369 and set(pred["level"]) == {"national", "segment"}
     # segment rows are specialty x age band x gender groups with their visit counts, nothing finer
     seg = pred[pred["level"] == "segment"]
     assert not seg.duplicated(["horizon", "specialty_name", "age_band", "gender"]).any()
 
 
 def test_the_reference_files_and_the_last_run_load():
-    assert data.serving_map()["decision"] == "DL-79"
+    assert data.serving_map()["decision"] == "DL-130"
     assert "horizons" in data.posthoc()
     run = data.last_run()
     assert run["status"] == "ok" and [s["stage"] for s in run["stages"]][-1] == "swap"

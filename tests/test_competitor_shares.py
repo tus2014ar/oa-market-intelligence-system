@@ -26,7 +26,7 @@ def test_the_rules_place_known_products_in_their_groups():
 
 def test_the_frozen_group_file_agrees_with_the_rules_and_covers_every_product():
     groups = cs.load_groups()
-    assert groups["product_name"].is_unique and len(groups) == 160
+    assert groups["product_name"].is_unique and len(groups) == 172  # 167 listed + 5 retired
     for row in groups.itertuples():
         assert cs.assign_group(row.product_name, row.treatment_category) == (row.group, row.rule)
     assert (groups["group"] == "zilretta").sum() == 1
@@ -39,7 +39,10 @@ def test_the_group_file_covers_the_warehouse_products_exactly_and_the_totals_add
     conn = sqlite3.connect(WAREHOUSE)
     names = {r[0] for r in conn.execute("select product_name from dim_product")}
     total = conn.execute("select sum(patient_visits) from fact_product_visits").fetchone()[0]
-    assert names == set(cs.load_groups()["product_name"])
+    grouped = set(cs.load_groups()["product_name"])
+    # five products of the old extract are no longer listed; they stay classified in the frozen file
+    retired = {"APAP/CAF", "BIOFREEZE W/ILEX", "EXCEDRIN TEN HDCHE", "OPDIVO", "YERVOY"}
+    assert names == grouped - retired and retired <= grouped
     monthly = cs.monthly_group_visits(engine)
     assert monthly.to_numpy().sum() == pytest.approx(total)
     assert list(monthly.columns) == list(cs.GROUPS) and len(monthly) == 72
@@ -100,7 +103,7 @@ def test_period_table_shares_match_a_hand_computation():
 
 
 def test_who_gained_compares_the_peak_year_with_the_latest_twelve_months():
-    months = [*range(202201, 202213), *range(202408, 202413), *range(202501, 202508)]
+    months = [*range(202201, 202213), *range(202510, 202513), *range(202601, 202610)]
     monthly = pd.DataFrame(
         {
             "zilretta": [10.0] * 12 + [5.0] * 12,

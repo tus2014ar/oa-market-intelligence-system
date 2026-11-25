@@ -174,4 +174,4 @@ def test_the_full_mode_stops_if_a_reconciliation_check_fails(files):
 def test_the_real_committed_subset_matches_its_committed_fingerprint():
     assert DEFAULT_SUBSET.exists() and FINGERPRINT_JSON.exists() and MANIFEST_JSON.exists()
     out = verify_committed()
-    assert out["tables"] == 23 and out["rows"] == 62339 and out["manifest_files"] == 171
+    assert out["tables"] == 23 and out["rows"] == 62372 and out["manifest_files"] == 171

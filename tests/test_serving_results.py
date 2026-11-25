@@ -212,12 +212,12 @@ def test_the_real_stored_results_give_the_headline_cards_the_site_shows():
     cards = results.headline_cards(
         board, views.bias_table(scores), views.posthoc_table(posthoc), round2
     )
-    assert cards[0][1] == "No model wins" and cards[1][1] == "+0.4% / +0.2%"
-    assert "5.5% and 10.9% high" in cards[1][2]
-    assert cards[2][1] == "1 of 3" and cards[3][1] == "3 of 7"
+    assert cards[0][1] == "No model wins" and cards[1][1] == "+0.5% / +0.3% / +0.3%"
+    assert "1.6% and 3.5% and 11.5% high" in cards[1][2]
+    assert cards[2][1] == "0 of 3" and cards[3][1] == "5 of 7"
 
 
-def test_the_real_round_2_results_make_seven_rows_and_three_passes():
+def test_the_real_round_2_results_make_seven_rows_and_five_passes():
     round2, posthoc2 = data.round2(), data.round2_posthoc()
     rows = results.round2_rows(round2, posthoc2)
     assert [(r["test"], r["horizon"]) for r in rows] == [
@@ -229,13 +229,19 @@ def test_the_real_round_2_results_make_seven_rows_and_three_passes():
         ("E2", 3),
         ("E3", 3),
     ]
-    assert [r["passes"] for r in rows] == [True, True, False, False, False, False, True]
+    assert [r["passes"] for r in rows] == [True, True, True, True, False, False, True]
     assert (
-        rows[0]["result"] == "5.5% to 1.0% too high"
-        and rows[1]["result"] == "10.9% to 3.0% too high"
+        rows[0]["result"] == "1.6% to 0.3% too high"
+        and rows[1]["result"] == "3.5% to 0.5% too high"
     )
-    assert rows[6]["result"] == "rank correlation +0.49" and "+0.38" in rows[6]["plain"]
-    assert results.round2_summary(round2)["which"] == ["E1a (1 mo)", "E1a (3 mo)", "E3 (3 mo)"]
+    # E1b passes on the limit alone: the bias was small to begin with and did not shrink, and the
+    # reading must say so instead of claiming the bias was removed
+    assert rows[3]["result"] == "3.5% to 3.8% too high" and "no harm" in rows[3]["plain"]
+    assert "Most of the upward bias is removed" in rows[0]["plain"]
+    assert rows[6]["result"] == "rank correlation +0.48" and "+0.38" in rows[6]["plain"]
+    assert results.round2_summary(round2)["which"] == [
+        "E1a (1 mo)", "E1a (3 mo)", "E1b (1 mo)", "E1b (3 mo)", "E3 (3 mo)"
+    ]
 
 
 def test_the_real_shap_summary_gives_nine_groups_that_add_up_to_a_hundred():

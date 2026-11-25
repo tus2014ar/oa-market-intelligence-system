@@ -90,7 +90,7 @@ def test_health_needs_no_key_and_says_how_current_the_data_are_and_whether_a_key
     assert body == {
         "status": "ok",
         "version": VERSION,
-        "data_through": "Jul 2025",
+        "data_through": "Sep 2026",
         "months_of_data": 72,
         "data_version": expected_version,
         "data_source": "image",
@@ -152,7 +152,7 @@ def test_the_headline_figures_equal_the_websites(open_client, snap):
     status = open_client.get("/v1/status").json()
     assert status["latest_share_pct"] == pytest.approx(100 * head["latest_share"], abs=0.005)
     assert status["peak_share_pct"] == pytest.approx(100 * head["peak_share"], abs=0.005)
-    assert status["latest_month"] == head["latest_month"] == "Jul 2025"
+    assert status["latest_month"] == head["latest_month"] == "Sep 2026"
     national = open_client.get("/v1/forecasts/national").json()["rows"]
     assert [r["months_ahead"] for r in national] == [1, 3, 6]
     assert {r["model"] for r in national} == {"same as last month"}
@@ -165,9 +165,9 @@ def test_the_monthly_series_can_be_limited_to_a_range_and_is_in_order(open_clien
     ).json()["rows"]
     assert [r["month_id"] for r in rows] == [202501, 202502, 202503, 202504, 202505, 202506]
     everything = open_client.get("/v1/share/monthly").json()["rows"]
-    assert len(everything) == 72 and everything[0]["month_id"] == 201908
+    assert len(everything) == 72 and everything[0]["month_id"] == 202010
     yearly = open_client.get("/v1/share/yearly").json()["rows"]
-    assert [r["year"] for r in yearly] == [2019, 2020, 2021, 2022, 2023, 2024, 2025]
+    assert [r["year"] for r in yearly] == [2020, 2021, 2022, 2023, 2024, 2025, 2026]
     assert yearly[0]["partial_year"] and yearly[-1]["partial_year"]
 
 
@@ -189,7 +189,8 @@ def test_segments_can_be_grouped_three_ways_and_the_forecast_caveats_are_there(o
 
 def test_the_limits_of_the_analysis_travel_with_the_status(open_client):
     status = open_client.get("/v1/status").json()
-    assert status["freshness"] == "stale" and status["age_days"] > 100
+    # the age is the one stored when the data were published (56 days after the month ended)
+    assert status["freshness"] == "fresh" and status["age_days"] == 56
     assert status["limits"] and all(isinstance(line, str) for line in status["limits"])
     findings = open_client.get("/v1/findings").json()
     assert findings["count"] == 17 and len(findings["findings"]) == 17
@@ -325,7 +326,7 @@ def test_the_saved_models_are_listed_with_what_they_were_fitted_on(open_client):
     assert by_id["segment:6"]["model"] == "last_month" and by_id["segment:6"]["n_parameters"] == 0
     for model in by_id.values():
         assert len(model["artifact_sha256"]) == 64 and model["trained_on_rows"] > 0
-        assert model["run_month_id"] == 202507
+        assert model["run_month_id"] == 202609
     assert by_id["segment:1"]["known_bias_pct"] > 0  # the forecasts ran high in testing
 
 
@@ -479,5 +480,5 @@ def test_a_browser_page_on_another_origin_may_read_but_not_write(open_client):
 def test_the_service_loads_the_published_warehouse_itself_when_given_no_snapshot():
     with TestClient(create_app(api_keys=[])) as client:  # the start-up loads it
         body = client.get("/health").json()
-        assert body["data_through"] == "Jul 2025" and body["months_of_data"] == 72
-        assert client.get("/v1/status").json()["latest_month"] == "Jul 2025"
+        assert body["data_through"] == "Sep 2026" and body["months_of_data"] == 72
+        assert client.get("/v1/status").json()["latest_month"] == "Sep 2026"

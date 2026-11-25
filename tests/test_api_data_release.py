@@ -25,7 +25,7 @@ from test_remote_data import BUCKET, Clock, FakeS3  # noqa: E402
 
 pytestmark = pytest.mark.skipif(not data.DB_PATH.exists(), reason="no published warehouse")
 
-REAL = "28b9a7bd3234"
+REAL = "bd8be3d30fc4"
 A, B, C = "aaaaaaaaaaaa", "bbbbbbbbbbbb", "cccccccccccc"
 
 
@@ -77,7 +77,7 @@ def test_the_api_starts_from_a_release_and_serves_its_data_run_record_and_models
         assert health(client) == (A, "s3")
         assert client.app.state.snapshot.run == pointer["run"]
         # the saved models and their inputs come from the release too
-        assert client.get("/v1/predict/segments").json()["count"] == 113
+        assert client.get("/v1/predict/segments").json()["count"] == 122
         models = client.get("/v1/models").json()["models"]
         assert len(models) == 4
 

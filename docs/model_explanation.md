@@ -1,5 +1,7 @@
 # What the segment forecast relies on (DL-91)
 
+> **Earlier extract.** The numbers on this page are from the earlier IQVIA extract (Aug 2019 to Jul 2025). The pre-registered plan was re-run on IQVIA's Nov 2026 pull (Oct 2020 to Sep 2026); where the two differ, [`rerun_nov_2026.md`](rerun_nov_2026.md) is the current state and this page is the record of the earlier run.
+
 A post-hoc explanation of the adopted segment forecast, the logistic regression that serves at 1 and 3 months ([model card](model_card_segment_share.md)). It answers one question: *which kinds of information does the model move its forecasts on?* It does not choose, tune or rank any model (the choice was made under DL-79 before this was run), and it says nothing about what makes a share move.
 
 SHAP was in the original proposal but was not part of the rebuilt project until this step. It covers the segment forecast only: the national forecast is the simple rule "same as last month" (nothing to open), and the decline alert is not explained here.

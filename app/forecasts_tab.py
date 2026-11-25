@@ -95,7 +95,8 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
         )
         st.caption(
             views.coverage_sentence(scores)
-            + " The months forecast here have already passed: no newer extract has arrived."
+            + " The forecast months follow the newest month of data and can be checked only when a"
+            " later extract arrives."
         )
         st.markdown(
             style.link_line(

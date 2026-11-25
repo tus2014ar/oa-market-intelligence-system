@@ -168,7 +168,7 @@ immutable IDs. There are no AWS access keys in GitHub ([`deployment.md`](deploym
 | S3 is down or a release is damaged | The API keeps serving what it has (the image copy at start-up). |
 | The API is unreachable from the site | The live panel shows one sentence; the rest of the page is unaffected. |
 | A bad deploy | `/health` data version is checked after the switch; `deploy-aws` can be re-run with `rollback_to`; the daily canary and CloudWatch alarms notify by email. |
-| The data are old | Monitoring reports freshness (the extract ends July 2025), and the site says so. |
+| The data are old | Monitoring reports freshness (the extract now ends September 2026) and drift against what happened, and the site says so. |
 
 ## Deliberately not built
 

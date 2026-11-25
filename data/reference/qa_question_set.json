@@ -5,7 +5,7 @@
       "id": "q01", "kind": "in_scope", "category": "trend", "audience": "brand manager",
       "question": "How has Zilretta's share changed since its peak?",
       "calls": [{"tool": "get_data_status", "args": {}}],
-      "facts": ["3.38", "1.88", "-44.2"],
+      "facts": ["3.36", "1.89", "-43.9"],
       "include_any": ["peak"],
       "avoid": ["because", "caused by"]
     },
@@ -40,7 +40,7 @@
         {"tool": "get_forecasts", "args": {"view": "national"}},
         {"tool": "get_model_results", "args": {}}
       ],
-      "facts": ["Oct 2025", "same as last month", "No model beat the simple rule"],
+      "facts": ["Dec 2026", "same as last month", "No model beat the simple rule"],
       "include_any": ["last month", "simple rule", "no model"],
       "avoid": ["will definitely", "guaranteed"]
     },
@@ -72,8 +72,8 @@
       "id": "q09", "kind": "in_scope", "category": "status", "audience": "brand manager",
       "question": "Is the data current?",
       "calls": [{"tool": "get_data_status", "args": {}}],
-      "facts": ["stale"],
-      "include_any": ["Jul 2025", "July 2025", "old", "stale", "not current"],
+      "facts": ["fresh"],
+      "include_any": ["Sep 2026", "September 2026", "fresh", "current", "recent"],
       "avoid": []
     },
     {

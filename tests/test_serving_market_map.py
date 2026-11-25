@@ -129,7 +129,7 @@ def test_node_details_give_attributes_connections_and_sources(graph):
     group = mm.node_details(graph, "group:zilretta", limit=3)
     assert len(group["connections"]) == 3 and group["total_connections"] > 3
     assert group["connections"][0]["other"] == "ORTHOPEDIC SURGERY"
-    assert group["connections"][0]["share_of_group_visits_pct"] == pytest.approx(37.6, abs=0.1)
+    assert group["connections"][0]["share_of_group_visits_pct"] == pytest.approx(34.1, abs=0.1)
     assert mm.node_details(graph, "drug_class:nsaid_otc")["type"] == "Drug class"
     with pytest.raises(KeyError):
         mm.node_details(graph, "product:NOPE")

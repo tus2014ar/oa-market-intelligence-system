@@ -1,30 +1,30 @@
 {
  "e3_main": {
-  "chance_hit_rate": 0.405086638659516,
+  "chance_hit_rate": 0.4060627322917652,
   "mean_spearman": {
-   "model": 0.49199040286076784,
-   "segment_reversal": 0.37914417262541866,
-   "specialty_reversal": 0.1433070756055859
+   "model": 0.48408867378602155,
+   "segment_reversal": 0.37866065093178086,
+   "specialty_reversal": 0.1221123377083416
   },
   "model_versus_flipped": {
    "segment_reversal": {
-    "estimate": 0.11284623023534918,
-    "lower_at_2_5": 0.07491810801139173,
-    "lower_at_round_percentile": 0.06567779857429755,
+    "estimate": 0.10542802285424069,
+    "lower_at_2_5": 0.06936753131416439,
+    "lower_at_round_percentile": 0.06029881920943043,
     "share_positive": 1.0
    },
    "specialty_reversal": {
-    "estimate": 0.3486833272551819,
-    "lower_at_2_5": 0.29859550718953115,
-    "lower_at_round_percentile": 0.2842765309343323,
+    "estimate": 0.36197633607768,
+    "lower_at_2_5": 0.3126973250421609,
+    "lower_at_round_percentile": 0.2996926165822895,
     "share_positive": 1.0
    }
   },
   "n_test_months": 44,
   "top_fifth_hit_rate": {
-   "model": 0.700076666871453,
-   "segment_reversal": 0.611435856923825,
-   "specialty_reversal": 0.46443808531041153
+   "model": 0.6915778517382796,
+   "segment_reversal": 0.6020888147057933,
+   "specialty_reversal": 0.4492286289913295
   }
  },
  "note": "post hoc, added after the results were seen; outside the plan's rules"

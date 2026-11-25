@@ -82,6 +82,14 @@ def load_serving_map(path: Path | str = SERVING_JSON) -> dict:
     return json.loads(Path(path).read_text("utf-8"))
 
 
+def _exception_allowed(exceptions: dict, key: str, horizon: str, model: str) -> bool:
+    """A segment horizon may serve a baseline the rule did not choose only with a written reason
+    in `exceptions` (a decision recorded in the decision log). Never for a fitted model: that would
+    be choosing a model after seeing the results."""
+    reason = exceptions.get(key, {}).get(str(horizon), "")
+    return key == "segment" and model in BASELINES and bool(str(reason).strip())
+
+
 def validate_serving_map(serving: dict, scores: pd.DataFrame | None = None) -> None:
     """Raise `ServingMapError` unless every adopted (task, horizon, model) is allowed and, when the
     stored `model_scores` are given, is what the registered serving rule chose."""
@@ -90,8 +98,9 @@ def validate_serving_map(serving: dict, scores: pd.DataFrame | None = None) -> N
         "segment": (*BASELINES, *T2_MODELS),
         "alert": ALERT_MODELS,
     }
+    exceptions = serving.get("exceptions", {})
     for key in serving:
-        if key in ("decision", "decided_on"):
+        if key in ("decision", "decided_on", "exceptions"):
             continue
         if key not in allowed:
             raise ServingMapError(f"unknown task {key!r} in the serving map")
@@ -106,6 +115,10 @@ def validate_serving_map(serving: dict, scores: pd.DataFrame | None = None) -> N
                 (scores["task"] == TASK_FOR_KEY[key]) & (scores["horizon"] == int(horizon))
                 & (scores["scenario"] == "main") & (scores["method"] == model)
             ]
+            if not rows.empty and int(rows["serving"].iloc[0]) != 1 and _exception_allowed(
+                exceptions, key, horizon, model
+            ):
+                continue  # a written, recorded decision to serve the baseline instead
             if rows.empty or int(rows["serving"].iloc[0]) != 1:
                 raise ServingMapError(
                     f"{key} at {horizon} months: {model!r} is not the model the registered "

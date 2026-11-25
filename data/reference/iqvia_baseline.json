@@ -1,13 +1,13 @@
 {
  "note": "Baseline for the data-quality stage; regenerate on purpose (see quality.py).",
  "months": [
-  201908,
-  202507
+  202010,
+  202609
  ],
  "created_from": {
-  "visit_rows": 241794,
-  "place_of_service_rows": 370,
-  "reference_rows": 852
+  "visit_rows": 257215,
+  "place_of_service_rows": 506,
+  "reference_rows": 859
  },
  "sets": {
   "specialty": [
@@ -16,6 +16,7 @@
    "ANESTHESIOLOGY",
    "CARDIOLOGY",
    "CLINICAL NEUROPHYSIOL.",
+   "COLON & RECTAL SURGERY",
    "CRITICAL CARE MEDICINE",
    "DERMATOLOGY",
    "EMERGENCY MEDICINE",
@@ -25,6 +26,7 @@
    "GEN PREVENTIVE MEDICINE",
    "GENERAL PRACTICE",
    "GENERAL SURGERY",
+   "GERIATRIC PSYCHIATRY",
    "GERIATRICS",
    "HEMATOLOGY",
    "HOSPICE & PALLIATIVE MED",
@@ -45,6 +47,7 @@
    "OSTEOPATHIC MEDICINE",
    "OTHER",
    "OTHER SURGERY",
+   "OTOLARYNGOLOGY",
    "PAIN MEDICINE",
    "PATHOLOGY",
    "PEDIATRIC CRITICAL CARE",
@@ -69,11 +72,11 @@
    "ACETAMINOPHEN CHILD",
    "ACTEMRA",
    "ADVIL",
+   "ADVIL JR STRENGTH",
    "ALEVE",
    "ANACIN",
    "ANJESO",
    "APAP X",
-   "APAP/CAF",
    "ARCALYST",
    "ARISTOCORT",
    "ARISTOSPAN",
@@ -83,6 +86,7 @@
    "ASPIRIN",
    "ASPIRIN (OTC)",
    "ASPIRIN BUFFERED",
+   "AVSOLA",
    "BAYCADRON",
    "BAYER ASP REGIMEN",
    "BAYER ASPIRIN",
@@ -92,7 +96,8 @@
    "BETAMETH DIP AUG",
    "BETAMETHASONE",
    "BETAMETHASONE COMBO",
-   "BIOFREEZE W/ILEX",
+   "BETAMETHASONE DIPR",
+   "BSP 0820",
    "BUFFERIN",
    "BUPRENORPHINE HCL",
    "BUTORPHANOL TART",
@@ -102,6 +107,7 @@
    "CLOBETASOL PROP",
    "CLONIDINE HCL",
    "CORTEF",
+   "CORTISONE ACE",
    "DARVOCET-N 100",
    "DARVOCET-N 50",
    "DARVON",
@@ -121,14 +127,16 @@
    "DOANS X-STR",
    "DOLOBID",
    "DOUBLEDEX",
+   "DUPIXENT",
+   "DURACLON",
    "DURAMORPH PF",
    "DYLOJECT",
    "DYURAL-80",
    "ECOTRIN",
+   "ENBREL",
    "EXCEDRIN ASP/FREE",
    "EXCEDRIN EX STR",
    "EXCEDRIN MIGRAINE",
-   "EXCEDRIN TEN HDCHE",
    "FENOPROFEN CA",
    "FENTANYL CIT",
    "FEVERALL JUNIOR",
@@ -144,9 +152,11 @@
    "IBUPROFEN (OTC) CHILD",
    "IBUPROFEN (RX)",
    "ILARIS",
+   "IMFINZI",
    "INFLECTRA",
    "INFUMORPH",
    "KENALOG",
+   "KENALOG SPRAY",
    "KETOROLAC TROMETH",
    "KEYTRUDA",
    "KINERET",
@@ -165,6 +175,7 @@
    "MLK PROCEDUR F2",
    "MORPHINE SULF",
    "MORPHINE SULF C-JECT",
+   "MORPHINE SULF PFS",
    "MOTRIN IB",
    "MULTI-SPECIALTY",
    "NALBUPHINE HCL",
@@ -172,7 +183,6 @@
    "NAPROXEN SOD (OTC)",
    "NAPROXEN SOD (RX)",
    "OFIRMEV",
-   "OPDIVO",
    "ORENCIA",
    "OXYCODONE HCL",
    "OXYCODONE/APAP",
@@ -197,6 +207,7 @@
    "RENFLEXIS",
    "RITUXAN",
    "SALSALATE",
+   "SAPHNELO",
    "SARAPIN",
    "SILAPAP",
    "SOLU-CORTEF",
@@ -205,19 +216,20 @@
    "STELARA",
    "TAC-3",
    "THERAPY BAYER ASP",
+   "TOFIDENCE",
    "TORADOL",
    "TRAMADOL HCL",
    "TRAMADOL HCL ER",
    "TRI-BUFFERED ASPIRIN",
    "TRIAMCINOLONE ACTN",
    "TRIAMCINOLONE DIAC",
+   "TRILOAN SUIK",
    "TRUXIMA",
    "TYLENOL 8 HOUR",
    "TYLENOL ARTHRITIS",
    "TYLENOL EXTRA STRG",
    "TYLENOL REGULAR",
    "VAZALORE",
-   "YERVOY",
    "ZILRETTA",
    "ZIPSOR",
    "ZORVOLEX"
@@ -242,9 +254,8 @@
   "manufacturer": [
    "A-S MEDICATION",
    "AACE PHARMACEUTICA",
-   "ACELLA PHARM",
+   "AARNA USA, INC.",
    "ADVAGEN PHARMA LTD",
-   "ADVANCE PHARM INC",
    "ADVANCED RX PHARMA",
    "AIDAREX PHARM",
    "AKORN, INC",
@@ -255,6 +266,7 @@
    "AMERICAN HLTH PKG",
    "AMERICAN PHARM",
    "AMERICAN REGENT IN",
+   "AMGEN INC",
    "AMICI PHARMA",
    "AMNEAL BIOSCIENCES",
    "AMNEAL PHARM",
@@ -262,8 +274,8 @@
    "ARCHIS PHARMA LLC",
    "ARMAS PHARM",
    "ASCEND LABS",
-   "ASSERTIO THERAPEU",
    "ASTELLAS PHARMA US",
+   "ASTRAZENECA",
    "ATHENEX PH",
    "AUROBINDO PHARM",
    "AV KARE INC",
@@ -277,7 +289,6 @@
    "BIONPHARMA INC.",
    "BIOVITRUM AB",
    "BLUEPOINT LABS",
-   "BPI LABS, INC.",
    "BRISTOL-M SQ US PH",
    "CAMBER CONSUMER CA",
    "CAMBER PHARM",
@@ -287,6 +298,7 @@
    "CINTEX SERVICES",
    "CIVICA RX",
    "CONTRACT PHARM",
+   "COSETTE PHARMA",
    "DIRECT RX, LLC",
    "DISPENSEXPRESS",
    "DISPENSING SOLUTIO",
@@ -295,12 +307,14 @@
    "ENCUBE ETHICALS",
    "ENDO USA INC.",
    "EPIC PHARMA",
+   "ESTEVE PHARMA",
    "EUGIA US LLC",
    "EXELA PHARMA SCI",
    "FERA PHARM",
    "FOSUN PHARMA USA",
    "FOUNDATION CONS",
    "FRESENIUS KABI USA",
+   "GENDOSE PHARMA",
    "GENENTECH,INC.",
    "GENERAMED INC",
    "GENOMMA LAB USA,IN",
@@ -308,6 +322,7 @@
    "GLENMARK PHARMA",
    "GRANULES PHARMA",
    "HALEON",
+   "HAPPY ROBIN, LLC",
    "HIGH CHEM CO",
    "HIKMA PHARMACEUT",
    "HOSPAK UNIT DOSE",
@@ -339,7 +354,7 @@
    "METHOD PHARMA, LLC",
    "MISEMER PHARM INC",
    "MORTON GROVE PHARM",
-   "MUTUAL PHARM",
+   "NOBLE OTC LLC",
    "NORTHSTAR RX",
    "NOVARTIS RX",
    "NOVITIUM PHARMA",
@@ -350,9 +365,9 @@
    "ORGANON",
    "PACIRA PHARM",
    "PADAGIS LLC",
+   "PAR HEALTH",
    "PARNELL PHARM",
    "PD-RX PHARM",
-   "PERFORMANCE HEALTH",
    "PERRIGO",
    "PFIZER",
    "PHARBEST PHARMA",
@@ -364,7 +379,6 @@
    "PLX PHARMA",
    "PRAGMA PHARMA, LLC",
    "PREFERRED PHARM",
-   "PRESCRIPT PHARM",
    "PRESTIGE BRANDS",
    "PRIVATE LABEL",
    "PROFICIENT RX",
@@ -379,6 +393,7 @@
    "RX PHARMA PACK",
    "SAGENT PHARM",
    "SANDOZ",
+   "SANOFI",
    "SCIEGEN PHARMA",
    "SILARX PHARM INC",
    "SOLA PHARMACEUTICA",
@@ -391,7 +406,6 @@
    "SUN PHARMACEUTICAL",
    "TELIGENT, INC.",
    "TERRAIN PHARMA",
-   "TERSERA THERAPEUT",
    "TEVA ONCOLOGY",
    "TEVA PARENTERAL ME",
    "TEVA PHARMACEUTICA",
@@ -401,8 +415,9 @@
    "UNIFIRST FIRST",
    "URL PHARMA",
    "US COMPOUNDING",
-   "VENSUN PHARM INC.",
    "VIATRIS",
+   "VIBRANTA",
+   "VIONA PHARM",
    "VIRTUS PHARMA",
    "WEEKS LEO",
    "WESTMINSTER PHARM",
@@ -428,42 +443,42 @@
  "monthly": {
   "OA": {
    "rows": {
-    "min": 2114,
-    "median": 3383.0,
-    "max": 3913
+    "min": 2832,
+    "median": 3636.0,
+    "max": 3943
    },
    "visits_sum": {
-    "min": 31373,
-    "median": 77811.0,
-    "max": 100206
+    "min": 58425,
+    "median": 83251.5,
+    "max": 101019
    }
   },
   "RA": {
    "rows": {
-    "min": 2,
-    "median": 14.0,
-    "max": 27
+    "min": 4,
+    "median": 20.0,
+    "max": 35
    },
    "visits_sum": {
-    "min": 2,
-    "median": 17.0,
-    "max": 36
+    "min": 5,
+    "median": 26.0,
+    "max": 55
    }
   }
  },
  "pos_monthly": {
   "OA": {
    "visits_sum": {
-    "min": 41367,
-    "median": 100633.5,
-    "max": 128132
+    "min": 77702,
+    "median": 107520.0,
+    "max": 128874
    }
   },
   "RA": {
    "visits_sum": {
-    "min": 1,
-    "median": 2.0,
-    "max": 6
+    "min": 5,
+    "median": 26.0,
+    "max": 55
    }
   }
  },

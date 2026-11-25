@@ -353,3 +353,15 @@ def test_the_coverage_sentence_and_the_findings_frame():
         "impact",
         "source",
     ]
+
+
+def test_a_recorded_decision_that_keeps_another_model_in_service_is_said_in_the_verdict():
+    best = pd.Series({"score": 0.1})
+    serving = pd.Series(
+        {"promoted": 1, "kind": "model", "method": "gbm", "gain_over_best_baseline": 0.0003}
+    )
+    plain = views.verdict("T2", 6, best, serving, None, "gbm")
+    assert plain == "Small gain over the simple rule: about 0.3% better"  # nothing overridden
+    kept = views.verdict("T2", 6, best, serving, None, "last_month")
+    assert kept.startswith("Small gain over the simple rule: about 0.3% better; the rule chose")
+    assert '"same as last month" stays in service (DL-130)' in kept

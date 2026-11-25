@@ -29,7 +29,7 @@ def _question(**changes):
         "audience": "brand manager",
         "question": "How has share changed?",
         "calls": [{"tool": "get_data_status", "args": {}}],
-        "facts": ["1.88"],
+        "facts": ["1.89"],
         "include_any": ["peak"],
         "avoid": ["because"],
     }

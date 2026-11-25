@@ -162,7 +162,7 @@ def test_branded_products_scopes_to_brand_and_branded_generic_tags():
     import pandas as pd
 
     products = branded_products(pd.concat([oa, ra]))
-    assert len(products) == 87
+    assert len(products) == 95
     assert "ZILRETTA" in products
     assert "KENALOG" in products
     # Tagged GENERIC/OTHER only — must not appear even though they're OA products.

@@ -103,18 +103,18 @@ def test_a_tool_call_is_run_and_its_result_sent_back(snap):
     client = FakeClient(
         [
             _response([_tool_use("get_data_status", {})], "tool_use"),
-            _response([_text("Share was 1.88% in Jul 2025.")], "end_turn"),
+            _response([_text("Share was 1.89% in Sep 2026.")], "end_turn"),
         ]
     )
     result = _ask(client, snap)
-    assert result["answer"] == "Share was 1.88% in Jul 2025."
+    assert result["answer"] == "Share was 1.89% in Sep 2026."
     assert result["tool_calls"] == [("get_data_status", {})]
 
     follow_up = client.requests[1]["messages"][-1]
     assert follow_up["role"] == "user"
     block = follow_up["content"][0]
     assert block["type"] == "tool_result" and block["tool_use_id"] == "tu_1"
-    assert json.loads(block["content"])["latest_share_pct"] == 1.88
+    assert json.loads(block["content"])["latest_share_pct"] == 1.89
 
 
 def test_an_unknown_tool_is_reported_to_the_model_as_an_error(snap):
@@ -253,7 +253,7 @@ def test_a_streamed_answer_calls_back_with_text_tools_and_round_starts(snap):
     client = FakeClient(
         [
             _response([_text("Let me look."), _tool_use("get_data_status", {})], "tool_use"),
-            _response([_text("Share was 1.88% in Jul 2025.")], "end_turn"),
+            _response([_text("Share was 1.89% in Sep 2026.")], "end_turn"),
         ]
     )
     events = []
@@ -267,8 +267,8 @@ def test_a_streamed_answer_calls_back_with_text_tools_and_round_starts(snap):
     assert events[0] == "round" and ("tool", "get_data_status") in events
     assert events.count("round") == 2  # the page clears what it streamed before the tool call
     streamed = "".join(e[1] for e in events if isinstance(e, tuple) and e[0] == "text")
-    assert "Share was 1.88% in Jul 2025." in streamed
-    assert result["answer"] == "Share was 1.88% in Jul 2025."  # only the last round is the answer
+    assert "Share was 1.89% in Sep 2026." in streamed
+    assert result["answer"] == "Share was 1.89% in Sep 2026."  # only the last round is the answer
 
 
 def test_without_callbacks_the_plain_request_is_used(snap):
@@ -325,7 +325,7 @@ def test_figures_not_found_in_the_lookups_are_listed(snap):
         [
             _response([_tool_use("get_data_status", {})], "tool_use"),
             _response(
-                [_text("Share was 1.88% in Jul 2025, down 44% from 3.38%, and about 7.7% a year.")],
+                [_text("Share was 1.89% in Sep 2026, down 44% from 3.36%, and about 7.7% a year.")],
                 "end_turn",
             ),
         ]
