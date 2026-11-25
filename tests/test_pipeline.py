@@ -57,9 +57,9 @@ def cached_ingest(monkeypatch, real_ingest):
 
 def test_ingest_returns_known_real_row_counts(raw_extracts):
     visits, place_of_service, reference = raw_extracts
-    assert len(visits) == 241_794
-    assert len(place_of_service) == 370
-    assert len(reference) == 852
+    assert len(visits) == 257_215
+    assert len(place_of_service) == 506
+    assert len(reference) == 859
 
 
 def test_validate_passes_real_extracts_through_unchanged(raw_extracts):
@@ -83,8 +83,8 @@ def test_run_pipeline_writes_a_real_sqlite_file_with_expected_tables(tmp_path, c
             text("SELECT SUM(branded_injectable_visits) FROM gold_visit_share_monthly")
         ).scalar()
         product_count = conn.execute(text("SELECT COUNT(*) FROM dim_product")).scalar()
-    assert branded_total == 135_119
-    assert product_count == 160
+    assert branded_total == 137_464
+    assert product_count == 167
 
     # the ingest audit (R5): six rows, hashes equal to the real files', counts equal to ingest's
     with engine.connect() as conn:
@@ -97,9 +97,9 @@ def test_run_pipeline_writes_a_real_sqlite_file_with_expected_tables(tmp_path, c
         real = DEFAULT_RAW_DIR / name
         assert row[2] == hashlib.sha256(real.read_bytes()).hexdigest()
         assert row[3] == real.stat().st_size
-    assert by_key[("Team1_M15_19_OA.xlsx", "nmta_pivot")][4] == 240_773
-    assert by_key[("Team1_M04_RA.xlsx", "nmta_pivot")][4] == 1_021
-    assert by_key[("Branded Generic - OA.xlsx", "reference_table")][4] == 834
+    assert by_key[("Team1_M15_19_OA.xlsx", "nmta_pivot")][4] == 255_827
+    assert by_key[("Team1_M04_RA.xlsx", "nmta_pivot")][4] == 1_388
+    assert by_key[("Branded Generic - OA.xlsx", "reference_table")][4] == 838
     assert summary["ingest_files"][0].keys() >= {"file_name", "role", "sha256", "rows_parsed"}
 
     # the data-quality stage (R3): every check recorded, none failing on the real extracts

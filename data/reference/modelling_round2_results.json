@@ -5,346 +5,358 @@
     "e1a": {
      "by_size": {
       "1000 and over": {
-       "n_rows": 985,
-       "ratio_minus_one": 0.012073789961339232
+       "n_rows": 1003,
+       "ratio_minus_one": -0.0016258517966853958
       },
       "200 to 999": {
-       "n_rows": 1459,
-       "ratio_minus_one": 0.018054925472965833
+       "n_rows": 1385,
+       "ratio_minus_one": 0.03141134548271318
       },
       "50 to 199": {
-       "n_rows": 2157,
-       "ratio_minus_one": -0.015961061719448
+       "n_rows": 2049,
+       "ratio_minus_one": -0.022566437462751
       },
       "under 50": {
-       "n_rows": 921,
-       "ratio_minus_one": -0.09860065277588737
+       "n_rows": 1079,
+       "ratio_minus_one": -0.09175609862811906
       }
      },
      "by_specialty": {
-      "ANESTHESIOLOGY": {
-       "n_rows": 420,
-       "ratio_minus_one": 0.06404389179884262
-      },
-      "EMERGENCY MEDICINE": {
+      "ALLERGY": {
        "n_rows": 1,
        "ratio_minus_one": null
       },
+      "ANESTHESIOLOGY": {
+       "n_rows": 402,
+       "ratio_minus_one": 0.09255500028276531
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 27,
+       "ratio_minus_one": -0.09437085180978955
+      },
       "FAMILY PRACTICE": {
-       "n_rows": 468,
-       "ratio_minus_one": 0.04148915394576469
+       "n_rows": 464,
+       "ratio_minus_one": -0.12998487426540228
       },
       "GENERAL SURGERY": {
-       "n_rows": 37,
-       "ratio_minus_one": -0.04451771496575074
+       "n_rows": 33,
+       "ratio_minus_one": 0.07050580143881335
       },
       "INTERNAL MEDICINE": {
-       "n_rows": 459,
-       "ratio_minus_one": 0.12903960303323703
+       "n_rows": 458,
+       "ratio_minus_one": 0.5508028639632023
       },
       "NURSE PRACTITIONER": {
-       "n_rows": 548,
-       "ratio_minus_one": 0.029369113653932022
+       "n_rows": 550,
+       "ratio_minus_one": 0.06395977739425485
       },
       "ORTHO SURG OF SPINE": {
        "n_rows": 8,
        "ratio_minus_one": null
       },
       "ORTHOPEDIC SURGERY": {
-       "n_rows": 565,
-       "ratio_minus_one": 0.004108420650481115
+       "n_rows": 555,
+       "ratio_minus_one": -0.003962086144609023
       },
       "OSTEOPATHIC MEDICINE": {
-       "n_rows": 544,
-       "ratio_minus_one": 0.02430433462258308
+       "n_rows": 543,
+       "ratio_minus_one": 0.06952904853228703
       },
       "OTHER": {
-       "n_rows": 81,
-       "ratio_minus_one": null
+       "n_rows": 93,
+       "ratio_minus_one": -0.06433555395314694
       },
       "OTHER SURGERY": {
-       "n_rows": 18,
-       "ratio_minus_one": 0.6068484333441486
+       "n_rows": 4,
+       "ratio_minus_one": -0.7099313453342105
       },
       "PAIN MEDICINE": {
        "n_rows": 431,
-       "ratio_minus_one": -0.029459468853298088
+       "ratio_minus_one": -0.19236228355029772
       },
       "PEDIATRICS": {
-       "n_rows": 9,
-       "ratio_minus_one": -0.17505496980834057
+       "n_rows": 23,
+       "ratio_minus_one": -0.09447396218790394
       },
       "PHYSICAL MEDICINE & REHAB": {
-       "n_rows": 463,
-       "ratio_minus_one": -0.09907544968553705
+       "n_rows": 462,
+       "ratio_minus_one": -0.04555826583476552
       },
       "PHYSICIAN ASSISTANT": {
-       "n_rows": 552,
-       "ratio_minus_one": 0.014670106122826487
+       "n_rows": 555,
+       "ratio_minus_one": -0.012173010171943388
       },
       "RHEUMATOLOGY": {
-       "n_rows": 438,
-       "ratio_minus_one": 0.19007092305159978
+       "n_rows": 421,
+       "ratio_minus_one": 0.024275826835599368
       },
       "SPORTS MEDICINE": {
-       "n_rows": 480,
-       "ratio_minus_one": 0.02874152417786391
+       "n_rows": 486,
+       "ratio_minus_one": 0.01422637273682259
       }
      },
-     "ratio_minus_one": 0.010480655208712664,
-     "slope": 1.0638405803992432
+     "ratio_minus_one": 0.0025425724260859095,
+     "slope": 1.0279021164860411
     },
     "e1b": {
      "by_size": {
       "1000 and over": {
-       "n_rows": 985,
-       "ratio_minus_one": 0.04078005389448869
+       "n_rows": 1003,
+       "ratio_minus_one": 0.009295745295532676
       },
       "200 to 999": {
-       "n_rows": 1459,
-       "ratio_minus_one": 0.04354935787688774
+       "n_rows": 1385,
+       "ratio_minus_one": 0.04144161759971676
       },
       "50 to 199": {
-       "n_rows": 2157,
-       "ratio_minus_one": 0.016498205268322685
+       "n_rows": 2049,
+       "ratio_minus_one": -0.0031580884605353354
       },
       "under 50": {
-       "n_rows": 921,
-       "ratio_minus_one": -0.08476991440281612
+       "n_rows": 1079,
+       "ratio_minus_one": -0.09116638280747114
       }
      },
      "by_specialty": {
-      "ANESTHESIOLOGY": {
-       "n_rows": 420,
-       "ratio_minus_one": 0.06472654391930677
-      },
-      "EMERGENCY MEDICINE": {
+      "ALLERGY": {
        "n_rows": 1,
        "ratio_minus_one": null
       },
+      "ANESTHESIOLOGY": {
+       "n_rows": 402,
+       "ratio_minus_one": 0.10663843951201102
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 27,
+       "ratio_minus_one": -0.2205334900123831
+      },
       "FAMILY PRACTICE": {
-       "n_rows": 468,
-       "ratio_minus_one": 0.027617716367142053
+       "n_rows": 464,
+       "ratio_minus_one": -0.0887005983875988
       },
       "GENERAL SURGERY": {
-       "n_rows": 37,
-       "ratio_minus_one": -0.03297625025586992
+       "n_rows": 33,
+       "ratio_minus_one": 0.08775951081809241
       },
       "INTERNAL MEDICINE": {
-       "n_rows": 459,
-       "ratio_minus_one": 0.1520835410778889
+       "n_rows": 458,
+       "ratio_minus_one": 0.5309199246904037
       },
       "NURSE PRACTITIONER": {
-       "n_rows": 548,
-       "ratio_minus_one": 0.048868995022631534
+       "n_rows": 550,
+       "ratio_minus_one": 0.05692280005105066
       },
       "ORTHO SURG OF SPINE": {
        "n_rows": 8,
        "ratio_minus_one": null
       },
       "ORTHOPEDIC SURGERY": {
-       "n_rows": 565,
-       "ratio_minus_one": 0.038587381783299346
+       "n_rows": 555,
+       "ratio_minus_one": 0.015491704160549125
       },
       "OSTEOPATHIC MEDICINE": {
-       "n_rows": 544,
-       "ratio_minus_one": 0.05229198194834006
+       "n_rows": 543,
+       "ratio_minus_one": 0.06982824903677987
       },
       "OTHER": {
-       "n_rows": 81,
-       "ratio_minus_one": null
+       "n_rows": 93,
+       "ratio_minus_one": -0.07521761628434886
       },
       "OTHER SURGERY": {
-       "n_rows": 18,
-       "ratio_minus_one": 0.5587148024255315
+       "n_rows": 4,
+       "ratio_minus_one": -0.7106580776176799
       },
       "PAIN MEDICINE": {
        "n_rows": 431,
-       "ratio_minus_one": -0.015401269587098088
+       "ratio_minus_one": -0.17791410885833703
       },
       "PEDIATRICS": {
-       "n_rows": 9,
-       "ratio_minus_one": -0.14955758880187675
+       "n_rows": 23,
+       "ratio_minus_one": -0.13240983119041072
       },
       "PHYSICAL MEDICINE & REHAB": {
-       "n_rows": 463,
-       "ratio_minus_one": -0.044593077855761165
+       "n_rows": 462,
+       "ratio_minus_one": -0.031355501267559927
       },
       "PHYSICIAN ASSISTANT": {
-       "n_rows": 552,
-       "ratio_minus_one": 0.037362875467942924
+       "n_rows": 555,
+       "ratio_minus_one": -0.0028330094176534093
       },
       "RHEUMATOLOGY": {
-       "n_rows": 438,
-       "ratio_minus_one": 0.20021305231599706
+       "n_rows": 421,
+       "ratio_minus_one": 0.05049860586284116
       },
       "SPORTS MEDICINE": {
-       "n_rows": 480,
-       "ratio_minus_one": 0.053736050987284845
+       "n_rows": 486,
+       "ratio_minus_one": 0.03337874533585361
       }
      },
-     "ratio_minus_one": 0.03865445256873956,
-     "slope": 1.0552371531444547
+     "ratio_minus_one": 0.013798134757523561,
+     "slope": 1.0236130865128015
     },
     "raw": {
      "by_size": {
       "1000 and over": {
-       "n_rows": 985,
-       "ratio_minus_one": 0.05660881169569576
+       "n_rows": 1003,
+       "ratio_minus_one": 0.01108363517042088
       },
       "200 to 999": {
-       "n_rows": 1459,
-       "ratio_minus_one": 0.060430726470407814
+       "n_rows": 1385,
+       "ratio_minus_one": 0.04555355641793679
       },
       "50 to 199": {
-       "n_rows": 2157,
-       "ratio_minus_one": 0.03301395284095365
+       "n_rows": 2049,
+       "ratio_minus_one": -0.006458639978819791
       },
       "under 50": {
-       "n_rows": 921,
-       "ratio_minus_one": -0.04553490078588618
+       "n_rows": 1079,
+       "ratio_minus_one": -0.07818597211059775
       }
      },
      "by_specialty": {
-      "ANESTHESIOLOGY": {
-       "n_rows": 420,
-       "ratio_minus_one": 0.09585334987832494
-      },
-      "EMERGENCY MEDICINE": {
+      "ALLERGY": {
        "n_rows": 1,
        "ratio_minus_one": null
       },
+      "ANESTHESIOLOGY": {
+       "n_rows": 402,
+       "ratio_minus_one": 0.1037910628795844
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 27,
+       "ratio_minus_one": -0.09445971170607004
+      },
       "FAMILY PRACTICE": {
-       "n_rows": 468,
-       "ratio_minus_one": 0.09892703961633909
+       "n_rows": 464,
+       "ratio_minus_one": -0.11636153923545889
       },
       "GENERAL SURGERY": {
-       "n_rows": 37,
-       "ratio_minus_one": 0.020816119089413387
+       "n_rows": 33,
+       "ratio_minus_one": 0.08055514691502674
       },
       "INTERNAL MEDICINE": {
-       "n_rows": 459,
-       "ratio_minus_one": 0.17124004838087514
+       "n_rows": 458,
+       "ratio_minus_one": 0.5618025239877096
       },
       "NURSE PRACTITIONER": {
-       "n_rows": 548,
-       "ratio_minus_one": 0.07457849994441457
+       "n_rows": 550,
+       "ratio_minus_one": 0.07812294080253057
       },
       "ORTHO SURG OF SPINE": {
        "n_rows": 8,
        "ratio_minus_one": null
       },
       "ORTHOPEDIC SURGERY": {
-       "n_rows": 565,
-       "ratio_minus_one": 0.046838217770568624
+       "n_rows": 555,
+       "ratio_minus_one": 0.009718377848380255
       },
       "OSTEOPATHIC MEDICINE": {
-       "n_rows": 544,
-       "ratio_minus_one": 0.06459725159541208
+       "n_rows": 543,
+       "ratio_minus_one": 0.08291261188892185
       },
       "OTHER": {
-       "n_rows": 81,
-       "ratio_minus_one": null
+       "n_rows": 93,
+       "ratio_minus_one": -0.059249013436030507
       },
       "OTHER SURGERY": {
-       "n_rows": 18,
-       "ratio_minus_one": 0.627003540138771
+       "n_rows": 4,
+       "ratio_minus_one": -0.7070718684401074
       },
       "PAIN MEDICINE": {
        "n_rows": 431,
-       "ratio_minus_one": 0.010424540488388256
+       "ratio_minus_one": -0.1864100065787343
       },
       "PEDIATRICS": {
-       "n_rows": 9,
-       "ratio_minus_one": -0.11849728378082292
+       "n_rows": 23,
+       "ratio_minus_one": -0.09160224246874338
       },
       "PHYSICAL MEDICINE & REHAB": {
-       "n_rows": 463,
-       "ratio_minus_one": -0.05093372709849764
+       "n_rows": 462,
+       "ratio_minus_one": -0.02950651275093652
       },
       "PHYSICIAN ASSISTANT": {
-       "n_rows": 552,
-       "ratio_minus_one": 0.062497082381115954
+       "n_rows": 555,
+       "ratio_minus_one": 0.0004962111177062578
       },
       "RHEUMATOLOGY": {
-       "n_rows": 438,
-       "ratio_minus_one": 0.23026140679489604
+       "n_rows": 421,
+       "ratio_minus_one": 0.03366445577365029
       },
       "SPORTS MEDICINE": {
-       "n_rows": 480,
-       "ratio_minus_one": 0.06893846500643641
+       "n_rows": 486,
+       "ratio_minus_one": 0.02705028206575344
       }
      },
-     "ratio_minus_one": 0.05493906172990992,
-     "slope": 1.0861810949690995
+     "ratio_minus_one": 0.015796286053852304,
+     "slope": 1.0339674966299612
     }
    },
    "factors": {
-    "202110": 1.0,
-    "202111": 1.0,
-    "202112": 1.0,
-    "202201": 1.0,
-    "202202": 1.0,
-    "202203": 1.0,
-    "202204": 1.0,
-    "202205": 1.0,
-    "202206": 1.0,
-    "202207": 1.0,
-    "202208": 1.0,
-    "202209": 1.0,
-    "202210": 0.9721259683058159,
-    "202211": 0.9626963677230587,
-    "202212": 0.9540809573281832,
-    "202301": 0.9461541448049123,
-    "202302": 0.9353298123844419,
-    "202303": 0.9321006252797274,
-    "202304": 0.9385373739939121,
-    "202305": 0.9395386554051505,
-    "202306": 0.9505830580578097,
-    "202307": 0.9492966588254902,
-    "202308": 0.948323515375748,
-    "202309": 0.9426219492289308,
-    "202310": 0.9430763688162891,
-    "202311": 0.9416282942626134,
-    "202312": 0.9446841092448768,
-    "202401": 0.9376312925074426,
-    "202402": 0.9461221440756713,
-    "202403": 0.9398744436328815,
-    "202404": 0.9291534192932802,
-    "202405": 0.9171833563359162,
-    "202406": 0.9002359953621951,
-    "202407": 0.8923192751084252,
-    "202408": 0.8978325212012004,
-    "202409": 0.9073728626961477,
-    "202410": 0.9090491693069801,
-    "202411": 0.9099641348662861,
-    "202412": 0.9102592750314801,
-    "202501": 0.9169280600962875,
-    "202502": 0.9202147633238706,
-    "202503": 0.9303508833336616,
-    "202504": 0.9261107239553243,
-    "202505": 0.9366963740543637,
-    "202506": 0.9463855643036371,
-    "202507": 0.9516932785569344
+    "202212": 1.0,
+    "202301": 1.0,
+    "202302": 1.0,
+    "202303": 1.0,
+    "202304": 1.0,
+    "202305": 1.0,
+    "202306": 1.0,
+    "202307": 1.0,
+    "202308": 1.0,
+    "202309": 1.0,
+    "202310": 1.0,
+    "202311": 1.0,
+    "202312": 0.9730651097382069,
+    "202401": 0.9673383261873101,
+    "202402": 0.9759757335880287,
+    "202403": 0.9717405027071355,
+    "202404": 0.9580948918858515,
+    "202405": 0.9469694901526973,
+    "202406": 0.9327280952618529,
+    "202407": 0.9283925352822929,
+    "202408": 0.9397081238409709,
+    "202409": 0.9557304251062907,
+    "202410": 0.957582904280899,
+    "202411": 0.9584848168707022,
+    "202412": 0.9582560371292284,
+    "202501": 0.9655756724017454,
+    "202502": 0.9682810776423202,
+    "202503": 0.9790603547472124,
+    "202504": 0.9725747350732354,
+    "202505": 0.9813044288522426,
+    "202506": 0.9862223918170488,
+    "202507": 0.9863843455090312,
+    "202508": 0.9884336183587651,
+    "202509": 0.9775672246221678,
+    "202510": 0.9843899679238037,
+    "202511": 0.9931894325889141,
+    "202512": 0.9932097590267444,
+    "202601": 0.9979709854866218,
+    "202602": 0.9971918836526962,
+    "202603": 0.9965971612145119,
+    "202604": 1.0040810536738403,
+    "202605": 1.0044195180076263,
+    "202606": 1.019699175086273,
+    "202607": 1.0195753681721131,
+    "202608": 1.0100608287552875,
+    "202609": 1.026826811069235
    },
    "horizon": 1,
    "scenarios": {
     "covid_removed": {
      "bias": {
-      "base": 0.0404660193705797,
-      "e1a": 0.011353879224970553,
-      "e1b": 0.042714068283420836,
-      "raw": 0.05255803591751995
+      "base": 0.04426384571348785,
+      "e1a": 0.0025425724260859095,
+      "e1b": 0.013798134757523561,
+      "raw": 0.015796286053852304
      },
-     "bias_when_corrected_e1a": -0.0041594386480282575,
-     "bias_when_corrected_raw": 0.05866948768082314,
+     "bias_when_corrected_e1a": -0.011190386678712194,
+     "bias_when_corrected_raw": 0.009303899714722341,
      "factor_active_months": 34,
      "horizon": 1,
      "log_loss": {
-      "base": 0.11317303511469055,
-      "e1a": 0.1126581769978298,
-      "e1b": 0.11266425638331705,
-      "raw": 0.11268077110342849
+      "base": 0.09918036053563181,
+      "e1a": 0.0986566903848958,
+      "e1b": 0.09864720361968705,
+      "raw": 0.0986572891816521
      },
      "n_test_months": 46,
      "variants": {
@@ -354,60 +366,60 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005148581168607502,
-        "high": 0.0005738938384480175,
-        "low": 0.0004562977423429003,
+        "estimate": 0.0005236701507360109,
+        "high": 0.0005818704862763965,
+        "low": 0.00046278484277282385,
         "n_valid": 2000,
-        "relative_gain": 0.004549300249295148,
+        "relative_gain": 0.00527997829316093,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 2.2594105598683356e-05,
-        "high": 6.133207330021615e-05,
-        "low": -1.4323685998354564e-05,
+        "estimate": 5.98796756304254e-07,
+        "high": 1.4297740309261927e-05,
+        "low": -1.342778990719073e-05,
         "n_valid": 2000,
-        "share_positive": 0.9365
+        "share_positive": 0.5425
        }
       },
       "e1b": {
-       "bias_within_limit": false,
+       "bias_within_limit": true,
        "not_less_accurate": true,
-       "passes": false,
+       "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005087787313735048,
-        "high": 0.0005618788357704924,
-        "low": 0.000451169140641979,
+        "estimate": 0.0005331569159447574,
+        "high": 0.000594217771766777,
+        "low": 0.00047147815853610433,
         "n_valid": 2000,
-        "relative_gain": 0.004495582634661198,
+        "relative_gain": 0.005375629943926388,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 1.6514720111437953e-05,
-        "high": 3.103309142309522e-05,
-        "low": 4.075460629859862e-06,
+        "estimate": 1.0085561965050838e-05,
+        "high": 1.77687622570146e-05,
+        "low": 2.6087340464884493e-06,
         "n_valid": 2000,
-        "share_positive": 0.999
+        "share_positive": 1.0
        }
       }
      }
     },
     "dip_2024_removed": {
      "bias": {
-      "base": 0.038244881336296555,
-      "e1a": 0.013115463622003443,
-      "e1b": 0.04224879540994775,
-      "raw": 0.055843901532341755
+      "base": 0.04216116599170183,
+      "e1a": 0.00349037440107125,
+      "e1b": 0.01686458306287042,
+      "raw": 0.017870670657630594
      },
-     "bias_when_corrected_e1a": 0.003926359809026891,
-     "bias_when_corrected_raw": 0.07189203281745526,
+     "bias_when_corrected_e1a": -0.011856568536145029,
+     "bias_when_corrected_raw": 0.011647034923392585,
      "factor_active_months": 29,
      "horizon": 1,
      "log_loss": {
-      "base": 0.114808759358171,
-      "e1a": 0.1142924332567628,
-      "e1b": 0.11429986344665986,
-      "raw": 0.11432474272949213
+      "base": 0.09944876560268039,
+      "e1a": 0.09894353852804284,
+      "e1b": 0.09893830146283523,
+      "raw": 0.09894484815441791
      },
      "n_test_months": 41,
      "variants": {
@@ -417,60 +429,60 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005163261014081988,
-        "high": 0.00058184267314503,
-        "low": 0.0004550146219393802,
+        "estimate": 0.0005052270746375431,
+        "high": 0.0005694541607785296,
+        "low": 0.000446132642142893,
         "n_valid": 2000,
-        "relative_gain": 0.0044972709773598955,
+        "relative_gain": 0.005080274969485655,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 3.2309472729322164e-05,
-        "high": 6.807725651360905e-05,
-        "low": -2.7314264780255765e-06,
+        "estimate": 1.3096263750678183e-06,
+        "high": 1.3844049291606866e-05,
+        "low": -1.1469460066047424e-05,
         "n_valid": 2000,
-        "share_positive": 0.987
+        "share_positive": 0.606
        }
       },
       "e1b": {
-       "bias_within_limit": false,
+       "bias_within_limit": true,
        "not_less_accurate": true,
-       "passes": false,
+       "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005088959115111397,
-        "high": 0.0005656943282966388,
-        "low": 0.000453003242152637,
+        "estimate": 0.0005104641398451515,
+        "high": 0.0005711896254413266,
+        "low": 0.0004535375524572514,
         "n_valid": 2000,
-        "relative_gain": 0.004432553006896692,
+        "relative_gain": 0.005132935906761956,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 2.487928283226304e-05,
-        "high": 4.650670260164831e-05,
-        "low": 6.920956713616902e-06,
+        "estimate": 6.5466915826761785e-06,
+        "high": 1.6804004437768624e-05,
+        "low": -3.4407417625618798e-06,
         "n_valid": 2000,
-        "share_positive": 1.0
+        "share_positive": 0.944
        }
       }
      }
     },
     "main": {
      "bias": {
-      "base": 0.0404660193705797,
-      "e1a": 0.010480655208712664,
-      "e1b": 0.03865445256873956,
-      "raw": 0.05493906172990992
+      "base": 0.04426384571348785,
+      "e1a": 0.0025425724260859095,
+      "e1b": 0.013798134757523561,
+      "raw": 0.015796286053852304
      },
-     "bias_when_corrected_e1a": 0.0009328045759331438,
-     "bias_when_corrected_raw": 0.06872387645396838,
+     "bias_when_corrected_e1a": -0.011190386678712194,
+     "bias_when_corrected_raw": 0.009303899714722341,
      "factor_active_months": 34,
      "horizon": 1,
      "log_loss": {
-      "base": 0.11317303511469055,
-      "e1a": 0.11264101092064235,
-      "e1b": 0.11264660659341132,
-      "raw": 0.11267216764206954
+      "base": 0.09918036053563181,
+      "e1a": 0.0986566903848958,
+      "e1b": 0.09864720361968705,
+      "raw": 0.0986572891816521
      },
      "n_test_months": 46,
      "variants": {
@@ -480,38 +492,38 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005320241940482001,
-        "high": 0.0005916695070558768,
-        "low": 0.0004750621056747291,
+        "estimate": 0.0005236701507360109,
+        "high": 0.0005818704862763965,
+        "low": 0.00046278484277282385,
         "n_valid": 2000,
-        "relative_gain": 0.004700980171725907,
+        "relative_gain": 0.00527997829316093,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 3.1156721427186285e-05,
-        "high": 6.81046167840842e-05,
-        "low": -4.607504412493445e-06,
+        "estimate": 5.98796756304254e-07,
+        "high": 1.4297740309261927e-05,
+        "low": -1.342778990719073e-05,
         "n_valid": 2000,
-        "share_positive": 0.9825
+        "share_positive": 0.5425
        }
       },
       "e1b": {
-       "bias_within_limit": false,
+       "bias_within_limit": true,
        "not_less_accurate": true,
-       "passes": false,
+       "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005264285212792374,
-        "high": 0.000581451417578284,
-        "low": 0.00046868542214999594,
+        "estimate": 0.0005331569159447574,
+        "high": 0.000594217771766777,
+        "low": 0.00047147815853610433,
         "n_valid": 2000,
-        "relative_gain": 0.004651536655756825,
+        "relative_gain": 0.005375629943926388,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 2.5561048658223617e-05,
-        "high": 4.89987185272718e-05,
-        "low": 6.874926476516207e-06,
+        "estimate": 1.0085561965050838e-05,
+        "high": 1.77687622570146e-05,
+        "low": 2.6087340464884493e-06,
         "n_valid": 2000,
         "share_positive": 1.0
        }
@@ -520,20 +532,20 @@
     },
     "pediatrics_removed": {
      "bias": {
-      "base": 0.04044770172875256,
-      "e1a": 0.010499713000346356,
-      "e1b": 0.03892144120077057,
-      "raw": 0.054950057173422495
+      "base": 0.044246459164163365,
+      "e1a": 0.002395870656255017,
+      "e1b": 0.013980520901051063,
+      "raw": 0.015574495361660112
      },
-     "bias_when_corrected_e1a": 0.0009483842799158371,
-     "bias_when_corrected_raw": 0.06876013299021344,
+     "bias_when_corrected_e1a": -0.011468045078230849,
+     "bias_when_corrected_raw": 0.008936615092955735,
      "factor_active_months": 34,
      "horizon": 1,
      "log_loss": {
-      "base": 0.11313986889378137,
-      "e1a": 0.11260754318992648,
-      "e1b": 0.11261368860432633,
-      "raw": 0.1126387870701245
+      "base": 0.09910483767596731,
+      "e1a": 0.09858171765417477,
+      "e1b": 0.09857352861194274,
+      "raw": 0.098582345355271
      },
      "n_test_months": 46,
      "variants": {
@@ -543,40 +555,40 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005323257038548912,
-        "high": 0.0005926399921725012,
-        "low": 0.0004747381476564713,
+        "estimate": 0.0005231200217925419,
+        "high": 0.0005811308317585107,
+        "low": 0.0004623600354525704,
         "n_valid": 2000,
-        "relative_gain": 0.004705023163449591,
+        "relative_gain": 0.00527845092187056,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 3.124388019801194e-05,
-        "high": 6.846206688321382e-05,
-        "low": -4.560224369904482e-06,
+        "estimate": 6.277010962257856e-07,
+        "high": 1.4206015641499444e-05,
+        "low": -1.3274713418333361e-05,
         "n_valid": 2000,
-        "share_positive": 0.9825
+        "share_positive": 0.5455
        }
       },
       "e1b": {
-       "bias_within_limit": false,
+       "bias_within_limit": true,
        "not_less_accurate": true,
-       "passes": false,
+       "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0005261802894550444,
-        "high": 0.000581182525320977,
-        "low": 0.0004686893553227237,
+        "estimate": 0.000531309064024571,
+        "high": 0.0005919985535105113,
+        "low": 0.00046833419551777964,
         "n_valid": 2000,
-        "relative_gain": 0.0046507061975565485,
+        "relative_gain": 0.005361081017676821,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 2.5098465798165104e-05,
-        "high": 4.8523985099590004e-05,
-        "low": 6.312064076079149e-06,
+        "estimate": 8.816743328254883e-06,
+        "high": 1.7232795835093918e-05,
+        "low": 1.039502758767257e-06,
         "n_valid": 2000,
-        "share_positive": 1.0
+        "share_positive": 0.998
        }
       }
      }
@@ -588,332 +600,356 @@
     "e1a": {
      "by_size": {
       "1000 and over": {
-       "n_rows": 943,
-       "ratio_minus_one": 0.03178247724584238
+       "n_rows": 957,
+       "ratio_minus_one": -0.0019608636723521533
       },
       "200 to 999": {
-       "n_rows": 1407,
-       "ratio_minus_one": 0.05046094319220584
+       "n_rows": 1324,
+       "ratio_minus_one": 0.04326710689174296
       },
       "50 to 199": {
-       "n_rows": 2073,
-       "ratio_minus_one": -0.034153948550376345
+       "n_rows": 1966,
+       "ratio_minus_one": -0.022217060645196463
       },
       "under 50": {
-       "n_rows": 867,
-       "ratio_minus_one": -0.07244515067393342
+       "n_rows": 1027,
+       "ratio_minus_one": -0.09786825672287003
       }
      },
      "by_specialty": {
+      "ALLERGY": {
+       "n_rows": 1,
+       "ratio_minus_one": null
+      },
       "ANESTHESIOLOGY": {
-       "n_rows": 404,
-       "ratio_minus_one": 0.1309651886783083
+       "n_rows": 386,
+       "ratio_minus_one": 0.16584508371366868
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 24,
+       "ratio_minus_one": 0.28049167815727905
       },
       "FAMILY PRACTICE": {
-       "n_rows": 448,
-       "ratio_minus_one": 0.019115925351010032
+       "n_rows": 444,
+       "ratio_minus_one": -0.1577302704193333
       },
       "GENERAL SURGERY": {
-       "n_rows": 37,
-       "ratio_minus_one": -0.1457293293959161
+       "n_rows": 33,
+       "ratio_minus_one": 0.08487739132763594
       },
       "INTERNAL MEDICINE": {
-       "n_rows": 439,
-       "ratio_minus_one": 0.31604312216546626
+       "n_rows": 438,
+       "ratio_minus_one": 1.0087260359609633
       },
       "NURSE PRACTITIONER": {
-       "n_rows": 524,
-       "ratio_minus_one": 0.06745540714381648
+       "n_rows": 526,
+       "ratio_minus_one": 0.08026242464102684
       },
       "ORTHO SURG OF SPINE": {
        "n_rows": 8,
-       "ratio_minus_one": -0.05274242953519426
+       "ratio_minus_one": -0.2397673533145972
       },
       "ORTHOPEDIC SURGERY": {
-       "n_rows": 540,
-       "ratio_minus_one": 0.021632623243836857
+       "n_rows": 531,
+       "ratio_minus_one": 0.00764715389160342
       },
       "OSTEOPATHIC MEDICINE": {
        "n_rows": 520,
-       "ratio_minus_one": 0.08012945057574217
+       "ratio_minus_one": 0.11671216401516049
       },
       "OTHER": {
-       "n_rows": 80,
-       "ratio_minus_one": 3.2363221193682534
+       "n_rows": 89,
+       "ratio_minus_one": -0.19476650917137184
       },
       "OTHER SURGERY": {
-       "n_rows": 18,
-       "ratio_minus_one": 1.3439746456919814
+       "n_rows": 4,
+       "ratio_minus_one": null
       },
       "PAIN MEDICINE": {
-       "n_rows": 415,
-       "ratio_minus_one": -0.043120893830775
+       "n_rows": 412,
+       "ratio_minus_one": -0.24266712710096172
       },
       "PEDIATRICS": {
-       "n_rows": 6,
-       "ratio_minus_one": -0.35015343733260884
+       "n_rows": 19,
+       "ratio_minus_one": -0.22060512898085538
       },
       "PHYSICAL MEDICINE & REHAB": {
-       "n_rows": 443,
-       "ratio_minus_one": -0.15313498473421017
+       "n_rows": 442,
+       "ratio_minus_one": -0.06134410089509146
       },
       "PHYSICIAN ASSISTANT": {
-       "n_rows": 528,
-       "ratio_minus_one": 0.03113159714651781
+       "n_rows": 531,
+       "ratio_minus_one": -0.026717412221223813
       },
       "RHEUMATOLOGY": {
-       "n_rows": 420,
-       "ratio_minus_one": 0.24461475682963996
+       "n_rows": 403,
+       "ratio_minus_one": 0.03640999258180044
       },
       "SPORTS MEDICINE": {
-       "n_rows": 460,
-       "ratio_minus_one": 0.051648763698338485
+       "n_rows": 463,
+       "ratio_minus_one": 0.010260231453547819
       }
      },
-     "ratio_minus_one": 0.030293491432842545,
-     "slope": 1.0381669242910032
+     "ratio_minus_one": 0.004629648170433542,
+     "slope": 0.9393839662714345
     },
     "e1b": {
      "by_size": {
       "1000 and over": {
-       "n_rows": 943,
-       "ratio_minus_one": 0.08237004928960978
+       "n_rows": 957,
+       "ratio_minus_one": 0.029975752561209656
       },
       "200 to 999": {
-       "n_rows": 1407,
-       "ratio_minus_one": 0.09368187217264223
+       "n_rows": 1324,
+       "ratio_minus_one": 0.074318798484456
       },
       "50 to 199": {
-       "n_rows": 2073,
-       "ratio_minus_one": 0.04027621361710354
+       "n_rows": 1966,
+       "ratio_minus_one": 0.026326070226465825
       },
       "under 50": {
-       "n_rows": 867,
-       "ratio_minus_one": -0.013799873856529032
+       "n_rows": 1027,
+       "ratio_minus_one": -0.07217783490379748
       }
      },
      "by_specialty": {
+      "ALLERGY": {
+       "n_rows": 1,
+       "ratio_minus_one": null
+      },
       "ANESTHESIOLOGY": {
-       "n_rows": 404,
-       "ratio_minus_one": 0.14537830402021634
+       "n_rows": 386,
+       "ratio_minus_one": 0.19912382342663904
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 24,
+       "ratio_minus_one": 0.11014252533818092
       },
       "FAMILY PRACTICE": {
-       "n_rows": 448,
-       "ratio_minus_one": 0.04094439416558715
+       "n_rows": 444,
+       "ratio_minus_one": -0.0991136167042781
       },
       "GENERAL SURGERY": {
-       "n_rows": 37,
-       "ratio_minus_one": -0.06992084102948137
+       "n_rows": 33,
+       "ratio_minus_one": 0.11609748749905324
       },
       "INTERNAL MEDICINE": {
-       "n_rows": 439,
-       "ratio_minus_one": 0.3401128838567
+       "n_rows": 438,
+       "ratio_minus_one": 1.030566870275678
       },
       "NURSE PRACTITIONER": {
-       "n_rows": 524,
-       "ratio_minus_one": 0.10363831815255975
+       "n_rows": 526,
+       "ratio_minus_one": 0.09235052947945155
       },
       "ORTHO SURG OF SPINE": {
        "n_rows": 8,
-       "ratio_minus_one": 0.08233714192115804
+       "ratio_minus_one": -0.2412562292782927
       },
       "ORTHOPEDIC SURGERY": {
-       "n_rows": 540,
-       "ratio_minus_one": 0.0754433146444966
+       "n_rows": 531,
+       "ratio_minus_one": 0.046641014153461446
       },
       "OSTEOPATHIC MEDICINE": {
        "n_rows": 520,
-       "ratio_minus_one": 0.12209106016550475
+       "ratio_minus_one": 0.14144453859162898
       },
       "OTHER": {
-       "n_rows": 80,
-       "ratio_minus_one": 3.1319985493467026
+       "n_rows": 89,
+       "ratio_minus_one": -0.18644362574684625
       },
       "OTHER SURGERY": {
-       "n_rows": 18,
-       "ratio_minus_one": 1.343458392562463
+       "n_rows": 4,
+       "ratio_minus_one": null
       },
       "PAIN MEDICINE": {
-       "n_rows": 415,
-       "ratio_minus_one": -0.003790951565462941
+       "n_rows": 412,
+       "ratio_minus_one": -0.22280466308327318
       },
       "PEDIATRICS": {
-       "n_rows": 6,
-       "ratio_minus_one": -0.2728335761879487
+       "n_rows": 19,
+       "ratio_minus_one": -0.2554390544872608
       },
       "PHYSICAL MEDICINE & REHAB": {
-       "n_rows": 443,
-       "ratio_minus_one": -0.04845371743572413
+       "n_rows": 442,
+       "ratio_minus_one": -0.016986499055694826
       },
       "PHYSICIAN ASSISTANT": {
-       "n_rows": 528,
-       "ratio_minus_one": 0.08076219402475049
+       "n_rows": 531,
+       "ratio_minus_one": 0.006396676474301088
       },
       "RHEUMATOLOGY": {
-       "n_rows": 420,
-       "ratio_minus_one": 0.26424810329396275
+       "n_rows": 403,
+       "ratio_minus_one": 0.07510933696800492
       },
       "SPORTS MEDICINE": {
-       "n_rows": 460,
-       "ratio_minus_one": 0.0994171104242012
+       "n_rows": 463,
+       "ratio_minus_one": 0.05129909338311878
       }
      },
-     "ratio_minus_one": 0.08107398237683583,
-     "slope": 1.0460885295764046
+     "ratio_minus_one": 0.037528382066245536,
+     "slope": 0.9468083618879646
     },
     "raw": {
      "by_size": {
       "1000 and over": {
-       "n_rows": 943,
-       "ratio_minus_one": 0.1109960366040117
+       "n_rows": 957,
+       "ratio_minus_one": 0.02660749784479144
       },
       "200 to 999": {
-       "n_rows": 1407,
-       "ratio_minus_one": 0.124474118632659
+       "n_rows": 1324,
+       "ratio_minus_one": 0.07547398448533404
       },
       "50 to 199": {
-       "n_rows": 2073,
-       "ratio_minus_one": 0.05271434611980874
+       "n_rows": 1966,
+       "ratio_minus_one": 0.01445688583809801
       },
       "under 50": {
-       "n_rows": 867,
-       "ratio_minus_one": 0.03850798098967112
+       "n_rows": 1027,
+       "ratio_minus_one": -0.06328741831780238
       }
      },
      "by_specialty": {
+      "ALLERGY": {
+       "n_rows": 1,
+       "ratio_minus_one": null
+      },
       "ANESTHESIOLOGY": {
-       "n_rows": 404,
-       "ratio_minus_one": 0.18548927443483776
+       "n_rows": 386,
+       "ratio_minus_one": 0.18977047127016355
+      },
+      "EMERGENCY MEDICINE": {
+       "n_rows": 24,
+       "ratio_minus_one": 0.268967517239054
       },
       "FAMILY PRACTICE": {
-       "n_rows": 448,
-       "ratio_minus_one": 0.12828277962300283
+       "n_rows": 444,
+       "ratio_minus_one": -0.12756131049069375
       },
       "GENERAL SURGERY": {
-       "n_rows": 37,
-       "ratio_minus_one": -0.041411092493240376
+       "n_rows": 33,
+       "ratio_minus_one": 0.11360334645407355
       },
       "INTERNAL MEDICINE": {
-       "n_rows": 439,
-       "ratio_minus_one": 0.3989960667679435
+       "n_rows": 438,
+       "ratio_minus_one": 1.0439810288415772
       },
       "NURSE PRACTITIONER": {
-       "n_rows": 524,
-       "ratio_minus_one": 0.1499104033307619
+       "n_rows": 526,
+       "ratio_minus_one": 0.11361738956500167
       },
       "ORTHO SURG OF SPINE": {
        "n_rows": 8,
-       "ratio_minus_one": 0.02468362323646134
+       "ratio_minus_one": -0.23252563015104422
       },
       "ORTHOPEDIC SURGERY": {
-       "n_rows": 540,
-       "ratio_minus_one": 0.09570079744664084
+       "n_rows": 531,
+       "ratio_minus_one": 0.037675712276053375
       },
       "OSTEOPATHIC MEDICINE": {
        "n_rows": 520,
-       "ratio_minus_one": 0.14987375643569845
+       "ratio_minus_one": 0.14646973710837163
       },
       "OTHER": {
-       "n_rows": 80,
-       "ratio_minus_one": 3.4897036626152493
+       "n_rows": 89,
+       "ratio_minus_one": -0.1851400639686055
       },
       "OTHER SURGERY": {
-       "n_rows": 18,
-       "ratio_minus_one": 1.36725957246018
+       "n_rows": 4,
+       "ratio_minus_one": null
       },
       "PAIN MEDICINE": {
-       "n_rows": 415,
-       "ratio_minus_one": 0.029136049920582385
+       "n_rows": 412,
+       "ratio_minus_one": -0.2294446582801174
       },
       "PEDIATRICS": {
-       "n_rows": 6,
-       "ratio_minus_one": -0.23008701249949992
+       "n_rows": 19,
+       "ratio_minus_one": -0.2073234560790327
       },
       "PHYSICAL MEDICINE & REHAB": {
-       "n_rows": 443,
-       "ratio_minus_one": -0.07508830346729911
+       "n_rows": 442,
+       "ratio_minus_one": -0.02663768884744555
       },
       "PHYSICIAN ASSISTANT": {
-       "n_rows": 528,
-       "ratio_minus_one": 0.11928675062492666
+       "n_rows": 531,
+       "ratio_minus_one": 0.0027042135279475854
       },
       "RHEUMATOLOGY": {
-       "n_rows": 420,
-       "ratio_minus_one": 0.3164477139286721
+       "n_rows": 403,
+       "ratio_minus_one": 0.057430943566527004
       },
       "SPORTS MEDICINE": {
-       "n_rows": 460,
-       "ratio_minus_one": 0.1182709372569355
+       "n_rows": 463,
+       "ratio_minus_one": 0.03794593884424646
       }
      },
-     "ratio_minus_one": 0.10917395769961402,
-     "slope": 1.0933689532900148
+     "ratio_minus_one": 0.03457880684809922,
+     "slope": 0.9462395457924158
     }
    },
    "factors": {
-    "202112": 1.0,
-    "202201": 1.0,
-    "202202": 1.0,
-    "202203": 1.0,
-    "202204": 1.0,
-    "202205": 1.0,
-    "202206": 1.0,
-    "202207": 1.0,
-    "202208": 1.0,
-    "202209": 1.0,
-    "202210": 1.0,
-    "202211": 1.0,
-    "202212": 1.0,
-    "202301": 1.0,
-    "202302": 0.9524799091551012,
-    "202303": 0.9353658168075805,
-    "202304": 0.9160242118822639,
-    "202305": 0.9044781833097632,
-    "202306": 0.9038528926667904,
-    "202307": 0.9046006068409848,
-    "202308": 0.914335901043301,
-    "202309": 0.9176126868127731,
-    "202310": 0.9170873595148659,
-    "202311": 0.9103005948145712,
-    "202312": 0.9073298533504114,
-    "202401": 0.9038280039074418,
-    "202402": 0.9045853087637835,
-    "202403": 0.8959668085710425,
-    "202404": 0.8989572723180311,
-    "202405": 0.8923951924578577,
-    "202406": 0.8787931277526754,
-    "202407": 0.8594320838928242,
-    "202408": 0.8327891503549928,
-    "202409": 0.8096288561937124,
-    "202410": 0.8042025262518416,
-    "202411": 0.8106501857197759,
-    "202412": 0.8149414883767826,
-    "202501": 0.81699284583437,
-    "202502": 0.81652763231145,
-    "202503": 0.8225717944907045,
-    "202504": 0.8298086883805771,
-    "202505": 0.8428077955940629,
-    "202506": 0.8445688520045709,
-    "202507": 0.8558343448634266
+    "202302": 1.0,
+    "202303": 1.0,
+    "202304": 1.0,
+    "202305": 1.0,
+    "202306": 1.0,
+    "202307": 1.0,
+    "202308": 1.0,
+    "202309": 1.0,
+    "202310": 1.0,
+    "202311": 1.0,
+    "202312": 1.0,
+    "202401": 1.0,
+    "202402": 1.0,
+    "202403": 1.0,
+    "202404": 0.9352065649612655,
+    "202405": 0.9276669579215074,
+    "202406": 0.9154370851760449,
+    "202407": 0.8938406062758811,
+    "202408": 0.8654144568878349,
+    "202409": 0.8454871366503133,
+    "202410": 0.8446072609228105,
+    "202411": 0.8611828647264644,
+    "202412": 0.8751870611052671,
+    "202501": 0.8836772823361743,
+    "202502": 0.8863355080029204,
+    "202503": 0.8967934958387948,
+    "202504": 0.9086870002039299,
+    "202505": 0.9302757640638205,
+    "202506": 0.937627371255167,
+    "202507": 0.9522279204468762,
+    "202508": 0.961576911493206,
+    "202509": 0.9755085798912041,
+    "202510": 0.9855880885781292,
+    "202511": 0.9804640053951202,
+    "202512": 0.9836566656069528,
+    "202601": 0.9912648944846685,
+    "202602": 1.0026702261465839,
+    "202603": 1.013231445087389,
+    "202604": 1.0146248700269807,
+    "202605": 1.0149610965482527,
+    "202606": 1.0171551226597424,
+    "202607": 1.0206648745794766,
+    "202608": 1.0396047083184397,
+    "202609": 1.048628745880236
    },
    "horizon": 3,
    "scenarios": {
     "covid_removed": {
      "bias": {
-      "base": 0.06830022234684874,
-      "e1a": 0.02814802607533151,
-      "e1b": 0.08776715409001223,
-      "raw": 0.0972048631934821
+      "base": 0.06311099986066648,
+      "e1a": 0.004629648170433542,
+      "e1b": 0.037528382066245536,
+      "raw": 0.03457880684809922
      },
-     "bias_when_corrected_e1a": -0.014909958495094577,
-     "bias_when_corrected_raw": 0.1023490819522932,
+     "bias_when_corrected_e1a": -0.047571109685594304,
+     "bias_when_corrected_raw": 0.0030365113782544473,
      "factor_active_months": 30,
      "horizon": 3,
      "log_loss": {
-      "base": 0.11209727396337016,
-      "e1a": 0.11176018504021186,
-      "e1b": 0.11179152062358504,
-      "raw": 0.11180618188676177
+      "base": 0.09806557058064526,
+      "e1a": 0.09776109381815797,
+      "e1b": 0.0977562775981769,
+      "raw": 0.09775223417314531
      },
      "n_test_months": 44,
      "variants": {
@@ -923,60 +959,60 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0003370889231582991,
-        "high": 0.00043713160737148346,
-        "low": 0.00022649754653497877,
+        "estimate": 0.0003044767624872935,
+        "high": 0.00038838255083116377,
+        "low": 0.00022724126859682096,
         "n_valid": 2000,
-        "relative_gain": 0.003007110799754587,
+        "relative_gain": 0.0031048283376570356,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 4.59968465499061e-05,
-        "high": 0.0001231919558305139,
-        "low": -3.392564824313311e-05,
+        "estimate": -8.859645012654349e-06,
+        "high": 3.2787823390484046e-05,
+        "low": -5.2248997977007164e-05,
         "n_valid": 2000,
-        "share_positive": 0.9215
+        "share_positive": 0.3015
        }
       },
       "e1b": {
-       "bias_within_limit": false,
+       "bias_within_limit": true,
        "not_less_accurate": true,
-       "passes": false,
+       "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.00030575333978512254,
-        "high": 0.0004094220946926505,
-        "low": 0.00018963259136920013,
+        "estimate": 0.00030929298246835935,
+        "high": 0.0003882602801067905,
+        "low": 0.00023271196842615283,
         "n_valid": 2000,
-        "relative_gain": 0.002727571590055197,
+        "relative_gain": 0.0031539405791149605,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 1.4661263176729555e-05,
-        "high": 4.052640368419664e-05,
-        "low": -8.974224248070595e-06,
+        "estimate": -4.043425031588499e-06,
+        "high": 4.13511288829638e-06,
+        "low": -1.2885266884748706e-05,
         "n_valid": 2000,
-        "share_positive": 0.9415
+        "share_positive": 0.1205
        }
       }
      }
     },
     "dip_2024_removed": {
      "bias": {
-      "base": 0.06086462979258078,
-      "e1a": 0.03956808282345303,
-      "e1b": 0.08854947899565357,
-      "raw": 0.10952423212904172
+      "base": 0.053123326112646474,
+      "e1a": 0.002869899157628142,
+      "e1b": 0.05175467398213174,
+      "raw": 0.043439063075464635
      },
-     "bias_when_corrected_e1a": 0.01815307523034493,
-     "bias_when_corrected_raw": 0.1443381544498814,
-     "factor_active_months": 25,
+     "bias_when_corrected_e1a": -0.05353236552523466,
+     "bias_when_corrected_raw": 0.01740011865998392,
+     "factor_active_months": 26,
      "horizon": 3,
      "log_loss": {
-      "base": 0.1137253332863695,
-      "e1a": 0.11337576734089315,
-      "e1b": 0.11343742609982099,
-      "raw": 0.11350249511234631
+      "base": 0.09824843517264514,
+      "e1a": 0.09794734568129315,
+      "e1b": 0.09795890248031204,
+      "raw": 0.09794305426346438
      },
      "n_test_months": 39,
      "variants": {
@@ -986,19 +1022,19 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0003495659454763461,
-        "high": 0.0004535407379990237,
-        "low": 0.00024257768796008224,
+        "estimate": 0.00030108949135199126,
+        "high": 0.0003907915425458199,
+        "low": 0.0002190865804434821,
         "n_valid": 2000,
-        "relative_gain": 0.003073773761525157,
+        "relative_gain": 0.0030645728944477093,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 0.0001267277714531584,
-        "high": 0.00021515662084203757,
-        "low": 4.28375037550965e-05,
+        "estimate": -4.291417828775068e-06,
+        "high": 3.663352878893396e-05,
+        "low": -3.99463059196453e-05,
         "n_valid": 2000,
-        "share_positive": 1.0
+        "share_positive": 0.389
        }
       },
       "e1b": {
@@ -1007,39 +1043,39 @@
        "passes": false,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0002879071865485028,
-        "high": 0.00039302384086420384,
-        "low": 0.00017597331330561106,
+        "estimate": 0.00028953269233310264,
+        "high": 0.0003640305175928156,
+        "low": 0.00022367144604566006,
         "n_valid": 2000,
-        "relative_gain": 0.002531601167732166,
+        "relative_gain": 0.0029469445678633657,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 6.506901252531505e-05,
-        "high": 0.00011351158502077262,
-        "low": 2.9170741961268605e-05,
+        "estimate": -1.5848216847663688e-05,
+        "high": 3.483834086817326e-06,
+        "low": -3.871588804656414e-05,
         "n_valid": 2000,
-        "share_positive": 1.0
+        "share_positive": 0.0275
        }
       }
      }
     },
     "main": {
      "bias": {
-      "base": 0.06830022234684874,
-      "e1a": 0.030293491432842545,
-      "e1b": 0.08107398237683583,
-      "raw": 0.10917395769961402
+      "base": 0.06311099986066648,
+      "e1a": 0.004629648170433542,
+      "e1b": 0.037528382066245536,
+      "raw": 0.03457880684809922
      },
-     "bias_when_corrected_e1a": 0.005222685691741447,
-     "bias_when_corrected_raw": 0.13916232397345252,
+     "bias_when_corrected_e1a": -0.047571109685594304,
+     "bias_when_corrected_raw": 0.0030365113782544473,
      "factor_active_months": 30,
      "horizon": 3,
      "log_loss": {
-      "base": 0.11209727396337016,
-      "e1a": 0.11175318912540474,
-      "e1b": 0.1117915801613718,
-      "raw": 0.1118667201189483
+      "base": 0.09806557058064526,
+      "e1a": 0.09776109381815797,
+      "e1b": 0.0977562775981769,
+      "raw": 0.09775223417314531
      },
      "n_test_months": 44,
      "variants": {
@@ -1049,60 +1085,60 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0003440848379654138,
-        "high": 0.000443603552334119,
-        "low": 0.00023859327004998007,
+        "estimate": 0.0003044767624872935,
+        "high": 0.00038838255083116377,
+        "low": 0.00022724126859682096,
         "n_valid": 2000,
-        "relative_gain": 0.00306952012122837,
+        "relative_gain": 0.0031048283376570356,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 0.00011353099354355356,
-        "high": 0.00019665017766330926,
-        "low": 2.7863942026144486e-05,
+        "estimate": -8.859645012654349e-06,
+        "high": 3.2787823390484046e-05,
+        "low": -5.2248997977007164e-05,
         "n_valid": 2000,
-        "share_positive": 0.9995
+        "share_positive": 0.3015
        }
       },
       "e1b": {
-       "bias_within_limit": false,
+       "bias_within_limit": true,
        "not_less_accurate": true,
-       "passes": false,
+       "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.0003056938019983524,
-        "high": 0.0004079535871994588,
-        "low": 0.00019515158106218634,
+        "estimate": 0.00030929298246835935,
+        "high": 0.0003882602801067905,
+        "low": 0.00023271196842615283,
         "n_valid": 2000,
-        "relative_gain": 0.00272704046396564,
+        "relative_gain": 0.0031539405791149605,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 7.513995757649217e-05,
-        "high": 0.00012233537745569227,
-        "low": 3.040199140034678e-05,
+        "estimate": -4.043425031588499e-06,
+        "high": 4.13511288829638e-06,
+        "low": -1.2885266884748706e-05,
         "n_valid": 2000,
-        "share_positive": 1.0
+        "share_positive": 0.1205
        }
       }
      }
     },
     "pediatrics_removed": {
      "bias": {
-      "base": 0.06828304278546593,
-      "e1a": 0.03061976650034892,
-      "e1b": 0.08127073091879766,
-      "raw": 0.1094822772831423
+      "base": 0.06321535695566416,
+      "e1a": 0.0048525133348957805,
+      "e1b": 0.03837412606946078,
+      "raw": 0.03546296174580599
      },
-     "bias_when_corrected_e1a": 0.005739872202744412,
-     "bias_when_corrected_raw": 0.13973063128297492,
+     "bias_when_corrected_e1a": -0.047408961068626354,
+     "bias_when_corrected_raw": 0.004403094008142983,
      "factor_active_months": 30,
      "horizon": 3,
      "log_loss": {
-      "base": 0.11206800294115735,
-      "e1a": 0.11172206109920418,
-      "e1b": 0.11176150135713338,
-      "raw": 0.11183714016580097
+      "base": 0.09799433158884849,
+      "e1a": 0.09768612641926797,
+      "e1b": 0.0976856747545122,
+      "raw": 0.09767742889081779
      },
      "n_test_months": 44,
      "variants": {
@@ -1112,40 +1148,40 @@
        "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.00034594184195316235,
-        "high": 0.00044513371031652344,
-        "low": 0.00023997557591767365,
+        "estimate": 0.00030820516958052213,
+        "high": 0.0003916427414368079,
+        "low": 0.0002300043552428201,
         "n_valid": 2000,
-        "relative_gain": 0.0030868921804094542,
+        "relative_gain": 0.0031451326274018394,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 0.00011507906659678768,
-        "high": 0.00019746096041114452,
-        "low": 3.061137169092926e-05,
+        "estimate": -8.697528450174463e-06,
+        "high": 3.320258058921263e-05,
+        "low": -5.182623867733817e-05,
         "n_valid": 2000,
-        "share_positive": 1.0
+        "share_positive": 0.303
        }
       },
       "e1b": {
-       "bias_within_limit": false,
+       "bias_within_limit": true,
        "not_less_accurate": true,
-       "passes": false,
+       "passes": true,
        "still_beats_baseline": true,
        "versus_best_baseline": {
-        "estimate": 0.00030650158402396877,
-        "high": 0.0004081307204085912,
-        "low": 0.00019460390525286332,
+        "estimate": 0.000308656834336285,
+        "high": 0.0003864595996462972,
+        "low": 0.00023172143261508186,
         "n_valid": 2000,
-        "relative_gain": 0.0027349607022523737,
+        "relative_gain": 0.0031497417180343253,
         "share_positive": 1.0
        },
        "versus_uncorrected": {
-        "estimate": 7.563880866759409e-05,
-        "high": 0.0001244735427659365,
-        "low": 3.026974247182423e-05,
+        "estimate": -8.245863694411604e-06,
+        "high": 1.1340483073233701e-06,
+        "low": -1.8266956262740634e-05,
         "n_valid": 2000,
-        "share_positive": 1.0
+        "share_positive": 0.016
        }
       }
      }
@@ -1158,151 +1194,151 @@
    "horizon": 1,
    "scenarios": {
     "covid_removed": {
-     "base_rate": 0.1558898847631242,
+     "base_rate": 0.1521378853165396,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 1,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 3.1646269678302534,
-      "random": 1.0833858088067534,
-      "recent_spike": 3.178882044261921,
-      "round1_alert": 3.164626967830254,
-      "small_segment": 1.9386903947068217
+      "model": 3.067392883079158,
+      "random": 1.2123505204550955,
+      "recent_spike": 3.1988525780682644,
+      "round1_alert": 3.0235729847494555,
+      "small_segment": 1.9426821592834662
      },
-     "n_rows": 3124,
+     "n_rows": 3017,
      "n_test_months": 45,
      "passes": false,
      "pr_auc": {
-      "model": 0.4836243219002547,
-      "random": 0.16096909127519107,
-      "recent_spike": 0.4485445367417253,
-      "round1_alert": 0.48833779586927367,
-      "small_segment": 0.2689981720314037
+      "model": 0.4565219704278054,
+      "random": 0.16547337431406323,
+      "recent_spike": 0.45438730104007996,
+      "round1_alert": 0.45448382313972263,
+      "small_segment": 0.2580316031552094
      },
      "precision_at_10": {
-      "model": 0.4933333333333334,
-      "random": 0.1688888888888889,
-      "recent_spike": 0.4955555555555556,
-      "round1_alert": 0.49333333333333346,
-      "small_segment": 0.3022222222222222
+      "model": 0.46666666666666673,
+      "random": 0.1844444444444444,
+      "recent_spike": 0.48666666666666664,
+      "round1_alert": 0.45999999999999996,
+      "small_segment": 0.2955555555555555
      },
      "versus_best_comparator": {
-      "estimate": -0.002222222222222181,
-      "high": 0.04222222222222219,
-      "low": -0.046047619047618976,
-      "share_positive": 0.469
+      "estimate": -0.019999999999999907,
+      "high": 0.031111111111111145,
+      "low": -0.06888888888888882,
+      "share_positive": 0.1545
      }
     },
     "dip_2024_removed": {
-     "base_rate": 0.15215072875933167,
+     "base_rate": 0.15109787867510235,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 1,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 3.154766355140188,
-      "random": 1.0022955607476636,
-      "recent_spike": 3.154766355140187,
-      "round1_alert": 3.072610981308411,
-      "small_segment": 1.9224357476635514
+      "model": 2.9782019704433496,
+      "random": 1.174735221674877,
+      "recent_spike": 3.176748768472907,
+      "round1_alert": 2.961656403940886,
+      "small_segment": 1.919285714285714
      },
-     "n_rows": 2813,
+     "n_rows": 2687,
      "n_test_months": 40,
      "passes": false,
      "pr_auc": {
-      "model": 0.4707671665984536,
-      "random": 0.15306180166060046,
-      "recent_spike": 0.44057422835176263,
-      "round1_alert": 0.4591253350823331,
-      "small_segment": 0.2617168338816032
+      "model": 0.4361528762021511,
+      "random": 0.16295356341760175,
+      "recent_spike": 0.44625972553531706,
+      "round1_alert": 0.4394283062360814,
+      "small_segment": 0.2566164056674738
      },
      "precision_at_10": {
-      "model": 0.4800000000000001,
-      "random": 0.1525,
-      "recent_spike": 0.48,
-      "round1_alert": 0.46749999999999997,
-      "small_segment": 0.2925
+      "model": 0.45,
+      "random": 0.17750000000000002,
+      "recent_spike": 0.4800000000000001,
+      "round1_alert": 0.44749999999999995,
+      "small_segment": 0.29
      },
      "versus_best_comparator": {
-      "estimate": 1.1102230246251565e-16,
-      "high": 0.04250000000000008,
-      "low": -0.04749999999999999,
-      "share_positive": 0.4765
+      "estimate": -0.030000000000000082,
+      "high": 0.02000000000000013,
+      "low": -0.0875000000000001,
+      "share_positive": 0.0845
      }
     },
     "main": {
-     "base_rate": 0.1558898847631242,
+     "base_rate": 0.1521378853165396,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 1,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 3.12186173853525,
-      "random": 1.0833858088067534,
-      "recent_spike": 3.178882044261921,
-      "round1_alert": 3.0790965092402467,
-      "small_segment": 1.9386903947068217
+      "model": 3.067392883079158,
+      "random": 1.2123505204550955,
+      "recent_spike": 3.1988525780682644,
+      "round1_alert": 3.0235729847494555,
+      "small_segment": 1.9426821592834662
      },
-     "n_rows": 3124,
+     "n_rows": 3017,
      "n_test_months": 45,
      "passes": false,
      "pr_auc": {
-      "model": 0.4795178771221345,
-      "random": 0.16096909127519107,
-      "recent_spike": 0.4485445367417253,
-      "round1_alert": 0.4772467870999392,
-      "small_segment": 0.2689981720314037
+      "model": 0.4565219704278054,
+      "random": 0.16547337431406323,
+      "recent_spike": 0.45438730104007996,
+      "round1_alert": 0.45448382313972263,
+      "small_segment": 0.2580316031552094
      },
      "precision_at_10": {
-      "model": 0.4866666666666667,
-      "random": 0.1688888888888889,
-      "recent_spike": 0.4955555555555556,
-      "round1_alert": 0.4800000000000001,
-      "small_segment": 0.3022222222222222
+      "model": 0.46666666666666673,
+      "random": 0.1844444444444444,
+      "recent_spike": 0.48666666666666664,
+      "round1_alert": 0.45999999999999996,
+      "small_segment": 0.2955555555555555
      },
      "versus_best_comparator": {
-      "estimate": -0.00888888888888889,
-      "high": 0.03715873015873002,
-      "low": -0.05333333333333343,
-      "share_positive": 0.3235
+      "estimate": -0.019999999999999907,
+      "high": 0.031111111111111145,
+      "low": -0.06888888888888882,
+      "share_positive": 0.1545
      }
     },
     "pediatrics_removed": {
-     "base_rate": 0.1558898847631242,
+     "base_rate": 0.1521378853165396,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 1,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 3.12186173853525,
-      "random": 1.0833858088067534,
-      "recent_spike": 3.178882044261921,
-      "round1_alert": 3.0790965092402467,
-      "small_segment": 1.9386903947068217
+      "model": 3.067392883079158,
+      "random": 1.2123505204550955,
+      "recent_spike": 3.1988525780682644,
+      "round1_alert": 3.0235729847494555,
+      "small_segment": 1.9426821592834662
      },
-     "n_rows": 3124,
+     "n_rows": 3017,
      "n_test_months": 45,
      "passes": false,
      "pr_auc": {
-      "model": 0.4795178771221345,
-      "random": 0.16096909127519107,
-      "recent_spike": 0.4485445367417253,
-      "round1_alert": 0.4772467870999392,
-      "small_segment": 0.2689981720314037
+      "model": 0.4565219704278054,
+      "random": 0.16547337431406323,
+      "recent_spike": 0.45438730104007996,
+      "round1_alert": 0.45448382313972263,
+      "small_segment": 0.2580316031552094
      },
      "precision_at_10": {
-      "model": 0.4866666666666667,
-      "random": 0.1688888888888889,
-      "recent_spike": 0.4955555555555556,
-      "round1_alert": 0.4800000000000001,
-      "small_segment": 0.3022222222222222
+      "model": 0.46666666666666673,
+      "random": 0.1844444444444444,
+      "recent_spike": 0.48666666666666664,
+      "round1_alert": 0.45999999999999996,
+      "small_segment": 0.2955555555555555
      },
      "versus_best_comparator": {
-      "estimate": -0.00888888888888889,
-      "high": 0.03715873015873002,
-      "low": -0.05333333333333343,
-      "share_positive": 0.3235
+      "estimate": -0.019999999999999907,
+      "high": 0.031111111111111145,
+      "low": -0.06888888888888882,
+      "share_positive": 0.1545
      }
     }
    }
@@ -1311,151 +1347,151 @@
    "horizon": 3,
    "scenarios": {
     "covid_removed": {
-     "base_rate": 0.1625124626121635,
+     "base_rate": 0.14563106796116504,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 3,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 2.5758310743330006,
-      "random": 1.1448138108146668,
-      "recent_spike": 2.8477243544014845,
-      "round1_alert": 2.6903124554144666,
-      "small_segment": 1.6599800256812667
+      "model": 2.602945736434109,
+      "random": 1.2136434108527132,
+      "recent_spike": 2.7626356589147285,
+      "round1_alert": 2.618914728682171,
+      "small_segment": 1.8683720930232561
      },
-     "n_rows": 3009,
+     "n_rows": 2884,
      "n_test_months": 43,
      "passes": false,
      "pr_auc": {
-      "model": 0.38491546789613995,
-      "random": 0.17169783559886415,
-      "recent_spike": 0.3847796042425698,
-      "round1_alert": 0.389017523743811,
-      "small_segment": 0.24795879406076315
+      "model": 0.3645595042421008,
+      "random": 0.1569686710584272,
+      "recent_spike": 0.345718621964965,
+      "round1_alert": 0.35370074429838977,
+      "small_segment": 0.22956616972179186
      },
      "precision_at_10": {
-      "model": 0.4186046511627907,
-      "random": 0.18604651162790697,
-      "recent_spike": 0.4627906976744187,
-      "round1_alert": 0.4372093023255813,
-      "small_segment": 0.2697674418604651
+      "model": 0.3790697674418605,
+      "random": 0.17674418604651163,
+      "recent_spike": 0.4023255813953488,
+      "round1_alert": 0.3813953488372093,
+      "small_segment": 0.27209302325581397
      },
      "versus_best_comparator": {
-      "estimate": -0.044186046511628,
-      "high": -0.007624584717608081,
-      "low": -0.07906976744186045,
-      "share_positive": 0.0005
+      "estimate": -0.023255813953488302,
+      "high": 0.009302325581395321,
+      "low": -0.06279069767441864,
+      "share_positive": 0.0435
      }
     },
     "dip_2024_removed": {
-     "base_rate": 0.15517241379310345,
+     "base_rate": 0.14172917489143308,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 3,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 2.577777777777778,
-      "random": 1.1023391812865495,
-      "recent_spike": 2.9,
-      "round1_alert": 2.7643274853801167,
-      "small_segment": 1.7637426900584796
+      "model": 2.6366075355519714,
+      "random": 1.2068978155695647,
+      "recent_spike": 2.803716463861604,
+      "round1_alert": 2.6180398768509017,
+      "small_segment": 1.9496041636123738
      },
-     "n_rows": 2668,
+     "n_rows": 2533,
      "n_test_months": 38,
      "passes": false,
      "pr_auc": {
-      "model": 0.34998840911279094,
-      "random": 0.15835166477418341,
-      "recent_spike": 0.38323337324533824,
-      "round1_alert": 0.3863353909481664,
-      "small_segment": 0.2508354753288154
+      "model": 0.3517698085054529,
+      "random": 0.15042541888557467,
+      "recent_spike": 0.34748315932120327,
+      "round1_alert": 0.34333650398471655,
+      "small_segment": 0.23305218772787345
      },
      "precision_at_10": {
-      "model": 0.4,
-      "random": 0.17105263157894735,
-      "recent_spike": 0.45,
-      "round1_alert": 0.42894736842105263,
-      "small_segment": 0.2736842105263158
+      "model": 0.37368421052631573,
+      "random": 0.17105263157894737,
+      "recent_spike": 0.3973684210526316,
+      "round1_alert": 0.37105263157894736,
+      "small_segment": 0.27631578947368424
      },
      "versus_best_comparator": {
-      "estimate": -0.04999999999999999,
-      "high": 0.005263157894736883,
-      "low": -0.09999999999999996,
-      "share_positive": 0.012
+      "estimate": -0.023684210526315863,
+      "high": 0.010526315789473772,
+      "low": -0.05789473684210528,
+      "share_positive": 0.0395
      }
     },
     "main": {
-     "base_rate": 0.1625124626121635,
+     "base_rate": 0.14563106796116504,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 3,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 2.6187615922385503,
-      "random": 1.1448138108146668,
-      "recent_spike": 2.8477243544014845,
-      "round1_alert": 2.70462262804965,
-      "small_segment": 1.6599800256812667
+      "model": 2.602945736434109,
+      "random": 1.2136434108527132,
+      "recent_spike": 2.7626356589147285,
+      "round1_alert": 2.618914728682171,
+      "small_segment": 1.8683720930232561
      },
-     "n_rows": 3009,
+     "n_rows": 2884,
      "n_test_months": 43,
      "passes": false,
      "pr_auc": {
-      "model": 0.3556265655674714,
-      "random": 0.17169783559886415,
-      "recent_spike": 0.3847796042425698,
-      "round1_alert": 0.3921342483218678,
-      "small_segment": 0.24795879406076315
+      "model": 0.3645595042421008,
+      "random": 0.1569686710584272,
+      "recent_spike": 0.345718621964965,
+      "round1_alert": 0.35370074429838977,
+      "small_segment": 0.22956616972179186
      },
      "precision_at_10": {
-      "model": 0.4255813953488372,
-      "random": 0.18604651162790697,
-      "recent_spike": 0.4627906976744187,
-      "round1_alert": 0.4395348837209302,
-      "small_segment": 0.2697674418604651
+      "model": 0.3790697674418605,
+      "random": 0.17674418604651163,
+      "recent_spike": 0.4023255813953488,
+      "round1_alert": 0.3813953488372093,
+      "small_segment": 0.27209302325581397
      },
      "versus_best_comparator": {
-      "estimate": -0.037209302325581506,
-      "high": 0.009302325581395487,
-      "low": -0.0837209302325581,
-      "share_positive": 0.0265
+      "estimate": -0.023255813953488302,
+      "high": 0.009302325581395321,
+      "low": -0.06279069767441864,
+      "share_positive": 0.0435
      }
     },
     "pediatrics_removed": {
-     "base_rate": 0.1625124626121635,
+     "base_rate": 0.14563106796116504,
      "beats_best_comparator": false,
      "best_comparator": "recent_spike",
      "horizon": 3,
      "lift_at_least_2": true,
      "lift_over_base_rate": {
-      "model": 2.6187615922385503,
-      "random": 1.1448138108146668,
-      "recent_spike": 2.8477243544014845,
-      "round1_alert": 2.70462262804965,
-      "small_segment": 1.6599800256812667
+      "model": 2.602945736434109,
+      "random": 1.2136434108527132,
+      "recent_spike": 2.7626356589147285,
+      "round1_alert": 2.618914728682171,
+      "small_segment": 1.8683720930232561
      },
-     "n_rows": 3009,
+     "n_rows": 2884,
      "n_test_months": 43,
      "passes": false,
      "pr_auc": {
-      "model": 0.3556265655674714,
-      "random": 0.17169783559886415,
-      "recent_spike": 0.3847796042425698,
-      "round1_alert": 0.3921342483218678,
-      "small_segment": 0.24795879406076315
+      "model": 0.3645595042421008,
+      "random": 0.1569686710584272,
+      "recent_spike": 0.345718621964965,
+      "round1_alert": 0.35370074429838977,
+      "small_segment": 0.22956616972179186
      },
      "precision_at_10": {
-      "model": 0.4255813953488372,
-      "random": 0.18604651162790697,
-      "recent_spike": 0.4627906976744187,
-      "round1_alert": 0.4395348837209302,
-      "small_segment": 0.2697674418604651
+      "model": 0.3790697674418605,
+      "random": 0.17674418604651163,
+      "recent_spike": 0.4023255813953488,
+      "round1_alert": 0.3813953488372093,
+      "small_segment": 0.27209302325581397
      },
      "versus_best_comparator": {
-      "estimate": -0.037209302325581506,
-      "high": 0.009302325581395487,
-      "low": -0.0837209302325581,
-      "share_positive": 0.0265
+      "estimate": -0.023255813953488302,
+      "high": 0.009302325581395321,
+      "low": -0.06279069767441864,
+      "share_positive": 0.0435
      }
     }
    }
@@ -1467,47 +1503,47 @@
    "covid_removed": {
     "beats_best_comparator": true,
     "best_comparator": "random",
-    "chance_hit_rate": 0.405086638659516,
+    "chance_hit_rate": 0.4060627322917652,
     "horizon": 3,
-    "log_loss": 0.11180618188676177,
+    "log_loss": 0.09775223417314532,
     "mean_spearman": {
-     "model": 0.5021428835836035,
-     "random": 0.008615524068163342,
-     "segment_trend": -0.37914417262541866,
-     "specialty_trend": -0.1433070756055859
+     "model": 0.48408867378602155,
+     "random": 0.008378243538233559,
+     "segment_trend": -0.37866065093178086,
+     "specialty_trend": -0.1221123377083416
     },
-    "n_rows": 3067,
+    "n_rows": 2953,
     "n_test_months": 44,
     "passes": true,
     "top_fifth_hit_rate": {
-     "model": 0.7030430187014413,
-     "random": 0.40667212689271515,
-     "segment_trend": 0.21182712118540994,
-     "specialty_trend": 0.34507288055082175
+     "model": 0.6915778517382796,
+     "random": 0.421883853668613,
+     "segment_trend": 0.20942854493990862,
+     "specialty_trend": 0.32998226706448625
     },
     "versus_best_comparator": {
-     "estimate": 0.49352735951544013,
-     "high": 0.5655279919088598,
-     "low": 0.4278939991650548,
+     "estimate": 0.475710430247788,
+     "high": 0.5411270844532008,
+     "low": 0.41087551441130005,
      "share_positive": 1.0
     },
     "versus_each_comparator": {
      "random": {
-      "estimate": 0.49352735951544013,
-      "high": 0.5655279919088598,
-      "low": 0.4278939991650548,
+      "estimate": 0.475710430247788,
+      "high": 0.5411270844532008,
+      "low": 0.41087551441130005,
       "share_positive": 1.0
      },
      "segment_trend": {
-      "estimate": 0.8812870562090221,
-      "high": 0.9469951899015009,
-      "low": 0.8133642951970367,
+      "estimate": 0.8627493247178024,
+      "high": 0.9389936749135009,
+      "low": 0.7894921281592775,
       "share_positive": 1.0
      },
      "specialty_trend": {
-      "estimate": 0.6454499591891893,
-      "high": 0.725553684451037,
-      "low": 0.5744215607094515,
+      "estimate": 0.6062010114943631,
+      "high": 0.6868499983111754,
+      "low": 0.5330806112650908,
       "share_positive": 1.0
      }
     }
@@ -1515,47 +1551,47 @@
    "dip_2024_removed": {
     "beats_best_comparator": true,
     "best_comparator": "random",
-    "chance_hit_rate": 0.4049347997497128,
+    "chance_hit_rate": 0.4063563173714391,
     "horizon": 3,
-    "log_loss": 0.11350249511234631,
+    "log_loss": 0.09794305426346438,
     "mean_spearman": {
-     "model": 0.4923197058176906,
-     "random": 0.004666473257389503,
-     "segment_trend": -0.38656741050009613,
-     "specialty_trend": -0.1501943541587237
+     "model": 0.49502334933871905,
+     "random": 0.005444201350615524,
+     "segment_trend": -0.3869209937772563,
+     "specialty_trend": -0.13154874740933029
     },
-    "n_rows": 2742,
+    "n_rows": 2616,
     "n_test_months": 39,
     "passes": true,
     "top_fifth_hit_rate": {
-     "model": 0.697450243321284,
-     "random": 0.3986752689241377,
-     "segment_trend": 0.2078489132787775,
-     "specialty_trend": 0.3444411985701579
+     "model": 0.6958346329387054,
+     "random": 0.4091451911587659,
+     "segment_trend": 0.19695272676041906,
+     "specialty_trend": 0.321090165490618
     },
     "versus_best_comparator": {
-     "estimate": 0.4876532325603011,
-     "high": 0.5562427623884014,
-     "low": 0.41544106294525524,
+     "estimate": 0.48957914798810354,
+     "high": 0.5609327194938711,
+     "low": 0.41582875360808014,
      "share_positive": 1.0
     },
     "versus_each_comparator": {
      "random": {
-      "estimate": 0.4876532325603011,
-      "high": 0.5562427623884014,
-      "low": 0.41544106294525524,
+      "estimate": 0.48957914798810354,
+      "high": 0.5609327194938711,
+      "low": 0.41582875360808014,
       "share_positive": 1.0
      },
      "segment_trend": {
-      "estimate": 0.8788871163177867,
-      "high": 0.9470552782882481,
-      "low": 0.8084447355778426,
+      "estimate": 0.8819443431159754,
+      "high": 0.9540683127357653,
+      "low": 0.8104929790317166,
       "share_positive": 1.0
      },
      "specialty_trend": {
-      "estimate": 0.6425140599764143,
-      "high": 0.7262087628349938,
-      "low": 0.564217440957158,
+      "estimate": 0.6265720967480494,
+      "high": 0.7072614051828665,
+      "low": 0.5475193690463237,
       "share_positive": 1.0
      }
     }
@@ -1563,47 +1599,47 @@
    "main": {
     "beats_best_comparator": true,
     "best_comparator": "random",
-    "chance_hit_rate": 0.405086638659516,
+    "chance_hit_rate": 0.4060627322917652,
     "horizon": 3,
-    "log_loss": 0.1118667201189483,
+    "log_loss": 0.09775223417314532,
     "mean_spearman": {
-     "model": 0.49199040286076784,
-     "random": 0.008615524068163342,
-     "segment_trend": -0.37914417262541866,
-     "specialty_trend": -0.1433070756055859
+     "model": 0.48408867378602155,
+     "random": 0.008378243538233559,
+     "segment_trend": -0.37866065093178086,
+     "specialty_trend": -0.1221123377083416
     },
-    "n_rows": 3067,
+    "n_rows": 2953,
     "n_test_months": 44,
     "passes": true,
     "top_fifth_hit_rate": {
-     "model": 0.700076666871453,
-     "random": 0.40667212689271515,
-     "segment_trend": 0.21182712118540994,
-     "specialty_trend": 0.34507288055082175
+     "model": 0.6915778517382796,
+     "random": 0.421883853668613,
+     "segment_trend": 0.20942854493990862,
+     "specialty_trend": 0.32998226706448625
     },
     "versus_best_comparator": {
-     "estimate": 0.4833748787926045,
-     "high": 0.5561731254489498,
-     "low": 0.4157613271709801,
+     "estimate": 0.475710430247788,
+     "high": 0.5411270844532008,
+     "low": 0.41087551441130005,
      "share_positive": 1.0
     },
     "versus_each_comparator": {
      "random": {
-      "estimate": 0.4833748787926045,
-      "high": 0.5561731254489498,
-      "low": 0.4157613271709801,
+      "estimate": 0.475710430247788,
+      "high": 0.5411270844532008,
+      "low": 0.41087551441130005,
       "share_positive": 1.0
      },
      "segment_trend": {
-      "estimate": 0.8711345754861866,
-      "high": 0.9380216572170522,
-      "low": 0.8018510175585476,
+      "estimate": 0.8627493247178024,
+      "high": 0.9389936749135009,
+      "low": 0.7894921281592775,
       "share_positive": 1.0
      },
      "specialty_trend": {
-      "estimate": 0.6352974784663538,
-      "high": 0.7166084840935246,
-      "low": 0.5616583475795026,
+      "estimate": 0.6062010114943631,
+      "high": 0.6868499983111754,
+      "low": 0.5330806112650908,
       "share_positive": 1.0
      }
     }
@@ -1611,47 +1647,47 @@
    "pediatrics_removed": {
     "beats_best_comparator": true,
     "best_comparator": "random",
-    "chance_hit_rate": 0.405086638659516,
+    "chance_hit_rate": 0.4060627322917652,
     "horizon": 3,
-    "log_loss": 0.11183714016580097,
+    "log_loss": 0.09767742889081779,
     "mean_spearman": {
-     "model": 0.49174519064478767,
-     "random": 0.008615524068163342,
-     "segment_trend": -0.37914417262541866,
-     "specialty_trend": -0.1433070756055859
+     "model": 0.4836452849477796,
+     "random": 0.008378243538233559,
+     "segment_trend": -0.37866065093178086,
+     "specialty_trend": -0.1221123377083416
     },
-    "n_rows": 3067,
+    "n_rows": 2953,
     "n_test_months": 44,
     "passes": true,
     "top_fifth_hit_rate": {
-     "model": 0.700076666871453,
-     "random": 0.40667212689271515,
-     "segment_trend": 0.21182712118540994,
-     "specialty_trend": 0.34507288055082175
+     "model": 0.6882270358874637,
+     "random": 0.421883853668613,
+     "segment_trend": 0.20942854493990862,
+     "specialty_trend": 0.32998226706448625
     },
     "versus_best_comparator": {
-     "estimate": 0.4831296665766243,
-     "high": 0.5558453023818354,
-     "low": 0.41538506068012265,
+     "estimate": 0.475267041409546,
+     "high": 0.5403992094884464,
+     "low": 0.41022397945581024,
      "share_positive": 1.0
     },
     "versus_each_comparator": {
      "random": {
-      "estimate": 0.4831296665766243,
-      "high": 0.5558453023818354,
-      "low": 0.41538506068012265,
+      "estimate": 0.475267041409546,
+      "high": 0.5403992094884464,
+      "low": 0.41022397945581024,
       "share_positive": 1.0
      },
      "segment_trend": {
-      "estimate": 0.8708893632702064,
-      "high": 0.9380440286442652,
-      "low": 0.8008609774601398,
+      "estimate": 0.8623059358795604,
+      "high": 0.9395096920435226,
+      "low": 0.7876803078067894,
       "share_positive": 1.0
      },
      "specialty_trend": {
-      "estimate": 0.6350522662503736,
-      "high": 0.7163520861639379,
-      "low": 0.5612281625714634,
+      "estimate": 0.6057576226561212,
+      "high": 0.6859573866482946,
+      "low": 0.531972220725551,
       "share_positive": 1.0
      }
     }
@@ -1674,13 +1710,13 @@
    "pediatrics_removed"
   ],
   "seed": 0,
-  "status": "exploratory and provisional until confirmed on months after July 2025",
+  "status": "exploratory and provisional: re-run on the Nov 2026 data, not yet tested on the months after July 2025 on their own",
   "tests": 7
  },
  "summary": [
   {
-   "bias_after": 0.010480655208712664,
-   "bias_before": 0.05493906172990992,
+   "bias_after": 0.0025425724260859095,
+   "bias_before": 0.015796286053852304,
    "checks": {
     "bias_within_limit": true,
     "not_less_accurate": true,
@@ -1691,8 +1727,8 @@
    "test": "E1a"
   },
   {
-   "bias_after": 0.030293491432842545,
-   "bias_before": 0.10917395769961402,
+   "bias_after": 0.004629648170433542,
+   "bias_before": 0.03457880684809922,
    "checks": {
     "bias_within_limit": true,
     "not_less_accurate": true,
@@ -1703,31 +1739,31 @@
    "test": "E1a"
   },
   {
-   "bias_after": 0.03865445256873956,
-   "bias_before": 0.05493906172990992,
+   "bias_after": 0.013798134757523561,
+   "bias_before": 0.015796286053852304,
    "checks": {
-    "bias_within_limit": false,
+    "bias_within_limit": true,
     "not_less_accurate": true,
     "still_beats_baseline": true
    },
    "horizon": 1,
-   "passes": false,
+   "passes": true,
    "test": "E1b"
   },
   {
-   "bias_after": 0.08107398237683583,
-   "bias_before": 0.10917395769961402,
+   "bias_after": 0.037528382066245536,
+   "bias_before": 0.03457880684809922,
    "checks": {
-    "bias_within_limit": false,
+    "bias_within_limit": true,
     "not_less_accurate": true,
     "still_beats_baseline": true
    },
    "horizon": 3,
-   "passes": false,
+   "passes": true,
    "test": "E1b"
   },
   {
-   "base_rate": 0.1558898847631242,
+   "base_rate": 0.1521378853165396,
    "best_comparator": "recent_spike",
    "checks": {
     "beats_best_comparator": false,
@@ -1735,11 +1771,11 @@
    },
    "horizon": 1,
    "passes": false,
-   "precision_at_10": 0.4866666666666667,
+   "precision_at_10": 0.46666666666666673,
    "test": "E2"
   },
   {
-   "base_rate": 0.1625124626121635,
+   "base_rate": 0.14563106796116504,
    "best_comparator": "recent_spike",
    "checks": {
     "beats_best_comparator": false,
@@ -1747,7 +1783,7 @@
    },
    "horizon": 3,
    "passes": false,
-   "precision_at_10": 0.4255813953488372,
+   "precision_at_10": 0.3790697674418605,
    "test": "E2"
   },
   {
@@ -1756,10 +1792,10 @@
     "beats_best_comparator": true
    },
    "horizon": 3,
-   "mean_spearman": 0.49199040286076784,
+   "mean_spearman": 0.48408867378602155,
    "passes": true,
    "test": "E3"
   }
  ],
- "tests_passed": 3
+ "tests_passed": 5
 }

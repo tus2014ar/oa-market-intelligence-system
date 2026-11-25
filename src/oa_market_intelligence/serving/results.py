@@ -27,7 +27,8 @@ COMPARATOR_NAMES = {
 }
 PROVISIONAL = (
     "Round 2 was designed after seeing round 1's results, on the same test months. A pass is "
-    "provisional: it is checked again on months after July 2025 and adopted only if it holds. "
+    "provisional: it passed 5 of 7 tests when re-run on the Nov 2026 data, but the months after "
+    "July 2025 have not been tested on their own, and it is adopted only if it holds there. "
     "Nothing from round 2 is used by the site yet."
 )
 
@@ -96,10 +97,17 @@ def round2_rows(round2: dict, posthoc: dict) -> list[dict]:
             before, after = 100 * line["bias_before"], 100 * line["bias_after"]
             limit = 2.5 if horizon == 1 else 5.0
             result = f"{before:.1f}% to {after:.1f}% too high"
-            if passed:
+            if passed and after <= 0.5 * before:
                 plain = (
                     "Most of the upward bias is removed and accuracy is not lost "
                     f"(limit {limit:g}%)."
+                )
+            elif passed:
+                # a pass on the limit alone: the bias was small to begin with, so the test shows
+                # the adjustment did no harm, not that it helped
+                plain = (
+                    f"The bias was already inside the {limit:g}% limit and the adjustment did not "
+                    "reduce it much: a pass that shows no harm, not a gain."
                 )
             else:
                 plain = (

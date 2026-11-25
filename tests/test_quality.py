@@ -265,4 +265,4 @@ def test_the_committed_baseline_has_the_expected_shape():
     assert {"specialty", "product", "age_band", "gender", "place_of_service"} <= set(
         baseline["sets"]
     )
-    assert baseline["months"][0] == 201908 and baseline["months"][1] >= 202507
+    assert baseline["months"][0] == 202010 and baseline["months"][1] >= 202609

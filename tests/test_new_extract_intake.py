@@ -96,6 +96,12 @@ def test_labels_with_a_year_are_unchanged(tmp_path):
     assert sorted(parsed["month"].unique()) == [pd.Timestamp(m) for m in MONTHS]
 
 
+def test_a_repeated_dated_label_is_rejected(tmp_path):
+    path = _synthetic(tmp_path, ["Oct 2020", "Oct 2020", "Dec 2020", "Jan 2021"])
+    with pytest.raises(PlaceOfServiceError, match="appears twice"):
+        parse_place_of_service(path)
+
+
 def test_a_label_whose_month_name_disagrees_with_the_pivot_is_rejected(tmp_path):
     path = _synthetic(tmp_path, ["Oct...", "Nov...", "Feb...", "Jan..."])
     with pytest.raises(PlaceOfServiceError, match="label 3 is 'Feb...' but the pivot month is Dec"):
@@ -103,6 +109,7 @@ def test_a_label_whose_month_name_disagrees_with_the_pivot_is_rejected(tmp_path)
 
 
 def test_a_different_number_of_labels_than_pivot_months_is_rejected(tmp_path):
+    # a sheet that lists only the months with visits cannot be dated without guessing
     path = _synthetic(tmp_path, ["Oct...", "Nov...", "Dec..."])
     with pytest.raises(PlaceOfServiceError, match="3 labels but the pivot sheet has 4 months"):
         parse_place_of_service(path)
@@ -126,16 +133,3 @@ def test_a_mix_of_dated_and_undated_labels_is_rejected(tmp_path):
     path = _synthetic(tmp_path, ["Oct 2020", "Nov...", "Dec...", "Jan..."])
     with pytest.raises(PlaceOfServiceError, match="is not 'Mon YYYY'"):
         parse_place_of_service(path)
-
-
-def test_a_sparse_sheet_without_years_is_rejected_not_guessed(tmp_path):
-    # the committed RA workbook lists only the 58 months that had RA visits, so with the years
-    # removed there is no telling which of the 72 pivot months are missing
-    workbook = load_workbook(RA_FILE)
-    ws = workbook[POS_SHEET]
-    for row in range(HEADER_ROW + 1, ws.max_row + 1):
-        label = ws.cell(row, 1).value
-        if isinstance(label, str):
-            ws.cell(row, 1).value = datetime.strptime(label, "%b %Y").strftime("%b") + "..."
-    with pytest.raises(PlaceOfServiceError, match="58 labels but the pivot sheet has 72 months"):
-        parse_place_of_service(_save(tmp_path, workbook))

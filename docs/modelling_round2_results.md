@@ -1,5 +1,7 @@
 # Modelling round 2: results (DL-92, DL-96)
 
+> **Earlier extract.** The numbers on this page are from the earlier IQVIA extract (Aug 2019 to Jul 2025). The pre-registered plan was re-run on IQVIA's Nov 2026 pull (Oct 2020 to Sep 2026); where the two differ, [`rerun_nov_2026.md`](rerun_nov_2026.md) is the current state and this page is the record of the earlier run.
+
 The tests are the seven fixed in [`modelling_round2_plan.md`](modelling_round2_plan.md) (DL-92, with the implementation choices in its sections 14 to 16) before any code was run. The code and the plan were not changed after the first result. The run was repeated once from the same code, data and seed (0; 2,000 bootstrap draws) and the two output files are **byte-identical**. Raw numbers: [`data/reference/modelling_round2_results.json`](../data/reference/modelling_round2_results.json); runner: `modeling/round2/run.py` (`oa-model-round2 --run`). One check was added **after** the results were seen and is labelled post hoc: [`data/reference/modelling_round2_posthoc.json`](../data/reference/modelling_round2_posthoc.json), `modeling/round2/posthoc.py`.
 
 **Round 2 is exploratory.** The experiments were chosen after seeing round 1, on the same test months. A pass is **provisional**: it is re-run on months after July 2025 and adopted, under a new decision, only if it holds there. **Nothing served has changed**: no warehouse table, `serving_models.json` or site wording.

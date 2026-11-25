@@ -215,7 +215,7 @@ jobs:
           for i in $(seq 1 30); do curl -fs http://localhost:8000/health && break; sleep 2; done
           curl -fs http://localhost:8000/health | grep -q '"auth":"api-key"'
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/v1/status)" = "401"
-          curl -fs -H "X-API-Key: ci-key" http://localhost:8000/v1/status | grep -q "Jul 2025"
+          curl -fs -H "X-API-Key: ci-key" http://localhost:8000/v1/status | grep -q "Sep 2026"
           test "$(docker exec api id -u)" != "0"
           docker logs api | tail -5
           docker rm -f api

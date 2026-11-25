@@ -90,7 +90,7 @@ def test_the_refit_reproduces_the_stored_forecasts_and_the_pieces_add_up(fresh):
     for horizon in ("1", "3"):
         h = fresh["horizons"][horizon]
         assert h["matches_stored_forecasts"] and h["contributions_add_up"]
-        assert h["segments"] == 113 and h["C"] > 0
+        assert h["segments"] == 122 and h["C"] > 0
         assert sum(h["group_share_of_movement_pct"].values()) == pytest.approx(100.0, abs=0.5)
 
 
@@ -98,9 +98,10 @@ def test_the_refit_reproduces_the_stored_forecasts_and_the_pieces_add_up(fresh):
 def test_what_the_model_relies_on_matches_what_the_deck_says(fresh):
     one, three = fresh["horizons"]["1"], fresh["horizons"]["3"]
     ranked = list(one["group_share_of_movement_pct"])
-    assert ranked[0] == explain.OWN_RECENT and ranked[1] == explain.CONTEXT
-    assert 39 <= one["group_share_of_movement_pct"][explain.OWN_RECENT] <= 42
-    assert one["group_share_of_movement_pct"][explain.SEASON] < 1.0  # time of year barely matters
+    # on the Nov 2026 data the segment's long-run share edges out the specialty and market context
+    assert ranked[0] == explain.OWN_RECENT and ranked[1] == explain.LONG_RUN
+    assert 35 <= one["group_share_of_movement_pct"][explain.OWN_RECENT] <= 39
+    assert one["group_share_of_movement_pct"][explain.SEASON] < 2.5  # time of year matters little
     assert (
         three["group_share_of_movement_pct"][explain.OWN_RECENT]
         > one["group_share_of_movement_pct"][explain.OWN_RECENT]

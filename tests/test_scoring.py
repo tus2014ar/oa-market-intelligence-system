@@ -69,7 +69,7 @@ def test_the_committed_map_is_allowed_and_agrees_with_the_registered_results():
     scores = model_scores_frame(load_results(RESULTS_JSON))
     validate_serving_map(serving)  # allowed names and horizons
     validate_serving_map(serving, scores)  # every adopted model is what the rule chose
-    assert serving["decision"] == "DL-79"
+    assert serving["decision"] == "DL-130"
     assert serving["alert"] == {"1": "logistic"}  # narrower than the registered rule: 1 month only
     assert serving["segment"] == {"1": "logistic", "3": "logistic", "6": "last_month"}
 
@@ -83,6 +83,24 @@ def test_a_map_naming_something_unsupported_is_refused():
     ):
         with pytest.raises(ServingMapError):
             validate_serving_map(bad)
+
+
+def test_the_baseline_may_serve_where_the_rule_chose_a_model_only_with_a_written_reason():
+    scores = _scores_frame([
+        ("T2", 6, "main", "gbm", 1, 0.02),  # the rule's choice
+        ("T2", 6, "main", "last_month", 0, None),
+        ("T2", 6, "main", "logistic", 0, 0.01),
+    ])
+    reason = {"segment": {"6": "kept the baseline for now (DL-130)"}}
+    validate_serving_map({"segment": {"6": "last_month"}, "exceptions": reason}, scores)
+    for bad in (
+        {"segment": {"6": "last_month"}},  # no reason
+        {"segment": {"6": "last_month"}, "exceptions": {"segment": {"6": "  "}}},  # a blank one
+        {"segment": {"6": "last_month"}, "exceptions": {"segment": {"3": "x"}}},  # another horizon
+        {"segment": {"6": "logistic"}, "exceptions": reason},  # a fitted model is never excepted
+    ):
+        with pytest.raises(ServingMapError):
+            validate_serving_map(bad, scores)
 
 
 def test_a_model_the_registered_rule_did_not_choose_is_refused():
@@ -295,7 +313,14 @@ def test_the_job_reproduces_the_stored_batch_demonstration_on_the_real_data(monk
     segment["segment"] = (
         segment["specialty_name"] + "|" + segment["age_band"] + "|" + segment["gender"]
     )
-    for horizon in (1, 3, 6):  # the demonstration's step k uses the model of horizon k here
+    demo_models = load_results(RESULTS_JSON)["demonstration"]["serving_t2"]
+    adopted = load_serving_map()["segment"]
+    # The demonstration uses the rule's choice. At 6 months that is gradient boosting, but the job
+    # serves the baseline there by a recorded exception (DL-130), so the two differ and only the
+    # horizons that use the same model can be compared.
+    same = [h for h in (1, 3, 6) if demo_models[str(h)] == adopted[str(h)]]
+    assert same == [1, 3]
+    for horizon in same:  # the demonstration's step k uses the model of horizon k here
         target = int(month_id_from_index(month_index(202212) + horizon))
         part = segment[segment["horizon"] == horizon].merge(
             outcomes[outcomes["month_id"] == target][["segment", "y_visits"]], on="segment")

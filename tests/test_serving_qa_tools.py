@@ -76,9 +76,9 @@ def test_the_definitions_match_the_tools_and_none_takes_sql(snap):
 
 def test_the_headline_numbers_are_the_sites(snap):
     out = _run(snap, "get_data_status")
-    assert out["latest_month"] == "Jul 2025" and out["latest_share_pct"] == 1.88
-    assert out["peak_month"] == "Dec 2021" and out["peak_share_pct"] == 3.38
-    assert out["change_since_peak_pct"] == pytest.approx(-44.2, abs=0.1)
+    assert out["latest_month"] == "Sep 2026" and out["latest_share_pct"] == 1.89
+    assert out["peak_month"] == "Dec 2021" and out["peak_share_pct"] == 3.36
+    assert out["change_since_peak_pct"] == pytest.approx(-43.9, abs=0.1)
     assert out["months_of_data"] == 72 and out["freshness"] in ("stale", "fresh")
     assert any("prescription-volume" in item for item in out["limits"])
     assert any("sales rose" in item for item in out["limits"])
@@ -88,9 +88,9 @@ def test_the_trend_can_be_cut_to_a_range_and_summed_by_year(snap):
     out = _run(snap, "get_market_trend", start_month_id=202110, end_month_id=202203)
     assert [r["month"] for r in out["rows"]][:2] == ["Oct 2021", "Nov 2021"]
     assert len(out["rows"]) == 6
-    assert out["rows"][2]["share_pct"] == pytest.approx(3.38, abs=0.01)  # Dec 2021 is the peak
+    assert out["rows"][2]["share_pct"] == pytest.approx(3.36, abs=0.01)  # Dec 2021 is the peak
     years = _run(snap, "get_market_trend", by_year=True)["rows"]
-    assert [r["year"] for r in years][:2] == [2019, 2020] and years[0]["partial_year"] is True
+    assert [r["year"] for r in years][:2] == [2020, 2021] and years[0]["partial_year"] is True
     assert "error" in _run(snap, "get_market_trend", start_month_id=210001)
 
 
@@ -129,7 +129,7 @@ def test_the_model_results_say_what_to_use_and_what_not_to(snap):
     assert board[("National share", 1)]["verdict"] == "No model beat the simple rule"
     assert board[("Decline alert", 3)]["adopted"] is False
     assert [r["what"] for r in out["use_and_dont"]][0] == "National share forecast"
-    assert out["decision"] == "DL-79"
+    assert out["decision"] == "DL-130"
     assert [r["horizon"] for r in out["segment_bias"]] == [1, 3, 6]
 
 

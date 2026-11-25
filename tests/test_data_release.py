@@ -241,5 +241,5 @@ def test_prepare_refuses_a_bad_warehouse_with_a_message_and_a_failing_status(tmp
 def test_the_published_warehouse_makes_a_valid_pointer_that_verifies_against_itself():
     pointer = dr.build_pointer(data.DB_PATH, data.RUN_LOG, now=NOW)
     dr.verify_database(data.DB_PATH, pointer)
-    assert pointer["data_version"] == "28b9a7bd3234" and pointer["run_month_id"] == 202507
+    assert pointer["data_version"] == "bd8be3d30fc4" and pointer["run_month_id"] == 202609
     assert pointer["run"]["status"] == "ok" and len(json.dumps(pointer)) < dr.MAX_POINTER_BYTES

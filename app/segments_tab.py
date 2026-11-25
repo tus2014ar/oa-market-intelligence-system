@@ -9,7 +9,7 @@ from __future__ import annotations
 import common
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, segments, style, trend
+from oa_market_intelligence.serving import charts, segments, style, trend, views
 
 SHOW = {"share": "Share", "visits": "Visits", "change": "Change"}
 SHOW_COLUMN = {"share": "share_pct", "visits": "zilretta_visits", "change": "delta_pp"}
@@ -76,9 +76,11 @@ def _over_time(seg, by, table, calendar) -> None:
                 charts.group_trend_chart(segments.group_trend(seg, by, pick, calendar=calendar)),
                 width="stretch",
             )
+            ids = sorted(calendar) if calendar is not None else sorted(seg["month_id"].unique())
             st.caption(
-                "Share by calendar year; the first and last years are part years (August 2019 to "
-                "July 2025). Every year uses all months of the series, whatever the period above."
+                "Share by calendar year; the first and last years are part years "
+                f"({views.month_label(ids[0])} to {views.month_label(ids[-1])}). "
+                "Every year uses all months of the series, whatever the period above."
             )
             common.explain("seg_time")
         else:

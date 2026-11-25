@@ -86,9 +86,9 @@ def test_ra_matches_data_dictionary(ra):
     assert list(ra.columns) == OUTPUT_COLUMNS
     assert (ra["disease_area"] == "RA").all()
     assert ra["month"].nunique() == 72
-    assert ra["month"].min().strftime("%Y-%m") == "2019-08"
-    assert ra["month"].max().strftime("%Y-%m") == "2025-07"
-    assert ra["specialty"].nunique() == 19
+    assert ra["month"].min().strftime("%Y-%m") == "2020-10"
+    assert ra["month"].max().strftime("%Y-%m") == "2026-09"
+    assert ra["specialty"].nunique() == 18
     assert ra["age_band"].nunique() == 9
     assert set(ra["gender"]) == {"FEMALE", "MALE"}
 
@@ -100,7 +100,8 @@ def test_ra_visit_counts_are_positive_and_keys_unique(ra):
 
 
 def test_ra_includes_the_miscoded_oncology_products(ra):
-    assert {"OPDIVO", "YERVOY", "KEYTRUDA"} <= set(ra["product"])
+    # the Nov 2026 pull no longer lists OPDIVO or YERVOY but still carries oncology products
+    assert {"KEYTRUDA", "IMFINZI"} <= set(ra["product"])
 
 
 def test_disease_area_ignores_the_file_name(tmp_path):
@@ -116,12 +117,12 @@ def test_oa_matches_data_dictionary(oa):
     assert list(oa.columns) == OUTPUT_COLUMNS
     assert (oa["disease_area"] == "OA").all()
     assert oa["month"].nunique() == 72
-    assert oa["month"].min().strftime("%Y-%m") == "2019-08"
-    assert oa["month"].max().strftime("%Y-%m") == "2025-07"
-    assert oa["specialty"].nunique() == 50
+    assert oa["month"].min().strftime("%Y-%m") == "2020-10"
+    assert oa["month"].max().strftime("%Y-%m") == "2026-09"
+    assert oa["specialty"].nunique() == 53
     assert oa["age_band"].nunique() == 10
     assert set(oa["gender"]) == {"FEMALE", "MALE", "UNSPECIFIED"}
-    assert len(oa[["specialty", "age_band", "gender"]].drop_duplicates()) == 647
+    assert len(oa[["specialty", "age_band", "gender"]].drop_duplicates()) == 650
 
 
 def test_oa_visit_counts_are_positive_and_keys_unique(oa):

@@ -245,11 +245,11 @@ def test_the_real_forecasts_equal_the_stored_predictions_and_last_month_is_the_o
     assert set(forecasts.coverage(scores)) == {1, 3, 6}
     for horizon in (1, 3, 6):
         view = forecasts.segment_view(pred, seg, horizon)
-        assert len(view) == 113 and view["last_pct"].notna().all()
+        assert len(view) == 122 and view["last_pct"].notna().all()
         stored = pred[(pred["level"] == "segment") & (pred["horizon"] == horizon)]
         assert view["forecast_pct"].sum() == pytest.approx(100 * stored["point_share"].sum())
         spec = forecasts.specialty_view(view, min_visits=0)
-        assert spec["segments"].sum() == 113
+        assert spec["segments"].sum() == 122
         floor = forecasts.specialty_view(view)
         assert len(floor) + floor.attrs["left_out"] == len(spec) and (floor["visits"] >= 300).all()
     assert len(forecasts.alerts(forecasts.segment_view(pred, seg, 1))) == 26

@@ -43,7 +43,7 @@ Every run records `versions` in the run log: `data` (a short hash of the input e
 oa-publish                      # the whole run
 oa-publish --public-data full   # local only: reload and re-export the public data first
 oa-model --counts-only          # what the modelling run will score (fits nothing)
-oa-model --run --n-jobs 6       # the full modelling run (about two hours)
+oa-model --run --n-jobs 6       # the full modelling run (3.5 to 4 hours on the Nov 2026 data; results are written only at the end)
 pytest tests/test_published_warehouse.py   # check the published database
 ```
 

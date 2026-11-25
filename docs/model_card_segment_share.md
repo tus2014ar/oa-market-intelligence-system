@@ -1,5 +1,7 @@
 # Model card: segment share (T2, logistic regression)
 
+> **Earlier extract.** The numbers on this page are from the earlier IQVIA extract (Aug 2019 to Jul 2025). The pre-registered plan was re-run on IQVIA's Nov 2026 pull (Oct 2020 to Sep 2026); where the two differ, [`rerun_nov_2026.md`](rerun_nov_2026.md) is the current state and this page is the record of the earlier run.
+
 **Status: serves at 1 and 3 months ahead under the registered rule; the baseline serves at 6 months. A small gain that runs too high; not a forecast of the overall level.** It estimates a segment's Zilretta share better than "last month's share", by about 0.44% of log-loss at 1 month and 0.21% at 3 months. Adopted in DL-79 (28 Oct 2026): the logistic regression at 1 and 3 months with its bias stated beside every forecast, the baseline at 6 months. Decisions: [`decision_log.md`](decision_log.md) DL-76 to DL-79. Plan: [`modelling_plan.md`](modelling_plan.md). Results: [`modelling_results.md`](modelling_results.md), notebook 15, `data/reference/modelling_results.json`, warehouse tables `model_scores` and `backtest_batch`.
 
 ## Model

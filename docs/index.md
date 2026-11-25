@@ -5,6 +5,7 @@ Every document and notebook in the project, with what each covers. Start with [`
 | Document | Covers |
 |---|---|
 | [`findings.md`](findings.md) | The 17 findings with their evidence and business impact, the data-quality and engineering outcomes, and the 171 public datasets (the website's Findings tab shows the same table) |
+| [`rerun_nov_2026.md`](rerun_nov_2026.md) | The pre-registered modelling plan re-run on IQVIA's Nov 2026 data: what changed in the data, the results beside the earlier ones, and what was not re-run |
 | [`decision_log.md`](decision_log.md) | Every significant decision, why it was made, what was rejected (entries up to DL-128; some describe work kept in the archive tag) |
 | [`PROPOSAL.md`](PROPOSAL.md) | The original project proposal: objectives, architecture, definitions and build decisions |
 | [`data_dictionary.md`](data_dictionary.md), [`database_schema.md`](database_schema.md), [`silver_gold_data_dictionary.md`](silver_gold_data_dictionary.md), [`data_analysis_reference.md`](data_analysis_reference.md) | Raw field structure, the star schema and DDL, every Silver and Gold column, and the dataset audit |

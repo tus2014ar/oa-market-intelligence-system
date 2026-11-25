@@ -8,7 +8,7 @@ import common
 import pandas as pd
 import streamlit as st
 
-from oa_market_intelligence.serving import charts, market_map
+from oa_market_intelligence.serving import charts, market_map, views
 
 
 def render(D: dict, graph, data_chip) -> None:
@@ -71,10 +71,11 @@ def render(D: dict, graph, data_chip) -> None:
 
     st.subheader("Events against the share")
     st.altair_chart(charts.events_chart(D["monthly"], GRAPH), width="stretch")
+    first = views.month_label(int(D["monthly"]["month_id"].min()))
     st.caption(
         "Events are context only: nothing here says an event changed the share, and the cause of "
-        "the March to July 2024 dip is unverified. Events before the data begins (August 2019) "
-        "are in the table only."
+        "the March to July 2024 dip is unverified. Events before the data begins "
+        f"({first}) are in the table only."
     )
     common.explain("map_events")
     st.dataframe(market_map.event_table(GRAPH), hide_index=True)

@@ -1,5 +1,7 @@
 # Modelling: results (DL-78)
 
+> **Earlier extract.** The numbers on this page are from the earlier IQVIA extract (Aug 2019 to Jul 2025). The pre-registered plan was re-run on IQVIA's Nov 2026 pull (Oct 2020 to Sep 2026); where the two differ, [`rerun_nov_2026.md`](rerun_nov_2026.md) is the current state and this page is the record of the earlier run.
+
 The test is the one fixed before any model was built in [`modelling_plan.md`](modelling_plan.md) (DL-78, with the amendment and the implementation choices in its sections 14 and 15). Nothing was changed after the first result. It was run twice from the same code, data and seed (0; 2,000 bootstrap draws), and the two output files are byte-identical. Raw numbers: [`data/reference/modelling_results.json`](../data/reference/modelling_results.json); runner: `modeling/run_modelling.py` (`python -m oa_market_intelligence.modeling.run_modelling --run`). Notebook: [15](../notebooks/15_modelling_results.ipynb). One check was added **after** the results were seen and is labelled post hoc: [`data/reference/modelling_posthoc.json`](../data/reference/modelling_posthoc.json), `modeling/posthoc.py`.
 
 ## In one table

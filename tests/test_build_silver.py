@@ -4,7 +4,7 @@ Hand-built DataFrames exercise each function's logic in isolation, including the
 bugs found while writing this module (the manufacturer-collapse in fact_product_visits,
 and the unmapped-vs-genuinely-'unclassified' distinction in resolve_product_attributes).
 A real-data integration test runs the whole thing end to end and checks it against figures
-independently confirmed in prior steps (160 products, 5,546,090 total patient visits,
+independently confirmed in prior steps (167 products, 5,906,260 total patient visits,
 Zilretta's resolved attributes).
 """
 
@@ -480,9 +480,9 @@ def test_build_silver_end_to_end_against_real_data(engine, real_data):
             .first()
         )
 
-    assert counts["dim_month"] == 72  # Aug 2019 - Jul 2025 inclusive, confirmed both files
-    assert counts["dim_product"] == 160  # 145 OA + 15 RA, confirmed in Step 4
-    assert counts["dim_specialty"] == 50  # OA's 50; RA's 19 are a confirmed subset
+    assert counts["dim_month"] == 72  # Oct 2020 - Sep 2026 inclusive, confirmed both files
+    assert counts["dim_product"] == 167  # 149 OA + 18 RA (Nov 2026 pull)
+    assert counts["dim_specialty"] == 53  # OA's 53; RA's 18 are a confirmed subset
     assert total_visits == visits["patient_visits"].sum()  # collapse loses nothing
     assert ra_pos_rows == 0
 

@@ -401,5 +401,5 @@ The same stage also saves the fitted models and the inputs the API needs to run 
 
 The saved numbers are checked before they are written: applied to the rows the job scored, they must give the fitted model's probabilities to within 1e-9, or the run stops.
 
-Show `known_bias` beside every segment forecast: the segment forecasts ran 5.5% (1 month) and 10.9% (3 months) too high in testing. The alert is a supporting flag, not a prediction of loss (about half its alerts were not real declines). The job reproduces the stored batch demonstration (`backtest_batch`) at the December 2022 cut-off exactly (tested).
+Show `known_bias` beside every segment forecast: the segment forecasts ran 1.6% (1 month) and 3.5% (3 months) too high in testing on the Nov 2026 data (5.5% and 10.9% on the earlier extract). The alert is a supporting flag, not a prediction of loss (about half its alerts were not real declines). The job reproduces the stored batch demonstration (`backtest_batch`) at the December 2022 cut-off exactly (tested).
 

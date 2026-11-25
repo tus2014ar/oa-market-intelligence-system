@@ -2,8 +2,13 @@
  "alert": {
   "1": "logistic"
  },
- "decided_on": "2026-10-28",
- "decision": "DL-79",
+ "decided_on": "2026-11-25",
+ "decision": "DL-130",
+ "exceptions": {
+  "segment": {
+   "6": "The registered rule chose gradient boosting at 6 months on the Nov 2026 data (a log-loss gain of about 0.25%). The project owner kept the last-month baseline for now (DL-130); gradient boosting there is a possible later change."
+  }
+ },
  "national": {
   "1": "last_month",
   "3": "last_month",

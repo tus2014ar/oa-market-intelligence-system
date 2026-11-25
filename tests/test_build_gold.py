@@ -404,25 +404,24 @@ def real_silver_engine(engine, real_data):
 
 def test_build_gold_end_to_end_against_real_data(real_silver_engine):
     summary = build_gold(real_silver_engine)
-    assert (
-        summary["gold_visit_share_monthly_rows"] == 72
-    )  # Aug 2019 - Jul 2025, confirmed in Step 7
+    assert summary["gold_visit_share_monthly_rows"] == 72  # Oct 2020 - Sep 2026
 
     with real_silver_engine.connect() as conn:
         monthly = pd.read_sql("SELECT * FROM gold_visit_share_monthly", conn)
         seg = pd.read_sql("SELECT * FROM gold_segment_adoption", conn)
 
-    assert monthly["branded_injectable_visits"].sum() == 135_119  # PROPOSAL.md §18.1
-    assert monthly["visit_share"].min() > 0.017
-    assert monthly["visit_share"].max() < 0.034  # PROPOSAL.md §18.1's 1.7%-3.4% range
+    # the Nov 2026 pull (PROPOSAL.md §18.1 gave 135,119 and a 1.7%-3.4% range on the earlier window)
+    assert monthly["branded_injectable_visits"].sum() == 137_464
+    assert monthly["visit_share"].min() > 0.016
+    assert monthly["visit_share"].max() < 0.034
 
-    # §18.2 (decided): the trailing-12-month z-score default, validated against the
-    # real 72-month series in notebooks/02_eda_cleaned_data.ipynb §12.4 - 7 Up / 43
-    # Flat / 9 Down over the 59 months with a full trailing window, 13 null before that.
+    # §18.2 (decided): the trailing-12-month z-score default. On the earlier window the notebook
+    # (02_eda_cleaned_data.ipynb §12.4) found 7 Up / 43 Flat / 9 Down; on the Nov 2026 window
+    # the same rule gives 9 Up / 39 Flat / 11 Down over the 59 months with a full trailing window.
     counts = monthly["direction_label"].value_counts(dropna=False)
-    assert counts.get("Up", 0) == 7
-    assert counts.get("Down", 0) == 9
-    assert counts.get("Flat", 0) == 43
+    assert counts.get("Up", 0) == 9
+    assert counts.get("Down", 0) == 11
+    assert counts.get("Flat", 0) == 39
     assert monthly["direction_label"].isna().sum() == 13
 
     # Rolling averages are leak-safe: each equals the mean of the PRIOR n months, so the
@@ -434,10 +433,10 @@ def test_build_gold_end_to_end_against_real_data(real_silver_engine):
         assert indexed[col].isna().sum() == n
         assert (indexed[col] - expected).abs().max() < 1e-12
 
-    # April 2020 COVID Office->Telehealth shock, confirmed in Step 3.
-    april_2020 = monthly.set_index("month_id").loc[202004]
-    assert april_2020["office_visits"] == 39_487
-    assert april_2020["telehealth_visits"] == 1_016
+    # the first month of the Nov 2026 pull (the April 2020 shock is before it)
+    first_month = monthly.set_index("month_id").loc[202010]
+    assert first_month["office_visits"] == 87_360
+    assert first_month["telehealth_visits"] == 376
 
     # §6.5's honest caveat: Zilretta-only means a constant competitor count.
     assert (monthly["competitor_count_on_market"] == 1).all()

@@ -52,17 +52,19 @@ def _corrupted_oa_copy(tmp_path, mutate):
 def test_oa_shape_and_columns(oa_ref):
     assert list(oa_ref.columns) == OUTPUT_COLUMNS
     assert (oa_ref["disease_area"] == "OA").all()
-    assert oa_ref["product"].nunique() == 145
-    assert oa_ref["manufacturer"].nunique() == 168
+    assert oa_ref["product"].nunique() == 149
+    assert oa_ref["manufacturer"].nunique() == 167
     assert set(oa_ref["icd10_code"]) == {"M16", "M17"}
-    assert len(oa_ref.drop_duplicates(ENTITY)) == 417
-    assert len(oa_ref) == 417 * 2
+    assert len(oa_ref.drop_duplicates(ENTITY)) == 419
+    assert len(oa_ref) == 419 * 2
 
 
-def test_oa_rows_overlap_so_they_exceed_the_printed_grand_total(oa_ref):
+def test_oa_rows_overlap_so_they_exceed_the_grand_total_row(oa_ref):
+    # The Nov 2026 workbook is built from the instructor's CSVs, which print no total; its Grand
+    # Total row is the largest row value per column (a stand-in), so this checks the sums only.
     by_code = oa_ref.groupby("icd10_code")["patient_visits"].sum()
-    assert by_code["M16"] == 567_927 > 525_661
-    assert by_code["M17"] == 4_993_204 > 4_797_621
+    assert by_code["M16"] == 616_062 > 144_292
+    assert by_code["M17"] == 5_307_092 > 1_625_899
 
 
 def test_blank_icd_cells_become_zero_not_dropped(oa_ref):
@@ -89,9 +91,12 @@ def test_zilretta_is_split_across_two_manufacturer_labels(oa_ref):
     assert set(zilretta["manufacturer"]) == {"No Manufacturer", "PACIRA PHARM"}
 
 
-def test_oa_products_match_the_committed_taxonomy_exactly(oa_ref, taxonomy):
+def test_oa_products_are_all_in_the_committed_taxonomy(oa_ref, taxonomy):
     in_taxonomy = set(taxonomy[taxonomy["disease_area"] == "OA"]["product_name"])
-    assert set(oa_ref["product"]) == in_taxonomy
+    # the Nov 2026 pull no longer lists these three; they stay classified in the frozen file
+    retired = {"APAP/CAF", "BIOFREEZE W/ILEX", "EXCEDRIN TEN HDCHE"}
+    assert in_taxonomy - set(oa_ref["product"]) == retired
+    assert set(oa_ref["product"]) <= in_taxonomy
 
 
 # ---------- real RA reference ----------
@@ -100,15 +105,16 @@ def test_oa_products_match_the_committed_taxonomy_exactly(oa_ref, taxonomy):
 def test_ra_is_all_brand_biologics(ra_ref):
     assert (ra_ref["disease_area"] == "RA").all()
     assert set(ra_ref["icd10_code"]) == {"M04"}
-    assert ra_ref["product"].nunique() == 15
+    assert ra_ref["product"].nunique() == 18
     assert set(ra_ref["brand_generic_tag"]) == {"BRAND"}
-    assert len(ra_ref) == 18
-    assert ra_ref["patient_visits"].sum() == 1_287
+    assert len(ra_ref) == 21
+    assert ra_ref["patient_visits"].sum() == 1_755
 
 
-def test_ra_products_match_the_committed_taxonomy_exactly(ra_ref, taxonomy):
+def test_ra_products_are_all_in_the_committed_taxonomy(ra_ref, taxonomy):
     in_taxonomy = set(taxonomy[taxonomy["disease_area"] == "RA"]["product_name"])
-    assert set(ra_ref["product"]) == in_taxonomy
+    assert in_taxonomy - set(ra_ref["product"]) == {"OPDIVO", "YERVOY"}  # no longer listed
+    assert set(ra_ref["product"]) <= in_taxonomy
 
 
 # ---------- the RA sheet-name collision ----------
@@ -160,7 +166,7 @@ def test_rejects_a_row_larger_than_the_grand_total(tmp_path):
 
 def test_rejects_rows_that_sum_to_less_than_the_grand_total(tmp_path):
     def mutate(ws):
-        ws.cell(row=ws.max_row, column=5).value += 1_000_000
+        ws.cell(row=ws.max_row, column=5).value += 100_000_000
 
     with pytest.raises(ReferenceTableError, match="less than the Grand Total"):
         parse_reference_table(_corrupted_oa_copy(tmp_path, mutate))

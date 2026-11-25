@@ -57,14 +57,14 @@ def test_every_stage_passes_in_order_and_the_run_is_logged(runs):
         assert record["status"] == "ok", record.get("error")
         assert [s["stage"] for s in record["stages"]] == STAGES
         assert all(s["status"] == "ok" for s in record["stages"])
-        assert record["n_months"] == 72 and record["last_month_id"] == 202507
+        assert record["n_months"] == 72 and record["last_month_id"] == 202609
         logged = json.loads((folder / "run_log.jsonl").read_text().strip().splitlines()[-1])
         assert logged["stages"] == record["stages"]
         assert not list(folder.glob(".staging-*"))  # the staging area is gone
     first = runs[0][1]
     assert first["public_data"]["tables"] == 23 and first["public_data"]["manifest_files"] == 171
     assert first["feature_tables"]["feat_segment_month"] > 8000
-    assert first["monitoring"]["freshness"]["last_month_id"] == 202507
+    assert first["monitoring"]["freshness"]["last_month_id"] == 202609
     assert first["monitoring"]["drift"]["status"] == "no_previous_run"  # a fresh folder
     assert first["monitoring"]["status"] in ("ok", "attention")
     assert first["versions"]["data"] != "unknown" and len(first["versions"]["environment"]) == 12
@@ -98,7 +98,7 @@ def test_the_predictions_agree_with_the_data(runs):
     last = int(monthly["month_id"].max())
     assert set(pred["run_month_id"]) == {last}
     national = pred[pred["level"] == "national"].set_index("horizon")
-    assert list(national["target_month_id"]) == [202508, 202510, 202601]
+    assert list(national["target_month_id"]) == [202610, 202612, 202703]
     value_now = monthly.set_index("month_id").loc[last, "visit_share"]
     assert (national["point_share"] - value_now).abs().max() < 1e-12  # "same as last month"
     segment = pred[pred["level"] == "segment"]

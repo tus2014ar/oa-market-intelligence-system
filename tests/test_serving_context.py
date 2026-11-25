@@ -264,9 +264,9 @@ def test_the_real_subset_gives_the_published_annual_changes(subset):
     years = context.annual(subset["company"])
     assert list(years["year"]) == [2021, 2022, 2023, 2024]
     assert years["sales_change_pct"].iloc[1:].round(1).tolist() == [2.7, 5.3, 6.3]
-    assert years["visits_change_pct"].iloc[1:].round(1).tolist() == [6.7, -13.5, -35.9]
+    assert years["visits_change_pct"].iloc[1:].round(1).tolist() == [6.1, -11.5, -35.9]
     head = context.headline(years)
-    assert round(head["sales_vs_base_pct"]) == 15 and round(head["visits_vs_base_pct"]) == -41
+    assert round(head["sales_vs_base_pct"]) == 15 and round(head["visits_vs_base_pct"]) == -40
 
 
 def test_the_real_medicare_adoption_matches_the_stored_results(subset):

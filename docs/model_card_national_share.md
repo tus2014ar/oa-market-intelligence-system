@@ -1,5 +1,7 @@
 # Model card: national share (T1, "same as last month")
 
+> **Earlier extract.** The numbers on this page are from the earlier IQVIA extract (Aug 2019 to Jul 2025). The pre-registered plan was re-run on IQVIA's Nov 2026 pull (Oct 2020 to Sep 2026); where the two differ, [`rerun_nov_2026.md`](rerun_nov_2026.md) is the current state and this page is the record of the earlier run.
+
 **Status: the baseline serves at 1, 3 and 6 months ahead. No trained model beat it.** The national Zilretta visit share is best forecast by its last value. Adopted in DL-79 (28 Oct 2026): the baseline serves at all three horizons. Decisions: [`decision_log.md`](decision_log.md) DL-76 to DL-79. Plan: [`modelling_plan.md`](modelling_plan.md). Results: [`modelling_results.md`](modelling_results.md), notebook 15, `data/reference/modelling_results.json`, warehouse tables `model_scores` and `backtest_batch`.
 
 ## Model

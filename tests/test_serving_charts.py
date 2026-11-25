@@ -86,7 +86,7 @@ def test_the_specialty_mix_is_the_graphs_weights(snap):
     chart = charts.specialty_mix_chart(snap.graph, 5)
     rows = _rows(chart)
     assert len(rows) == 5 and rows[0]["specialty"] == "ORTHOPEDIC SURGERY"
-    assert rows[0]["share_pct"] == pytest.approx(37.6, abs=0.1)
+    assert rows[0]["share_pct"] == pytest.approx(34.1, abs=0.1)
     assert sum(r["share_pct"] for r in _rows(charts.specialty_mix_chart(snap.graph, 50))) == (
         pytest.approx(100.0, abs=0.1)
     )
@@ -114,9 +114,9 @@ def test_the_events_chart_draws_the_events_inside_the_data_and_marks_unverified_
     sets = {len(rows): rows for rows in spec["datasets"].values()}
     assert 72 in sets  # the share line
     events = next(rows for size, rows in sets.items() if size != 72 and size > 3)
-    assert len(events) == 12  # 14 events, less the two that end or fall before August 2019
+    assert len(events) == 8  # 14 events, less those that end or fall before October 2020
     assert {r["kind"] for r in events} == {"Verified event", "Not verified"}
     assert sum(r["kind"] == "Not verified" for r in events) == 2
-    assert min(r["x"] for r in events) >= "2019-08-01"  # a window that began earlier is clipped
+    assert min(r["x"] for r in events) >= "2020-10-01"  # a window that began earlier is clipped
     assert {"Date", "Event", "Type", "Verified"} <= set(_tooltip_titles(chart))
     assert not any("caus" in title.lower() for title in _tooltip_titles(chart))

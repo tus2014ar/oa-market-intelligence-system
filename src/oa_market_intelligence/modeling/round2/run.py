@@ -128,7 +128,10 @@ def run_round2(
             "seed": seed,
             "scenarios": list(scenarios),
             "g4_columns": list(extra_columns),
-            "status": "exploratory and provisional until confirmed on months after July 2025",
+            "status": (
+                "exploratory and provisional: re-run on the Nov 2026 data, not yet tested on "
+                "the months after July 2025 on their own"
+            ),
         },
         "e1": {},
         "e2": {},

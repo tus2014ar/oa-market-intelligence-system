@@ -104,11 +104,14 @@ def test_the_real_results_reach_the_tables_with_one_serving_method_per_scenario(
     assert (best == 1).all()
     # the headline numbers of the results document
     main = scores[(scores["scenario"] == "main")].set_index(["task", "horizon", "method"])
-    assert main.loc[("T1", 1, "last_month"), "score"] == pytest.approx(0.1246, abs=5e-4)
+    assert main.loc[("T1", 1, "last_month"), "score"] == pytest.approx(0.1236, abs=5e-4)
     assert main.loc[("T2", 1, "logistic"), "promoted"] == 1
     assert main.loc[("T2", 6, "logistic"), "promoted"] == 0
     assert main.loc[("T2", 1, "logistic"), "serving"] == 1
-    assert main.loc[("T2", 6, "last_month"), "serving"] == 1
+    # on the Nov 2026 data the rule chose gradient boosting at 6 months; the site and the job keep
+    # the baseline there by a recorded exception (DL-130), so the stored rule choice is gbm
+    assert main.loc[("T2", 6, "gbm"), "serving"] == 1
+    assert main.loc[("T2", 6, "last_month"), "serving"] == 0
     assert np.isfinite(main.loc[("T3", 1, "logistic"), "score"])
     backtest = backtest_batch_frame(results)
     assert len(backtest) == len(results["demonstration"]["national"]) + len(

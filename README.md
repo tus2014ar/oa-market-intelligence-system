@@ -10,7 +10,7 @@
 
 It is built like a real product: a monthly data pipeline, a prediction API running on AWS, a website, and a Claude-powered question box, all tested and monitored. Built as a **portfolio project** on real IQVIA visit data.
 
-[**Live website**](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app) · [API guide](docs/api.md) · [Architecture](docs/architecture.md) · [All findings](docs/findings.md) · [Decision log](docs/decision_log.md) · [Documentation index](docs/index.md)
+[**Live website**](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app) · [API guide](docs/api.md) · [Architecture](docs/architecture.md) · [All findings](docs/findings.md) · [Nov 2026 re-run](docs/rerun_nov_2026.md) · [Decision log](docs/decision_log.md) · [Documentation index](docs/index.md)
 
 ![The system on one page: data in, a monthly Docker pipeline with a promotion gate, one warehouse, a live FastAPI API on AWS Lambda, a website and a Claude question box, and what the brand manager gets](docs/images/system_overview.png)
 
@@ -32,12 +32,12 @@ The same findings in words:
 
 | What a brand manager can now do | What the data showed |
 |---|---|
-| **Stop planning on a noisy forecast** | No model beat "same as last month" for the overall share. Its error is 0.125, 0.180 and 0.239 points at 1, 3 and 6 months, so the plan stays simple. |
-| **Know where to look first** | Orthopedic surgery and physician assistants account for 64% of the net fall of 11,256 visits. |
-| **Avoid quoting a number that may be wrong** | Company net sales rose 5% (2023) and 6% (2024) while IQVIA's Zilretta visits fell 14% and 36%. The size of the decline cannot be quoted as a market fact until IQVIA confirms its panel coverage. |
-| **Rank groups, with the bias stated** | The segment model beats "last month" in all 46 test months at 1 month (+0.44% log-loss) but runs 5.5% and 10.9% high at 1 and 3 months. A correction cut that to about 1% and 3% in testing; it stays provisional until new months confirm it. |
+| **Stop planning on a noisy forecast** | No model beat "same as last month" for the overall share. Its error is 0.124, 0.145 and 0.205 points at 1, 3 and 6 months, so the plan stays simple. |
+| **Know where to look first** | Orthopedic surgery and physician assistants account for 65% of the net fall of 11,109 visits (2021 to 2024). |
+| **Avoid quoting a number that may be wrong** | Company net sales rose 5% (2023) and 6% (2024) while IQVIA's Zilretta visits fell 12% and 36%. The size of the decline cannot be quoted as a market fact until IQVIA confirms its panel coverage. Visits were flat in 2025, and IQVIA's Nov 2026 pull restated earlier months. |
+| **Rank groups, with the bias stated** | The segment model beats "last month" in all 46 test months at 1 month (+0.53% log-loss) but runs 1.6% and 3.5% high at 1 and 3 months. A correction cut that to about 0.3% and 0.5% in testing; it stays provisional because it has not been tested on the 14 new months on their own. |
 | **Prioritise territories** | A stable state ranking (0.92 rank correlation) puts Michigan, Arizona, Florida, Minnesota and Indiana first for room to grow. |
-| **Get an early warning, not a trigger** | The 1-month decline alert catches about two in three real declines (recall 0.64), but only about half of its alerts are real (precision 0.49). Use it as a flag to look, never to act alone. |
+| **Get an early warning, not a trigger** | The 1-month decline alert catches about two in three real declines (recall 0.67), but only about half of its alerts are real (precision 0.47). Use it as a flag to look, never to act alone. |
 
 Every forecast on the site and in the API carries its known bias and caveats. The full list of 17 findings is in [`docs/findings.md`](docs/findings.md).
 
@@ -112,10 +112,10 @@ More: the Docker images ([`docs/docker.md`](docs/docker.md)), the monthly run an
 
 ## Honest limits
 
-- **The data end in July 2025.** No newer IQVIA extract exists, so forecasts are for months that have passed. They show the method and a baseline, not a current view, and the system flags its own data as stale.
+- **The data end in September 2026.** The forecasts are for October 2026, December 2026 and March 2027. IQVIA's Nov 2026 pull restated 58 earlier months, and the models that served on the earlier extract ran 13.9% too high at 1 month on the 14 new months (5.5% in testing), so history is not fixed and the forecasts are a method and a baseline, not a current view.
 - **IQVIA's panel coverage is unconfirmed.** If it changed in 2023 or 2024, every model learned from a series with a break in it.
-- **The gains are small.** The segment forecast beats the simple rule by about 0.4% of log-loss at 1 month and runs high; there is no reliable gain at 6 months.
-- **The bias correction is provisional.** It was chosen after seeing the first results, so it is adopted only if it holds on months after July 2025.
+- **The gains are small.** The segment forecast beats the simple rule by about 0.5% of log-loss at 1 month and runs high; at 6 months only boosted trees gain (about 0.25%) and the baseline stays in service.
+- **The bias correction is provisional.** It was chosen after seeing the first results. It passed 5 of 7 tests when re-run on the Nov 2026 data, but two of those passes only show it did no harm, and it has not been tested on the 14 new months on their own.
 - **The question box** was checked with a scripted client and a 28-question set; the full evaluation against the live model has not been run.
 - **Not built, on purpose:** Kubernetes, Spark, a feature store, SageMaker, Terraform and a separate staging environment. Nothing in this problem needs them.
 
@@ -144,4 +144,4 @@ docs/  notebooks/  tests/     documentation, executed notebooks, about 1,800 tes
 
 ## Data
 
-The primary dataset is a real IQVIA NMTA patient-visit extract (72 months, 160 products, 7M+ visits), provided for this project. The Excel extracts are committed in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. A product taxonomy (160 products) is in [`data/reference/`](data/reference/). FDA approval dates come from the free openFDA API; a snapshot is committed so the work reproduces offline. 171 public CMS, CDC, SEC and FDA files (about 24 GB) add outside context ([`docs/findings.md`](docs/findings.md)).
+The primary dataset is a real IQVIA NMTA patient-visit extract (72 months, Oct 2020 to Sep 2026, 167 products, 7.6M visits), provided for this project. The Excel extracts are committed in [`data/raw/`](data/raw/) with the course instructor's approval under Penn State's data license. The two Branded Generic workbooks in the Nov 2026 set were built from the instructor's CSV files, so their Grand Total row is a stand-in, not an IQVIA figure. A product taxonomy (172 products: the 167 now listed and 5 retired ones) is in [`data/reference/`](data/reference/). FDA approval dates come from the free openFDA API; a snapshot is committed so the work reproduces offline. 171 public CMS, CDC, SEC and FDA files (about 24 GB) add outside context ([`docs/findings.md`](docs/findings.md)).

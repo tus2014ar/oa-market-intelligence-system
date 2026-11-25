@@ -27,7 +27,7 @@ TRIAMCINOLONE_NAMES = (
     "TAC-3",
 )
 PEAK_YEAR = 2022
-LATEST_FROM, LATEST_TO = 202408, 202507  # the latest twelve months in the extract
+LATEST_FROM, LATEST_TO = 202510, 202609  # the latest twelve months in the extract
 
 
 def assign_group(product_name: str, treatment_category: str) -> tuple[str, str]:

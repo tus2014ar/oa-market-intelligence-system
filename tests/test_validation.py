@@ -65,20 +65,20 @@ def _frame(base: dict, **overrides) -> pd.DataFrame:
 def test_real_oa_and_ra_visits_pass(real_oa_visits, real_ra_visits):
     oa = validate_nmta_visits(real_oa_visits())
     ra = validate_nmta_visits(real_ra_visits())
-    assert len(oa) == 240_773
-    assert len(ra) == 1_021
+    assert len(oa) == 255_827
+    assert len(ra) == 1_388
 
 
 def test_real_place_of_service_passes():
     oa = validate_place_of_service(parse_place_of_service(RAW / "Team1_M15_19_OA.xlsx"))
-    assert oa["patient_visits"].sum() == 7_189_004
+    assert oa["patient_visits"].sum() == 7_658_186
 
 
 def test_real_reference_tables_pass():
     oa = validate_reference_table(parse_reference_table(RAW / "Branded Generic - OA.xlsx"))
     ra = validate_reference_table(parse_reference_table(RAW / "Branded Generic - RA.xlsx"))
-    assert len(oa) == 834
-    assert len(ra) == 18
+    assert len(oa) == 838
+    assert len(ra) == 21
 
 
 def test_real_openfda_lookup_passes():

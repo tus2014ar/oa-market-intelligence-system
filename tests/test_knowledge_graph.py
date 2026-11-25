@@ -203,7 +203,7 @@ def test_every_edge_has_known_ends_a_named_source_and_every_node_is_connected():
 def test_the_products_and_events_are_all_there_with_one_of_each_basic_edge():
     graph = kg.Graph.load()
     products = [n for n in graph.nodes.values() if n["type"] == "product"]
-    assert len(products) == 160
+    assert len(products) == 167
     for product in products:
         out = [e["relation"] for e in graph.neighbors(product["id"], direction="out")]
         assert out.count("in_class") == out.count("in_disease_area") == out.count("in_group") == 1
