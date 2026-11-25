@@ -180,7 +180,10 @@ def test_the_deploy_workflow_runs_only_from_main_by_hand_or_after_a_successful_p
     text = WORKFLOW.read_text(encoding="utf-8")
     assert "secrets." not in text and "AWS_ACCESS_KEY_ID" not in text
     assert "vars.AWS_DEPLOY_ROLE_ARN" in text and "vars.AWS_REGION" in text
-    assert "--provenance" not in text  # a plain image manifest: Lambda rejects an OCI index
+    # Lambda rejects an OCI image index with attestation manifests (the 25 Nov 2026 deploy failed
+    # that way on a newer runner Docker), so the build switches them off and names the platform
+    assert "--provenance=false" in text and "--sbom=false" in text
+    assert "--platform linux/amd64" in text and "docker build -f" not in text
 
 
 def test_the_deploy_workflow_skips_when_current_checks_freshness_and_can_roll_back():
