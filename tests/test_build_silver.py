@@ -298,6 +298,29 @@ def _seed_dims_for_fact(engine, product_name="ZILRETTA"):
     )
 
 
+def test_refresh_fact_product_visits_names_products_the_reference_table_lacks(engine):
+    # IQVIA's Nov 2026 re-pull holds products the old Branded Generic tables do not list; the
+    # build must say so plainly, not stop with a bare KeyError
+    _seed_dims_for_fact(engine)
+    visits = pd.DataFrame(
+        [
+            {
+                "month": pd.Timestamp("2019-08-01"),
+                "disease_area": "OA",
+                "manufacturer": "MFR A",
+                "product": product,
+                "specialty": "ORTHOPEDIC SURGERY",
+                "age_band": "40 TO 59",
+                "gender": "FEMALE",
+                "patient_visits": 3,
+            }
+            for product in ("ZILRETTA", "NEW PRODUCT X", "NEW PRODUCT Y")
+        ]
+    )
+    with pytest.raises(ValueError, match="2 product.*Branded Generic reference table.*NEW PRODUCT"):
+        refresh_fact_product_visits(engine, visits)
+
+
 def test_refresh_fact_product_visits_sums_across_manufacturer(engine):
     # This is the real bug found against production data: the same product/month/
     # specialty/demographic slice appears once per manufacturer in the raw pivot output,

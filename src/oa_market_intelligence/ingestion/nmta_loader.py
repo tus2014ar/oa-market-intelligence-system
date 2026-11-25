@@ -81,8 +81,13 @@ def _find_pivot_sheet(workbook):
     matches = []
     for ws in workbook.worksheets:
         first = next(ws.iter_rows(min_row=1, max_row=1, values_only=True), ())
-        if first and first[0] == "Month" and any(
-            isinstance(h, str) and h.endswith(VISITS_LABEL) for h in first[1:]
+        # IQVIA's Nov 2026 re-pull writes "Month" followed by line breaks (one per empty
+        # header level), so the label is compared without surrounding whitespace.
+        if (
+            first
+            and isinstance(first[0], str)
+            and first[0].strip() == "Month"
+            and any(isinstance(h, str) and h.endswith(VISITS_LABEL) for h in first[1:])
         ):
             matches.append(ws)
     if len(matches) != 1:

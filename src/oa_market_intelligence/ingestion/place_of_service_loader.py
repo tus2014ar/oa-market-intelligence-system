@@ -7,6 +7,7 @@ one row per (month, disease area, setting).
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -55,6 +56,58 @@ def _parse_month(label, row_no: int) -> datetime:
         ) from None
 
 
+_TRUNCATED_LABEL = re.compile(r"^[A-Za-z]{3}\.\.\.$")
+
+
+def _pivot_months(workbook) -> list[datetime]:
+    """The months of the workbook's own pivot sheet (the dates in its first column), in order."""
+    for ws in workbook.worksheets:
+        first = next(ws.iter_rows(min_row=1, max_row=1, max_col=2, values_only=True), ())
+        if (
+            len(first) > 1
+            and isinstance(first[0], str)
+            and first[0].strip() == "Month"
+            and isinstance(first[1], str)
+            and first[1].endswith("Patient Visits")
+        ):
+            return [
+                row[0]
+                for row in ws.iter_rows(min_col=1, max_col=1, values_only=True)
+                if isinstance(row[0], datetime)
+            ]
+    return []
+
+
+def _months_from_pivot(labels: list[str], pivot_months: list[datetime]) -> list[datetime]:
+    """Years for labels such as 'Oct...' (IQVIA's Nov 2026 re-pull writes the month name only).
+
+    A year is never guessed. The labels are accepted only when the same workbook's pivot sheet
+    gives the months, as consecutive months, there are exactly as many labels as pivot months,
+    and every label's month name matches the pivot month in the same position.
+    """
+    reason = None
+    if not pivot_months:
+        reason = "the workbook has no pivot sheet to take the years from"
+    elif len(labels) != len(pivot_months):
+        reason = f"{len(labels)} labels but the pivot sheet has {len(pivot_months)} months"
+    elif any(
+        (b.year * 12 + b.month) - (a.year * 12 + a.month) != 1
+        for a, b in zip(pivot_months, pivot_months[1:], strict=False)
+    ):
+        reason = "the pivot sheet's months are not consecutive"
+    else:
+        for number, (label, month) in enumerate(zip(labels, pivot_months, strict=True), start=1):
+            if label[:3].lower() != month.strftime("%b").lower():
+                reason = f"label {number} is {label!r} but the pivot month is {month:%b %Y}"
+                break
+    if reason:
+        raise PlaceOfServiceError(
+            "Month labels without a year (such as 'Sep...') carry no year and are not loaded "
+            "unless the workbook's own pivot sheet gives it: " + reason + "."
+        )
+    return list(pivot_months)
+
+
 def parse_place_of_service(path: str | Path) -> pd.DataFrame:
     """Parse a workbook's Place-of-Service sheet into a tidy long-format table.
 
@@ -76,6 +129,7 @@ def parse_place_of_service(path: str | Path) -> pd.DataFrame:
         ws = candidates[0]
         all_rows = list(ws.iter_rows(values_only=True))
         sheet_name = ws.title
+        pivot_months = _pivot_months(workbook)
     finally:
         workbook.close()
 
@@ -84,13 +138,20 @@ def parse_place_of_service(path: str | Path) -> pd.DataFrame:
     headers = all_rows[header_index]
     settings = [(col, h) for col, h in enumerate(headers) if col > 0 and h is not None]
 
+    data_rows = [
+        (header_index + offset + 2, row)
+        for offset, row in enumerate(all_rows[header_index + 1 :])
+        if not all(v is None for v in row)
+    ]
+    labels = [str(row[0]).strip() for _, row in data_rows]
+    from_pivot = None
+    if labels and all(_TRUNCATED_LABEL.match(label) for label in labels):
+        from_pivot = _months_from_pivot(labels, pivot_months)
+
     records = []
     seen_months = set()
-    for offset, row in enumerate(all_rows[header_index + 1 :]):
-        if all(v is None for v in row):
-            continue
-        row_no = header_index + offset + 2
-        month = _parse_month(row[0], row_no)
+    for position, (row_no, row) in enumerate(data_rows):
+        month = from_pivot[position] if from_pivot else _parse_month(row[0], row_no)
         if month in seen_months:
             raise PlaceOfServiceError(f"Row {row_no}: month {month:%Y-%m} appears twice")
         seen_months.add(month)
