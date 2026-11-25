@@ -18,7 +18,7 @@ Every document and notebook in the project, with what each covers. Start with [`
 | [`feature_results.md`](feature_results.md) | Results of the feature-group test: each rule, its verdict, the numbers and the limits |
 | [`database_schema.md`](database_schema.md) sections 13 and 14 | The two feature tables and the two model-result tables the publish step writes into the warehouse |
 | [`pipeline.md`](pipeline.md) | The orchestrated pipeline: its nine stages (including the monthly scoring job, the promotion gate and monitoring), the public-data modes, the run record with versions, the monthly schedule and the CI gates |
-| [`site.md`](site.md) | The website: its 11 pages, where each number comes from, how to run it locally and how it is tested (live) |
+| [`site.md`](site.md) | The website: its 12 pages, where each number comes from, how to run it locally and how it is tested (live) |
 | [`api.md`](api.md) | The API: read-only data endpoints and live predictions from the saved models, API keys and rate limits, errors, and how it is tested |
 | [`loadtest.md`](loadtest.md) | The load test (Locust): budgets, results before and after the answer cache, the live function's warm latency and cold start, what was not measured, and what the rate limit and cost limits rest on |
 | [`architecture.md`](architecture.md) | The technical architecture on one page: four diagrams (the whole system, the nine-stage monthly build, one request from visitor to forecast, and a change reaching production), the components and why each was chosen, the design decisions and their trade-offs, what happens when something fails, and what was deliberately not built |

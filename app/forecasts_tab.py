@@ -7,7 +7,6 @@ logic, the wording and the drawing.
 from __future__ import annotations
 
 import common
-import live_panel
 import streamlit as st
 
 from oa_market_intelligence.serving import charts, forecasts, links, style, views
@@ -209,8 +208,20 @@ def render(D: dict, adoption: dict, data_chip, flt: dict) -> None:
             "text/csv",
         )
 
-    # ---- the model run live, through the API
-    live_panel.render(forecasts.segment_view(pred, seg, horizon), pred, horizon)
+    # ---- the model run live has its own page
+    st.markdown("##### Run the model live")
+    with st.container(border=True, key="fc_live_pointer"):
+        st.write(
+            "A separate service on AWS can work any segment's forecast out again from the saved "
+            "model, and check that the answer equals the stored forecast above."
+        )
+        st.markdown(
+            style.link_line(
+                "Run it on the Live model page",
+                links.href("Live model", source="Forecasts"),
+            ),
+            unsafe_allow_html=True,
+        )
 
     # ---- the decline alert
     st.markdown("##### Decline alert, 1 month ahead")

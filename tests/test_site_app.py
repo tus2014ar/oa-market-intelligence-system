@@ -84,11 +84,11 @@ def _text(at):
 # ------------------------------------------------------------------ the pages and the navigation
 
 
-def test_the_navigation_is_eleven_pages_each_a_real_file_with_its_own_address():
+def test_the_navigation_is_twelve_pages_each_a_real_file_with_its_own_address():
     assert [title for title, *_ in overview.PAGES] == list(overview.TAB_NAMES)
     assert all((APP_DIR / script).is_file() for script in SCRIPTS.values())
     addresses = [slug for *_, slug in overview.PAGES]
-    assert len(set(addresses)) == 11 and all(a == a.lower() and " " not in a for a in addresses)
+    assert len(set(addresses)) == 12 and all(a == a.lower() and " " not in a for a in addresses)
     assert all(icon.startswith(":material/") for _, _, icon, _ in overview.PAGES)
 
 
@@ -210,7 +210,7 @@ def test_the_overview_has_cards_a_forecast_chart_status_cards_and_two_downloads(
 def test_the_overview_has_small_lines_on_two_cards_a_guide_and_the_unverified_decline_note(page):
     text = " ".join(m.value for m in page("Overview").markdown)
     assert text.count('class="oa-spark"') == 2  # the share and the change since the peak
-    assert text.count('class="oa-guide"') == 10 and "What each page answers" in text
+    assert text.count('class="oa-guide"') == 11 and "What each page answers" in text
     assert "the size of the visits decline is unverified: see the Context page" in text
     assert "Company sales kept rising while these visits fell" in text
 
@@ -1041,6 +1041,7 @@ def test_the_charts_have_a_what_does_this_mean_button_where_a_chart_is_drawn(pag
         "Segments": 3,
         "Segment detail": 0,  # nothing chosen yet: no chart
         "Forecasts": 4,
+        "Live model": 0,
         "Model results": 3,
         "Data status": 0,
         "Findings": 0,
@@ -1360,10 +1361,28 @@ def _everything(at):
     return " ".join([_text(at)] + [w.value for w in at.warning] + [e.value for e in at.error])
 
 
+def test_the_live_model_page_explains_it_step_by_step_and_the_forecasts_page_points_to_it(page):
+    from oa_market_intelligence.serving import livemodel
+
+    at = page("Live model")
+    text = _text(at)
+    assert [s.value for s in at.subheader] == [
+        "What happens when you press the button",
+        "What it gives a brand manager",
+        "What makes it dependable",
+        "What it does not do",
+    ]
+    for number, (title, _, _) in enumerate(livemodel.STEPS, start=1):
+        assert f"{number}. {title}" in text
+    assert "production-style" in text and "not a what-if tool" in text
+    assert "Run it on the Live model page" in _text(page("Forecasts"))
+    assert not [b for b in page("Forecasts").button if b.key == "live_run"]  # the panel moved
+
+
 def test_without_a_service_address_and_key_the_panel_is_switched_off_and_the_page_is_unchanged(
     page,
 ):
-    at = page("Forecasts")
+    at = page("Live model")
     assert "Run the model live" in _text(at) and "switched off on this copy of the site" in _text(
         at
     )
@@ -1372,7 +1391,7 @@ def test_without_a_service_address_and_key_the_panel_is_switched_off_and_the_pag
 
 
 def test_with_the_service_set_the_panel_offers_three_choices_and_a_button(live):
-    at = run_page("Forecasts")
+    at = run_page("Live model")
     assert not at.exception
     assert [s.key for s in at.selectbox if s.key and s.key.startswith("live_")] == [
         "live_specialty", "live_age", "live_gender",
@@ -1384,12 +1403,12 @@ def test_with_the_service_set_the_panel_offers_three_choices_and_a_button(live):
 def test_a_run_calls_the_service_for_the_chosen_segment_and_horizon_and_shows_it_equals_the_page(
     live,
 ):
-    at = _run_live(run_page("Forecasts", fc_horizon=3))
+    at = _run_live(run_page("Live model", lm_horizon=3))
     assert not at.exception and len(live.calls) == 1
     assert live.calls[0][3] == 3  # the page's horizon
     text = _everything(at)
     assert "Live forecast, 3 months" in text
-    assert "Same as the forecast above" in text
+    assert "Same as the stored forecast" in text
     assert "Data version on the website" in text and "The service also checked it" in text
     assert "optimistic" in text  # the caveat comes with every answer
     assert LIVE_KEY not in text and "abc123example" not in text and "amazonaws" not in text
@@ -1397,25 +1416,26 @@ def test_a_run_calls_the_service_for_the_chosen_segment_and_horizon_and_shows_it
 
 def test_a_live_answer_that_differs_from_the_page_is_flagged_with_the_gap(live):
     live.offset = 0.5
-    at = _run_live(run_page("Forecasts"))
+    at = _run_live(run_page("Live model"))
     text = _everything(at)
-    assert "Different from the forecast above by 0.5000 points" in text
-    assert "Same as the forecast above" not in text
+    assert "Different from the stored forecast by 0.5000 points" in text
+    assert "Same as the stored forecast" not in text
 
 
 def test_when_the_service_does_not_answer_the_panel_says_so_and_the_page_still_works(live):
     live.fail = "unreachable"
-    at = _run_live(run_page("Forecasts"))
+    at = _run_live(run_page("Live model"))
     assert not at.exception
     text = _everything(at)
-    assert "The live model service did not answer. The forecast shown above is unchanged." in text
-    assert "In 1 month (Oct 2026)" in _cards(at)[0]  # the page's own forecasts are untouched
+    assert "The live model service did not answer. The stored forecasts are unchanged." in text
+    # the rest of the page is intact
+    assert "What happens when you press the button" in [s.value for s in at.subheader]
     assert LIVE_KEY not in text and "abc123example" not in text
 
 
 def test_a_refused_key_is_reported_without_naming_the_key(live):
     live.fail = "rejected"
-    text = _everything(_run_live(run_page("Forecasts")))
+    text = _everything(_run_live(run_page("Live model")))
     assert "key for the live model service was refused" in text and LIVE_KEY not in text
 
 
@@ -1426,19 +1446,19 @@ def test_each_visitor_may_run_it_only_so_often_and_the_page_says_when_they_are_o
 
     monkeypatch.setattr(live_panel, "PER_VISITOR_PER_HOUR", 2)
     live_panel._limits.clear()
-    at = run_page("Forecasts")
+    at = run_page("Live model")
     for _ in range(2):
         _run_live(at)
         assert "Live forecast, 1 month" in _everything(at)
     _run_live(at)
-    assert "Too many live runs in the last hour. The forecast shown above is unchanged." in (
+    assert "Too many live runs in the last hour. The stored forecasts are unchanged." in (
         _everything(at)
     )
     assert len(live.calls) <= 2  # the third click never reached the service
 
 
 def test_an_answer_is_shown_only_while_the_choice_is_the_one_it_answered(live):
-    at = _run_live(run_page("Forecasts"))
+    at = _run_live(run_page("Live model"))
     assert "Live forecast, 1 month" in _everything(at)
     options = at.selectbox(key="live_specialty").options
     assert len(options) > 1
@@ -1465,7 +1485,7 @@ def test_a_half_set_or_unusable_setting_is_told_apart_from_switched_off_without_
             monkeypatch.delenv(name, raising=False)
         else:
             monkeypatch.setenv(name, value)
-    at = run_page("Forecasts")
+    at = run_page("Live model")
     text = _everything(at)
     assert "is set up on this site, but its address or key is not usable" in text
     expected = {

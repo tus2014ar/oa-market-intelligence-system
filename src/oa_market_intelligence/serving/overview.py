@@ -15,6 +15,7 @@ PAGES = (
     ("Segments", "views/segments.py", ":material/pie_chart:", "segments"),
     ("Segment detail", "views/segment_detail.py", ":material/zoom_in:", "segment-detail"),
     ("Forecasts", "views/forecasts.py", ":material/query_stats:", "forecasts"),
+    ("Live model", "views/live_model.py", ":material/bolt:", "live-model"),
     ("Model results", "views/model_results.py", ":material/analytics:", "model-results"),
     ("Data status", "views/data_status.py", ":material/fact_check:", "data-status"),
     ("Findings", "views/findings.py", ":material/lightbulb:", "findings"),
@@ -36,6 +37,10 @@ TAB_GUIDE = (
     (
         "Forecasts",
         "What is the forecast, how far can it be trusted, and which segments are flagged?",
+    ),
+    (
+        "Live model",
+        "Can the forecast be reproduced on demand by a separate service, and how does that work?",
     ),
     (
         "Model results",

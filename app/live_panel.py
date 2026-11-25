@@ -1,4 +1,4 @@
-"""The Forecasts page's "Run the model live" panel (DL-122): pick a segment and the website asks
+"""The "Run the model live" panel of the Live model page (DL-122, DL-133): pick a segment and the website asks
 the model service on AWS to run the saved model now, then shows whether the answer equals the
 forecast already on the page. A thin page over `serving.live_client` (the only code that talks to
 the service) and `serving.livepanel` (the choices, the comparison and the wording).

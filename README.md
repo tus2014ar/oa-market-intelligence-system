@@ -45,7 +45,7 @@ Every forecast on the site and in the API carries its known bias and caveats. Th
 
 | Part | Where it runs | What it does |
 |---|---|---|
-| **Website** | Streamlit Community Cloud ([open it](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app)) | 11 pages: what to use and what not to trust, trends, segments, forecasts with their bias, model results. A "Run the model" panel calls the live API. |
+| **Website** | Streamlit Community Cloud ([open it](https://oa-market-intelligence-system-gc4jn4n6qqdf8mnaliabff.streamlit.app)) | 12 pages: what to use and what not to trust, trends, segments, forecasts with their bias, model results, and a Live model page where a separate service on AWS reproduces any forecast on demand and the page checks it. |
 | **Prediction API** | FastAPI in a container on **AWS Lambda** | 14 endpoints, API-key access, rate limits, and live predictions from the saved models. |
 | **Data release** | Versioned **S3** bucket | A new month of data reaches the API with no rebuild. |
 | **Monitoring** | CloudWatch alarms, email alerts, a daily canary check | Errors, slow responses, and a check that the live data matches the repository. |

@@ -129,11 +129,11 @@ curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d
 
 ## Switching the live panel on (DL-122)
 
-The Forecasts page has a panel that asks the AWS API to run the model (`site.md`, "The live model panel"). It stays switched off until the site's Secrets hold the API's address and a key. Use a **separate key for the website**, so either side can be changed without touching the other.
+The Live model page has a panel that asks the AWS API to run the model (`site.md`, "The live model panel"). It stays switched off until the site's Secrets hold the API's address and a key. Use a **separate key for the website**, so either side can be changed without touching the other.
 
 1. **Add a second key to the API.** In CloudFormation open the stack `oa-market-api`, choose **Update stack**, **Make a direct update**, **Use existing template**, then in **ApiKeys** type your current key, a comma, and a new random key of at least 32 characters, with no spaces (`current-key,website-key`). Save the website key in your password manager. Submit and wait for `UPDATE_COMPLETE`. Both keys work from then on.
 2. **Give the site its two secrets.** In Streamlit Community Cloud open the app, **Settings**, **Secrets**, and add two lines (the address is the stack's `ApiUrl` output; type the values yourself, never into a chat or a file in the repository): `LIVE_API_URL = "https://…/"` and `LIVE_API_KEY = "the website key"`. Save; the app restarts.
-3. **Check.** Open the Forecasts page, find "Run the model live", press **Run the model**. It should show the live forecast and "Same as the forecast above". If it says the service did not answer, check the address; if it says the key was refused, check the key.
+3. **Check.** Open the Live model page, press **Run the model**. It should show the live forecast and "Same as the stored forecast". If it says the service did not answer, check the address; if it says the key was refused, check the key.
 4. **Switching it off, or changing the key.** Delete the two secrets to switch the panel off. To replace the website key, change it in both places (the stack's **ApiKeys** and the Secrets); removing the old key from **ApiKeys** stops it working.
 
 Until step 2 is done the live site shows "The live model check is switched off on this copy of the site." The panel calls the API only when a visitor presses the button; the API's own rate limit counts the website as one client (its key).

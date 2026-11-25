@@ -125,6 +125,13 @@ a.oa-see:hover {{text-decoration:underline !important}}
 .oa-stand {{display:flex;justify-content:space-between;align-items:baseline;
   padding:.4rem 0;border-bottom:1px solid rgba(127,127,127,.18)}}
 .oa-stand .k {{font-size:.88rem;opacity:.8}} .oa-stand .x {{font-weight:700;font-size:1.05rem}}
+.oa-flow {{display:flex;flex-wrap:wrap;gap:.45rem;align-items:stretch;margin:.4rem 0 .8rem}}
+.oa-flow-box {{flex:1 1 118px;border:1px solid rgba(127,127,127,.28);border-radius:10px;
+  padding:.55rem .65rem;background:rgba(13,71,161,.06);display:flex;flex-direction:column;
+  gap:.15rem}}
+.oa-flow-box b {{color:{BLUE};font-size:.86rem}}
+.oa-flow-box span {{font-size:.76rem;opacity:.75}}
+.oa-flow-arrow {{align-self:center;opacity:.55;font-weight:700}}
 </style>"""
 
 
@@ -279,10 +286,19 @@ def test_rows(rows: list[tuple[str, str, str, bool, str, str]]) -> str:
     return "".join(out)
 
 
-def text_card(label: str, title: str, caption: str = "") -> str:
+def flow_row(steps: list[tuple[str, str]] | tuple[tuple[str, str], ...]) -> str:
+    """A left-to-right row of boxes (a bold name and a few words) joined by arrows."""
+    boxes = '<span class="oa-flow-arrow">&rarr;</span>'.join(
+        f'<div class="oa-flow-box"><b>{escape(name)}</b><span>{escape(words)}</span></div>'
+        for name, words in steps
+    )
+    return f'<div class="oa-flow">{boxes}</div>'
+
+
+def text_card(label: str, title: str, caption: str = "", tall: bool = True) -> str:
     """A blue card whose main line is a sentence (a finding's title) rather than a number."""
     return (
-        f'<div class="oa-kpi tall"><div class="l">{escape(label)}</div>'
+        f'<div class="oa-kpi{" tall" if tall else ""}"><div class="l">{escape(label)}</div>'
         f'<div class="v t">{escape(title)}</div><div class="c">{escape(caption)}</div></div>'
     )
 
