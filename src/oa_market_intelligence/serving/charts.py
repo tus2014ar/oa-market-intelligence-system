@@ -83,7 +83,7 @@ def market_trend_chart(
     `frame` comes from `trend.monthly` or `trend.quarterly`."""
     data = frame.assign(fitted=None if fitted is None else fitted.to_numpy())
     base = alt.Chart(data)
-    x = alt.X("month:T", title=None)
+    x = alt.X("month:T", title=None, axis=DATE_AXIS)
     y = alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False))
     tip = [
         alt.Tooltip("label:N", title="Period"),
@@ -445,7 +445,7 @@ def share_grid(cells: pd.DataFrame) -> alt.Chart:
         .mark_text(fontSize=11)
         .encode(
             text=alt.Text("share_pct:Q", format=".1f"),
-            color=alt.condition("datum.share_pct > 4", alt.value("white"), alt.value("#353639")),
+            color=alt.condition("datum.share_pct > 2.8", alt.value("white"), alt.value("#353639")),
         )
     )
     return _style((empty + filled + text).properties(height=alt.Step(26)))
@@ -625,7 +625,7 @@ def events_chart(monthly: pd.DataFrame, graph) -> alt.Chart:
         alt.Chart(line_frame, title="Share of visits, with the events that fall inside the data")
         .mark_line(color=PRIMARY, strokeWidth=2)
         .encode(
-            x=alt.X("month:T", title=None),
+            x=alt.X("month:T", title=None, axis=DATE_AXIS),
             y=alt.Y("share_pct:Q", title="Share of visits (%)", scale=alt.Scale(zero=False)),
         )
     )

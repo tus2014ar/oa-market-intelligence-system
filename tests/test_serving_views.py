@@ -317,6 +317,9 @@ def test_the_status_block_and_its_banner():
     status = views.status_block(run)
     assert "Jul 2025" in status["banner"] and "454" in status["banner"]
     assert "nothing to check yet" in status["drift_text"]
+    assert "13.9% too high" not in status["drift_text"]  # the Nov 2026 note is for that window only
+    nov = views.status_block({**run, "last_month_id": 202609})
+    assert "nothing to check yet" in nov["drift_text"] and "13.9% too high" in nov["drift_text"]
     assert list(views.stages_frame(run)["stage"]) == ["swap"]
     assert list(views.extracts_frame(run)["sha256_start"]) == [
         "1" * 12

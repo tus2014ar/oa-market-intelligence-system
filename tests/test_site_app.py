@@ -259,7 +259,8 @@ def test_the_market_trend_page_opens_on_all_visits_with_four_cards_and_its_contr
 def test_the_market_trend_page_keeps_its_caveats(page):
     text = _text(page("Market trend"))
     assert "not company sales" in text and "nothing here says why the share moved" in text
-    assert "a guide, not a forecast" in text and "data-capture dip" in text
+    assert "a guide, not a forecast" in text
+    assert "have not been re-checked on the Nov 2026 data" in text
     assert 'The method is "same as last month": no model beat it' in text
     assert "the data cannot say why visits moved" in text
 
@@ -406,7 +407,8 @@ def test_the_model_results_page_opens_with_four_headlines_and_marks_round_2_prov
     at = page("Model results")
     cards = _cards(at)
     assert len(cards) == 4
-    assert "No model wins" in cards[0] and "+0.5% / +0.3% / +0.3%" in cards[1]
+    assert "No model wins" in cards[0] and "+0.5% / +0.3%" in cards[1]
+    assert "stays in service" in cards[1]
     assert "0 of 3" in cards[2] and "5 of 7" in cards[3] and "none adopted" in cards[3]
     text = " ".join(m.value for m in at.markdown)
     assert "Round 2: improvements tried after round 1" in text
@@ -423,7 +425,7 @@ def test_the_model_results_page_keeps_its_caveats_and_the_scoreboard(page):
     at = page("Model results")
     text = _text(at)
     assert "Do the segment forecasts run high?" in text and "+11.5%" in text
-    assert "one-line rule" in text and "reliable only at 1 month" in text
+    assert "one-line rule" in text and "not reliable at any horizon" in text
     assert "designed after seeing round 1" in text
     assert "not influence which model was chosen" in text
     boards = [d.value for d in at.dataframe if "In plain words" in d.value.columns]

@@ -74,7 +74,8 @@ def render(D: dict, graph, data_chip) -> None:
     first = views.month_label(int(D["monthly"]["month_id"].min()))
     st.caption(
         "Events are context only: nothing here says an event changed the share, and the cause of "
-        "the March to July 2024 dip is unverified. Events before the data begins "
+        "the March to July 2024 dip (found on the earlier extract, not re-checked on the Nov 2026 "
+        "data) is unverified. Events before the data begins "
         f"({first}) are in the table only."
     )
     common.explain("map_events")

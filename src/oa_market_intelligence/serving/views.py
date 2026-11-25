@@ -343,6 +343,17 @@ def alert_summary(alerts: pd.DataFrame, scores: pd.DataFrame) -> dict:
 # ------------------------------------------------------------------ model results
 
 
+# What the first run on IQVIA's Nov 2026 extract found when it checked the forecasts made on the
+# earlier extract against the 14 new months. It is kept here because the next publish, on the same
+# data, has nothing new to compare and replaces that result (DL-131). Shown only for that window.
+NOV_2026_DRIFT_NOTE = (
+    " When the Nov 2026 extract first arrived, the forecasts made on the earlier extract were "
+    "checked against its 14 new months: the 1-month segment forecasts ran 13.9% too high "
+    "(5.5% in testing), the 3-month 11.6% (10.9% in testing) and the 6-month 17.4%. That check "
+    "ran once and is recorded in the decision log (DL-131)."
+)
+
+
 def adopted_model(adoption: dict, task: str, horizon: int) -> str | None:
     return adoption.get(TASK_KEY[task], {}).get(str(horizon))
 
@@ -480,6 +491,7 @@ def status_block(run: dict) -> dict:
     out["drift_text"] = {
         "nothing_to_compare": (
             "No month has arrived since the previous forecasts, so there is nothing to check yet."
+            + (NOV_2026_DRIFT_NOTE if run.get("last_month_id") == 202609 else "")
         ),
         "ok": "Earlier forecasts are holding up within the tested range.",
         "drift": "Earlier forecasts have drifted beyond the tested range.",

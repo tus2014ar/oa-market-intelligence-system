@@ -67,8 +67,10 @@ def _chart(win, who: str, chart_key: str, bounds) -> None:
         f"{who}: Zilretta's visits as a share of Zilretta, generic steroid injection and "
         "NSAID/OTC visits. Orange dashes: the straight-line guide. Grey dotted lines: the peak, "
         "the turn in March 2022 and the start of the 2024 dip. Shaded: the March to July 2024 "
-        "data-capture dip, which hit all three classes. Drag across the chart to pick a range: "
-        "the cards and the panel beside it follow your range. Changing the view above clears it."
+        "dip, which hit all three classes. The turn and the dip were found on the earlier extract "
+        "(to July 2025) and have not been re-checked on the Nov 2026 data; the cause of the dip "
+        "is unverified. Drag across the chart to pick a range: the cards and the panel beside it "
+        "follow your range. Changing the view above clears it."
     )
     common.explain("trend_chart")
 
