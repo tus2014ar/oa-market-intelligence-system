@@ -114,7 +114,11 @@ jobs:
             echo "mode=rollback" >> "$GITHUB_OUTPUT"
           else
             IMAGE="${REGISTRY}/${REPOSITORY_NAME}:${GITHUB_SHA}"
-            docker build -f Dockerfile.lambda -t "$IMAGE" .
+            # Lambda accepts a plain single-platform image, not the image index with attestation
+            # manifests that a newer Docker on the runner adds by default (the update fails with
+            # "image manifest, config or layer media type ... is not supported"), so those are
+            # switched off and the platform is the function's (x86_64).
+            docker buildx build --provenance=false --sbom=false --platform linux/amd64 --load               -f Dockerfile.lambda -t "$IMAGE" .
             docker push "$IMAGE"
             echo "uri=$IMAGE" >> "$GITHUB_OUTPUT"
             echo "mode=deploy" >> "$GITHUB_OUTPUT"
