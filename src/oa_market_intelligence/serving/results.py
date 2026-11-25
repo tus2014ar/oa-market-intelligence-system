@@ -44,8 +44,23 @@ def segment_gains(board: pd.DataFrame) -> dict[int, float]:
     rows = board[board["task"] == "Segment share"]
     out = {}
     for r in rows.itertuples():
-        if r.chosen_model != r.simple_rule:
+        # a model the registered rule chose but a recorded decision keeps out of service does not
+        # count here (see `not_served_gains`)
+        served = getattr(r, "adopted_model", r.chosen_model) in ("", r.chosen_model)
+        if r.chosen_model != r.simple_rule and served:
             out[int(r.horizon)] = (r.simple_rule_score - r.chosen_model_score) / r.simple_rule_score
+    return out
+
+
+def not_served_gains(board: pd.DataFrame) -> list[tuple[int, str, float]]:
+    """(horizon, model, gain) where the registered rule chose a model but a recorded decision
+    keeps another in service."""
+    out = []
+    for r in board[board["task"] == "Segment share"].itertuples():
+        adopted = getattr(r, "adopted_model", r.chosen_model)
+        if r.chosen_model != r.simple_rule and adopted not in ("", r.chosen_model):
+            gain = (r.simple_rule_score - r.chosen_model_score) / r.simple_rule_score
+            out.append((int(r.horizon), r.chosen_model, gain))
     return out
 
 
@@ -60,6 +75,11 @@ def headline_cards(board: pd.DataFrame, bias: pd.DataFrame, posthoc: pd.DataFram
     horizons = " and ".join(str(h) for h in gains)
     high = " and ".join(f"{biases[h]:.1f}%" for h in gains if h in biases)
     reliable = int(posthoc["reliable"].sum())
+    kept_out = "".join(
+        f" At {h} months the rule chose {model} (+{100 * g:.1f}%), but the simple rule stays in "
+        "service."
+        for h, model, g in not_served_gains(board)
+    )
     return [
         (
             "National share",
@@ -70,7 +90,7 @@ def headline_cards(board: pd.DataFrame, bias: pd.DataFrame, posthoc: pd.DataFram
             "Segment share",
             gain_text,
             f"Small gain over the simple rule at {horizons} months, and the forecast runs "
-            f"{high} high.",
+            f"{high} high.{kept_out}",
         ),
         (
             "Decline alert",

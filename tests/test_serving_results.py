@@ -212,8 +212,12 @@ def test_the_real_stored_results_give_the_headline_cards_the_site_shows():
     cards = results.headline_cards(
         board, views.bias_table(scores), views.posthoc_table(posthoc), round2
     )
-    assert cards[0][1] == "No model wins" and cards[1][1] == "+0.5% / +0.3% / +0.3%"
-    assert "1.6% and 3.5% and 11.5% high" in cards[1][2]
+    assert cards[0][1] == "No model wins" and cards[1][1] == "+0.5% / +0.3%"
+    assert "1 and 3 months" in cards[1][2] and "1.6% and 3.5% high" in cards[1][2]
+    # the 6-month gain belongs to a model the registered rule chose but a recorded decision keeps
+    # out of service (DL-130): it is said so, and not counted as the served model's gain
+    assert "At 6 months the rule chose gradient boosting" in cards[1][2]
+    assert "the simple rule stays in service" in cards[1][2]
     assert cards[2][1] == "0 of 3" and cards[3][1] == "5 of 7"
 
 
@@ -251,3 +255,17 @@ def test_the_real_shap_summary_gives_nine_groups_that_add_up_to_a_hundred():
         assert len(info["groups"]) == 9 and info["checks_pass"]
         assert sum(p for _, p in info["groups"]) == pytest.approx(100, abs=0.5)
         assert info["groups"][0][0] == "The segment's own recent share"
+
+
+def test_a_model_the_rule_chose_but_a_decision_keeps_out_of_service_is_not_counted_as_served():
+    board = _board().assign(adopted_model=["same as last month"] * 3 + ["logistic regression"] * 2
+                            + ["same as last month"])
+    board.loc[board["horizon"] == 6, "chosen_model"] = board.loc[
+        board["horizon"] == 6, "chosen_model"
+    ].where(board["task"] != "Segment share", "gradient boosting")
+    six = (board["task"] == "Segment share") & (board["horizon"] == 6)
+    board.loc[six, "chosen_model_score"] = 0.2991
+    assert results.segment_gains(board) == pytest.approx({1: 0.004, 3: 0.002})
+    kept = results.not_served_gains(board)
+    assert [(h, m) for h, m, _ in kept] == [(6, "gradient boosting")]
+    assert kept[0][2] == pytest.approx(0.003)

@@ -41,9 +41,10 @@ THEMES = {
 }
 START_HERE = (1, 2, 14, 16)  # the four a brand manager should read first
 ROUND2_NOTE = (
-    "These findings are from the first modelling round. A second round, tried after seeing it, "
-    "found a provisional fix for the segment forecast's upward bias; it is not adopted and is "
-    "shown on the Model results page."
+    "Findings 14 to 16 come from the pre-registered modelling plan, re-run on IQVIA's Nov 2026 "
+    "data; finding 13 (which inputs help) was tested on the earlier extract. A second round, "
+    "tried after seeing the first, found a provisional fix for the segment forecast's upward "
+    "bias; it is not adopted and is shown on the Model results page."
 )
 
 

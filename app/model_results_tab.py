@@ -67,7 +67,7 @@ def _scoreboard(board) -> None:
         )
         st.caption(
             "Each row compares the models with a simple rule under tests fixed before anything "
-            'ran. "Used by the site" is what the project adopted (decision DL-79). Lower is '
+            'ran. "Used by the site" is what the project adopted (decisions DL-79 and DL-130). Lower is '
             "better for the first two measures; higher is better for the ranking score."
         )
 
@@ -90,13 +90,21 @@ def _bias(bias) -> None:
         )
 
 
+def _reliable_text(posthoc_table) -> str:
+    """Where the alert's gain over the corrected rule is reliable, from the stored post-hoc table."""
+    months = [int(h) for h in posthoc_table.loc[posthoc_table["reliable"], "horizon"]]
+    if not months:
+        return "not reliable at any horizon"
+    return "reliable only at " + " and ".join(f"{m} month{'s' if m != 1 else ''}" for m in months)
+
+
 def _alert(posthoc_table) -> None:
     st.markdown("**The caveat on the decline alert**")
     st.write(
         "The alert passed its registered test, but one of the simple rules it was tested "
         "against was written the wrong way round. With only that corrected (a check made after "
         'the results were seen), a one-line rule "this segment just spiked" does almost as '
-        "well as the model, and the model's gain is reliable only at 1 month."
+        f"well as the model, and the model's gain is {_reliable_text(posthoc_table)}."
     )
     cols = st.columns(3)
     for col, (label, registered, corrected, model, reliable) in zip(

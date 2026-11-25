@@ -210,6 +210,11 @@ def render(D: dict, data_chip, flt: dict) -> None:
             f"cell has under {segments.MIN_CELL_VISITS} visits, too few to show a rate. Click a "
             "cell to open that specialty and age band."
         )
+        st.caption(
+            "Pediatrics shows very high shares in the oldest age bands, which is implausible for a "
+            "pediatric practice: the specialty label is likely mis-coded in IQVIA's data (the "
+            "modelling checks are also run without it). Read it as a data quirk, not a market fact."
+        )
         common.explain("seg_grid")
 
     # ---- groups over time
