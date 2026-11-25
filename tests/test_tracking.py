@@ -418,7 +418,7 @@ def test_the_published_warehouse_builds_a_store_with_every_score_and_the_four_ch
     n_scores = con.execute("SELECT COUNT(*) FROM model_scores").fetchone()[0]
     arts = pd.read_sql("SELECT model_id, artifact_sha256, model_version FROM model_artifacts", con)
     con.close()
-    assert result["runs"] == n_scores == 222 and result["data_version"] == "28b9a7bd3234"
+    assert result["runs"] == n_scores == 222 and result["data_version"] == "bd8be3d30fc4"
     assert result["promotion_runs"] == 1 and result["experiments"] == 5
     listed = tr.summary(store)
     assert len(listed) == 4
