@@ -102,7 +102,8 @@ def _months_from_pivot(labels: list[str], pivot_months: list[datetime]) -> list[
                 break
     if reason:
         raise PlaceOfServiceError(
-            "Month labels without a year (such as 'Sep...') cannot be loaded: " + reason + "."
+            "Month labels without a year (such as 'Sep...') carry no year and are not loaded "
+            "unless the workbook's own pivot sheet gives it: " + reason + "."
         )
     return list(pivot_months)
 
