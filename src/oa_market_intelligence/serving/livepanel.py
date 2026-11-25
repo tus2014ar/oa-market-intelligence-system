@@ -1,4 +1,4 @@
-"""The logic and the wording behind the Forecasts page's "Run the model live" panel (DL-122).
+"""The logic and the wording behind the Live model page's "Run the model live" panel (DL-122).
 
 The page draws; this module decides. It picks the options a visitor can choose, compares the
 live answer with the forecast the page already shows, compares the data version the website holds
@@ -16,15 +16,15 @@ TOLERANCE_PP = 1e-3
 
 LEAD = (
     "Pick a segment and the website asks the model service on AWS to run the saved model now. "
-    "The answer should equal the forecast above; this shows that it does."
+    "The answer should equal the forecast the monthly job stored; this shows that it does."
 )
 BIAS_NOTE = (
     "Segment forecasts ran high in testing, so read this as optimistic and as a lead to look into, "
     "not as proof. At 6 months the model is 'same as last month'."
 )
 SWITCHED_OFF = (
-    "The live model check is switched off on this copy of the site. The forecasts above are the "
-    "monthly job's stored output."
+    "The live model check is switched off on this copy of the site. The forecasts on the "
+    "Forecasts page are the monthly job's stored output."
 )
 UNUSABLE = (
     "The live model service is set up on this site, but its address or key is not usable. The "
@@ -41,7 +41,7 @@ def setting_detail(address_found: bool, key_found: bool, address_https: bool) ->
     return f"Address: {address}. Key: {'found' if key_found else 'not found'}."
 
 
-UNAVAILABLE_TAIL = "The forecast shown above is unchanged."
+UNAVAILABLE_TAIL = "The stored forecasts are unchanged."
 
 
 def specialties(view: pd.DataFrame) -> list[str]:
@@ -99,7 +99,7 @@ def verdict(comparison: dict, versions: str) -> tuple[str, str]:
     """A level ('ok' or 'warn') and one sentence about how the live answer compares."""
     status = comparison["status"]
     if status == "match":
-        text = "Same as the forecast above, to the 4 decimals the service reports."
+        text = "Same as the stored forecast, to the 4 decimals the service reports."
         if versions == "different":
             return "warn", text + " The website and the service hold different data versions."
         return "ok", text
@@ -110,8 +110,8 @@ def verdict(comparison: dict, versions: str) -> tuple[str, str]:
             if versions == "different"
             else ""
         )
-        return "warn", f"Different from the forecast above by {gap:.4f} points.{why}"
-    return "warn", "The page has no stored forecast for this segment to compare with."
+        return "warn", f"Different from the stored forecast by {gap:.4f} points.{why}"
+    return "warn", "There is no stored forecast for this segment to compare with."
 
 
 def unavailable(message: str) -> str:
@@ -127,6 +127,9 @@ def result_rows(live: dict, horizon_label: str) -> list[tuple[str, str]]:
             f"Live forecast, {horizon_label} ({live['target_month']})",
             f"{live['forecast_pct']:.2f}%",
         ),
+        ("Stored forecast (monthly job)", f"{live['stored_forecast_pct']:.2f}%")
+        if live.get("stored_forecast_pct") is not None
+        else ("Stored forecast (monthly job)", "none"),
         ("Last month's share", f"{live['last_month_pct']:.2f}%"),
         ("Change", f"{live['change_pp']:+.2f} points"),
         (

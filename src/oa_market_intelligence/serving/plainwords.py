@@ -104,6 +104,18 @@ GLOSSARY: dict[str, str] = {
         "rate. It is arithmetic, not a target and not a forecast."
     ),
     "Not verified": ("Shown, but not yet checked against its source, so it is not relied on."),
+    "Model service (API)": (
+        "A program on AWS that other programs can ask a question over the internet. Here the "
+        "website asks it for a segment's forecast, and a spreadsheet or planning tool could too."
+    ),
+    "Saved model": (
+        "The numbers the monthly job learned when it fitted the model, stored so the forecast can "
+        "be worked out again later by simple arithmetic, without training anything."
+    ),
+    "Data version": (
+        "A short code that names exactly which data a forecast was made from. If the website and "
+        "the service show the same code, they are using the same data."
+    ),
     "Neighbours": (
         "The other groups along the same split, for example the other specialties, shown beside "
         "the group so you can see where it sits."
@@ -136,6 +148,11 @@ PAGE_SUMMARY: dict[str, str] = {
         "Where the share is expected to be in 1, 3 and 6 months, with a range around it. The "
         "national forecast is last month's value because nothing beat it. The segment forecasts "
         "ran high in testing, and the alert is a prompt to look, not a prediction to act on."
+    ),
+    "Live model": (
+        "How a forecast can be reproduced on demand: a separate service on AWS works it out "
+        "again from the saved model and the page checks that the two answers are equal. What "
+        "happens step by step, what it gives a brand manager, and what it does not do."
     ),
     "Model results": (
         "The scorecard: each model against a simple rule, tested under rules written before any "
@@ -193,6 +210,13 @@ PAGE_TERMS: dict[str, tuple[str, ...]] = {
         "Segment",
         "Decline alert",
         "Regression to the mean",
+        "Small group",
+    ),
+    "Live model": (
+        "Model service (API)",
+        "Saved model",
+        "Data version",
+        "Bias",
         "Small group",
     ),
     "Model results": (

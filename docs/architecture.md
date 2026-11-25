@@ -41,7 +41,7 @@ flowchart TD
   subgraph SERVE["Serving"]
     direction LR
     API["FastAPI on AWS Lambda<br/>container, function URL, API key<br/>answer cache, live predictions<br/>follows S3, image copy as fallback"]
-    SITE["Streamlit site<br/>Community Cloud, 11 pages<br/>reads the repo copy"]
+    SITE["Streamlit site<br/>Community Cloud, 12 pages<br/>reads the repo copy"]
     ASK["Question box<br/>Claude API, 11 read-only tools<br/>over the tables"]
     API ~~~ SITE ~~~ ASK
   end
@@ -90,7 +90,7 @@ sequenceDiagram
   participant A as API on Lambda
   participant C as Answer cache
   participant D as warehouse.db (from S3 or image)
-  V->>S: Forecasts page, press "Run the model"
+  V->>S: Live model page, press "Run the model"
   S->>A: GET /v1/predict/segment (X-API-Key, server side)
   A->>A: key check, rate limit (60 per minute)
   A->>C: look up (path, query, data generation)

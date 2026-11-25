@@ -90,7 +90,7 @@ def test_the_local_version_is_the_one_every_stored_forecast_carries():
 
 def test_the_verdict_says_same_when_equal_and_warns_when_not():
     ok = lp.verdict(lp.compare(1.7326, 1.7326), "same")
-    assert ok[0] == "ok" and ok[1].startswith("Same as the forecast above")
+    assert ok[0] == "ok" and ok[1].startswith("Same as the stored forecast")
     unknown = lp.verdict(lp.compare(1.7326, 1.7326), "unknown")
     assert unknown[0] == "ok"
     skewed = lp.verdict(lp.compare(1.7326, 1.7326), "different")
@@ -105,7 +105,7 @@ def test_the_verdict_says_same_when_equal_and_warns_when_not():
 
 def test_an_unavailable_service_leaves_the_page_untouched_and_says_so():
     text = lp.unavailable("The live model service did not answer.")
-    assert text == "The live model service did not answer. The forecast shown above is unchanged."
+    assert text == "The live model service did not answer. The stored forecasts are unchanged."
 
 
 def test_the_result_rows_name_the_forecast_the_change_the_visits_and_the_model():
@@ -116,6 +116,10 @@ def test_the_result_rows_name_the_forecast_the_change_the_visits_and_the_model()
     }  # fmt: skip
     rows = dict(lp.result_rows(live, "3 months"))
     assert rows["Live forecast, 3 months (Oct 2025)"] == "1.73%"
+    assert rows["Stored forecast (monthly job)"] == "none"  # the service sent none
+    assert dict(lp.result_rows({**live, "stored_forecast_pct": 1.7326}, "3 months"))[
+        "Stored forecast (monthly job)"
+    ] == "1.73%"
     assert rows["Last month's share"] == "2.65%"
     assert rows["Change"] == "-0.91 points"
     assert rows["Visits last month"] == "169"
